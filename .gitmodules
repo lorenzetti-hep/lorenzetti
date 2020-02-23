@@ -1,0 +1,3 @@
+[submodule "gaugi"]
+	path = gaugi
+	url = https://github.com/jodafons/Gaugi.git
