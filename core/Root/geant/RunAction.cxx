@@ -1,5 +1,5 @@
 
-#include "core/geant/RunData.h"
+#include "core/EventLoop.h"
 #include "core/geant/RunAction.h"
 #include "core/geant/Analysis.h"
 
@@ -9,7 +9,7 @@
 #include "G4SystemOfUnits.hh"
 
 RunAction::RunAction()
- : G4UserRunAction(),
+ : G4UserRunAction()
 {;}
 
 
@@ -21,7 +21,7 @@ RunAction::~RunAction()
 
 G4Run* RunAction::GenerateRun()
 {
-  return new RunData();
+  return new EventLoop();
 }
 
 

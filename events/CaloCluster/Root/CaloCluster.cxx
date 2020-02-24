@@ -13,7 +13,7 @@ CaloCluster::CaloCluster( float energy_center, float eta_center,
   m_eta_center(eta_center),
   m_phi_center(phi_center),
   m_delta_eta(delta_eta),
-  m_delta_phi(delta_phi),
+  m_delta_phi(delta_phi)
 {;}
 
 

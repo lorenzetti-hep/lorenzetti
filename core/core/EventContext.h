@@ -38,7 +38,7 @@ class EventContext
     //void attach( xAOD::EventInto * );
     
     /*! retrieve the geant step point */
-    void retrieve( G4Step * );
+    void retrieve( const G4Step * );
     /*! retrieve the calo cluster container pointer */
     void retrieve( xAOD::CaloClusterContainer * );
     /*! retrieve the calo cell collection pointer */

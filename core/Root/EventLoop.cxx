@@ -6,7 +6,7 @@
 //#include "CaloCluster/CaloClusterMaker.h"
 
 
-EventLoop::EventLoop() : G4Run(),
+EventLoop::EventLoop() : G4Run()
 {
   initialize();
 }
@@ -18,7 +18,7 @@ EventLoop::~EventLoop()
 }
 
 
-bool EventLoop::initialize(){
+void EventLoop::initialize(){
 
   // Create the event context  
   m_context = new EventContext();
@@ -42,7 +42,7 @@ bool EventLoop::initialize(){
 }
 
 
-bool EventLoop::finalize(){
+void EventLoop::finalize(){
 
   for( auto &toolHandle : m_toolHandles ){
     toolHandle->finalize();

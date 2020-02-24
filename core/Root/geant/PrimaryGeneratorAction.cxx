@@ -2,7 +2,8 @@
 
 #include "core/geant/PrimaryGeneratorAction.h"
 #include "core/geant/PrimaryGeneratorMessenger.h"
-#include "reader/pythia/EventReader.h"
+#include "reader/EventReader.h"
+
 
 #include "G4Event.hh"
 #include "G4ParticleGun.hh"

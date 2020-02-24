@@ -8,8 +8,8 @@
 #include "G4UIdirectory.hh"
 #include "G4UIparameter.hh"
 
-#include "core/geant/PrimaryGeneratorMessenger.hh"
-#include "core/geant/PrimaryGeneratorAction.hh"
+#include "core/geant/PrimaryGeneratorMessenger.h"
+#include "core/geant/PrimaryGeneratorAction.h"
 
 
 PrimaryGeneratorMessenger::PrimaryGeneratorMessenger( PrimaryGeneratorAction* genaction )

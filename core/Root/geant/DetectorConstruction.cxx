@@ -222,15 +222,15 @@ void DetectorConstruction::ConstructSDandField()
 
 
 void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
-                                          G4String name,  
+                                          std::string name,  
                                           G4Material *defaultMaterial,
                                           G4Material *absorberMaterial,
                                           G4Material *gapMaterial,
-                                          G4int nofLayers,
-                                          G4double absoThickness,
-                                          G4double gapThickness,
-                                          G4double calorRmin,
-                                          G4double calorZ,
+                                          int nofLayers,
+                                          double absoThickness,
+                                          double gapThickness,
+                                          double calorRmin,
+                                          double calorZ,
                                           G4ThreeVector center_pos
                                           ) 
 

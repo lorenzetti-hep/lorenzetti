@@ -26,19 +26,19 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
     virtual void GeneratePrimaries(G4Event* anEvent);
   
     void SetGenerator(G4VPrimaryGenerator* gen);
-    void SetGenerator(std::string genname);
+    void SetGenerator(G4String genname);
   
     G4VPrimaryGenerator* GetGenerator() const;
-    std::string GetGeneratorName() const;
+    G4String GetGeneratorName() const;
   
   private:
 
   
     G4VPrimaryGenerator       *m_currentGenerator;
-    std::string                m_currentGeneratorName;
+    G4String                m_currentGeneratorName;
     PrimaryGeneratorMessenger *m_messenger;
 
-    std::map<std::string, G4VPrimaryGenerator*>   m_generatorMap;
+    std::map<G4String, G4VPrimaryGenerator*>   m_generatorMap;
 
 };
 

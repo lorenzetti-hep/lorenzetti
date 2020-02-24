@@ -36,9 +36,13 @@ class EventLoop : public G4Run
 
     /** Get the context. To be used externally in Geant core **/
     EventContext* getContext();
-
+    
+    SG::StoreGate* getStoreGateSvc();
 
   private:
+
+    void initialize();
+    void finalize();
 
     // the event context
     EventContext *m_context;

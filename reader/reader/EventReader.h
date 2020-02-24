@@ -13,6 +13,9 @@
 #include <vector>
 
 
+#include "core/macros.h"
+#include "EventInfo/EventInfo.h"
+
 class EventReaderMessenger;
 
 class EventReader : public G4VPrimaryGenerator 

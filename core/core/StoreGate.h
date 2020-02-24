@@ -26,9 +26,9 @@ namespace SG
       /** Move between directories **/
       void cd(std::string);
       /** Create 1D histogram **/
-      void AddHistogram( std::string, std::string, int xbin, float xmin, float xmax );
+      bool AddHistogram( std::string, std::string, int xbin, float xmin, float xmax );
       /** Create 2D histogram **/
-      void AddHistogram( std::string, std::string, int xbin, float xmin, float xmax, int ybin, float ymin, float ymax );
+      bool AddHistogram( std::string, std::string, int xbin, float xmin, float xmax, int ybin, float ymin, float ymax );
       /** Get 1D pointer **/
       TH1F* hist1( std::string );
       /** Get 2D pointer **/

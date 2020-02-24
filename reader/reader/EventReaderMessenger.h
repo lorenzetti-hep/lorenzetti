@@ -1,5 +1,5 @@
-#ifndef EventReaderMessage_h
-#define EventReaderMessege_h
+#ifndef EventReaderMessenger_h
+#define EventReaderMessenger_h
 
 /** geant 4 libs **/
 #include "G4UImessenger.hh"
@@ -19,8 +19,8 @@ class EventReaderMessenger : public G4UImessenger {
     EventReaderMessenger(EventReader* agen);
     ~EventReaderMessenger();
   
-    void SetNewValue(G4UIcommand* command, std::string newValues);
-    std::string GetCurrentValue(G4UIcommand* command);
+    void SetNewValue(G4UIcommand* command, G4String newValues);
+    G4String GetCurrentValue(G4UIcommand* command);
   
   private:
     EventReader           *m_gen;

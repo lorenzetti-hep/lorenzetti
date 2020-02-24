@@ -33,7 +33,7 @@ void CaloClusterContainer::clear()
       delete caloCluster;
   }
 
-  m_container.clear()
+  m_container.clear();
 }
 
 

@@ -1,0 +1,62 @@
+#ifndef EventInfo_h
+#define EventInfo_h
+
+/** simulator libs **/
+#include "CaloCluster/CaloCluster.h"
+#include "core/macros.h"
+
+/** geant 4 libs **/
+#include "globals.hh"
+
+/** standard libs **/
+#include <vector>
+
+
+namespace xAOD{
+
+  // helper struct
+  struct seed_t{ float et; float eta; float phi; int pdgid;};
+  
+  /// Description of a calorimeter cluster
+  ///
+  /// This is a first stab at how a calorimeter cell could behave in the
+  /// xAOD EDM.
+  /// @author Joao victor da Fonseca Pinto <jodafons@cern.ch, jodafons@lps.ufrj.br>
+  ///
+	/// $Revision: 1 $
+  /// $Date: 2020-02-01$
+  ///
+  class EventInfo
+  {  
+    public:
+      /** Constructor **/
+      EventInfo();
+      /** Destructor **/
+      ~EventInfo();
+      /** Average mu from the pythia generator **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_avgmu, setAvgmu, avgmu );
+      /** Tje particle identification **/
+      PRIMITIVE_SETTER_AND_GETTER( int, m_pdgid, setPdgid, pdgid );
+      /** Event number form geant4 **/
+      PRIMITIVE_SETTER_AND_GETTER( int, m_eventNumber, setEventNumber, eventNumber );
+      /** The event total energy **/
+      PRIMITIVE_SETTER_AND_GETTER( int, m_totalEnergy, setTotalEnergy, totalEnergy );
+      /** All RoI given by the pythia generator **/
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<seed_t>, m_seeds, setSeeds, seeds );
+
+    private:
+      
+      // particle identification
+      int m_pdgid;
+      // event number
+      float m_eventNumber;
+      // event total energy
+      float m_totalEnergy;
+      // average mu
+      float m_avgmu;
+      // all seeds in the event
+      std::vector<seed_t> m_seeds;
+      
+  };
+}
+#endif

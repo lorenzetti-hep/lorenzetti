@@ -1,9 +1,9 @@
 
+#include "EventInfo/EventInfo.h"
 #include "reader/EventReader.h"
 #include "reader/EventReaderMessenger.h"
 #include "core/EventLoop.h"
 #include "core/EventContext.h"
-//#include "edm/EventInfo.h"
 #include "core/macros.h"
 
 
@@ -17,6 +17,9 @@
 #include "G4SystemOfUnits.hh"
 #include <math.h>
 
+
+#include "TFile.h"
+#include "TTree.h"
 
 EventReader::EventReader():  
     m_evt(0),
@@ -39,7 +42,7 @@ EventReader::~EventReader()
 void EventReader::Initialize()
 {
   MSG_INFO( "Open the root file: " << m_filename );
-  m_f = new TFile( m_filename , "read" );
+  m_f = new TFile( m_filename.c_str() , "read" );
   m_ttree = (TTree*)m_f->Get("particles");
   m_evt=0;
   link( m_ttree );
@@ -158,7 +161,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   EventLoop *sequence = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   // Get the event context into the main sequence
-  EventContext *ctx = sequence->getContext();
+  //EventContext *ctx = sequence->getContext();
   //EventInfo *event=nullptr;
   //ctx->retrieve( event );
 
@@ -192,10 +195,10 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
-std::vector<xAOD::t_roi>& EventReader::Load( G4Event* g4event )
+std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
 {
   // Find all seeds into this event
-  std::vector<xAOD::t_roi> vec_seed;
+  std::vector<xAOD::seed_t> vec_seed;
   
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
@@ -204,17 +207,17 @@ std::vector<xAOD::t_roi>& EventReader::Load( G4Event* g4event )
     if ( m_p_pdg_id->at(i) == 0 ){ 
       // If the vec_seed its empty, add the seed
       if(vec_seed.empty()){
-        vec_seed.push_back(xAOD::t_roi{m_p_eta->at(i), m_p_phi->at(i), m_p_et->at(i)});
+        vec_seed.push_back(xAOD::seed_t{m_p_eta->at(i), m_p_phi->at(i), m_p_et->at(i), 0});
       }else{ // Not empty, let's check the roi overlap
         // Loop over all seed until now
         float eta=m_p_eta->at(i);
         float phi=m_p_phi->at(i);
         float et=m_p_et->at(i);
         // Loop over all rois inside of vec_roi
-        for( unsigned int j=0;j<vec_roi.size(); ++j ){
+        for( unsigned int j=0;j<vec_seed.size(); ++j ){
           if (abs(eta - vec_seed[j].eta)<0.2 && abs( phi - vec_seed[j].phi)<0.2 ){
             if (et > vec_seed[j].et)
-              vec_seed[j] = xAOD::t_roi{eta,phi,et};
+              vec_seed[j] = xAOD::seed_t{eta,phi,et,m_p_pdg_id->at(i)};
           }
         }// Loop over all rois
       }// Its empty?
