@@ -51,12 +51,14 @@ link_directories( ${Boost_LIBRARY_DIR} )
 
 
 add_subdirectory( core )
+add_subdirectory( reader )
 add_subdirectory( events/CaloCluster )
 add_subdirectory( events/CaloCell )
 
 
 add_library(atropos SHARED
   $<TARGET_OBJECTS:core>
+  $<TARGET_OBJECTS:reader>
   $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:CaloCell>
 )

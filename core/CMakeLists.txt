@@ -1,6 +1,6 @@
 
-file(GLOB SOURCES Root/*.cxx Root/geant/*.cxx
-file(GLOB_RECURSE HEADERS core/*.h core/geant/*.h
+file(GLOB SOURCES Root/*.cxx Root/geant/*.cxx )
+file(GLOB_RECURSE HEADERS core/*.h core/geant/*.h )
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
