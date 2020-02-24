@@ -1,5 +1,5 @@
-#ifndef "CaloClusterMaker_h"
-#define "CaloClusterMaker_h"
+#ifndef CaloClusterMaker_h
+#define CaloClusterMaker_h
 
 /** simulator libs **/
 #include "StatusCode.h"

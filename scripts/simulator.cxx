@@ -30,7 +30,7 @@
 
 //#define G4MULTITHREADED 1
 
-#include "DetectorConstruction.hh"
+#include "geometry/DetectorConstruction.h"
 #include "ActionInitialization.hh"
 
 #ifdef G4MULTITHREADED

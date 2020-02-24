@@ -1,7 +1,7 @@
 
-#include "tools/CaloClusterMaker.hh"
-#include "edm/CaloCell.hh"
-#include "edm/CaloCluster.hh"
+#include "CaloClusterMaker.hh"
+#include "CaloCell.hh"
+#include "CaloCluster.hh"
 #include "G4PhysicalConstants.hh"
 #include "macros.hh"
 

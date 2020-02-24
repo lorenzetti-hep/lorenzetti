@@ -48,45 +48,22 @@ link_directories( ${Boost_LIBRARY_DIR} )
 
 
 
-#----------------------------------------------------------------------------
-#include(Gaugi/cmake/InstallGaugiFunctions.cmake)
-# Add the executable, and link it to the Geant4 libraries
-file(GLOB sources 
-  ${PROJECT_SOURCE_DIR}/events/CaloCell/src/*.cxx
-  ${PROJECT_SOURCE_DIR}/events/CaloCluster/src/*.cxx
-  ${PROJECT_SOURCE_DIR}/reco/CaloCellMaker/src/*.cxx
-  ${PROJECT_SOURCE_DIR}/reco/CaloClusterMaker/src/*.cxx
-  ${PROJECT_SOURCE_DIR}/minerva/src/*.cxx
-  ${PROJECT_SOURCE_DIR}/minerva/src/kernel/*.cxx
-  ${PROJECT_SOURCE_DIR}/tools/MonGroup/src/*.cxx
-  )
-
-file(GLOB headers 
-  ${PROJECT_SOURCE_DIR}/events/CaloCell/include/*.h
-  ${PROJECT_SOURCE_DIR}/events/CaloCluster/include/*.h
-  ${PROJECT_SOURCE_DIR}/reco/CaloCellMaker/include/*.h
-  ${PROJECT_SOURCE_DIR}/reco/CaloClusterMaker/include/*.h
-  ${PROJECT_SOURCE_DIR}/minerva/include/*.h
-  ${PROJECT_SOURCE_DIR}/minerva/include/kernel/*.h
-  ${PROJECT_SOURCE_DIR}/tools/MonGroup/include/*.h
-  )
-
-add_executable(simulator scripts/simulator.cc ${sources} ${headers})
-target_link_libraries(simulator ${Geant4_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} ${ROOT_LIBRARIES} )
-#----------------------------------------------------------------------------
 
 
+add_subdirectory( core )
+add_subdirectory( events/CaloCluster )
+add_subdirectory( events/CaloCell )
 
-add_subdirectory(minerva)
-add_subdirectory(events/CaloCell)
-add_subdirectory(events/CaloCluster)
 
-add_library(minerva SHARED
-  $<TARGET_OBJECTS:minerva>
+add_library(atropos SHARED
+  $<TARGET_OBJECTS:core>
+  $<TARGET_OBJECTS:CaloCluster>
+  $<TARGET_OBJECTS:CaloCell>
 )
 
 
-target_link_Libraries(minerva ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
-  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+target_link_Libraries(atropos ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
+  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} ${ROOT_LIBRARIES} )
+#----------------------------------------------------------------------------
 
 

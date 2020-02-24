@@ -1,18 +1,18 @@
-#ifndef "CaloCellMaker_h"
-#define "CaloCellMaker_h"
+#ifndef CaloCellMaker_h
+#define CaloCellMaker_h
 
-/** Simulator libs **/
+/** Simulator includes **/
 #include "AlgTool.h"
-#include "edm/CaloCell.h"
-#include "edm/CaloCellCollection.h"
+#include "CaloCell.h"
+#include "CaloCellCollection.h"
 #include "EventContext.h"
 #include "macros.h"
 
-/** Geant 4 libs **/
+/** Geant 4 includes **/
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
-/** Standard libs **/
+/** Standard includes **/
 #include <vector>
 #include <string>
 
