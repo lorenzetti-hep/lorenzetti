@@ -1,10 +1,10 @@
-#ifndef IAlgTool_h
-#define IAlgTool_h
+#ifndef AlgTool_h
+#define AlgTool_h
 
 /** simulator includes **/
-#include "IAlgTool.h"
-#include "EventContext.h"
-#include "StoreGate.h"
+#include "core/IAlgTool.h"
+#include "core/EventContext.h"
+#include "core/StoreGate.h"
 
 /** standard includes **/
 #include <string>
@@ -13,15 +13,15 @@ class AlgTool : public IAlgTool
 {
   public:
     /** Constructor **/
-    virtual AlgTool( std::string & );
+    AlgTool( std::string & );
     /** Destructor **/
     virtual ~AlgTool();
     /** return the tool name **/
     virtual std::string name() override;
     /** set the event context **/
-    virtual setContext( EventContext *ctx ) override;
+    virtual void setContext( EventContext *ctx ) override;
     /** set the monitoring tool **/
-    virtual setStoreGateSvc( SG::StoreGate *store ) override;
+    virtual void setStoreGateSvc( SG::StoreGate *store ) override;
   
   protected:
     /** get the event context **/
@@ -31,7 +31,7 @@ class AlgTool : public IAlgTool
 
   private:
     // the tool name
-    std::string name;
+    std::string m_name;
     // the event context
     EventContext *m_context;
     // the monitoring tool

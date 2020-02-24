@@ -29,7 +29,7 @@ class EventContext
     ~EventContext();
 
     /*! Attach the geant step point */
-    void attach( G4Step * );
+    void attach( const G4Step * );
     /*! Attach the calo cluster container into the context */
     void attach( xAOD::CaloClusterContainer * );
     /*! Attach the collection into the context */
@@ -49,13 +49,13 @@ class EventContext
   private:
     
     // G4Step point from geant
-    G4Step *m_step;
+    const G4Step *m_step;
     // Calo cluster container
-    xAOD::CaloClusterConteiner *m_caloClusterCont;
+    xAOD::CaloClusterContainer *m_caloClusterCont;
     // Calo cell collection
     xAOD::CaloCellCollection *m_collection;
     // Event info from reader
-    xAOD::EventInto *m_eventInfo;
+    //xAOD::EventInto *m_eventInfo;
 
 };
 

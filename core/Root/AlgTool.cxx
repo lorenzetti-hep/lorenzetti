@@ -1,5 +1,5 @@
 
-#include "AlgTool.h"
+#include "core/AlgTool.h"
 
 
 AlgTool::AlgTool( std::string &name ):

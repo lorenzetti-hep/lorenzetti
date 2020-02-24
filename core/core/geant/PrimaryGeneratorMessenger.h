@@ -20,8 +20,8 @@ class PrimaryGeneratorMessenger : public G4UImessenger {
     PrimaryGeneratorMessenger(PrimaryGeneratorAction* genaction);
     ~PrimaryGeneratorMessenger();
 
-    virtual void SetNewValue(G4UIcommand* command, std::string newValues);
-    virtual std::string GetCurrentValue(G4UIcommand* command);
+    virtual void SetNewValue(G4UIcommand* command, G4String newValues);
+    virtual G4String GetCurrentValue(G4UIcommand* command);
 
   private:
     PrimaryGeneratorAction* m_primaryAction;

@@ -3,7 +3,7 @@
 
 /** simulator includes **/
 #include "core/EventContext.h"
-#include "core/StatsCode.h"
+#include "core/StatusCode.h"
 #include "core/StoreGate.h"
 
 
@@ -11,9 +11,9 @@ class IAlgTool{
 
   public:
     /** Contructor **/
-    virtual IToolSvc();
+    IAlgTool();
     /** Destructor **/
-    virtual ~IToolSvc();
+    virtual ~IAlgTool();
 
     virtual StatusCode initialize()=0;
     
@@ -36,7 +36,10 @@ class IAlgTool{
     /** return the tool name **/
     virtual std::string name()=0;
     /** set the event context **/
-    virtual setContext( EventContext * )=0;
+    virtual void setContext( EventContext * )=0;
     /** set the monitoring tool **/
-    virtual setStoreGateSvc( SG::StoreGate * )=0
+    virtual void setStoreGateSvc( SG::StoreGate * )=0;
 };
+#endif
+
+
