@@ -27,8 +27,6 @@ class CaloCellMaker : public AlgTool
     ~CaloCellMaker();
     /** initialize the object **/
     virtual StatusCode initialize() override;
-    /** finalize the object **/
-    virtual StatusCode finalize() override;
     /** Execute in step action step from geant core **/
     virtual StatusCode execute( EventContext *ctx ) override;
     /** execute before start the step action **/
