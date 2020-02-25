@@ -4,7 +4,7 @@
 
 
 
-CaloCellMaker::CaloCellMaker( std::string &name ) : 
+CaloCellMaker::CaloCellMaker( std::string name ) : 
   AlgTool( name ),
   m_card("data/detector.card"), 
   m_bc_id_start( 0),

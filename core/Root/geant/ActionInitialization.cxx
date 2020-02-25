@@ -8,8 +8,9 @@
 #include "G4MTRunManager.hh"
 
 
-ActionInitialization::ActionInitialization(DetectorConstruction * /**/, std::string output)
+ActionInitialization::ActionInitialization(std::vector<IAlgTool*> sequence , std::string output)
  : G4VUserActionInitialization(),
+  m_sequence(sequence),
   m_output(output)
 {;}
 
@@ -20,14 +21,14 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new RunAction());
+  SetUserAction(new RunAction(m_sequence, m_output));
 }
 
 
 void ActionInitialization::Build() const
 {
   SetUserAction(new PrimaryGeneratorAction());
-  SetUserAction(new RunAction());
+  SetUserAction(new RunAction(m_sequence, m_output));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());
 }  

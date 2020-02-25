@@ -21,7 +21,7 @@ class EventLoop : public G4Run
   public:
 
     /** Constructor **/
-    EventLoop();
+    EventLoop(std::vector<IAlgTool*>, std::string);
     /** Destructor **/
     virtual ~EventLoop();
     
@@ -51,6 +51,7 @@ class EventLoop : public G4Run
     // list of alg tools to be executed in loop
     std::vector < IAlgTool* > m_toolHandles;
 
+    std::string m_output;
 };
 
   

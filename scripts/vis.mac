@@ -1,0 +1,67 @@
+
+/vis/open OGL 600x600-0+0
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+/vis/viewer/set/viewpointVector -1 0 0
+/vis/viewer/set/lightsVector -1 0 0
+/vis/viewer/set/style wireframe
+/vis/viewer/set/auxiliaryEdge true
+/vis/viewer/set/lineSegmentsPerCircle 100
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/endOfEventAction accumulate
+/vis/geometry/set/visibility World 0 false
+#/vis/geometry/set/colour ECal 0 green
+/vis/geometry/set/colour ECal_Abso 0 red
+/vis/geometry/set/colour ECal_EndCap_B_Abso 0 blue
+#/vis/geometry/set/colour HCal 0 yellow
+#/vis/geometry/set/colour HCal_Layer 0 blue
+/vis/geometry/set/colour HCal_Abso 0 green
+/vis/geometry/set/colour HCal_EndCap_B_Abso 0 yellow
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+
+#############################################
+##                Detector                 ##
+#############################################
+#/detector/rundata/bunch_size 25
+#/detector/rundata/nsamples_per_bunch 1
+#/detector/rundata/nbunchs_before_main 0
+#/detector/rundata/nbunchs_after_main 0
+#/detector/rundata/configfile data/calo.config
+
+
+
+#############################################
+##        Particle gun as generator        ##
+#############################################
+#/generator/select particleGun
+#/gun/particle e-
+#/gun/energy 10 GeV
+#/gun/position 0.0 0.0 0.0
+#/gun/direction 1 1 1
+#/gun/number 10 
+#/run/beamOn 1
+
+
+#############################################
+##   Jet reader as particle generator      ##
+#############################################
+/generator/select eventReader
+/generator/eventReader/open pythia_zee.root
+/generator/eventReader/verbose 1
+/run/beamOn 10
+
+
+
+
+
+#############################################
+
+
+
+

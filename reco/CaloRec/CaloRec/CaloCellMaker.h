@@ -22,18 +22,26 @@ class CaloCellMaker : public AlgTool
   public:
   
     /** Contructor **/
-    CaloCellMaker( std::string & );
+    CaloCellMaker( std::string );
     /** Destructor **/
     ~CaloCellMaker();
+    
+    
     /** initialize the object **/
     virtual StatusCode initialize() override;
     /** Execute in step action step from geant core **/
     virtual StatusCode execute( EventContext *ctx ) override;
     /** execute before start the step action **/
     virtual StatusCode pre_execute( EventContext *ctx ) override;
+    /** override to avoid abstract python import problem **/ 
+    virtual StatusCode post_execute( EventContext * ) override{return SUCCESS;};
     /** fill hisogram in the end **/
     virtual StatusCode fill( EventContext *ctx ) override;
+    /** override to avoid abstract python import problem **/ 
+    virtual StatusCode finalize() override {return SUCCESS;};
 
+
+    void setCard( std::string card ){m_card=card;};
 
   private:
     // Detector card (granularity configuration)

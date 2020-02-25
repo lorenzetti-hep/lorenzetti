@@ -1,6 +1,8 @@
 #ifndef ActionInitialization_h
 #define ActionInitialization_h
 
+#include "core/IAlgTool.h"
+
 /** simulator libs **/
 #include "DetectorConstruction.h"
 
@@ -11,7 +13,7 @@
 class ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    ActionInitialization(DetectorConstruction *, std::string output );
+    ActionInitialization( std::vector<IAlgTool*> sequence, std::string output );
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
@@ -19,6 +21,7 @@ class ActionInitialization : public G4VUserActionInitialization
 
   private:
 
+    std::vector<IAlgTool*> m_sequence;
     std::string   m_output;
 };
 

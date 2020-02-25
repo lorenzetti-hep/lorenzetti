@@ -1,4 +1,5 @@
 
+#include "CaloRec/CaloCellMaker.h"
 
 #ifdef __CINT__
 
@@ -7,5 +8,7 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 
+
+#pragma link C++ class CaloCellMaker+;
 
 #endif

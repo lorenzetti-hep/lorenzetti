@@ -8,8 +8,10 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
-RunAction::RunAction()
- : G4UserRunAction()
+RunAction::RunAction( std::vector<IAlgTool*> sequence, std::string output )
+ : m_sequence(sequence),
+   m_output(output),
+   G4UserRunAction()
 {;}
 
 
@@ -21,7 +23,7 @@ RunAction::~RunAction()
 
 G4Run* RunAction::GenerateRun()
 {
-  return new EventLoop();
+  return new EventLoop(m_sequence, m_output);
 }
 
 

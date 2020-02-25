@@ -6,7 +6,10 @@
 //#include "CaloCluster/CaloClusterMaker.h"
 
 
-EventLoop::EventLoop() : G4Run()
+EventLoop::EventLoop( std::vector<IAlgTool*> sequence, std::string output) : 
+  m_toolHandles(sequence),
+  m_output(output),
+  G4Run()
 {
   initialize();
 }
@@ -22,15 +25,10 @@ void EventLoop::initialize(){
 
   // Create the event context  
   m_context = new EventContext();
-  //m_context->initialize();
 
   // Create the monitoring tool
-  m_store = new SG::StoreGate();
-  //m_store->initialize();
+  m_store = new SG::StoreGate(m_output);
 
-  // Create the reconstruction sequence
-  //m_tools.push_back( new CaloCellMaker("CaloCellMaker")       ); 
-  //m_tools.push_back( new CaloClusterMaker("CaloClusterMaker") );
 
   // Lint the event context, monitoring for each reco alg (tool)
   for( auto &toolHandle : m_toolHandles ){
