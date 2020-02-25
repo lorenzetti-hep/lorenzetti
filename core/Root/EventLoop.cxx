@@ -103,3 +103,15 @@ void EventLoop::EndOfEvent()
 }
 
 
+SG::StoreGate* EventLoop::getStoreGateSvc()
+{
+  return m_store;
+}
+
+EventContext* EventLoop::getContext()
+{
+  return m_context;
+}
+
+
+

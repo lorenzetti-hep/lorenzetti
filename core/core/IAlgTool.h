@@ -11,9 +11,9 @@ class IAlgTool{
 
   public:
     /** Contructor **/
-    IAlgTool();
+    IAlgTool(){};
     /** Destructor **/
-    virtual ~IAlgTool();
+    virtual ~IAlgTool(){};
 
     virtual StatusCode initialize()=0;
     

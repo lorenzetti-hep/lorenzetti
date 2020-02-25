@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(minerva)
+project(castor)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DDROP_CGAL")
@@ -34,7 +34,7 @@ include(${ROOT_USE_FILE})
 
 
 #----------------------------------------------------------------------------
-include(gaugi/cmake/InstallGaugiFunctions.cmake)
+include(external/gaugi/cmake/InstallGaugiFunctions.cmake)
 gaugi_initialize()
 
 
@@ -55,18 +55,20 @@ add_subdirectory( reader )
 add_subdirectory( events/CaloCluster )
 add_subdirectory( events/CaloCell )
 add_subdirectory( events/EventInfo )
+add_subdirectory( reco/CaloRec )
 
 
-add_library(minerva SHARED
+add_library(castor SHARED
   $<TARGET_OBJECTS:core>
   $<TARGET_OBJECTS:reader>
   $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:CaloCell>
   $<TARGET_OBJECTS:EventInfo>
+  $<TARGET_OBJECTS:CaloRec>
 )
 
 
-target_link_Libraries(minerva ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
+target_link_Libraries(castor ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
   ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} ${ROOT_LIBRARIES} )
 
 

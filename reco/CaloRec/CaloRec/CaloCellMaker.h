@@ -2,11 +2,11 @@
 #define CaloCellMaker_h
 
 /** Simulator includes **/
-#include "AlgTool.h"
-#include "CaloCell.h"
-#include "CaloCellCollection.h"
-#include "EventContext.h"
-#include "macros.h"
+#include "core/AlgTool.h"
+#include "core/EventContext.h"
+#include "core/macros.h"
+#include "CaloCell/CaloCell.h"
+#include "CaloCell/CaloCellCollection.h"
 
 /** Geant 4 includes **/
 #include "G4PhysicalConstants.hh"

@@ -1,17 +1,18 @@
 
-#include "CaloClusterMaker.hh"
-#include "CaloCell.hh"
-#include "CaloCluster.hh"
+#include "CaloRec/CaloClusterMaker.h"
+#include "CaloCell/CaloCell.h"
+#include "CaloCluster/CaloCluster.h"
+#include "core/macros.h"
+
 #include "G4PhysicalConstants.hh"
-#include "macros.hh"
 
 using namespace std;
 
 
 
 
-CaloClusterMaker::CaloClusterMaker( std::string &name ) : 
-  IAlgTool( name ),
+CaloClusterMaker::CaloClusterMaker( std::string name ) : 
+  AlgTool( name ),
   m_etaWindow( 0.4 ),
   m_phiWindow( 0.4 ),
   m_energyThreshold( 3*GeV )
@@ -29,7 +30,7 @@ CaloClusterMaker::initialize()
 }
 
 
-bool CaloClusterMaker::preExecute( EventContext *ctx )
+bool CaloClusterMaker::pre_execute( EventContext *ctx )
 {
   xAOD::CaloClusterContainer *caloClusterCont=nullptr;
 
@@ -41,10 +42,10 @@ bool CaloClusterMaker::preExecute( EventContext *ctx )
 }
 
 
-StatusCode CaloClusterMaker::postExecute( EventContext *ctx )
+StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
 {
   // Retrieve the calo cell collection
-  const xAOD::CaloCellCollection * collection=nullptr;
+  xAOD::CaloCellCollection * collection=nullptr;
   ctx->retrieve( collection );
 
   // Retrieve the calo cluster container
@@ -55,13 +56,13 @@ StatusCode CaloClusterMaker::postExecute( EventContext *ctx )
   if( !collection )
   {
     MSG_ERROR("It's not possible to retrieve the calo cell collection.");
-    return StatusCode::FAILURE;
+    return FAILURE;
   }
  
   if( !caloClusterCont )
   {
     MSG_ERROR("It's not possible to retrieve the calo cluster container");
-    return StatusCode::FAILURE;
+    return FAILURE;
   }
 
 
@@ -117,15 +118,17 @@ StatusCode CaloClusterMaker::postExecute( EventContext *ctx )
   }
 
 
-  return StatusCode::SUCCESS;
+  return SUCCESS;
 }
 
 
 
 
 
-void CaloClusterMaker::fill( EventContext * /*ctx*/ )
-{;}
+StatusCode CaloClusterMaker::fill( EventContext * /*ctx*/ )
+{
+  return SUCCESS;
+}
 
 
 

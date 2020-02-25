@@ -2,9 +2,9 @@
 #define CaloClusterMaker_h
 
 /** simulator libs **/
-#include "StatusCode.h"
-#include "EventContext.h"
-#include "AlgTool.h"
+#include "core/StatusCode.h"
+#include "core/EventContext.h"
+#include "core/AlgTool.h"
 
 /** standard libs **/
 #include <string>
@@ -15,9 +15,9 @@ class CaloClusterMaker : public AlgTool
 
   public:
     /** Constructor **/
-    virtual CaloClusterMaker( std::string & );
+    CaloClusterMaker( std::string & );
     /** Destructor **/
-    virtual ~CaloCluster();
+    virtual ~CaloClusterMaker();
     /** initialize the object **/
     virtual StatusCode initialize() override;
     /** pre execute the event before step action **/
@@ -38,7 +38,7 @@ class CaloClusterMaker : public AlgTool
 
 };
 
-
+#endif
 
 
 
