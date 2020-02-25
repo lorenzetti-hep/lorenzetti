@@ -91,6 +91,11 @@ StatusCode CaloCellMaker::initialize()
 }
 
 
+StatusCode CaloCellMaker::finalize()
+{
+  return SUCCESS;
+}
+
 
 
 StatusCode CaloCellMaker::pre_execute( EventContext *ctx )

@@ -5,13 +5,14 @@
 #include "core/macros.h"
 
 #include "G4PhysicalConstants.hh"
+#include "G4SystemOfUnits.hh"
 
 using namespace std;
 
 
 
 
-CaloClusterMaker::CaloClusterMaker( std::string name ) : 
+CaloClusterMaker::CaloClusterMaker( std::string &name ) : 
   AlgTool( name ),
   m_etaWindow( 0.4 ),
   m_phiWindow( 0.4 ),
@@ -24,13 +25,14 @@ CaloClusterMaker::~CaloClusterMaker()
 {;}
 
 
-CaloClusterMaker::initialize()
+StatusCode CaloClusterMaker::initialize()
 {
   getContext()->attach( new xAOD::CaloClusterContainer() );
+  return SUCCESS;
 }
 
 
-bool CaloClusterMaker::pre_execute( EventContext *ctx )
+StatusCode CaloClusterMaker::pre_execute( EventContext *ctx )
 {
   xAOD::CaloClusterContainer *caloClusterCont=nullptr;
 
@@ -38,6 +40,8 @@ bool CaloClusterMaker::pre_execute( EventContext *ctx )
 
   if( caloClusterCont )
     caloClusterCont->clear();
+
+  return SUCCESS;
 
 }
 
@@ -69,7 +73,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
   std::vector<xAOD::CaloCluster*> vec_roi;
   
   // Get all cells from the second calorimeter layer
-  for (const &cell : collection->getCollection(CaloSampling::CaloSample::EM2) )
+  for (auto &cell : collection->getCollection(CaloSampling::CaloSample::EM2) )
   {
     // Check only cells with higher than the stablish energy threshold
     if (cell->rawEnergy() > m_energyThreshold ){
@@ -82,8 +86,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
         float eta = cell->eta(); float phi = cell->phi(); float energy =  cell->rawEnergy();
         for( unsigned int i=0; i < vec_roi.size(); ++i )
         {
-          if (abs(eta - vec_roi[i].eta())<m_etaWindow/2 && abs( phi - vec_roi[i].phi())<m_phiWindow/2 ){
-            if (energy > vec_roi[i].energyCenter())
+          if (abs(eta - vec_roi[i]->eta())<m_etaWindow/2 && abs( phi - vec_roi[i]->phi())<m_phiWindow/2 ){
+            if (energy > vec_roi[i]->energyCenter())
               // Destroy the old one and avoid memory leak
               delete vec_roi[i];
               // Create the new one
@@ -99,10 +103,10 @@ StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
   {
     for (auto & caloCluster : vec_roi){
       // Check if the current cell is in the eta window
-      if( (cell->eta() < caloCluster->eta()+m_etaWindow/2) && (cell->eta() > caloCluster->eta()-m_etaWindow/2)
+      if( (cell->eta() < caloCluster->eta()+m_etaWindow/2) && (cell->eta() > caloCluster->eta()-m_etaWindow/2) )
       {
         // Check if the current cell is in the phi window
-        if( (cell->phi() < caloCluster->phi()+m_phiWindow/2) && (cell->phi() > caloCluster->phi()-m_phiWindow/2)
+        if( (cell->phi() < caloCluster->phi()+m_phiWindow/2) && (cell->phi() > caloCluster->phi()-m_phiWindow/2) )
         {
           // Add the cell to the cluster
           caloCluster->push_back(cell);
