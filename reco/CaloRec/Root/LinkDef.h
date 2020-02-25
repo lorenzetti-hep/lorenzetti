@@ -1,5 +1,6 @@
 
 #include "CaloRec/CaloCellMaker.h"
+#include "CaloRec/CaloClusterMaker.h"
 
 #ifdef __CINT__
 
@@ -10,5 +11,6 @@
 
 
 #pragma link C++ class CaloCellMaker+;
+#pragma link C++ class CaloClusterMaker+;
 
 #endif

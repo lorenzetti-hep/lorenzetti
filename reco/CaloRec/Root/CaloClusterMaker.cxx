@@ -12,7 +12,7 @@ using namespace std;
 
 
 
-CaloClusterMaker::CaloClusterMaker( std::string &name ) : 
+CaloClusterMaker::CaloClusterMaker( std::string name ) : 
   AlgTool( name ),
   m_etaWindow( 0.4 ),
   m_phiWindow( 0.4 ),

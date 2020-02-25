@@ -15,7 +15,7 @@ class CaloClusterMaker : public AlgTool
 
   public:
     /** Constructor **/
-    CaloClusterMaker( std::string & );
+    CaloClusterMaker( std::string );
     /** Destructor **/
     virtual ~CaloClusterMaker();
     /** initialize the object **/
@@ -26,6 +26,12 @@ class CaloClusterMaker : public AlgTool
     virtual StatusCode post_execute( EventContext *ctx ) override;
     /** fill histograms after post execute **/
     virtual StatusCode fill( EventContext *ctx ) override;
+
+
+    PRIMITIVE_SETTER_AND_GETTER( float, m_etaWindow, setEtaWindow, etaWindow )
+    PRIMITIVE_SETTER_AND_GETTER( float, m_phiWindow, setPhiWindow, phiWindow )
+    PRIMITIVE_SETTER_AND_GETTER( float, m_energyThreshold, setEnergyThreshold, energyThreshold )
+    
 
   private:
     

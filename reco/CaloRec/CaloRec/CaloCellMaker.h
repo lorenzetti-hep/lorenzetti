@@ -2,6 +2,7 @@
 #define CaloCellMaker_h
 
 /** Simulator includes **/
+#include "core/macros.h"
 #include "core/AlgTool.h"
 #include "core/EventContext.h"
 #include "core/macros.h"
@@ -41,17 +42,25 @@ class CaloCellMaker : public AlgTool
     virtual StatusCode finalize() override {return SUCCESS;};
 
 
-    void setCard( std::string card ){m_card=card;};
+
+    PRIMITIVE_SETTER_AND_GETTER( std::string, m_card, setCard, card );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_start   , bc_id_start, set_bc_id_start );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_nsamples, bc_nsamples, set_bc_nsamples );
+    PRIMITIVE_SETTER_AND_GETTER( float      , m_bc_duration   , bc_duration, set_bc_duration );
+
 
   private:
+    
     // Detector card (granularity configuration)
     std::string m_card;
     // bunch crossing id start
-    float m_bc_id_start;
+    int m_bc_id_start;
+    // number of samples per bunch
+    int m_bc_nsamples;
     // buncg crossing time duration (in ns)
     float m_bc_duration;
-    // number of samples per bunch
-    float m_bc_nsamples;
+
+
 };
 
 #endif
