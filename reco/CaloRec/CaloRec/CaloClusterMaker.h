@@ -22,10 +22,15 @@ class CaloClusterMaker : public AlgTool
     virtual StatusCode initialize() override;
     /** pre execute the event before step action **/
     virtual StatusCode pre_execute( EventContext *ctx ) override;
+    /** override to avoid abstract python import problem **/ 
+    virtual StatusCode execute( EventContext * ) override{return SUCCESS;};
     /** post execute the event after step action **/
     virtual StatusCode post_execute( EventContext *ctx ) override;
     /** fill histograms after post execute **/
     virtual StatusCode fill( EventContext *ctx ) override;
+    /** override to avoid abstract python import problem **/ 
+    virtual StatusCode finalize() override {return SUCCESS;};
+
 
 
     PRIMITIVE_SETTER_AND_GETTER( float, m_etaWindow, setEtaWindow, etaWindow )

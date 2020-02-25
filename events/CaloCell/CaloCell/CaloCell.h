@@ -38,7 +38,7 @@ namespace xAOD{
       ~CaloCell();
 
       /** Add the step point into the cell **/
-      void push_back( const G4Step * );
+      void Fill( const G4Step * );
        
       /** Zeroize the pulse/sample vector **/
       void clear();

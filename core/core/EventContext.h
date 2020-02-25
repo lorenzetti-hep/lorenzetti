@@ -5,7 +5,7 @@
 #include "core/macros.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/CaloCellCollection.h"
-//#include "/EventInto.h"
+#include "EventInfo/EventInfo.h"
 
 /** geant 4 libs **/
 #include "G4Step.hh"
@@ -35,16 +35,16 @@ class EventContext
     /*! Attach the collection into the context */
     void attach( xAOD::CaloCellCollection * );
     /*! Attach the event info into the context */
-    //void attach( xAOD::EventInto * );
+    void attach( xAOD::EventInfo * );
     
     /*! retrieve the geant step point */
-    void retrieve( const G4Step * );
+    void retrieve( const G4Step *& );
     /*! retrieve the calo cluster container pointer */
-    void retrieve( xAOD::CaloClusterContainer * );
+    void retrieve( xAOD::CaloClusterContainer *& );
     /*! retrieve the calo cell collection pointer */
-    void retrieve( xAOD::CaloCellCollection * );
+    void retrieve( xAOD::CaloCellCollection *& );
     /*! retrieve the event info  pointer */
-    //void retrieve( xAOD::EventInto * );
+    void retrieve( xAOD::EventInfo *& );
   
   private:
     
@@ -55,7 +55,7 @@ class EventContext
     // Calo cell collection
     xAOD::CaloCellCollection *m_collection;
     // Event info from reader
-    //xAOD::EventInto *m_eventInfo;
+    xAOD::EventInfo *m_eventInfo;
 
 };
 

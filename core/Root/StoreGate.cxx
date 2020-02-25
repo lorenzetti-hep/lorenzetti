@@ -12,22 +12,28 @@ StoreGate::StoreGate( std::string name): m_currentPath("")
 
 
   //MSG_INFO( "Creating histogram file with name: " << name );
-  m_file = new TFile(name.c_str(), "new");
+  //m_file = new TFile(name.c_str(), "new");
+  m_file = new TFile(name.c_str(), "recreate");
 }
 
 StoreGate::~StoreGate()
 {
   //MSG_INFO( "Writing histogram file..." );
   m_file->Write();
-  m_file->Close();
+
+
   /** Delete all TH1F histograms **/
   for( const auto &p : m_h1_book){
+    //p.second->Write();
     delete p.second;
   }
   /** Delete all TH2F histograms **/
   for( const auto &p : m_h2_book){
+    //p.second->Write();
     delete p.second;
   }
+  m_file->Close();
+
 }
 
 

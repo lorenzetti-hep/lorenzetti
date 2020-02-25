@@ -1,0 +1,14 @@
+
+/run/initialize
+/run/printProgress 1
+/run/verbose 2
+
+/generator/select eventReader
+/generator/eventReader/open pythia_jf17.root
+/generator/eventReader/verbose 1
+
+#/detector/rundata/configfile ../data/detector.card
+
+/run/beamOn 100
+
+

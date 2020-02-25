@@ -25,7 +25,7 @@ StatusCode CaloCellMaker::initialize()
 
   auto store = getStoreGateSvc();
 
-  store->mkdir("/CaloCellMaker");
+  //store->mkdir("/CaloCellMaker");
   
   // Create the container
   auto collection = new xAOD::CaloCellCollection();  
@@ -97,7 +97,6 @@ StatusCode CaloCellMaker::pre_execute( EventContext *ctx )
 
   ctx->retrieve( collection );
 
-
   if(!collection){
     MSG_ERROR("It's not possible to retrieve the cell collection.");
     return FAILURE;
@@ -140,7 +139,7 @@ StatusCode CaloCellMaker::execute( EventContext *ctx )
     xAOD::CaloCell *cell=nullptr;
     collection->retrieve( vpos, cell );
     if(cell){
-      cell->push_back( step );
+      cell->Fill( step );
     }
   }
 
@@ -154,7 +153,7 @@ StatusCode CaloCellMaker::fill( EventContext *ctx )
   xAOD::CaloCellCollection *collection = nullptr; 
   
   auto store = getStoreGateSvc();
-  
+
   ctx->retrieve( collection );
 
   if( !collection ){
@@ -162,13 +161,17 @@ StatusCode CaloCellMaker::fill( EventContext *ctx )
     return FAILURE;
   }
 
-
   for ( const auto& cell : collection->getCollection() ){ 
-    std::stringstream ss; ss << "/CaloCellMaker/layer_" << (int)cell->sampling();
+    // Skip cells with energy equal zero
+    if (cell->rawEnergy()==0)  continue; 
+
+    std::stringstream ss; ss << "layer_" << (int)cell->sampling();
     int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
     int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
     int bin = store->hist2(ss.str())->GetBin(x,y,0);
-    store->hist2(ss.str())->SetBinContent( bin, cell->rawEnergy());
+    float energy = store->hist2(ss.str())->GetBinContent( bin );
+    // move average
+    store->hist2(ss.str())->SetBinContent( bin, (energy + cell->rawEnergy())/2 );
   }
   return SUCCESS;
 }

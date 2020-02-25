@@ -59,7 +59,7 @@ void CaloCell::clear()
 }
 
 
-void CaloCell::push_back( const G4Step* step )
+void CaloCell::Fill( const G4Step* step )
 {
   // Get total energy deposit
   float edep = (float)step->GetTotalEnergyDeposit();

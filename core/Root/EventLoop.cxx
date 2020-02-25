@@ -2,8 +2,7 @@
 #include "core/EventLoop.h"
 #include "core/EventContext.h"
 #include "core/StoreGate.h"
-//#include "CaloCell/CaloCellMaker.h"
-//#include "CaloCluster/CaloClusterMaker.h"
+#include "EventInfo/EventInfo.h"
 
 
 EventLoop::EventLoop( std::vector<IAlgTool*> sequence, std::string output) : 
@@ -17,6 +16,7 @@ EventLoop::EventLoop( std::vector<IAlgTool*> sequence, std::string output) :
 
 EventLoop::~EventLoop()
 {
+  MSG_INFO("Destroy event loop...");
   finalize();
 }
 
@@ -37,15 +37,16 @@ void EventLoop::initialize(){
     toolHandle->initialize();
   }
 
+  getContext()->attach( new xAOD::EventInfo() );
 }
 
 
 void EventLoop::finalize(){
-
-  for( auto &toolHandle : m_toolHandles ){
-    toolHandle->finalize();
-    delete toolHandle;
-  }
+  
+  //for( auto &toolHandle : m_toolHandles ){
+  //  toolHandle->finalize();
+  //  delete toolHandle;
+  //}
  
   //m_monTool->finalize();
   delete m_store;
@@ -60,7 +61,6 @@ void EventLoop::BeginOfEvent()
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Execute pre-execute for " << toolHandle->name() );
-
     if (toolHandle->pre_execute( getContext() ).isFailure() ){
       MSG_FATAL("It's not possible to pre-execute " << toolHandle->name());
     }
@@ -75,7 +75,6 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Execute execute for " << toolHandle->name() );
   
     if (toolHandle->execute( getContext() ).isFailure() ){
       MSG_FATAL("It's not possible to execute " << toolHandle->name());

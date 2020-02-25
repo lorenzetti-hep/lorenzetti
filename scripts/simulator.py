@@ -12,8 +12,8 @@ import os
 basepath = os.environ['CASTOR']
 print (basepath)
 
-macro = 'run_gun.mac'
-
+#macro = 'run_gun.mac'
+macro = 'run_jf17.mac'
 
 
 

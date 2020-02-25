@@ -37,7 +37,7 @@ void CaloCellCollection::push_back( xAOD::CaloCellAccessor *acc )
 
 
 
-bool CaloCellCollection::retrieve( TLorentzVector &pos, xAOD::CaloCell *cell )
+bool CaloCellCollection::retrieve( TLorentzVector &pos, xAOD::CaloCell *&cell )
 {
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)

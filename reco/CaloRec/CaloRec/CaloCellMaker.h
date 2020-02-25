@@ -45,7 +45,7 @@ class CaloCellMaker : public AlgTool
 
     PRIMITIVE_SETTER_AND_GETTER( std::string, m_card, setCard, card );
     PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_start   , bc_id_start, set_bc_id_start );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_nsamples, bc_nsamples, set_bc_nsamples );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_nsamples   , bc_nsamples, set_bc_nsamples );
     PRIMITIVE_SETTER_AND_GETTER( float      , m_bc_duration   , bc_duration, set_bc_duration );
 
 

@@ -84,12 +84,10 @@ void RunCastor::run( std::string macro )
     UImanager->ApplyCommand(command+macro);
   } else  {
     UImanager->ApplyCommand("/control/execute "+m_visMacro);
-    //ui->SessionStart();
-    //delete ui;
   }
 
-  delete visManager;
   delete runManager;
+  delete visManager;
 }
 
 

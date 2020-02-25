@@ -4,7 +4,8 @@
 EventContext::EventContext():
   m_step(nullptr),
   m_caloClusterCont(nullptr),
-  m_collection(nullptr)
+  m_collection(nullptr),
+  m_eventInfo(nullptr)
 {}
 
 
@@ -29,23 +30,36 @@ void EventContext::attach( xAOD::CaloCellCollection *collection )
 }
 
 
+void EventContext::attach( xAOD::EventInfo *evt )
+{
+  m_eventInfo = evt;
+}
 
-void EventContext::retrieve( const G4Step *step )
+
+
+void EventContext::retrieve( const G4Step *&step )
 {
   step = m_step;
 }
 
 
-void EventContext::retrieve( xAOD::CaloClusterContainer *cont)
+void EventContext::retrieve( xAOD::CaloClusterContainer *&cont)
 {
   cont = m_caloClusterCont;
 }
 
 
 
-void EventContext::retrieve( xAOD::CaloCellCollection *collection )
+void EventContext::retrieve( xAOD::CaloCellCollection *&collection )
 {
   collection = m_collection;
+}
+
+
+
+void EventContext::retrieve( xAOD::EventInfo *&evt )
+{
+  evt = m_eventInfo;
 }
 
 

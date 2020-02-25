@@ -80,7 +80,7 @@ namespace xAOD{
       /** Get a vec of cells for a specific layer **/
       std::vector< xAOD::CaloCell* > getCollection( CaloSampling::CaloSample ); 
       /** Return the correct cell given a particle position **/
-      bool retrieve( TLorentzVector &, xAOD::CaloCell* );
+      bool retrieve( TLorentzVector &, xAOD::CaloCell*& );
 
     private:
 

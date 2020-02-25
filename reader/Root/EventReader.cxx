@@ -161,9 +161,9 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   EventLoop *sequence = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   // Get the event context into the main sequence
-  //EventContext *ctx = sequence->getContext();
-  //EventInfo *event=nullptr;
-  //ctx->retrieve( event );
+  EventContext *ctx = sequence->getContext();
+  xAOD::EventInfo *event=nullptr;
+  ctx->retrieve( event );
 
   if ( m_evt <  m_ttree->GetEntries() ){
 
@@ -173,9 +173,9 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
     // Load all particles into the g4event and return all rois
     auto seeds = Load( anEvent );
     
-    //event->setEventNumber( m_evt );
-    //event->setAvgmu( m_avgmu );
-    //event->setSeeds( seeds );
+    event->setEventNumber( m_evt );
+    event->setAvgmu( m_avgmu );
+    event->setSeeds( seeds );
 
   }else{
     MSG_INFO( "EventReader: no generated particles. run terminated..." );
@@ -207,7 +207,7 @@ std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
     if ( m_p_pdg_id->at(i) == 0 ){ 
       // If the vec_seed its empty, add the seed
       if(vec_seed.empty()){
-        vec_seed.push_back(xAOD::seed_t{m_p_eta->at(i), m_p_phi->at(i), m_p_et->at(i), 0});
+        vec_seed.push_back(xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  0});
       }else{ // Not empty, let's check the roi overlap
         // Loop over all seed until now
         float eta=m_p_eta->at(i);
@@ -217,7 +217,7 @@ std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
         for( unsigned int j=0;j<vec_seed.size(); ++j ){
           if (abs(eta - vec_seed[j].eta)<0.2 && abs( phi - vec_seed[j].phi)<0.2 ){
             if (et > vec_seed[j].et)
-              vec_seed[j] = xAOD::seed_t{eta,phi,et,m_p_pdg_id->at(i)};
+              vec_seed[j] = xAOD::seed_t{et,eta,phi,m_p_pdg_id->at(i)};
           }
         }// Loop over all rois
       }// Its empty?
