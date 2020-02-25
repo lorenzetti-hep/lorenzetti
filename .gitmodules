@@ -1,0 +1,3 @@
+[submodule "external/gaugi"]
+	path = external/gaugi
+	url = https://github.com/jodafons/Gaugi.git
