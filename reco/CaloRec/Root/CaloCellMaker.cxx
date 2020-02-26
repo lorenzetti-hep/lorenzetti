@@ -8,6 +8,7 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   AlgTool( name ),
   m_card("data/detector.card"), 
   m_bc_id_start( 0),
+  m_bc_id_end( 0),
   m_bc_nsamples( 1),
   m_bc_duration(25)
 {;}
@@ -31,13 +32,17 @@ StatusCode CaloCellMaker::initialize()
   auto collection = new xAOD::CaloCellCollection();  
 
   // This configuration is fixed for each event and can not be changed
-  int nsamples=1;
   float start = m_bc_id_start * m_bc_duration;
   float step  = m_bc_duration / m_bc_nsamples;
   
+  int nbins = (m_bc_id_end - m_bc_id_start) + 1;
+
   std::vector<float> tbins;
-  for (int sp=0; sp< (nsamples + 1); ++sp)
-    tbins.push_back( (start + step*sp) );
+  for (int b=0; b< nbins; ++b){
+    tbins.push_back( (start + step*b) );
+    MSG_INFO( "BIN = " << b << " = " << (start+step*b));
+  }
+  
 
   // Read the file
   std::ifstream file(m_card);

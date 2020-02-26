@@ -44,9 +44,10 @@ class CaloCellMaker : public AlgTool
 
 
     PRIMITIVE_SETTER_AND_GETTER( std::string, m_card, setCard, card );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_start   , bc_id_start, set_bc_id_start );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_nsamples   , bc_nsamples, set_bc_nsamples );
-    PRIMITIVE_SETTER_AND_GETTER( float      , m_bc_duration   , bc_duration, set_bc_duration );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_start   , set_bc_id_start, bc_id_start );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_end     , set_bc_id_end  , bc_id_end );
+    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_nsamples   , set_bc_nsamples, bc_nsamples );
+    PRIMITIVE_SETTER_AND_GETTER( float      , m_bc_duration   , set_bc_duration, bc_duration );
 
 
   private:
@@ -55,6 +56,8 @@ class CaloCellMaker : public AlgTool
     std::string m_card;
     // bunch crossing id start
     int m_bc_id_start;
+    // bunch crossing id end
+    int m_bc_id_end;
     // number of samples per bunch
     int m_bc_nsamples;
     // buncg crossing time duration (in ns)
