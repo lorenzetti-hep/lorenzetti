@@ -9,9 +9,9 @@
 #include "G4SystemOfUnits.hh"
 
 RunAction::RunAction( std::vector<IAlgTool*> sequence, std::string output )
- : m_sequence(sequence),
-   m_output(output),
-   G4UserRunAction()
+ : G4UserRunAction(),
+   m_sequence(sequence),
+   m_output(output)
 {;}
 
 

@@ -226,9 +226,11 @@ std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
       // https://github.com/zaborowska/Geant4-Pythia8/blob/master/src/HepMCG4Interface.cc
       int bc_id = m_p_bc_id->at(i);
 
+      
       G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
       if (! CheckVertexInsideWorld(xvtx.vect()*mm)) continue;
-      G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()*mm/c_light  );
+      G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()  );
+
 
       G4int pdgcode= m_p_pdg_id->at(i);
       G4LorentzVector p( m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i),  m_p_e->at(i) );

@@ -8,8 +8,8 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   AlgTool( name ),
   m_card("data/detector.card"), 
   m_bc_id_start( 0),
-  m_bc_duration(25),
-  m_bc_nsamples( 1)
+  m_bc_nsamples( 1),
+  m_bc_duration(25)
 {;}
 
 

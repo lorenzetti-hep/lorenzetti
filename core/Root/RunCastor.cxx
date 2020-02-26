@@ -24,8 +24,8 @@
 
 
 RunCastor::RunCastor( std::string output , int nThreads ): 
-  m_output(output),
-  m_nThreads(nThreads)
+  m_nThreads(nThreads),
+  m_output(output)
 {;}
 
 RunCastor::~RunCastor()

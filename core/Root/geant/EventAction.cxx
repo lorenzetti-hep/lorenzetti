@@ -26,11 +26,11 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 
 
-void EventAction::EndOfEventAction(const G4Event* event)
+void EventAction::EndOfEventAction(const G4Event* /*event*/)
 {
-  G4PrimaryVertex* primaryVertex = event->GetPrimaryVertex();
-  G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
-  G4double ke = primaryParticle->GetKineticEnergy()/1000.; //in GeV.
+  //G4PrimaryVertex* primaryVertex = event->GetPrimaryVertex();
+  //G4PrimaryParticle* primaryParticle = primaryVertex->GetPrimary();
+  //G4double ke = primaryParticle->GetKineticEnergy()/1000.; //in GeV.
   //runData->GetEventInfo()->setTotalEnergy(ke);
   EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   

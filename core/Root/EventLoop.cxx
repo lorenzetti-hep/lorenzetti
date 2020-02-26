@@ -6,9 +6,10 @@
 
 
 EventLoop::EventLoop( std::vector<IAlgTool*> sequence, std::string output) : 
+  G4Run(),
   m_toolHandles(sequence),
-  m_output(output),
-  G4Run()
+  m_output(output)
+
 {
   initialize();
 }

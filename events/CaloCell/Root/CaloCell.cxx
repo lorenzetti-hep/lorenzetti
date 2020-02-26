@@ -19,16 +19,16 @@ CaloCell::CaloCell( float eta_center,
                     std::vector<float> tbins,
                     std::string hash): 
 
+  m_sampling(sampling),
   m_eta_center(eta_center),
   m_phi_center(phi_center),
   m_delta_eta(delta_eta),
   m_delta_phi(delta_phi),
   m_rmin(rmin),
   m_rmax(rmax),
-  m_sampling(sampling),
-  m_tbins(tbins),
-  m_rawEnergySamples( tbins.size()-1, 0 ),
   m_rawEnergy(0),
+  m_rawEnergySamples( tbins.size()-1, 0 ),
+  m_tbins(tbins),
   m_hash(hash)
 {;}
 
@@ -67,10 +67,10 @@ void CaloCell::Fill( const G4Step* step )
   // Get the position
   G4ThreeVector pos = point->GetPosition();
   // Get the particle time
-  float t = (float)point->GetGlobalTime()/c_light;
-  //float t1 = (float)pos.t()/c_light;
+  float t = (float)point->GetGlobalTime()*mm/c_light; // mm to ns
+
+
   int bin=-1;
-   
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
     if( t >= m_tbins[sample] && t < m_tbins[sample+1]){
       bin=sample; break;
