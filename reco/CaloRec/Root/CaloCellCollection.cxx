@@ -1,6 +1,6 @@
 
 
-#include "CaloCell/CaloCellCollection.h"
+#include "CaloRec/CaloCellCollection.h"
 
 using namespace xAOD;
 

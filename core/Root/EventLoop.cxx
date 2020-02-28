@@ -59,6 +59,8 @@ void EventLoop::finalize(){
 
 void EventLoop::BeginOfEvent()
 {
+  createContainer()
+
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Execute pre-execute for " << toolHandle->name() );
@@ -110,6 +112,14 @@ EventContext* EventLoop::getContext()
 {
   return m_context;
 }
+
+
+
+
+
+
+
+
 
 
 

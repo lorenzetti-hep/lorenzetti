@@ -9,6 +9,7 @@
 using namespace xAOD;
 
 
+
 CaloCell::CaloCell( float eta_center, 
                     float phi_center, 
                     float delta_eta, 
@@ -39,7 +40,7 @@ xAOD::CaloCell* CaloCell::clone()
   return new xAOD::CaloCell( eta(), phi(), 
                             deltaEta(), deltaPhi(),
                             rmin(),rmax(),
-                            sampling(), m_tbins, m_hash);
+                            sampling(), layer(), m_tbins, m_hash);
 
 }
 
@@ -57,6 +58,15 @@ void CaloCell::clear()
     *it=0.0;
   }
 }
+
+
+
+CaloSampling::CaloLayer CaloCell::layer()
+{
+  return ((int)m_sampling < 0) ? CaloSampling::CaloLayer::LAr : CaloSampling::CaloLayer::Tile ;
+}
+
+
 
 
 void CaloCell::Fill( const G4Step* step )

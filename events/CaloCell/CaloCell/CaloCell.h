@@ -28,6 +28,7 @@ namespace xAOD{
   {  
     public:
 
+
       CaloCell( float eta_center,  float phi_center, 
                 float delta_eta, float delta_phi, 
                 float rmin, float rmax,
@@ -39,10 +40,8 @@ namespace xAOD{
 
       /** Add the step point into the cell **/
       void Fill( const G4Step * );
-       
       /** Zeroize the pulse/sample vector **/
       void clear();
-      
       /** Allocate a new calocell and return the pointer **/
       xAOD::CaloCell* clone();
 
@@ -58,15 +57,21 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_rmin        , setRmin     , rmin      );
       /** Cell r maximal in the plane xy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_rmax        , setRmax     , rmax      );
-      /** Set the raw energy (without calibration) **/
-      PRIMITIVE_SETTER_AND_GETTER( float, m_rawEnergy   , setRawEnergy, rawEnergy );
-      /** Raw energy samples store in this calorimeter cell **/
-      PRIMITIVE_SETTER_AND_GETTER( std::vector<float>   , m_rawEnergySamples   , setRawEnergySamples  , rawEnergySamples );
       /** The sampling (EM1,EM2,EM3,HAD1,HAD2 or HAD3) **/
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample , m_sampling , setSampling , sampling   );
       /** Get the cell hash **/
       PRIMITIVE_SETTER_AND_GETTER( std::string , m_hash , setHash , hash   );
-
+      /** The cell estimated energy **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
+      /** The raw energy **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_rawEnergy   , setRawEnergy, rawEnergy );
+      /** Raw energy samples for each bunch crossing. **/
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<float>   , m_rawEnergySamples   , setRawEnergySamples  , rawEnergySamples );
+      /** The integrated pulse center in bunch zero **/
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<float>   , m_pulse, setPulse, pulse );
+      
+      /** Get the calorimeter layer (LAr or Tile) **/
+      CaloSampling::CaloLayer layer();
 
     private:
   
@@ -80,14 +85,19 @@ namespace xAOD{
       float m_rmin; // In xy plane 
       float m_rmax; // In xy plane
       
-      /* raw energy (without calibration) */
+      /* Energy cell after shaper */
+      float energy;
+
+      /* raw energy (without shaper) */
       float m_rawEnergy;
       
-      /* Energy for each sample throut all bunchs */
+      /* Energy for each bunch crossing */
       std::vector<float> m_rawEnergySamples;
       /* time bins */
       std::vector<float> m_tbins;
-      
+      /* Integrated pulse */
+      std::vector<float> m_pulse;
+
       /* Cell hash */
       std::string m_hash;
   };

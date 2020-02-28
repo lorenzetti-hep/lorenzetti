@@ -7,15 +7,20 @@
 namespace CaloSampling{
 
   enum CaloSample{
-    Tile=-2,
-    LAr=-1,
-    EM1=1,
-    EM2=2, 
-    EM3=3,
-    HAD1=4, 
-    HAD2=5, 
-    HAD3=6
+    EM1=-1,
+    EM2=-2, 
+    EM3=-3,
+    HAD1=1, 
+    HAD2=2, 
+    HAD3=3
   };
+
+
+  enum CaloLayer{
+    LAr  = 1,
+    Tile = 2 
+  };
+
 } 
 
 #endif

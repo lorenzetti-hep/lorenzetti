@@ -18,10 +18,15 @@ void EventContext::attach( const G4Step *step )
 }
 
 
-void EventContext::attach( xAOD::CaloClusterContainer *cont )
+void EventContext::attach( const xAOD::CaloClusterContainer *cont , std::string key )
 {
-  m_caloClusterCont = cont;
+  m_caloCluster[key] = cont;
 }
+
+
+
+
+
 
 
 void EventContext::attach( xAOD::CaloCellCollection *collection )

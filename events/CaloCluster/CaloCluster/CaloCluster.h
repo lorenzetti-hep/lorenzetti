@@ -31,9 +31,9 @@ namespace xAOD{
       /** Destructor **/
       ~CaloCluster();
       /** Add the calorimeter cell into the RoI collection **/
-      void push_back( xAOD::CaloCell * );
+      void push_back( const xAOD::CaloCell * );
       /** Get the cell collection into this RoI **/
-      const std::vector<xAOD::CaloCell*> & getCollection();
+      const std::vector< const xAOD::CaloCell*> & getCollection();
       /** Return the number of cells inside of this cluster **/
       size_t size();
       /** release all memory holded by the cell collection into this RoI **/
@@ -61,7 +61,7 @@ namespace xAOD{
       /* Total estimated energy into the roi in the second eletromagnetic layer*/
       float m_totalEnergy;
       /* All calo cells into the roi window */
-      std::vector<xAOD::CaloCell*> m_collection;
+      std::vector<const xAOD::CaloCell*> m_collection;
   };
 }
 #endif
