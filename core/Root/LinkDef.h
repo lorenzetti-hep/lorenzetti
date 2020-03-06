@@ -1,5 +1,5 @@
 
-#include "core/RunCastor.h"
+#include "core/Simulator.h"
 #include "core/IAlgTool.h"
 #include "core/AlgTool.h"
 
@@ -11,7 +11,7 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class RunCastor+;
+#pragma link C++ class Simulator+;
 #pragma link C++ class IAlgTool+;
 #pragma link C++ class AlgTool+;
 

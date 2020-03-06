@@ -8,41 +8,33 @@
 
 using namespace xAOD;
 
-
-
-CaloCell::CaloCell( float eta_center, 
-                    float phi_center, 
-                    float delta_eta, 
-                    float delta_phi, 
-                    float rmin, 
-                    float rmax,
-                    CaloSampling::CaloSample sampling, 
-                    std::vector<float> tbins,
-                    std::string hash): 
-
-  m_sampling(sampling),
-  m_eta_center(eta_center),
-  m_phi_center(phi_center),
-  m_delta_eta(delta_eta),
-  m_delta_phi(delta_phi),
-  m_rmin(rmin),
-  m_rmax(rmax),
-  m_rawEnergy(0),
-  m_rawEnergySamples( tbins.size()-1, 0 ),
-  m_tbins(tbins),
-  m_hash(hash)
+CaloCell::CaloCell()
 {;}
 
 
+CaloCell::CaloCell( float eta, 
+                    float phi, 
+                    float deta, 
+                    float dphi, 
+                    float rmin, 
+                    float rmax,
+                    CaloSampling::CaloSample sampling, 
+                    std::vector<float> timestamp,
+                    std::string hash): 
 
-xAOD::CaloCell* CaloCell::clone()
-{
-  return new xAOD::CaloCell( eta(), phi(), 
-                            deltaEta(), deltaPhi(),
-                            rmin(),rmax(),
-                            sampling(), layer(), m_tbins, m_hash);
+  m_sampling(sampling),
+  m_eta(eta),
+  m_phi(phi),
+  m_deta(deta),
+  m_dphi(dphi),
+  m_rmin(rmin),
+  m_rmax(rmax),
+  m_rawEnergy(0),
+  m_rawEnergySamples( timestamp.size()-1, 0 ),
+  m_timestamp(timestamp),
+  m_hash(hash)
+{;}
 
-}
 
 
 CaloCell::~CaloCell()
@@ -63,7 +55,7 @@ void CaloCell::clear()
 
 CaloSampling::CaloLayer CaloCell::layer()
 {
-  return ((int)m_sampling < 0) ? CaloSampling::CaloLayer::LAr : CaloSampling::CaloLayer::Tile ;
+  return ((int)m_sampling < 4) ? CaloSampling::CaloLayer::ECal : CaloSampling::CaloLayer::HCal;
 }
 
 
@@ -82,7 +74,7 @@ void CaloCell::Fill( const G4Step* step )
 
   int bin=-1;
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
-    if( t >= m_tbins[sample] && t < m_tbins[sample+1]){
+    if( t >= m_timestamp[sample] && t < m_timestamp[sample+1]){
       bin=sample; break;
     }
   }
@@ -96,5 +88,28 @@ void CaloCell::Fill( const G4Step* step )
 
 
 
+
+
+xAOD::CaloCell* CaloCell::copy()
+{
+  auto newcell = new xAOD::CaloCell();
+  // Cell location parameters
+  newcell->setEta(eta());
+  newcell->setPhi(phi());
+  newcell->setDeltaEta( deltaEta() );
+  newcell->setDeltaPhi( deltaPhi() );
+  newcell->setRmin( rmin() );
+  newcell->setRmax( rmax() );
+  newcell->setHash( hash() );
+  newcell->setEt( et() );
+  newcell->setEnergy( energy() );
+  newcell->setRawEt( rawEt() );
+  newcell->setRawEnergy( rawEnergy() );
+  newcell->setRawEnergySamples( rawEnergySamples() );
+  newcell->setPulse( pulse() );
+  newcell->setSampling(sampling());
+  newcell->setTimestamp( timestamp() ); // bunch crossing bounds in ns
+  return newcell;
+}
 
 

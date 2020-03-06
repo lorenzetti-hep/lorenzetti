@@ -160,22 +160,29 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   
   EventLoop *sequence = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  // Get the event context into the main sequence
-  EventContext *ctx = sequence->getContext();
-  xAOD::EventInfo *event=nullptr;
-  ctx->retrieve( event );
-
   if ( m_evt <  m_ttree->GetEntries() ){
 
     MSG_INFO( "Get event (EventReader) with number " << m_evt )
     m_ttree->GetEntry(m_evt);
-
-    // Load all particles into the g4event and return all rois
-    auto seeds = Load( anEvent );
     
+    // Get the event context into the main sequence
+    EventContext *ctx = sequence->getContext();
+    xAOD::EventInfoContainer *eventContainer = new xAOD::EventInfoContainer();
+    xAOD::TruthContainer *truthContainer = new xAOD::TruthContainer();
+    xAOD::EventInfo *event = new xAOD::EventInfo();
+
     event->setEventNumber( m_evt );
     event->setAvgmu( m_avgmu );
-    event->setSeeds( seeds );
+    
+    eventContainer->push_back(event);
+
+    auto vec_truth = Load( anEvent );
+
+    for (auto& particle : vec_truth )
+      truthContainer->push_back(particle);
+
+    ctx->attach( truthContainer );
+    ctx->attach( eventContainer );
 
   }else{
     MSG_INFO( "EventReader: no generated particles. run terminated..." );
@@ -195,32 +202,38 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
-std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
+std::vector<xAOD::Truth*> EventReader::Load( G4Event* g4event )
 {
-  // Find all seeds into this event
-  std::vector<xAOD::seed_t> vec_seed;
-  
+  std::vector<xAOD::Truth*> vec_seed;
+
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     // pdg equals zero is the main particle (interest) and can be used as eta/phi roi position
     if ( m_p_pdg_id->at(i) == 0 ){ 
-      // If the vec_seed its empty, add the seed
-      if(vec_seed.empty()){
-        vec_seed.push_back(xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  0});
-      }else{ // Not empty, let's check the roi overlap
-        // Loop over all seed until now
-        float eta=m_p_eta->at(i);
-        float phi=m_p_phi->at(i);
-        float et=m_p_et->at(i);
-        // Loop over all rois inside of vec_roi
-        for( unsigned int j=0;j<vec_seed.size(); ++j ){
-          if (abs(eta - vec_seed[j].eta)<0.2 && abs( phi - vec_seed[j].phi)<0.2 ){
-            if (et > vec_seed[j].et)
-              vec_seed[j] = xAOD::seed_t{et,eta,phi,m_p_pdg_id->at(i)};
+
+      // Loop over all seed until now
+      float eta=m_p_eta->at(i);
+      float phi=m_p_phi->at(i);
+      float et=m_p_et->at(i);
+      bool overlap=false;
+      // Loop over all rois inside of vec_roi
+      for( unsigned int j=0;j<vec_seed.size(); ++j ){
+        if (abs(eta - vec_seed[j]->eta())<0.2 && abs( phi - vec_seed[j]->phi())<0.2 ){
+          if (et > vec_seed[j]->et()){
+            // Overwrite the old truth
+            vec_seed[j]->setEt(et); 
+            vec_seed[j]->setEta(eta); 
+            vec_seed[j]->setPhi(phi); 
+            vec_seed[j]->setPdgid(m_p_pdg_id->at(i));
+            overlap=true;
+            break;
           }
-        }// Loop over all rois
-      }// Its empty?
+        }
+      }// Loop over all rois
+
+      if (!overlap)
+        vec_seed.push_back( new xAOD::Truth( m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  0) );
 
     }else{
       // https://github.com/zaborowska/Geant4-Pythia8/blob/master/src/HepMCG4Interface.cc
@@ -239,10 +252,6 @@ std::vector<xAOD::seed_t> EventReader::Load( G4Event* g4event )
       g4event->AddPrimaryVertex(g4vtx);
     }
   }
-
-  MSG_INFO( "Number of Seeds for this event: "<< vec_seed.size() );
-  for(auto seed : vec_seed)
-    MSG_INFO("Seed: eta = " << seed.eta << ", phi = " << seed.phi << ", Et = " << seed.et);
 
   return vec_seed;
 }

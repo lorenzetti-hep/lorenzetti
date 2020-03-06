@@ -50,21 +50,27 @@ link_directories( ${Boost_LIBRARY_DIR} )
 
 
 
+
+add_subdirectory( external/cpk )
+add_subdirectory( events/CaloCell )
+add_subdirectory( events/CaloCluster )
+add_subdirectory( events/EventInfo )
+add_subdirectory( events/Truth )
+
 add_subdirectory( core )
 add_subdirectory( reader )
-add_subdirectory( events/CaloCluster )
-add_subdirectory( events/CaloCell )
-add_subdirectory( events/EventInfo )
 add_subdirectory( reco/CaloRec )
 
 
 add_library(castor SHARED
-  $<TARGET_OBJECTS:core>
   $<TARGET_OBJECTS:reader>
-  $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:CaloCell>
+  $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:EventInfo>
+  $<TARGET_OBJECTS:Truth>
+  $<TARGET_OBJECTS:core>
   $<TARGET_OBJECTS:CaloRec>
+  $<TARGET_OBJECTS:cpk>
 )
 
 

@@ -25,29 +25,7 @@
   G4cout << "[FATAL]  " << message << G4endl; \
 
 
-
-
-// Used only in event context class
-
-#define PRIMITIVE_ATTACH_AND_RETRIEVE( CONTAINER, VAR )                                                             \
-void attach( const CONTAINER * ptr, std::string key="" )                                                            \
-{                                                                                                                   \
-  if ( VAR.find(key) == VAR.end() ) {                                                                               \
-    VAR[key] = ptr;                                                                                                 \
-    return true;                                                                                                    \
-  }                                                                                                                 \
-  MSG_ERROR( "The key exist into the event context. Can not attach this feature using key: " << key );              \
-  return false;                                                                                                     \
-}                                                                                                                   \
-bool retrieve( const CONTAINER*& ptr, std::string key="" )                                                          \
-{                                                                                                                   \
-  if ( VAR.find(key) == VAR.end() ) {                                                                               \
-    ptr = VAR[key];                                                                                                 \
-    return true;                                                                                                    \
-  }                                                                                                                 \
-  MSG_ERROR( "The key does not exist into the event context. Can not retrieve this feature using key: " << key );   \
-  return false;                                                                                                     \
-}                                                                                                                   \
+                                                                                                               \
 
 
 

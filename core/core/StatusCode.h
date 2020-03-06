@@ -3,22 +3,22 @@
 #define StatusCode_h
 
 
-
-enum class ErrorCode { FAILURE = 0, SUCCESS = 1};
+enum class __ErrorCode__ { FAILURE = 0, SUCCESS = 1};
 
 class StatusCode{
   public:
-    StatusCode( ErrorCode code ):m_code(code){;};
+    StatusCode( __ErrorCode__ code ):m_code(code){;};
     ~StatusCode(){;};
-    bool isSuccess() const { return (m_code==ErrorCode::SUCCESS) ? true : false; }
-	  bool isFailure() const { return (m_code==ErrorCode::FAILURE) ? true : false; }
+    bool isSuccess() const { return (m_code==__ErrorCode__::SUCCESS) ? true : false; }
+	  bool isFailure() const { return (m_code==__ErrorCode__::FAILURE) ? true : false; }
   private:
-    ErrorCode m_code;
+    __ErrorCode__ m_code;
 };
 
-// Provide shorthands for default code values
-const static auto SUCCESS = StatusCode( ErrorCode::SUCCESS );
-const static auto FAILURE = StatusCode( ErrorCode::FAILURE );
-
+namespace ErrorCode{
+  // Provide shorthands for default code val ues
+  const static auto SUCCESS = StatusCode( __ErrorCode__::SUCCESS );
+  const static auto FAILURE = StatusCode( __ErrorCode__::FAILURE );
+}
 
 #endif

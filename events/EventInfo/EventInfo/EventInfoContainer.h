@@ -5,7 +5,7 @@
 #include "EventInfo/EventInfo.h"
 #include "core/DataVector.h"
 
-
-typedef DataVector<const xAOD::EventInfo*> xAOD::EventInfoContainer
-
+namespace xAOD{
+  typedef DataVector<const xAOD::EventInfo> EventInfoContainer;
+}
 #endif

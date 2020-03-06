@@ -31,7 +31,7 @@ class IAlgTool{
     
     virtual StatusCode finalize()=0;
     
-    virtual StatusCode fill( EventContext * /*ctx*/ )=0;
+    virtual StatusCode fillHistograms( EventContext * /*ctx*/ )=0;
 
     /** return the tool name **/
     virtual std::string name()=0;

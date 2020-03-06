@@ -38,28 +38,20 @@ void EventLoop::initialize(){
     toolHandle->initialize();
   }
 
-  getContext()->attach( new xAOD::EventInfo() );
 }
 
 
 void EventLoop::finalize(){
   
-  //for( auto &toolHandle : m_toolHandles ){
-  //  toolHandle->finalize();
-  //  delete toolHandle;
-  //}
- 
-  //m_monTool->finalize();
   delete m_store;
-
-  //m_context->finalize();
   delete m_context;
 }
 
 
 void EventLoop::BeginOfEvent()
 {
-  createContainer()
+
+  getContext()->initialize(); 
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
@@ -74,7 +66,7 @@ void EventLoop::BeginOfEvent()
 
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
-  getContext()->attach( step );
+  getContext()->attach( step, "", true );
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
@@ -98,8 +90,12 @@ void EventLoop::EndOfEvent()
       MSG_FATAL("It's not possible to post-execute " << toolHandle->name());
     }
 
-    toolHandle->fill( getContext() );
+    toolHandle->fillHistograms( getContext() );
   }
+
+  // Release all memory allocated for all containers during the 
+  // tool handle execution
+  getContext()->finalize();
 }
 
 

@@ -9,6 +9,9 @@
 #include "CaloCell/CaloCell.h"
 #include "CaloCell/CaloCellCollection.h"
 
+/** Pulse generator **/
+#include "TPulseGenerator.h"
+
 /** Geant 4 includes **/
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -28,42 +31,51 @@ class CaloCellMaker : public AlgTool
     ~CaloCellMaker();
     
     
-    /** initialize the object **/
+    /** initialize the algorithm **/
     virtual StatusCode initialize() override;
     /** Execute in step action step from geant core **/
     virtual StatusCode execute( EventContext *ctx ) override;
     /** execute before start the step action **/
     virtual StatusCode pre_execute( EventContext *ctx ) override;
-    /** override to avoid abstract python import problem **/ 
-    virtual StatusCode post_execute( EventContext * ) override{return SUCCESS;};
+    /** execute after the step action **/ 
+    virtual StatusCode post_execute( EventContext *ctx ) override;
     /** fill hisogram in the end **/
-    virtual StatusCode fill( EventContext *ctx ) override;
-    /** override to avoid abstract python import problem **/ 
-    virtual StatusCode finalize() override {return SUCCESS;};
+    virtual StatusCode fillHistograms( EventContext *ctx ) override;
+    /** finalize the algorithm **/ 
+    virtual StatusCode finalize() override;
 
 
 
-    PRIMITIVE_SETTER_AND_GETTER( std::string, m_card, setCard, card );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_start   , set_bc_id_start, bc_id_start );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_id_end     , set_bc_id_end  , bc_id_end );
-    PRIMITIVE_SETTER_AND_GETTER( int        , m_bc_nsamples   , set_bc_nsamples, bc_nsamples );
-    PRIMITIVE_SETTER_AND_GETTER( float      , m_bc_duration   , set_bc_duration, bc_duration );
+    PRIMITIVE_SETTER_AND_GETTER( std::string, m_calibPath, SetCalibPath, GetCalibPath);
+
 
 
   private:
+   
+    xAOD::CaloCellCollection m_collection;
+
+    void GeneratePulse( xAOD::CaloCell * );
+    void CalculateEnergy( xAOD::CaloCell * );
+
     
-    // Detector card (granularity configuration)
-    std::string m_card;
+    std::string m_inputKey;
+    std::string m_outputKey;
+ 
     // bunch crossing id start
     int m_bc_id_start;
     // bunch crossing id end
     int m_bc_id_end;
     // number of samples per bunch
     int m_bc_nsamples;
-    // buncg crossing time duration (in ns)
+    // bunch crossing time duration (in ns)
     float m_bc_duration;
+    
+    std::string m_calibPath;
 
-
+    
+    std::map<CaloSampling::CaloLayer, CPK::TPulseGenerator*> m_pulseGenerator;
 };
+
+
 
 #endif

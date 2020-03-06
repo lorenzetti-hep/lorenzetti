@@ -5,7 +5,7 @@
 #include "CaloCell/CaloCell.h"
 #include "core/DataVector.h"
 
-
-typedef DataVector<const xAOD::CaloCell*> xAOD::CaloCellContainer
-
+namespace xAOD{
+  typedef DataVector<const xAOD::CaloCell> CaloCellContainer;
+}
 #endif

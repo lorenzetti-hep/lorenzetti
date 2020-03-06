@@ -1,72 +1,46 @@
 
 #include "core/EventContext.h"
 
-EventContext::EventContext():
-  m_step(nullptr),
-  m_caloClusterCont(nullptr),
-  m_collection(nullptr),
-  m_eventInfo(nullptr)
+EventContext::EventContext()
 {}
 
 
-EventContext::~EventContext()
-{}
-
-void EventContext::attach( const G4Step *step )
-{
-  m_step = step;
-}
-
-
-void EventContext::attach( const xAOD::CaloClusterContainer *cont , std::string key )
-{
-  m_caloCluster[key] = cont;
+EventContext::~EventContext(){
+  // Just to be sure to remove all allocated memory
+  finalize();
 }
 
 
 
-
-
-
-
-void EventContext::attach( xAOD::CaloCellCollection *collection )
+StatusCode EventContext::initialize()
 {
-  m_collection = collection;
-}
-
-
-void EventContext::attach( xAOD::EventInfo *evt )
-{
-  m_eventInfo = evt;
+  return ErrorCode::SUCCESS;
 }
 
 
 
-void EventContext::retrieve( const G4Step *&step )
+StatusCode EventContext::finalize()
 {
-  step = m_step;
+  //for ( auto& pairObj : m_stepHandleKey )
+  //  delete pairObj.second;
+  m_stepHandleKey.clear();
+
+  for ( auto& pairObj : m_caloCellHandleKey )
+    if(pairObj.second)  delete pairObj.second;
+  m_caloCellHandleKey.clear();
+
+  for ( auto& pairObj : m_caloClusterHandleKey )
+    if(pairObj.second)  delete pairObj.second;
+  m_caloClusterHandleKey.clear();
+  
+  for ( auto& pairObj : m_eventInfoHandleKey )
+    if(pairObj.second)  delete pairObj.second;
+  m_eventInfoHandleKey.clear();
+
+  for ( auto& pairObj : m_truthHandleKey )
+    if(pairObj.second)  delete pairObj.second;
+  m_truthHandleKey.clear();
+  
+  return ErrorCode::SUCCESS;
 }
-
-
-void EventContext::retrieve( xAOD::CaloClusterContainer *&cont)
-{
-  cont = m_caloClusterCont;
-}
-
-
-
-void EventContext::retrieve( xAOD::CaloCellCollection *&collection )
-{
-  collection = m_collection;
-}
-
-
-
-void EventContext::retrieve( xAOD::EventInfo *&evt )
-{
-  evt = m_eventInfo;
-}
-
-
-
 

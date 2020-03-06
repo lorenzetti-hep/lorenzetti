@@ -36,16 +36,16 @@ namespace xAOD{
       /*! Phi particle position */
       PRIMITIVE_SETTER_AND_GETTER( float, m_phi     , setPhi    , phi         );
       /*! Particle energy in MeV */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_energy  , setEnergy , energy      );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_et      , setEt     , et          );
       /*! Particle identification */
       PRIMITIVE_SETTER_AND_GETTER( int  , m_pdgid   , setPdgid  , pdgid       );
       /*! Link the truth object with the associated cluster */ 
-      PRIMITIVE_SETTER_AND_GETTER( const xAOD::CaloCluster*, setCaloCluster, caloCluster );
+      PRIMITIVE_SETTER_AND_GETTER( const xAOD::CaloCluster*, m_cluster, setCaloCluster, caloCluster );
 
     private:
 
       // Energy
-      float m_energy;
+      float m_et;
       // Eta
       float m_eta;
       // Phi

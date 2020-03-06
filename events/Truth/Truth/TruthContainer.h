@@ -5,7 +5,7 @@
 #include "Truth/Truth.h"
 #include "core/DataVector.h"
 
-
-typedef DataVector<const xAOD::Truth*> xAOD::TruthContainer
-
+namespace xAOD{
+  typedef DataVector<const xAOD::Truth> TruthContainer;
+}
 #endif

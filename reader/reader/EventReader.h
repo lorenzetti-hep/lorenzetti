@@ -15,6 +15,11 @@
 
 #include "core/macros.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventInfoContainer.h"
+#include "Truth/Truth.h"
+#include "Truth/TruthContainer.h"
+
+
 
 class EventReaderMessenger;
 
@@ -53,7 +58,7 @@ class EventReader : public G4VPrimaryGenerator
     // can be implemented in your own class.
     bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
     
-    std::vector<xAOD::seed_t> Load( G4Event *);
+    std::vector<xAOD::Truth*> Load( G4Event *);
 
 
     unsigned int           m_evt;
