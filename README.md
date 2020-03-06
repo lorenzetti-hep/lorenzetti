@@ -1,35 +1,23 @@
 # Lorenzetti Event Simulator
 
-This is the first event generator for HEP using a generic calorimeter for machine learning studies based on athena framework (ATLAS).
+This is the first event generator for HEP using a generic calorimeter for machine learning 
+studies based on athena framework (ATLAS).
 
 
 
 ## Detector construction:
 
-It's a composite cilindric calorimeter with eletromagnetic and hadronic layers.
+It's a composite cilindric calorimeter with eletromagnetic and hadronic layers with 6.12m in z starting 90cm of disntance
+in the collision line and 148cm of material.
 
 Description:
 
-- First layer (strips) is a LAr calorimeter using iron as absorver with cells of size (0.03 x 0.1) in eta/phi coordinates;
-
-
-It's a composite calorimeter with eletromagnet and hadronic layers. See the 
-![Lateral Calorimeter view](https://github.com/jodafons/lorenzet/blob/master/figures/lateral_view_jets.pdf) for more details.
-
-
-Description:
-- 100cm X 100cm with face (x,y);
-- We considere a face of 48 cm as Region of interesti (x,y);
-- We always shot the particle in the center of the (x,y) face;
-- First EM layer with 15 cm depth (z) and 15 segments (layers) of LAR and Pb; (3 x 96 cells);
-- Second EM layer with 30 cm depth (z) and 50 segments (layers) of LAR and Pb; (12 x 12 cells);
-- Third EM layer with 3 cm depth (z) and 15 segments (layers) of LAR and Pb; (12 x 6 cells);
-- First HAD layer with 40 cm depth (z) and 2 segments (layers) of Cesium iodide and iron ( 8 x 8 cells); 
-- Second HAD layer with 40 cm depth (z) and 2 segments (layers) of Cesium iodide and iron ( 8 x 8 cells); 
-- Third HAD layer with 20 cm depth (z) and 1 segments (layers) of Cesium iodide and iron ( 4 x 4 cells); 
-
-
-
+- First EM layer (stripts) with 15 cm depth (xy) and 2 segments (layers) of LAr and Pb (0.003 x 0.003); 
+- Second EM layer with 30 cm depth (xy) and 2 segments (layers) of LAr and Pb (0.025 x 0.025); 
+- Third EM layer with 3 cm depth (xy) and 2 segments (layers) of LAr and Pb (0.05 x 0.025); 
+- First HAD layer with 40 cm depth (xy) and 2 segments (layers) of Cesium iodide and iron (0.1 x 0.1); 
+- Second HAD layer with 40 cm depth (xy) and 2 segments (layers) of Cesium iodide and iron (0.1 x 0.1); 
+- Third HAD layer with 20 cm depth (xy) and 1 segments (layers) of Cesium iodide and iron (0.2 x 0.1); 
 
 
 
@@ -86,7 +74,7 @@ cmake ..
 make
 ```
 
-### Compile the pythia jet maker:
+### Compile the pythia event generator:
 
 This sub package is used to create jet patcicles using pythia and dump this information
 inside a ttree. This root file will be used by the gnerator to read all jets and propagate
@@ -99,5 +87,11 @@ make generator
 
 
 ## Usage:
+
+
+
+## References:
+
+- Athena framework: https://gitlab.cern.ch/atlas/athena
 
 
