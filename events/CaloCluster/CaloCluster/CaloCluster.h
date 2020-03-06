@@ -104,6 +104,8 @@ namespace xAOD{
       std::vector<const xAOD::CaloCell*> all();
 
 
+      void Print();
+
     private:
 
 

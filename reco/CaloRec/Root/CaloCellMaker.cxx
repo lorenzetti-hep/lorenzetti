@@ -1,5 +1,3 @@
-
-
 #include "CaloRec/CaloCellMaker.h"
 #include "TLorentzVector.h"
 #include "TPulseGenerator.h"
@@ -99,8 +97,8 @@ StatusCode CaloCellMaker::initialize()
   m_pulseGenerator[ CaloSampling::CaloLayer::ECal ] = new CPK::TPulseGenerator( 7, (m_calibPath+"/larcalorimeter_pulse_shape.dat").c_str());
   // Add shaper for hadronic layer
   m_pulseGenerator[ CaloSampling::CaloLayer::HCal ] = new CPK::TPulseGenerator( 7, (m_calibPath+"/tilecalorimeter_pulse_shape.dat").c_str());
-
-
+	m_ofweights[ CaloSampling::CaloLayer::ECal ] = {-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292};
+	m_ofweights[ CaloSampling::CaloLayer::HCal ] = {-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292};
 
   return ErrorCode::SUCCESS;
 }
@@ -172,9 +170,9 @@ StatusCode CaloCellMaker::post_execute( EventContext *ctx )
     // Estimate the cell energy from the pulse
     CalculateEnergy( cell );
     // Transverse energy from integrated energy for all step point
-    //cell->setRawEt( cell->rawEnergy()/cosh(fabs(cell->eta())) ); 
+    cell->setRawEt( cell->eta() != 0.0 ? cell->rawEnergy()/cosh(fabs(cell->eta()))  : 0.0); 
     // Transverse energy with cell estimation from pulse
-    //cell->setEt( cell->energy()/cosh(fabs(cell->eta())) ); 
+    cell->setEt( cell->eta() != 0.0 ? cell->energy()/cosh(fabs(cell->eta())) : 0.0); 
     // make this const and add to the container
     container->push_back( cell );
   }
@@ -208,7 +206,7 @@ StatusCode CaloCellMaker::fillHistograms( EventContext *ctx )
     int bin = store->hist2(ss.str())->GetBin(x,y,0);
     float energy = store->hist2(ss.str())->GetBinContent( bin );
     // move average
-    store->hist2(ss.str())->SetBinContent( bin, (energy + cell->rawEnergy()) );
+    store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
   }
 
   return ErrorCode::SUCCESS;
@@ -227,12 +225,12 @@ void CaloCellMaker::GeneratePulse( xAOD::CaloCell *cell )
   // Create an pulse with zeros with n samples
   std::vector<float> pulse_sum(pulse_size, 0.0);
   // Loop over each bunch crossing
-  for ( unsigned bc = m_bc_id_start, i=0;  bc <= m_bc_id_end; ++bc, ++i )
+  for ( int bc = m_bc_id_start, i=0;  bc <= m_bc_id_end; ++bc, ++i )
   {
     // Generate the pulse
     auto pulse = m_pulseGenerator[cell->layer()]->GenerateDeterministicPulse( rawEnergySamples[i], 0, bc*m_bc_duration );
     // Add gaussian noise
-    m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
+    //m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
     // Accumulate into pulse sum (Sum all pulses)
     for ( unsigned j=0; j < pulse_size; ++j )
       pulse_sum[j] += (float)pulse->operator[](j);
@@ -244,10 +242,19 @@ void CaloCellMaker::GeneratePulse( xAOD::CaloCell *cell )
 
 
 
-void CaloCellMaker::CalculateEnergy( xAOD::CaloCell * /*cell*/ )
+void CaloCellMaker::CalculateEnergy( xAOD::CaloCell *cell )
 {
+	auto pulse = cell->pulse();
+	auto weights = m_ofweights[cell->layer()];
+	float energy=0.0;
 
+	if( weights.size() != pulse.size() ){
+		MSG_ERROR( "The ofweights size its different than the pulse size." );
+	}else{
+		for( unsigned sample=0; sample < pulse.size(); ++sample) 
+			energy += pulse[sample]*weights[sample];
+	}
+	
+	cell->setEnergy(energy);		
 }
-
-
 

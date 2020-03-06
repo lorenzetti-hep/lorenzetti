@@ -69,7 +69,7 @@ class EventReader : public G4VPrimaryGenerator
     TFile *m_f;
     TTree *m_ttree;
 
-    float m_avgmu;
+    double m_avgmu;
 
     std::vector<int>    *m_p_isMain		  ;
     std::vector<int>    *m_p_pdg_id	    ;

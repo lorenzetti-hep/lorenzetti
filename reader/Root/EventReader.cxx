@@ -178,11 +178,18 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
 
     auto vec_truth = Load( anEvent );
 
-    for (auto& particle : vec_truth )
-      truthContainer->push_back(particle);
+    MSG_INFO( "Event id: " << event->eventNumber() );
+    MSG_INFO( "Avgmu   : " << event->avgmu() );
 
+    for (auto& particle : vec_truth )
+    {
+      MSG_INFO( "Truth particle in (eta="<< particle->eta() << ",phi="<< particle->phi() << ") with Et = " << 
+          particle->et() << " GeV and PDGID = " << particle->pdgid() );
+      truthContainer->push_back(particle);
+    }
     ctx->attach( truthContainer );
     ctx->attach( eventContainer );
+
 
   }else{
     MSG_INFO( "EventReader: no generated particles. run terminated..." );
@@ -216,24 +223,24 @@ std::vector<xAOD::Truth*> EventReader::Load( G4Event* g4event )
       float eta=m_p_eta->at(i);
       float phi=m_p_phi->at(i);
       float et=m_p_et->at(i);
-      bool overlap=false;
+      bool newtruth=true;
       // Loop over all rois inside of vec_roi
       for( unsigned int j=0;j<vec_seed.size(); ++j ){
         if (abs(eta - vec_seed[j]->eta())<0.2 && abs( phi - vec_seed[j]->phi())<0.2 ){
+          newtruth=false;
           if (et > vec_seed[j]->et()){
             // Overwrite the old truth
             vec_seed[j]->setEt(et); 
             vec_seed[j]->setEta(eta); 
             vec_seed[j]->setPhi(phi); 
             vec_seed[j]->setPdgid(m_p_pdg_id->at(i));
-            overlap=true;
             break;
           }
         }
       }// Loop over all rois
 
-      if (!overlap)
-        vec_seed.push_back( new xAOD::Truth( m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  0) );
+      if (newtruth)
+        vec_seed.push_back( new xAOD::Truth( m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  m_p_pdg_id->at(i)) );
 
     }else{
       // https://github.com/zaborowska/Geant4-Pythia8/blob/master/src/HepMCG4Interface.cc
@@ -247,7 +254,7 @@ std::vector<xAOD::Truth*> EventReader::Load( G4Event* g4event )
 
       G4int pdgcode= m_p_pdg_id->at(i);
       G4LorentzVector p( m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i),  m_p_e->at(i) );
-      G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x()*MeV, p.y()*MeV, p.z()*MeV);
+      G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x()*GeV, p.y()*GeV, p.z()*GeV);
       g4vtx->SetPrimary(g4prim);
       g4event->AddPrimaryVertex(g4vtx);
     }

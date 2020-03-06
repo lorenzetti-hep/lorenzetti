@@ -93,7 +93,7 @@ std::vector < xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( const xAOD:
     if(cell->sampling() != CaloSampling::CaloSample::EM2)  continue;
     
     // Must be higher than energy cut to be considere an roi
-    if (cell->rawEnergy() < m_energyThreshold ) continue;
+    if (cell->energy() < m_energyThreshold ) continue;
  
 
     float eta = cell->eta(); 
@@ -116,9 +116,9 @@ std::vector < xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( const xAOD:
       }
     }
 
-    if(newCluster)
+    if(newCluster){
       vec_cluster.push_back( new xAOD::CaloCluster( emaxs2, eta, phi, m_etaWindow/2., m_phiWindow/2. ) );
-    
+    }
   }
   
   return vec_cluster;
@@ -205,7 +205,8 @@ void CaloClusterMaker::calculate( std::vector< xAOD::CaloCluster* > vec_cluster 
     clus->setF1( f1 );
     clus->setF3( f3 );
     clus->setRhad( rhad );
-
+    clus->setEt( clus->eta() != 0.0 ? clus->etot()/cosh(fabs(clus->eta())) : 0.0 ); 
+    clus->Print();
   }
 
 }
@@ -222,7 +223,7 @@ float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
     if(cell->sampling() != sampling)  continue;
     // deta/dphi is the half of the cell size
     if( ( cell->eta() < ( eta_ncell * cell->deltaEta() ) ) && ( cell->phi() < ( phi_ncell * cell->deltaPhi() ) ) )  
-      energy+=cell->rawEnergy();
+      energy+=cell->energy();
   }
   return energy;
 }
@@ -238,8 +239,8 @@ float CaloClusterMaker::maxEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
     // Useful strategy to get the second highest energy cell
     if( exclude && maxCell && cell==maxCell)  continue;
 
-    if ( cell->rawEnergy() > energy ){
-      energy=cell->rawEnergy();
+    if ( cell->energy() > energy ){
+      energy=cell->energy();
       if(!exclude)  maxCell = cell;
     }
   }

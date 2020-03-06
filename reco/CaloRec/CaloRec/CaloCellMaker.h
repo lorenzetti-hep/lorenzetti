@@ -72,8 +72,9 @@ class CaloCellMaker : public AlgTool
     
     std::string m_calibPath;
 
-    
     std::map<CaloSampling::CaloLayer, CPK::TPulseGenerator*> m_pulseGenerator;
+
+    std::map<CaloSampling::CaloLayer, std::vector<float>> m_ofweights;
 };
 
 

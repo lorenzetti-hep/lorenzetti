@@ -48,3 +48,27 @@ std::vector<const xAOD::CaloCell*> CaloCluster::all()
 }
 
 
+
+void CaloCluster::Print()
+{
+  MSG_INFO( "Et       : " << et() );
+  MSG_INFO( "Eta      : " << eta() );
+  MSG_INFO( "Phi      : " << phi() );
+  MSG_INFO( "e1       : " << e1() );
+  MSG_INFO( "e2       : " << e2() );
+  MSG_INFO( "e3       : " << e3() );
+  MSG_INFO( "ehad1    : " << ehad1() );
+  MSG_INFO( "ehad2    : " << ehad2() );
+  MSG_INFO( "ehad3    : " << ehad3() );
+  MSG_INFO( "emaxs1   : " << emaxs1() );
+  MSG_INFO( "emaxs2   : " << emaxs2() );
+  MSG_INFO( "e2tsts1  : " << e2tsts1() );
+}
+
+
+
+
+
+
+
+
