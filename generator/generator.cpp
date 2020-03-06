@@ -413,7 +413,7 @@ int main( int argc, char *argv[] ) {
   const double jet_pt_filter = 17.; // GeV
   const double zee_pt_filter = 15.; // GeV
   // Average number of pileup events per signal event.
-  const double nPileupAvg = 40;
+  const double nPileupAvg = 10;
   // The number of BC interfering with the main event. Negative values
   // refer to events before and positive to events after the main event,
   // which is at bc_id = 0.
@@ -582,7 +582,6 @@ int main( int argc, char *argv[] ) {
         // Generate main event. Quit if too many failures.
         // Select the number of pileup events to generate.
         
-        cout << "AKI JOAO >>>>>>>>>>> "<<bc_id<< endl;
         int nPileup = poisson(nPileupAvg, mb_pythia.rndm);
         nPileUpMean += nPileup;
 

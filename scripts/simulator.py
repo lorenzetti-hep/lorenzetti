@@ -4,8 +4,7 @@
 
 import ROOT
 ROOT.gSystem.Load('libcastor')
-from ROOT import RunCastor
-from ROOT import CaloCellMaker
+from ROOT import CaloCellMaker, CaloClusterMaker,Simulator
 
 
 import os
@@ -17,21 +16,26 @@ macro = 'run_jf17.mac'
 
 
 
-alg = CaloCellMaker( "CaloCellMaker" )
+rec = CaloCellMaker( "CaloCellMaker" )
 
-# Calo cell reconstuction configuration
-alg.setCard( basepath+"/core/data/detector.card" )
-alg.set_bc_id_start( -8 )
-alg.set_bc_id_end( 7 )
-alg.set_bc_nsamples( 1 )
-alg.set_bc_duration( 25 )
+clus = CaloClusterMaker( "CaloClusterMaker" )
+print (basepath)
+rec.SetCalibPath( basepath+'/reco/CaloRec/data' )
 
 
 
+#
+## Calo cell reconstuction configuration
+#alg.setCard( basepath+"/core/data/detector.card" )
+#alg.set_bc_id_start( -8 )
+#alg.set_bc_id_end( 7 )
+#alg.set_bc_nsamples( 1 )
+#alg.set_bc_duration( 25 )
 
-castor = RunCastor( "output.root", 1 )
-castor.push_back( alg )
-castor.run(macro)
+sim = Simulator( "output.root", 1 )
+sim.push_back( rec )
+sim.push_back( clus )
+sim.run(macro)
 
 
 
