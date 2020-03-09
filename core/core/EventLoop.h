@@ -52,6 +52,7 @@ class EventLoop : public G4Run
     std::vector < IAlgTool* > m_toolHandles;
 
     std::string m_output;
+    std::string m_outputStepKey;
 };
 
   

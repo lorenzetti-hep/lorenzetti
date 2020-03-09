@@ -7,7 +7,7 @@
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "EventInfo/EventInfoContainer.h"
-#include "Truth/TruthContainer.h"
+#include "TruthParticle/TruthParticleContainer.h"
 
 /** geant 4 libs **/
 #include "G4Step.hh"
@@ -52,11 +52,11 @@ class EventContext
 
     StatusCode finalize();
 
-    PRIMITIVE_ATTACH_AND_RETRIEVE( const G4Step                     , m_stepHandleKey         );
-    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::CaloCellContainer    , m_caloCellHandleKey     );
-    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::CaloClusterContainer , m_caloClusterHandleKey  );
-    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::EventInfoContainer   , m_eventInfoHandleKey    );
-    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::TruthContainer       , m_truthHandleKey        );
+    PRIMITIVE_ATTACH_AND_RETRIEVE( const G4Step                       , m_stepHandleKey         );
+    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::CaloCellContainer      , m_caloCellHandleKey     );
+    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::CaloClusterContainer   , m_caloClusterHandleKey  );
+    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::EventInfoContainer     , m_eventInfoHandleKey    );
+    PRIMITIVE_ATTACH_AND_RETRIEVE( const xAOD::TruthParticleContainer , m_truthHandleKey        );
 
   
   private:
@@ -69,7 +69,7 @@ class EventContext
     // Event info containers
     std::map< std::string, const xAOD::EventInfoContainer*>  m_eventInfoHandleKey;
     // truth containers
-    std::map< std::string, const xAOD::TruthContainer*> m_truthHandleKey;
+    std::map< std::string, const xAOD::TruthParticleContainer*> m_truthHandleKey;
 
 };
 

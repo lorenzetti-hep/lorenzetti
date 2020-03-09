@@ -2,7 +2,7 @@
 
 #include "core/geant/PrimaryGeneratorAction.h"
 #include "core/geant/PrimaryGeneratorMessenger.h"
-#include "reader/EventReader.h"
+#include "core/reader/EventReader.h"
 
 
 #include "G4Event.hh"

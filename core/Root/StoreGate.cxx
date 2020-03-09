@@ -2,6 +2,7 @@
 #include "core/StoreGate.h"
 #include "core/macros.h"
 #include "TROOT.h"
+#include <iostream>
 
 using namespace SG;
 
@@ -39,6 +40,7 @@ StoreGate::~StoreGate()
 
 void StoreGate::mkdir( std::string path ){
   m_file->mkdir(path.c_str());
+  m_currentPath = path;
 }
 
 
@@ -55,6 +57,7 @@ bool StoreGate::AddHistogram( std::string key, std::string s, int xbin, float xm
     //MSG_WARNING( "The histogram with path " << path << " exist into the histogram book." );
     return false;
   }
+  std::cout << "Add " << path << std::endl; 
   m_h1_book[path] = new TH1F(key.c_str(),s.c_str(),xbin,xmin,xmax);
   return true;
 }
@@ -68,6 +71,7 @@ bool StoreGate::AddHistogram( std::string key, std::string s, int xbin, float xm
     //MSG_WARNING( "The histogram with path " << path << " exist into the histogram book." );
     return false;
   }
+  std::cout << "Add " << path << std::endl; 
   m_h2_book[path] = new TH2F(key.c_str(),s.c_str(),xbin,xmin,xmax,ybin,ymin,ymax);
   return true;
 }
@@ -75,15 +79,14 @@ bool StoreGate::AddHistogram( std::string key, std::string s, int xbin, float xm
 
 TH1F * StoreGate::hist1( std::string key )
 {
-  std::string path = m_currentPath+"/"+key;
-  return m_h1_book[path];
+  std::cout << key << std::endl;
+  return m_h1_book[key];
 }
 
 
 TH2F * StoreGate::hist2( std::string key )
 {
-  std::string path = m_currentPath+"/"+key;
-  return m_h2_book[path];
+  return m_h2_book[key];
 }
 
 

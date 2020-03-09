@@ -1,6 +1,6 @@
 
-#include "reader/EventReaderMessenger.h"
-#include "reader/EventReader.h"
+#include "core/reader/EventReaderMessenger.h"
+#include "core/reader/EventReader.h"
 
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"

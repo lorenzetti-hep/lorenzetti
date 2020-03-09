@@ -52,28 +52,24 @@ class CaloCellMaker : public AlgTool
 
   private:
    
-    xAOD::CaloCellCollection m_collection;
+
 
     void GeneratePulse( xAOD::CaloCell * );
     void CalculateEnergy( xAOD::CaloCell * );
 
     
+    xAOD::CaloCellCollection m_collection;
+    
     std::string m_inputKey;
     std::string m_outputKey;
- 
-    // bunch crossing id start
-    int m_bc_id_start;
-    // bunch crossing id end
-    int m_bc_id_end;
-    // number of samples per bunch
-    int m_bc_nsamples;
-    // bunch crossing time duration (in ns)
-    float m_bc_duration;
-    
     std::string m_calibPath;
+ 
+    int m_bc_id_start;
+    int m_bc_id_end;
+    int m_bc_nsamples;
+    float m_bc_duration;
 
     std::map<CaloSampling::CaloLayer, CPK::TPulseGenerator*> m_pulseGenerator;
-
     std::map<CaloSampling::CaloLayer, std::vector<float>> m_ofweights;
 };
 

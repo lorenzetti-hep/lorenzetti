@@ -28,12 +28,14 @@ void CaloCellCollection::release()
   }
   m_collection.clear();
   m_collectionAccessor.clear();
+  m_cells.clear();
 }
 
 
 void CaloCellCollection::push_back( xAOD::CaloCell *cell )
 {
   m_collection[ cell->hash() ] = cell;
+  m_cells.push_back(cell);
 }
 
 
@@ -82,13 +84,18 @@ void CaloCellCollection::clear()
 
 const std::vector< xAOD::CaloCell* >  CaloCellCollection::all()
 {
-  std::vector<xAOD::CaloCell*> vec;
-  for( auto& pairObj : m_collection )
-    vec.push_back( pairObj.second );
-  return vec;
+  return m_cells;
 }
 
 
+void CaloCellCollection::Print()
+{
+
+ MSG_INFO( "Number of cells in this collection: " << size() );
+  for (auto& cell : all() ){
+    MSG_INFO( "Cell for layer " << cell->sampling() << " with center in (" << cell->eta() << ", " << cell->phi() << ") and hash " << cell->hash());
+  }
+}
 
 
 
@@ -100,6 +107,8 @@ CaloCellAccessor::CaloCellAccessor( float etamin, float etamax, float etabins, f
                     float phimax, float phibins, float rmin, float rmax, int sampling):
   m_rmin(rmin), m_rmax(rmax), m_sampling(sampling)
 {
+  MSG_INFO( " Sampling = " << sampling << " Etamin = " << etamin << " Etamax" << etamax );
+  MSG_INFO( " phimin = " << phimin << " phimax = " << phimax << " rmin = " << rmin << " rmax = " << rmax);
   float deta = (etamax-etamin)/etabins;
   float dphi = (phimax-phimin)/phibins;
   for (unsigned eta_idx=0 ; eta_idx<etabins+1; ++eta_idx)

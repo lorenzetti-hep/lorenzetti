@@ -16,7 +16,13 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   AlgTool( name ),
   m_etaWindow( 0.4 ),
   m_phiWindow( 0.4 ),
-  m_energyThreshold( 3*GeV )
+  m_energyThreshold( 3*GeV ),
+  m_forceTruthMatch(true),
+  m_dR(0.15),
+  m_inputCaloKey("xAOD__CaloCellContainer"),
+  m_inputEventKey("xAOD__EventInfoContainer"),
+  m_outputClusterKey("xAOD__CaloClusterContainer"),
+  m_outputTruthKey("xAOD__TruthParticleContainer")
 {;}
 
 
@@ -29,9 +35,18 @@ StatusCode CaloClusterMaker::initialize()
 {
   auto store = getStoreGateSvc();
   
-  
-  store->AddHistogram("eratio", "", 100, 0.0, 1.0);
-  
+  store->mkdir( "cluster" );  
+
+  store->AddHistogram("truth_eta", "Count;#eta;", 100, -1.5, 1.5);
+  store->AddHistogram("truth_phi", "Count;#phi;", 100, -3.2, 3.2);
+  store->AddHistogram("truth_eratio", "Count;E_{ratio};", 100, 0.0, 1.05);
+  store->AddHistogram("eta", "Count;#eta;", 100, -1.5, 1.5);
+  store->AddHistogram("phi", "Count;#phi;", 100, -3.2, 3.2);
+  store->AddHistogram("eratio", "Count;E_{ratio};", 100, 0.0, 1.05);
+  store->AddHistogram("res_eta", "Count;res_{#eta};",100, -1, 1 );
+  store->AddHistogram("res_phi", "Count;res_{#phi};",100, -3.2, 3.2 );
+  store->AddHistogram("res_eratio", "Count;res_{E_{ratio}};",100, -1, 1 );
+
   
   return ErrorCode::SUCCESS;
 }
@@ -42,52 +57,116 @@ StatusCode CaloClusterMaker::pre_execute( EventContext *ctx )
   return ErrorCode::SUCCESS;
 }
 
+StatusCode CaloClusterMaker::execute( EventContext *ctx )
+{
+  return ErrorCode::SUCCESS;
+}
+
+
+StatusCode CaloClusterMaker::finalize()
+{
+  return ErrorCode::SUCCESS;
+}
+
+
 
 StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
 {
   // Retrieve the calo cluster container
   xAOD::CaloClusterContainer *caloClusterContainer=new xAOD::CaloClusterContainer();
+  xAOD::TruthParticleContainer  *particleContainer= new xAOD::TruthParticleContainer();
+  
+  ctx->retrieve( m_eventInfoContainer , m_inputEventKey);
+  ctx->retrieve( m_caloCellContainer , m_inputCaloKey);
 
-  const xAOD::TruthContainer  *truthContainer=nullptr;
-  ctx->retrieve( truthContainer );
+  auto particles = getAllParticles();
+  auto clusters = getAllClusters();
 
+  if ( m_forceTruthMatch ){
 
-  const xAOD::CaloCellContainer *caloCellContainer=nullptr;
-  ctx->retrieve( caloCellContainer );
+    for( auto& caloCluster : clusters )
+    {
+      for( auto& particle : particles )
+      {
+        fillParticle( particle );
+        calculate( particle );
+    
+        MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
+        if( !particle->caloCluster() && dR( caloCluster, particle ) < m_dR ){
+          fillCluster( caloCluster );
+          calculate( caloCluster );
+          particle->setCaloCluster( caloCluster );
+          caloClusterContainer->push_back( caloCluster );
+        }
+        particleContainer->push_back( particle );
+      }
+    }
 
-  // Get all clusters
-  auto clusters = getAllClusters( caloCellContainer, truthContainer );
-  // Fill all clusters with cells inside of the window
-  fillClusters( clusters, caloCellContainer );
-  // Extract all shower shapes and energy parameters
-  calculate( clusters );
+  }else{
+    for( auto& caloCluster : clusters ){
+      fillCluster( caloCluster );
+      calculate( caloCluster );
+      caloClusterContainer->push_back( caloCluster );
+    }
 
-
-  for (auto& clus : clusters) 
-  {
-    MSG_INFO( "eta = " << clus->eta() << " phi = " << clus->phi() << " emaxs2 = " << clus->emaxs2() << " size " << clus->size() );
-    caloClusterContainer->push_back( clus );
+    for( auto& particle : particles ){
+      fillParticle( particle );
+      calculate( particle );
+      particleContainer->push_back( particle );
+    }
   }
 
 
 
-  ctx->attach( caloClusterContainer);
+  MSG_INFO( "We found " << clusters.size() << " clusters (RoIs) inside of this event." );
+  MSG_INFO( "We found " << particles.size() << " particles (seeds) inside of this event." );
+
+  for (auto& particle : particles)
+  {
+    bool matched = particle->caloCluster()?true:false;
+    MSG_INFO( "Particle in (eta="<<particle->eta() << ",phi="<< particle->phi()<< ") with " << particle->et()<< ". With cluster? " << (matched?"Yes":"No") );
+  }
+
+
+  ctx->attach( caloClusterContainer, m_outputClusterKey);
+  ctx->attach( particleContainer, m_outputTruthKey);
+
   return ErrorCode::SUCCESS;
 }
 
 
 
 
+std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles()
+{
+  std::vector< xAOD::TruthParticle* > particles;
 
-std::vector < xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( const xAOD::CaloCellContainer *container , 
-                                                                    const xAOD::TruthContainer *truthContainer )
+  // All seeds for this event
+  auto event = m_eventInfoContainer->all().front();
+ 
+  for ( auto& seed : event->allSeeds() )
+  {
+    xAOD::TruthParticle *particle = new xAOD::TruthParticle();
+    particle->setEta( seed.eta );
+    particle->setPhi( seed.phi );
+    particle->setPdgid( seed.pdgid );
+    particles.push_back( particle );
+  }
+
+  return particles;
+}
+
+
+
+std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters() 
 {
 
 
   std::vector<xAOD::CaloCluster*> vec_cluster;
   
+
   // Get all cells from the second calorimeter layer
-  for (const auto &cell : container->all() )
+  for (const auto &cell : m_caloCellContainer->all() )
   {
     // Only second layer cells
     if(cell->sampling() != CaloSampling::CaloSample::EM2)  continue;
@@ -125,100 +204,103 @@ std::vector < xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( const xAOD:
 }
 
 
-void CaloClusterMaker::fillClusters( std::vector< xAOD::CaloCluster* > vec_cluster,  const xAOD::CaloCellContainer *container )
+void CaloClusterMaker::fillCluster( xAOD::CaloCluster* caloCluster)
 {
 
-
   // Attach all cells into your cluster
-  for ( auto& cell : container->all() )
+  for ( auto& cell : m_caloCellContainer->all() )
   {
-    for (auto & caloCluster : vec_cluster){
-
-      // Check if the current cell is in the eta window
-      if( (cell->eta() < caloCluster->eta()+m_etaWindow/2.) && (cell->eta() > caloCluster->eta()-m_etaWindow/2.) )
+    // Check if the current cell is in the eta window
+    if( (cell->eta() < caloCluster->eta()+m_etaWindow/2.) && (cell->eta() > caloCluster->eta()-m_etaWindow/2.) )
+    {
+      // Check if the current cell is in the phi window
+      if( (cell->phi() < caloCluster->phi()+m_phiWindow/2.) && (cell->phi() > caloCluster->phi()-m_phiWindow/2.) )
       {
-        // Check if the current cell is in the phi window
-        if( (cell->phi() < caloCluster->phi()+m_phiWindow/2.) && (cell->phi() > caloCluster->phi()-m_phiWindow/2.) )
-        {
-          // Add the cell to the cluster
-          caloCluster->push_back(cell);
-        }
+        // Add the cell to the cluster
+        caloCluster->push_back(cell);
       }
-    }// Loop over cluster
+    }
   }// Loop over all cells
 
 }
 
 
-void CaloClusterMaker::calculate( std::vector< xAOD::CaloCluster* > vec_cluster )
+
+void CaloClusterMaker::fillParticle( xAOD::TruthParticle *particle )
 {
-
-  for (auto& clus : vec_cluster )
+  // Attach all cells into your particleter
+  for ( auto& cell : m_caloCellContainer->all() )
   {
-
-    const xAOD::CaloCell *maxCell=nullptr;
-    float emaxs1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell );
-    float e2tsts1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell, true );
-    float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
-
-
-    float e277 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 7, 7 );
-    float e233 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 3 );
-    float e237 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 7 );
-
-    float reta = e237/e277;
-    float rphi = e233/e237;
-    
-    float e1 = sumEnergy( clus, CaloSampling::CaloSample:: EM1 );
-    float e2 = sumEnergy( clus, CaloSampling::CaloSample:: EM2 );
-    float e3 = sumEnergy( clus, CaloSampling::CaloSample:: EM3 );
-
-    float ehad1 = sumEnergy( clus, CaloSampling::CaloSample::HAD1 );
-    float ehad2 = sumEnergy( clus, CaloSampling::CaloSample::HAD2 );
-    float ehad3 = sumEnergy( clus, CaloSampling::CaloSample::HAD3 );
-
-    float etot = e1+e2+e3+ehad1+ehad2+ehad3;
-
-    //fraction of energy deposited in 1st sampling
-    float f1 = e1 / etot;
-    float f3 = e3 / etot;
-    float rhad = (ehad1+ehad2+ehad3) / etot;
-
-    clus->setE1( e1 );
-    clus->setE2( e2 );
-    clus->setE3( e3 );
-    clus->setEhad1( ehad1 );
-    clus->setEhad2( ehad2 );
-    clus->setEhad3( ehad3 );
-    clus->setEtot( etot );
-
-    clus->setE277( e277 );
-    clus->setE237( e237 );
-    clus->setE233( e233 );
-
-    // Shower shapes
-    clus->setReta( reta );
-    clus->setRphi( rphi );
-    clus->setEratio( eratio );
-    clus->setEmaxs1( emaxs1 );
-    clus->setE2tsts1( e2tsts1 );
-    clus->setF1( f1 );
-    clus->setF3( f3 );
-    clus->setRhad( rhad );
-    clus->setEt( clus->eta() != 0.0 ? clus->etot()/cosh(fabs(clus->eta())) : 0.0 ); 
-    clus->Print();
-  }
-
+    // Check if the current cell is in the eta window
+    if( (cell->eta() < particle->eta()+m_etaWindow/2.) && (cell->eta() > particle->eta()-m_etaWindow/2.) )
+    {
+      // Check if the current cell is in the phi window
+      if( (cell->phi() < particle->phi()+m_phiWindow/2.) && (cell->phi() > particle->phi()-m_phiWindow/2.) )
+      {
+        // Add the cell to the particleter
+        particle->push_back(cell);
+      }
+    }
+  }// Loop over all cells
 }
 
 
 
 
-float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell )
+
+
+StatusCode CaloClusterMaker::fillHistograms(EventContext *ctx)
+{
+  auto store = getStoreGateSvc();
+  
+  //if( m_forceTruthMatch )
+  //{
+  //  const xAOD::TruthParticleContainer *container = nullptr; 
+  //  ctx->retrieve( container, "" );
+
+  //  for( auto& particle : container->all() )
+  //  {
+  //    store->hist1("cluster/truth_eta")->Fill( particle->eta() );
+  //    store->hist1("cluster/truth_phi")->Fill( particle->phi() );
+
+  //    //if ( particle->caloCluster() ){
+  //    //  store->hist1("cluster/eta")->Fill( particle->caloCluster()->eta() );
+  //    //  store->hist1("cluster/phi")->Fill( particle->caloCluster()->phi() );
+  //    //}
+  //  }
+
+  //}
+  return ErrorCode::SUCCESS;
+}
+
+
+float CaloClusterMaker::dR( xAOD::CaloCluster *clus, xAOD::TruthParticle *p )
+{
+  return sqrt( pow(clus->eta() - p->eta(),2) + pow( clus->phi() - p->phi() ,2));
+}
+
+
+
+float CaloClusterMaker::sumEnergy( xAOD::TruthParticle *particle, CaloSampling::CaloSample sampling, 
+                                   unsigned eta_ncell, unsigned phi_ncell )
 {
   float energy = 0.0;
+  for ( const auto& cell : particle->allCells() )
+  {
+    if(cell->sampling() != sampling)  continue;
+    // deta/dphi is the half of the cell size
+    if( ( cell->eta() < ( eta_ncell * cell->deltaEta() ) ) && ( cell->phi() < ( phi_ncell * cell->deltaPhi() ) ) )  
+      energy+=cell->truthRawEnergy();
+  }
+  return energy;
+}
 
-  for ( const auto& cell : clus->all() )
+
+float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, 
+                                   unsigned eta_ncell, unsigned phi_ncell )
+{
+  float energy = 0.0;
+  for ( const auto& cell : clus->allCells() )
   {
     if(cell->sampling() != sampling)  continue;
     // deta/dphi is the half of the cell size
@@ -229,11 +311,31 @@ float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
 }
 
 
-
-float CaloClusterMaker::maxEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, const xAOD::CaloCell *maxCell , bool exclude)
+float CaloClusterMaker::maxEnergy( xAOD::TruthParticle *particle, CaloSampling::CaloSample sampling, 
+                                   const xAOD::CaloCell *&maxCell, bool exclude )
 {
   float energy = 0.0;
-  for ( const auto& cell : clus->all() )
+  for ( const auto& cell : particle->allCells() )
+  {
+    if(cell->sampling() != sampling)  continue;
+    // Useful strategy to get the second highest energy cell
+    if( exclude && maxCell && cell==maxCell) continue;
+
+    if ( cell->truthRawEnergy() > energy ){
+      energy=cell->truthRawEnergy();
+      if(!exclude)  maxCell = cell;
+    }
+  }
+  
+  return energy;
+}
+
+
+float CaloClusterMaker::maxEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, 
+                                   const xAOD::CaloCell *&maxCell , bool exclude)
+{
+  float energy = 0.0;
+  for ( const auto& cell : clus->allCells() )
   {
     if(cell->sampling() != sampling)  continue;
     // Useful strategy to get the second highest energy cell
@@ -249,19 +351,104 @@ float CaloClusterMaker::maxEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
 
 
 
-
-StatusCode CaloClusterMaker::fillHistograms(EventContext *ctx)
+void CaloClusterMaker::calculate( xAOD::CaloCluster* clus )
 {
-  const xAOD::CaloClusterContainer *container = nullptr; 
-  auto store = getStoreGateSvc();
+  MSG_INFO("Calculate shower shapes for this cluster." );
+  
+  const xAOD::CaloCell *maxCell=nullptr;
+  float emaxs1 = maxEnergy( clus, CaloSampling::CaloSample::EM2, maxCell );
+  float e2tsts1 = maxEnergy( clus, CaloSampling::CaloSample::EM2, maxCell, true );
+  float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
+  float e277 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 7, 7 );
+  float e233 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 3 );
+  float e237 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 7 );
+  float reta = e237/e277;
+  float rphi = e233/e237;
+  
+  float e1 = sumEnergy( clus, CaloSampling::CaloSample:: EM1 );
+  float e2 = sumEnergy( clus, CaloSampling::CaloSample:: EM2 );
+  float e3 = sumEnergy( clus, CaloSampling::CaloSample:: EM3 );
+  float ehad1 = sumEnergy( clus, CaloSampling::CaloSample::HAD1 );
+  float ehad2 = sumEnergy( clus, CaloSampling::CaloSample::HAD2 );
+  float ehad3 = sumEnergy( clus, CaloSampling::CaloSample::HAD3 );
 
-  ctx->retrieve( container, "" );
+  float etot = e1+e2+e3+ehad1+ehad2+ehad3;
 
-  for( auto& clus : container->all() )
-  {
-    store->hist1("eratio")->Fill( clus->eratio() );
-  }
+  //fraction of energy deposited in 1st sampling
+  float f1 = e1 / etot;
+  float f3 = e3 / etot;
+  float rhad = (ehad1+ehad2+ehad3) / etot;
 
-
-  return ErrorCode::SUCCESS;
+  clus->setE1( e1 );
+  clus->setE2( e2 );
+  clus->setE3( e3 );
+  clus->setEhad1( ehad1 );
+  clus->setEhad2( ehad2 );
+  clus->setEhad3( ehad3 );
+  clus->setEtot( etot );
+  clus->setE277( e277 );
+  clus->setE237( e237 );
+  clus->setE233( e233 );
+  clus->setReta( reta );
+  clus->setRphi( rphi );
+  clus->setEratio( eratio );
+  clus->setEmaxs1( emaxs1 );
+  clus->setE2tsts1( e2tsts1 );
+  clus->setF1( f1 );
+  clus->setF3( f3 );
+  clus->setRhad( rhad );
+  clus->setEt( clus->eta() != 0.0 ? clus->etot()/cosh(fabs(clus->eta())) : 0.0 ); 
+  clus->Print();
 }
+
+
+void CaloClusterMaker::calculate( xAOD::TruthParticle *particle )
+{
+  MSG_INFO("Calculate shower shapes for this particle." );
+  
+  const xAOD::CaloCell *maxCell=nullptr;
+  
+  float emaxs1 = maxEnergy( particle, CaloSampling::CaloSample::EM2, maxCell );
+  float e2tsts1 = maxEnergy( particle, CaloSampling::CaloSample::EM2, maxCell, true );
+  float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
+
+
+  float e277 = sumEnergy( particle, CaloSampling::CaloSample::EM2, 7, 7 );
+  float e233 = sumEnergy( particle, CaloSampling::CaloSample::EM2, 3, 3 );
+  float e237 = sumEnergy( particle, CaloSampling::CaloSample::EM2, 3, 7 );
+
+  float reta = e237/e277;
+  float rphi = e233/e237;
+  
+  float e1 = sumEnergy( particle, CaloSampling::CaloSample:: EM1 );
+  float e2 = sumEnergy( particle, CaloSampling::CaloSample:: EM2 );
+  float e3 = sumEnergy( particle, CaloSampling::CaloSample:: EM3 );
+
+  float ehad1 = sumEnergy( particle, CaloSampling::CaloSample::HAD1 );
+  float ehad2 = sumEnergy( particle, CaloSampling::CaloSample::HAD2 );
+  float ehad3 = sumEnergy( particle, CaloSampling::CaloSample::HAD3 );
+
+  float etot = e1+e2+e3+ehad1+ehad2+ehad3;
+
+  //fraction of energy deposited in 1st sampling
+  float f1 = e1 / etot;
+  float f3 = e3 / etot;
+  float rhad = (ehad1+ehad2+ehad3) / etot;
+
+  particle->setEtot( etot );
+  particle->setReta( reta );
+  particle->setRphi( rphi );
+  particle->setEratio( eratio );
+  particle->setEmaxs1( emaxs1 );
+  particle->setE2tsts1( e2tsts1 );
+  particle->setF1( f1 );
+  particle->setF3( f3 );
+  particle->setRhad( rhad );
+  particle->setEt( particle->eta() != 0.0 ? particle->etot()/cosh(fabs(particle->eta())) : 0.0 ); 
+
+  particle->Print();
+}
+
+
+
+

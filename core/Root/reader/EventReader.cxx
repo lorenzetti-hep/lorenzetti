@@ -1,10 +1,11 @@
 
 #include "EventInfo/EventInfo.h"
-#include "reader/EventReader.h"
-#include "reader/EventReaderMessenger.h"
+#include "core/reader/EventReader.h"
+#include "core/reader/EventReaderMessenger.h"
 #include "core/EventLoop.h"
 #include "core/EventContext.h"
 #include "core/macros.h"
+#include "core/constants.h"
 
 
 #include "G4RunManager.hh"
@@ -21,10 +22,13 @@
 #include "TFile.h"
 #include "TTree.h"
 
+
+
 EventReader::EventReader():  
     m_evt(0),
     m_filename("hepmc_input.root"), 
-    m_verbose(0)
+    m_verbose(0),
+    m_outputEventKey("xAOD__EventInfoContainer")
 {
   m_messenger= new EventReaderMessenger(this);
 }
@@ -168,27 +172,19 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
     // Get the event context into the main sequence
     EventContext *ctx = sequence->getContext();
     xAOD::EventInfoContainer *eventContainer = new xAOD::EventInfoContainer();
-    xAOD::TruthContainer *truthContainer = new xAOD::TruthContainer();
     xAOD::EventInfo *event = new xAOD::EventInfo();
 
     event->setEventNumber( m_evt );
     event->setAvgmu( m_avgmu );
     
+    Load( anEvent, event );
+
+    MSG_INFO( "Event id         : " << event->eventNumber() );
+    MSG_INFO( "Avgmu            : " << event->avgmu() );
+    MSG_INFO( "Number of seeds  : " << event->size() );
+
     eventContainer->push_back(event);
-
-    auto vec_truth = Load( anEvent );
-
-    MSG_INFO( "Event id: " << event->eventNumber() );
-    MSG_INFO( "Avgmu   : " << event->avgmu() );
-
-    for (auto& particle : vec_truth )
-    {
-      MSG_INFO( "Truth particle in (eta="<< particle->eta() << ",phi="<< particle->phi() << ") with Et = " << 
-          particle->et() << " GeV and PDGID = " << particle->pdgid() );
-      truthContainer->push_back(particle);
-    }
-    ctx->attach( truthContainer );
-    ctx->attach( eventContainer );
+    ctx->attach( eventContainer, m_outputEventKey );
 
 
   }else{
@@ -209,67 +205,41 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
-std::vector<xAOD::Truth*> EventReader::Load( G4Event* g4event )
+void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 {
-  std::vector<xAOD::Truth*> vec_seed;
-
+  MSG_INFO( "AKI "<< m_p_bc_id->size());
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
-    // pdg equals zero is the main particle (interest) and can be used as eta/phi roi position
-    if ( m_p_pdg_id->at(i) == 0 ){ 
-
-      // Loop over all seed until now
-      float eta=m_p_eta->at(i);
-      float phi=m_p_phi->at(i);
-      float et=m_p_et->at(i);
-      bool newtruth=true;
-      // Loop over all rois inside of vec_roi
-      for( unsigned int j=0;j<vec_seed.size(); ++j ){
-        if (abs(eta - vec_seed[j]->eta())<0.2 && abs( phi - vec_seed[j]->phi())<0.2 ){
-          newtruth=false;
-          if (et > vec_seed[j]->et()){
-            // Overwrite the old truth
-            vec_seed[j]->setEt(et); 
-            vec_seed[j]->setEta(eta); 
-            vec_seed[j]->setPhi(phi); 
-            vec_seed[j]->setPdgid(m_p_pdg_id->at(i));
-            break;
-          }
-        }
-      }// Loop over all rois
-
-      if (newtruth)
-        vec_seed.push_back( new xAOD::Truth( m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i),  m_p_pdg_id->at(i)) );
-
+    int bc_id = m_p_bc_id->at(i);
+    
+    if(m_p_pdg_id->at(i)==0)  
+      event->push_back( xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i), 0} );
+   
+    if( m_p_isMain->at(i) ){
+      Add( g4event, i, bc_id );
+      Add( g4event, i, BC_TRUTH_EVENT );
     }else{
-      // https://github.com/zaborowska/Geant4-Pythia8/blob/master/src/HepMCG4Interface.cc
-      int bc_id = m_p_bc_id->at(i);
-
-      
-      G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
-      if (! CheckVertexInsideWorld(xvtx.vect()*mm)) continue;
-      G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()  );
-
-
-      G4int pdgcode= m_p_pdg_id->at(i);
-      G4LorentzVector p( m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i),  m_p_e->at(i) );
-      G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x()*GeV, p.y()*GeV, p.z()*GeV);
-      g4vtx->SetPrimary(g4prim);
-      g4event->AddPrimaryVertex(g4vtx);
+      Add( g4event, i, bc_id );
     }
+
   }
 
-  return vec_seed;
 }
 
 
 
-
-
-
-
-
-
+bool EventReader::Add( G4Event* g4event , int i, int bc_id )
+{
+  G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
+  if (! CheckVertexInsideWorld(xvtx.vect()*mm)) return false;
+  G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()  );
+  G4int pdgcode= m_p_pdg_id->at(i);
+  G4LorentzVector p( m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i),  m_p_e->at(i) );
+  G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x()*GeV, p.y()*GeV, p.z()*GeV);
+  g4vtx->SetPrimary(g4prim);
+  g4event->AddPrimaryVertex(g4vtx);
+  return true;
+}
 
 

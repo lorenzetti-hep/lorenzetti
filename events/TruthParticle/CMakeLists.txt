@@ -7,10 +7,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../CaloCell)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../CaloCluster)
 
-ROOT_GENERATE_DICTIONARY(TruthDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/Root/LinkDef.h  MODULE Truth)
+ROOT_GENERATE_DICTIONARY(TruthParticleDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/Root/LinkDef.h  MODULE TruthParticle)
                                       
-add_library(Truth  OBJECT ${SOURCES} TruthDict.cxx)
-install(FILES ${HEADERS}  DESTINATION Truth)
+add_library(TruthParticle  OBJECT ${SOURCES} TruthParticleDict.cxx)
+install(FILES ${HEADERS}  DESTINATION TruthParticle)
 
 
 

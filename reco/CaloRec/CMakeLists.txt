@@ -6,7 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOU
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/CaloCluster)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/CaloCell)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/EventInfo)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/Truth)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/TruthParticle)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../external/cpk/include)
 

@@ -6,8 +6,8 @@
 
 CaloCellMaker::CaloCellMaker( std::string name ) : 
   AlgTool( name ),
-  m_inputKey(""),
-  m_outputKey("")
+  m_inputKey("G4_Step"),
+  m_outputKey("xAOD__CaloCellContainer")
 {
 }
 
@@ -23,7 +23,8 @@ CaloCellMaker::~CaloCellMaker()
 StatusCode CaloCellMaker::initialize()
 {
   auto store = getStoreGateSvc();
-  
+  store->mkdir( "cells" );
+
   MSG_INFO( "Pushing all configurations from: " << m_calibPath );
   
   std::ifstream bc_file( m_calibPath +"/bunch.dat");
@@ -46,9 +47,10 @@ StatusCode CaloCellMaker::initialize()
   // Read the file
   std::ifstream det_file( m_calibPath +"/detector.dat");
 
-	std::string line, command;
+	std::string line;
 	while (std::getline(det_file, line))
 	{
+    std::string command;
     // Get the command
     det_file >> command;
 
@@ -62,6 +64,7 @@ StatusCode CaloCellMaker::initialize()
       int sampling; // Calorimeter layer
       std::string cell_hash;
       det_file >> sampling >> eta_center >> phi_center >> delta_eta >> delta_phi >> rmin >> rmax >> cell_hash;
+
       // Create the calorimeter cell
       auto *cell = new xAOD::CaloCell( eta_center, phi_center, delta_eta , delta_phi, 
                                        rmin, rmax, (CaloSampling::CaloSample)sampling,
@@ -88,8 +91,6 @@ StatusCode CaloCellMaker::initialize()
 
   det_file.close();
 
-
-  
 
   // Pulse generator from: https://gitlab.cern.ch/ginaciog/calopulsekit
   // Initalize the pulse generator for eletromagnetic and hadronic calorimeters
@@ -200,7 +201,7 @@ StatusCode CaloCellMaker::fillHistograms( EventContext *ctx )
 
   for ( const auto& cell : container->all() ){ 
     // Skip cells with energy equal zero
-    std::stringstream ss; ss << "layer_" << (int)cell->sampling();
+    std::stringstream ss; ss << "cells/layer_" << (int)cell->sampling();
     int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
     int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
     int bin = store->hist2(ss.str())->GetBin(x,y,0);

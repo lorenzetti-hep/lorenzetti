@@ -8,8 +8,8 @@
 EventLoop::EventLoop( std::vector<IAlgTool*> sequence, std::string output) : 
   G4Run(),
   m_toolHandles(sequence),
-  m_output(output)
-
+  m_output(output),
+  m_outputStepKey("G4_Step")
 {
   initialize();
 }
@@ -33,6 +33,7 @@ void EventLoop::initialize(){
 
   // Lint the event context, monitoring for each reco alg (tool)
   for( auto &toolHandle : m_toolHandles ){
+    MSG_INFO( "Initialize " << toolHandle->name() );
     toolHandle->setStoreGateSvc( getStoreGateSvc() );
     toolHandle->setContext( getContext() );
     toolHandle->initialize();
@@ -44,7 +45,7 @@ void EventLoop::initialize(){
 void EventLoop::finalize(){
   
   delete m_store;
-  delete m_context;
+  //delete m_context;
 }
 
 
@@ -66,7 +67,7 @@ void EventLoop::BeginOfEvent()
 
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
-  getContext()->attach( step, "", true );
+  getContext()->attach( step, m_outputStepKey, true );
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
@@ -96,6 +97,7 @@ void EventLoop::EndOfEvent()
   // Release all memory allocated for all containers during the 
   // tool handle execution
   getContext()->finalize();
+  MSG_INFO("EndOfEvent::done");
 }
 
 

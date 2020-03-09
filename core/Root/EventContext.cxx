@@ -5,10 +5,8 @@ EventContext::EventContext()
 {}
 
 
-EventContext::~EventContext(){
-  // Just to be sure to remove all allocated memory
-  finalize();
-}
+EventContext::~EventContext()
+{}
 
 
 
@@ -21,10 +19,10 @@ StatusCode EventContext::initialize()
 
 StatusCode EventContext::finalize()
 {
+  MSG_INFO( "EventContext::finalize()" );
   //for ( auto& pairObj : m_stepHandleKey )
   //  delete pairObj.second;
   m_stepHandleKey.clear();
-
   for ( auto& pairObj : m_caloCellHandleKey )
     if(pairObj.second)  delete pairObj.second;
   m_caloCellHandleKey.clear();
@@ -37,10 +35,9 @@ StatusCode EventContext::finalize()
     if(pairObj.second)  delete pairObj.second;
   m_eventInfoHandleKey.clear();
 
-  for ( auto& pairObj : m_truthHandleKey )
-    if(pairObj.second)  delete pairObj.second;
+  //for ( auto& pairObj : m_truthHandleKey )
+  //  if(pairObj.second)  delete pairObj.second;
   m_truthHandleKey.clear();
-  
   return ErrorCode::SUCCESS;
 }
 

@@ -1,6 +1,7 @@
 
 #include "CaloCell/CaloCell.h"
 #include "core/enumeration.h"
+#include "core/constants.h"
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -19,7 +20,7 @@ CaloCell::CaloCell( float eta,
                     float rmin, 
                     float rmax,
                     CaloSampling::CaloSample sampling, 
-                    std::vector<float> timestamp,
+                    std::vector<float> t,
                     std::string hash): 
 
   m_sampling(sampling),
@@ -30,8 +31,9 @@ CaloCell::CaloCell( float eta,
   m_rmin(rmin),
   m_rmax(rmax),
   m_rawEnergy(0),
-  m_rawEnergySamples( timestamp.size()-1, 0 ),
-  m_timestamp(timestamp),
+  m_truthRawEnergy(0),
+  m_rawEnergySamples( t.size()-1, 0 ),
+  m_t(t),
   m_hash(hash)
 {;}
 
@@ -45,6 +47,7 @@ CaloCell::~CaloCell()
 void CaloCell::clear()
 {
   m_rawEnergy=0.0;
+  m_truthRawEnergy=0.0;
   for (std::vector<float>::iterator it = m_rawEnergySamples.begin(); it < m_rawEnergySamples.end(); it++)
   {
     *it=0.0;
@@ -71,17 +74,24 @@ void CaloCell::Fill( const G4Step* step )
   // Get the particle time
   float t = (float)point->GetGlobalTime()*mm/c_light; // mm to ns
 
+  float bc_duration = abs(m_t[1]-m_t[0]);
 
   int bin=-1;
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
-    if( t >= m_timestamp[sample] && t < m_timestamp[sample+1]){
+    if( t >= m_t[sample] && t < m_t[sample+1]){
       bin=sample; break;
     }
   }
-  if(bin>=0)  
-    m_rawEnergySamples[bin]+=edep;
 
-  m_rawEnergy+=edep;
+  if(bin>=0)
+    m_rawEnergySamples[bin]+=edep;
+  
+  // Accumulate the truth energy bc+-15ns
+  if ( t >= (BC_TRUTH_EVENT*bc_duration - 20) && t < (BC_TRUTH_EVENT*bc_duration) + 20 ){
+    m_truthRawEnergy+=edep;
+  }else{
+    m_rawEnergy+=edep;
+  }
 }
 
 
@@ -105,10 +115,11 @@ xAOD::CaloCell* CaloCell::copy()
   newcell->setEnergy( energy() );
   newcell->setRawEt( rawEt() );
   newcell->setRawEnergy( rawEnergy() );
+  newcell->setTruthRawEnergy( truthRawEnergy() );
   newcell->setRawEnergySamples( rawEnergySamples() );
   newcell->setPulse( pulse() );
   newcell->setSampling(sampling());
-  newcell->setTimestamp( timestamp() ); // bunch crossing bounds in ns
+  newcell->setT( t() );
   return newcell;
 }
 

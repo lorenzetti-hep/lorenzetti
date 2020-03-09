@@ -82,13 +82,16 @@ namespace xAOD{
       /** get the vector of cells **/
       const std::vector<xAOD::CaloCell*> all();
 
+      void Print();
+
     private:
 
       /** The cells collection **/
       std::map< std::string , xAOD::CaloCell* > m_collection;
       /** The layer accessor **/
       std::vector< xAOD::CaloCellAccessor* > m_collectionAccessor;
-  
+ 
+      std::vector< xAOD::CaloCell* > m_cells;
   };
 
 

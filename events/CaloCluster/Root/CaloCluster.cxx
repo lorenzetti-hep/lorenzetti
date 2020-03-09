@@ -26,27 +26,26 @@ CaloCluster::~CaloCluster()
 
 void CaloCluster::clear()
 {
-  m_collection.clear();
+  m_container.clear();
 }
 
 
 void CaloCluster::push_back( const xAOD::CaloCell *cell )
 {
-	m_collection.push_back(cell);
+	m_container.push_back(cell);
 }
 
 
 size_t CaloCluster::size()
 { 
-  return m_collection.size();
+  return m_container.size();
 }
 
 
-std::vector<const xAOD::CaloCell*> CaloCluster::all()
+std::vector<const xAOD::CaloCell*> CaloCluster::allCells()
 {
-  return m_collection;
+  return m_container;
 }
-
 
 
 void CaloCluster::Print()
@@ -63,6 +62,9 @@ void CaloCluster::Print()
   MSG_INFO( "emaxs1   : " << emaxs1() );
   MSG_INFO( "emaxs2   : " << emaxs2() );
   MSG_INFO( "e2tsts1  : " << e2tsts1() );
+  MSG_INFO( "reta     : " << reta() );
+  MSG_INFO( "rphi     : " << rphi() );
+  MSG_INFO( "eratio   : " << eratio() );
 }
 
 
