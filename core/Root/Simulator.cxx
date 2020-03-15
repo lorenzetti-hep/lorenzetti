@@ -48,6 +48,13 @@ void Simulator::push_back( IAlgTool *alg )
 
 void Simulator::run( std::string macro )
 {
+  int argc=1;
+  char* argv[1] = {"app"};
+  G4UIExecutive* ui = 0;
+  if ( macro=="" ) {
+    ui = new G4UIExecutive(argc,argv);
+  }
+
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
@@ -85,6 +92,9 @@ void Simulator::run( std::string macro )
     UImanager->ApplyCommand(command+macro);
   } else  {
     UImanager->ApplyCommand("/control/execute "+m_visMacro);
+    ui->SessionStart();
+    delete ui;
+  
   }
 
   delete runManager;

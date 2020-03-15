@@ -4,15 +4,27 @@
 /run/initialize
 /run/printProgress 1
 /run/verbose 2
-/generator/select particleGun
-/gun/particle pi0
-#/gun/particle e+
-/gun/energy 50 GeV
-/gun/position 0.0 0.0 0.0
-/gun/direction 0 1 0
-/gun/number 1
 
-/run/beamOn 2
+
+#/generator/select eventReader
+#/generator/eventReader/open pythia_zee.root
+#/generator/eventReader/verbose 1
+
+
+/generator/select particleGun
+/gps/particle e-
+/gps/pos/type Beam
+/gps/pos/centre 0.0 0.0 0.0
+/gps/direction 0 1 0
+/gps/ene/type Lin
+/gps/ene/min 100 GeV	
+/gps/ene/max 100 GeV	
+/gps/ene/gradient 0. #uniform
+/gps/ene/intercept 1	
+/gps/number 1 
+
+
+/run/beamOn 1
 
 
 

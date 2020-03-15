@@ -40,9 +40,18 @@ StatusCode CaloClusterMaker::initialize()
   store->AddHistogram("truth_eta", "Count;#eta;", 100, -1.5, 1.5);
   store->AddHistogram("truth_phi", "Count;#phi;", 100, -3.2, 3.2);
   store->AddHistogram("truth_eratio", "Count;E_{ratio};", 100, 0.0, 1.05);
+  
+  
+  
+  store->AddHistogram("et", "Count;E_{T};", 100, 0, 100);
   store->AddHistogram("eta", "Count;#eta;", 100, -1.5, 1.5);
   store->AddHistogram("phi", "Count;#phi;", 100, -3.2, 3.2);
   store->AddHistogram("eratio", "Count;E_{ratio};", 100, 0.0, 1.05);
+  store->AddHistogram("reta", "Count;R_{#eta};", 100, 0.5, 1.1);
+  store->AddHistogram("rphi", "Count;R_{#phi};", 100, 0.5, 1.1);
+  store->AddHistogram("rhad", "Count;R_{had};", 100, 0.1, 1.1);
+  
+
   store->AddHistogram("res_eta", "Count;res_{#eta};",100, -1, 1 );
   store->AddHistogram("res_phi", "Count;res_{#phi};",100, -3.2, 3.2 );
   store->AddHistogram("res_eratio", "Count;res_{E_{ratio}};",100, -1, 1 );
@@ -54,6 +63,8 @@ StatusCode CaloClusterMaker::initialize()
 
 StatusCode CaloClusterMaker::pre_execute( EventContext *ctx )
 {
+  m_eventInfoContainer=nullptr;
+  m_caloCellContainer=nullptr;
   return ErrorCode::SUCCESS;
 }
 
@@ -76,13 +87,18 @@ StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
   xAOD::CaloClusterContainer *caloClusterContainer=new xAOD::CaloClusterContainer();
   xAOD::TruthParticleContainer  *particleContainer= new xAOD::TruthParticleContainer();
   
+
+
   ctx->retrieve( m_eventInfoContainer , m_inputEventKey);
+  bool forceTruthMatch = !m_eventInfoContainer? false : m_forceTruthMatch;
+
+
   ctx->retrieve( m_caloCellContainer , m_inputCaloKey);
 
   auto particles = getAllParticles();
   auto clusters = getAllClusters();
 
-  if ( m_forceTruthMatch ){
+  if ( forceTruthMatch ){
 
     for( auto& caloCluster : clusters )
     {
@@ -140,6 +156,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext *ctx )
 std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles()
 {
   std::vector< xAOD::TruthParticle* > particles;
+
+  if(!m_eventInfoContainer)  return particles;
 
   // All seeds for this event
   auto event = m_eventInfoContainer->all().front();
@@ -252,24 +270,42 @@ void CaloClusterMaker::fillParticle( xAOD::TruthParticle *particle )
 StatusCode CaloClusterMaker::fillHistograms(EventContext *ctx)
 {
   auto store = getStoreGateSvc();
-  
-  //if( m_forceTruthMatch )
-  //{
-  //  const xAOD::TruthParticleContainer *container = nullptr; 
-  //  ctx->retrieve( container, "" );
+ 
+  /*
+  if( m_forceTruthMatch )
+  {
+    const xAOD::TruthParticleContainer *container = nullptr; 
+    ctx->retrieve( container, "" );
 
-  //  for( auto& particle : container->all() )
-  //  {
-  //    store->hist1("cluster/truth_eta")->Fill( particle->eta() );
-  //    store->hist1("cluster/truth_phi")->Fill( particle->phi() );
+    for( auto& particle : container->all() )
+    {
+      store->hist1("cluster/truth_eta")->Fill( particle->eta() );
+      store->hist1("cluster/truth_phi")->Fill( particle->phi() );
 
-  //    //if ( particle->caloCluster() ){
-  //    //  store->hist1("cluster/eta")->Fill( particle->caloCluster()->eta() );
-  //    //  store->hist1("cluster/phi")->Fill( particle->caloCluster()->phi() );
-  //    //}
-  //  }
+      //if ( particle->caloCluster() ){
+      //  store->hist1("cluster/eta")->Fill( particle->caloCluster()->eta() );
+      //  store->hist1("cluster/phi")->Fill( particle->caloCluster()->phi() );
+      //}
+    }
 
-  //}
+  }*/
+
+  const xAOD::CaloClusterContainer *container = nullptr; 
+  ctx->retrieve( container, m_outputClusterKey );
+
+  for( const auto& clus : container->all() ){
+    store->hist1("cluster/et")->Fill( clus->et() / 1000.);
+    store->hist1("cluster/eta")->Fill( clus->eta() );
+    store->hist1("cluster/phi")->Fill( clus->phi() );
+    store->hist1("cluster/reta")->Fill( clus->reta() );
+    store->hist1("cluster/rphi")->Fill( clus->rphi() );
+    store->hist1("cluster/rhad")->Fill( clus->rhad() );
+    store->hist1("cluster/eratio")->Fill( clus->eratio() );
+
+
+  }
+
+
   return ErrorCode::SUCCESS;
 }
 
@@ -288,9 +324,18 @@ float CaloClusterMaker::sumEnergy( xAOD::TruthParticle *particle, CaloSampling::
   for ( const auto& cell : particle->allCells() )
   {
     if(cell->sampling() != sampling)  continue;
-    // deta/dphi is the half of the cell size
-    if( ( cell->eta() < ( eta_ncell * cell->deltaEta() ) ) && ( cell->phi() < ( phi_ncell * cell->deltaPhi() ) ) )  
-      energy+=cell->truthRawEnergy();
+   
+
+    // deta/dphi is the half of the cell sizei
+    if( ( cell->eta() > ( particle->eta() - eta_ncell * cell->deltaEta() ) ) && 
+        ( cell->eta() < ( particle->eta() + eta_ncell * cell->deltaEta() ) ) )
+    {
+      if( ( cell->phi() > ( particle->phi() - phi_ncell * cell->deltaPhi() ) ) && 
+          ( cell->phi() < ( particle->phi() + phi_ncell * cell->deltaPhi() ) ) )
+      {  
+          energy+=cell->truthRawEnergy();
+      }
+    }
   }
   return energy;
 }
@@ -303,9 +348,18 @@ float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
   for ( const auto& cell : clus->allCells() )
   {
     if(cell->sampling() != sampling)  continue;
-    // deta/dphi is the half of the cell size
-    if( ( cell->eta() < ( eta_ncell * cell->deltaEta() ) ) && ( cell->phi() < ( phi_ncell * cell->deltaPhi() ) ) )  
-      energy+=cell->energy();
+   
+
+    // deta/dphi is the half of the cell sizei
+    if( ( cell->eta() > ( clus->eta() - eta_ncell * cell->deltaEta() ) ) && 
+        ( cell->eta() < ( clus->eta() + eta_ncell * cell->deltaEta() ) ) )
+    {
+      if( ( cell->phi() > ( clus->phi() - phi_ncell * cell->deltaPhi() ) ) && 
+          ( cell->phi() < ( clus->phi() + phi_ncell * cell->deltaPhi() ) ) )
+      {  
+          energy+=cell->energy();
+      }
+    }
   }
   return energy;
 }
@@ -356,25 +410,26 @@ void CaloClusterMaker::calculate( xAOD::CaloCluster* clus )
   MSG_INFO("Calculate shower shapes for this cluster." );
   
   const xAOD::CaloCell *maxCell=nullptr;
-  float emaxs1 = maxEnergy( clus, CaloSampling::CaloSample::EM2, maxCell );
-  float e2tsts1 = maxEnergy( clus, CaloSampling::CaloSample::EM2, maxCell, true );
+  float emaxs1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell );
+  float e2tsts1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell, true );
+  MSG_INFO( "EMAX 1 = " << emaxs1 );
+  MSG_INFO( "EMAX 2 = " << e2tsts1 );
   float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
   float e277 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 7, 7 );
   float e233 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 3 );
   float e237 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 7 );
   float reta = e237/e277;
   float rphi = e233/e237;
-  
-  float e1 = sumEnergy( clus, CaloSampling::CaloSample:: EM1 );
-  float e2 = sumEnergy( clus, CaloSampling::CaloSample:: EM2 );
-  float e3 = sumEnergy( clus, CaloSampling::CaloSample:: EM3 );
+  float e1 = sumEnergy( clus, CaloSampling::CaloSample::EM1 );
+  float e2 = sumEnergy( clus, CaloSampling::CaloSample::EM2 );
+  float e3 = sumEnergy( clus, CaloSampling::CaloSample::EM3 );
   float ehad1 = sumEnergy( clus, CaloSampling::CaloSample::HAD1 );
   float ehad2 = sumEnergy( clus, CaloSampling::CaloSample::HAD2 );
   float ehad3 = sumEnergy( clus, CaloSampling::CaloSample::HAD3 );
 
   float etot = e1+e2+e3+ehad1+ehad2+ehad3;
 
-  //fraction of energy deposited in 1st sampling
+  // fraction of energy deposited in 1st sampling
   float f1 = e1 / etot;
   float f3 = e3 / etot;
   float rhad = (ehad1+ehad2+ehad3) / etot;

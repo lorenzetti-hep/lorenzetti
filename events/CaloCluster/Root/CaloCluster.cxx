@@ -65,6 +65,9 @@ void CaloCluster::Print()
   MSG_INFO( "reta     : " << reta() );
   MSG_INFO( "rphi     : " << rphi() );
   MSG_INFO( "eratio   : " << eratio() );
+  MSG_INFO( "e233     : " << e233() );
+  MSG_INFO( "e237     : " << e237() );
+  MSG_INFO( "e277     : " << e277() );
 }
 
 

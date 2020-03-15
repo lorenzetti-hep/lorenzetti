@@ -19,6 +19,9 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
+#include <string>
+#include <sstream>
+
 
 G4ThreadLocal
 G4GlobalMagFieldMessenger* DetectorConstruction::m_magFieldMessenger = 0;
@@ -119,11 +122,12 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 80, // layers,
                 2.*mm, // abso
                 4.*mm, // gap
-                1.*m, // start radio,
-                6.2*m ,// z
+                90.*cm, // start radio,
+                6.12*m ,// z
                 G4ThreeVector(0,0,0));
 
-
+  
+  /*
   // Create Hadronic calorimeter
   CreateBarrel( worldLV,
                 "HCal",
@@ -133,11 +137,11 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 5, // layers,
                 10.*cm, // abso
                 10.*cm, // gap
-                1.*m + 48*cm, // start radio,
-                6.2*m, // z
+                90*cm + 48*cm, // start radio,
+                6.12*m, // z
                 G4ThreeVector(0,0,0));
 
-  
+  */
 
 
 
@@ -275,7 +279,6 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
 
   for (G4int layer=0; layer < nofLayers; ++layer){
 
-    
     G4VSolid* layerS = new G4Tubs(name+ "_Layer",// its name
                                  calorRmin + layer*layerThickness,        // R min 1700mm
                                  calorRmin + (layer+1)*layerThickness,   // R max 48cm+1700mm

@@ -9,12 +9,13 @@
 #include "G4ParticleGun.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleGunMessenger.hh"
-
+#include "G4GeneralParticleSource.hh"
 
 
 PrimaryGeneratorAction::PrimaryGeneratorAction(): G4VUserPrimaryGeneratorAction()
 {
-  m_generatorMap["particleGun"] = new G4ParticleGun();
+  //m_generatorMap["particleGun"] = new G4ParticleGun();
+  m_generatorMap["particleGun"] = new G4GeneralParticleSource();
   m_generatorMap["eventReader"]   = new EventReader();
   
   m_currentGenerator = m_generatorMap["particleGun"];
