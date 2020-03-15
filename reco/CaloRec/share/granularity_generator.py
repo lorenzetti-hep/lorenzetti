@@ -117,7 +117,7 @@ class CellGenerator(object):
 
     def dump(self):
 
-        file = open( 'detector.card', 'w' )
+        file = open( 'detector.dat', 'w' )
         file.write("# layer_id eta phi delta_eta delta_phi rmin rmax\n")
         from pprint import pprint
 
