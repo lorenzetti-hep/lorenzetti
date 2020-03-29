@@ -365,75 +365,47 @@ float CaloClusterMaker::sumEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSa
 }
 
 
-float CaloClusterMaker::maxEnergy( xAOD::TruthParticle *particle, CaloSampling::CaloSample sampling, 
-                                   const xAOD::CaloCell *&maxCell, bool exclude )
-{
-  float energy = 0.0;
-  for ( const auto& cell : particle->allCells() )
-  {
-    if(cell->sampling() != sampling)  continue;
-    // Useful strategy to get the second highest energy cell
-    if( exclude && maxCell && cell==maxCell) continue;
-
-    if ( cell->truthRawEnergy() > energy ){
-      energy=cell->truthRawEnergy();
-      if(!exclude)  maxCell = cell;
-    }
-  }
-  
-  return energy;
-}
-
-
-float CaloClusterMaker::maxEnergy( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, 
-                                   const xAOD::CaloCell *&maxCell , bool exclude)
-{
-  float energy = 0.0;
-  for ( const auto& cell : clus->allCells() )
-  {
-    if(cell->sampling() != sampling)  continue;
-    // Useful strategy to get the second highest energy cell
-    if( exclude && maxCell && cell==maxCell)  continue;
-
-    if ( cell->energy() > energy ){
-      energy=cell->energy();
-      if(!exclude)  maxCell = cell;
-    }
-  }
-  return energy;
-}
-
-
-
 void CaloClusterMaker::calculate( xAOD::CaloCluster* clus )
 {
   MSG_INFO("Calculate shower shapes for this cluster." );
-  
-  const xAOD::CaloCell *maxCell=nullptr;
-  float emaxs1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell );
-  float e2tsts1 = maxEnergy( clus, CaloSampling::CaloSample::EM1, maxCell, true );
-  MSG_INFO( "EMAX 1 = " << emaxs1 );
-  MSG_INFO( "EMAX 2 = " << e2tsts1 );
-  float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
+
+  auto em1Cells = clus->allCells();
+
+	em1Cells.erase(std::remove_if(em1Cells.begin(),
+                                em1Cells.end(),
+                              [](const xAOD::CaloCell* c){return c->sampling() != CaloSampling::CaloSample::EM1;}),
+                 em1Cells.end());
+
+  std::sort(em1Cells.begin(), em1Cells.end(),
+                              [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->energy() > c2->energy();});
+
+
+  float emaxs1 = (em1Cells.size()>=4)?(em1Cells[0]->energy() + em1Cells[1]->energy()):0;
+  float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->energy() + em1Cells[3]->energy()):0;
+  float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
   float e277 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 7, 7 );
   float e233 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 3 );
   float e237 = sumEnergy( clus, CaloSampling::CaloSample::EM2, 3, 7 );
   float reta = e237/e277;
   float rphi = e233/e237;
+  float e0 = sumEnergy( clus, CaloSampling::CaloSample::PS );
   float e1 = sumEnergy( clus, CaloSampling::CaloSample::EM1 );
   float e2 = sumEnergy( clus, CaloSampling::CaloSample::EM2 );
   float e3 = sumEnergy( clus, CaloSampling::CaloSample::EM3 );
-  float ehad1 = sumEnergy( clus, CaloSampling::CaloSample::HAD1 );
-  float ehad2 = sumEnergy( clus, CaloSampling::CaloSample::HAD2 );
-  float ehad3 = sumEnergy( clus, CaloSampling::CaloSample::HAD3 );
+  float ehad1 = sumEnergy( clus, CaloSampling::CaloSample::HAD1 ) + sumEnergy( clus, CaloSampling::CaloSample::HAD1_Extended );
+  float ehad2 = sumEnergy( clus, CaloSampling::CaloSample::HAD2 ) + sumEnergy( clus, CaloSampling::CaloSample::HAD2_Extended );
+  float ehad3 = sumEnergy( clus, CaloSampling::CaloSample::HAD3 ) + sumEnergy( clus, CaloSampling::CaloSample::HAD3_Extended );
 
-  float etot = e1+e2+e3+ehad1+ehad2+ehad3;
+  float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
 
   // fraction of energy deposited in 1st sampling
+  float f0 = e0 / etot;
   float f1 = e1 / etot;
+  float f2 = e2 / etot;
   float f3 = e3 / etot;
   float rhad = (ehad1+ehad2+ehad3) / etot;
 
+  clus->setE0( e0 );
   clus->setE1( e1 );
   clus->setE2( e2 );
   clus->setE3( e3 );
@@ -449,7 +421,9 @@ void CaloClusterMaker::calculate( xAOD::CaloCluster* clus )
   clus->setEratio( eratio );
   clus->setEmaxs1( emaxs1 );
   clus->setE2tsts1( e2tsts1 );
+  clus->setF0( f0 );
   clus->setF1( f1 );
+  clus->setF2( f2 );
   clus->setF3( f3 );
   clus->setRhad( rhad );
   clus->setEt( clus->eta() != 0.0 ? clus->etot()/cosh(fabs(clus->eta())) : 0.0 ); 
@@ -460,13 +434,21 @@ void CaloClusterMaker::calculate( xAOD::CaloCluster* clus )
 void CaloClusterMaker::calculate( xAOD::TruthParticle *particle )
 {
   MSG_INFO("Calculate shower shapes for this particle." );
-  
-  const xAOD::CaloCell *maxCell=nullptr;
-  
-  float emaxs1 = maxEnergy( particle, CaloSampling::CaloSample::EM2, maxCell );
-  float e2tsts1 = maxEnergy( particle, CaloSampling::CaloSample::EM2, maxCell, true );
-  float eratio = (emaxs1 - e2tsts1)/(emaxs1 + e2tsts1);
 
+  auto em1Cells = particle->allCells();
+
+	em1Cells.erase(std::remove_if(em1Cells.begin(),
+                                em1Cells.end(),
+                              [](const xAOD::CaloCell* c){return c->sampling() != CaloSampling::CaloSample::EM1;}),
+                 em1Cells.end());
+
+  std::sort(em1Cells.begin(), em1Cells.end(),
+                              [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->truthRawEnergy() > c2->truthRawEnergy();});
+
+
+  float emaxs1 = (em1Cells.size()>=4)?(em1Cells[0]->truthRawEnergy() + em1Cells[1]->truthRawEnergy()):0;
+  float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->truthRawEnergy() + em1Cells[3]->truthRawEnergy()):0;
+  float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
 
   float e277 = sumEnergy( particle, CaloSampling::CaloSample::EM2, 7, 7 );
   float e233 = sumEnergy( particle, CaloSampling::CaloSample::EM2, 3, 3 );
@@ -474,19 +456,22 @@ void CaloClusterMaker::calculate( xAOD::TruthParticle *particle )
 
   float reta = e237/e277;
   float rphi = e233/e237;
-  
+
+  float e0 = sumEnergy( particle, CaloSampling::CaloSample:: PS );
   float e1 = sumEnergy( particle, CaloSampling::CaloSample:: EM1 );
   float e2 = sumEnergy( particle, CaloSampling::CaloSample:: EM2 );
   float e3 = sumEnergy( particle, CaloSampling::CaloSample:: EM3 );
 
-  float ehad1 = sumEnergy( particle, CaloSampling::CaloSample::HAD1 );
-  float ehad2 = sumEnergy( particle, CaloSampling::CaloSample::HAD2 );
-  float ehad3 = sumEnergy( particle, CaloSampling::CaloSample::HAD3 );
+  float ehad1 = sumEnergy( particle, CaloSampling::CaloSample::HAD1 ) + sumEnergy( particle, CaloSampling::CaloSample::HAD1_Extended );
+  float ehad2 = sumEnergy( particle, CaloSampling::CaloSample::HAD2 ) + sumEnergy( particle, CaloSampling::CaloSample::HAD2_Extended );
+  float ehad3 = sumEnergy( particle, CaloSampling::CaloSample::HAD3 ) + sumEnergy( particle, CaloSampling::CaloSample::HAD3_Extended );
 
-  float etot = e1+e2+e3+ehad1+ehad2+ehad3;
+  float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
 
   //fraction of energy deposited in 1st sampling
+  float f0 = e0 / etot;
   float f1 = e1 / etot;
+  float f2 = e2 / etot;
   float f3 = e3 / etot;
   float rhad = (ehad1+ehad2+ehad3) / etot;
 
@@ -496,7 +481,9 @@ void CaloClusterMaker::calculate( xAOD::TruthParticle *particle )
   particle->setEratio( eratio );
   particle->setEmaxs1( emaxs1 );
   particle->setE2tsts1( e2tsts1 );
+  particle->setF1( f0 );
   particle->setF1( f1 );
+  particle->setF2( f2 );
   particle->setF3( f3 );
   particle->setRhad( rhad );
   particle->setEt( particle->eta() != 0.0 ? particle->etot()/cosh(fabs(particle->eta())) : 0.0 ); 

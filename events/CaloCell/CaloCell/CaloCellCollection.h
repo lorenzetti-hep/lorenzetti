@@ -12,7 +12,7 @@
 #include "globals.hh"
 
 /** ROOT includes **/
-#include "TLorentzVector.h"
+#include "TVector3.h"
 
 /** standard includes **/
 #include <vector>
@@ -76,7 +76,7 @@ namespace xAOD{
       /** Return the number of cells into this collection **/
       size_t size();
       /** Return the correct cell given a particle position **/
-      bool retrieve( TLorentzVector &, xAOD::CaloCell*& );
+      bool retrieve( TVector3 &, xAOD::CaloCell*& );
       /** Release all allocated memory **/
       void release();
       /** get the vector of cells **/

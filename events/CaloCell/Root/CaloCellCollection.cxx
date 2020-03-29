@@ -47,13 +47,21 @@ void CaloCellCollection::push_back( xAOD::CaloCellAccessor *acc )
 
 
 
-bool CaloCellCollection::retrieve( TLorentzVector &pos, xAOD::CaloCell *&cell )
+bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell )
 {
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
-  float eta = pos.Eta(); 
-  float phi = pos.Phi(); 
-  float r = abs(pos.Mag());
+  float eta = pos.PseudoRapidity();
+  float phi = pos.Phi();
+  float r = pos.Perp();
+  //std::cout << "("
+  //          << pos.X() << ","
+  //          << pos.Y() << ","
+  //          << pos.Z() << ") = ("
+  //          << r << ","
+  //          << pos.Theta() << ","
+  //          << pos.Eta() << ","
+  //          << pos.Phi() << "). Found cell is: ";
 
   for ( auto& acc : m_collectionAccessor )
   {
@@ -61,9 +69,15 @@ bool CaloCellCollection::retrieve( TLorentzVector &pos, xAOD::CaloCell *&cell )
     if( acc->getHash( eta, phi, r, cell_hash ))
     {
       cell = m_collection[cell_hash];
+      //std::cout << "(" << cell->rmin() << "<" << cell->rmax()
+      //  << "," << cell->eta() << "±" << cell->deltaEta()
+      //  << "," << cell->phi() << "±" << cell->deltaPhi()
+      //  << ")" << std::endl;
+
       return true;
     }
   }
+  //std::cout << "None" << std::endl;
   return false;
 }
 

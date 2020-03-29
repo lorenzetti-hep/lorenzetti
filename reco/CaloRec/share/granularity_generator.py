@@ -3,7 +3,7 @@ import os
 import json
 import logging
 import numpy as np
-import math
+from math import *
 
 RES=3
 
@@ -30,7 +30,7 @@ class CellGenerator(object):
         # Because is a circle this is the radius in the transverse plane
         self.r_xy           = np.sqrt((self.layer_dict[layer]['max_dist_to_ip']**2 + 
                                        self.layer_dict[layer]['max_dist_to_ip']**2))
-        self.eta_max        = self.calculate_eta_max(self.detector_size)
+        self.eta_max        = self.calculate_eta_max(self.detector_size)-self.eta_step_size
         # Because eta is symmetric
         self.eta_min        = -1*self.eta_max
 
@@ -69,16 +69,21 @@ class CellGenerator(object):
     
 
 
-    def calculate_cell_centers(self, is_eta):
+    def calculate_cell_centers(self, eta_lims=None, is_eta=True):
         '''
         This method will calculate the cell centers based on the delta_eta or delta_phi.
         Parameters:
         is_eta: this parameter is used to calculate the center in eta. 
                 if False the center will calculate in terms of phi.
         '''
+        if eta_lims is None:
+          eta_lims = (0,self.eta_max)
+        else:
+          print( eta_lims )
+          print( ( eta_lims[0] + self.eta_step_size, eta_lims[1], 2*self.eta_step_size ) )
         if is_eta:
             # the max value in np.arange is protected since this array can pass the eta_max when we add the delta_eta
-            positive_eta = np.arange( 0 + self.eta_step_size, self.eta_max-self.eta_step_size, step=2*self.eta_step_size)
+            positive_eta = np.arange( eta_lims[0] + self.eta_step_size, eta_lims[1], step=2*self.eta_step_size)
             negative_eta = positive_eta * -1
             eta = np.concatenate ( (np.flip(negative_eta), positive_eta ) )
             return eta 
@@ -95,9 +100,17 @@ class CellGenerator(object):
         for layer in self.layer_dict.keys():
             if layer == 'nominal_size':
                 continue
+            eta_lims = None
+            for k,v in self.layer_dict[layer].items():
+              if k == 'eta_max':
+                if eta_lims is None: eta_lims = [None,None]
+                eta_lims[1] = v
+              elif k == 'eta_min':
+                if eta_lims is None: eta_lims = [None,None]
+                eta_lims[0] = v
             temp_dict = self.layer_dict[layer]
             print( ('Creating the cell center for %s using:' %(layer) + 
-                   'max_radius: %1.3f \n delta_eta: %1.4f \n and delta_phi: %1.4f')
+                   'max_radius: %1.8f \n delta_eta: %1.8f \n and delta_phi: %1.8f')
                    %(temp_dict['max_dist_to_ip'],
                      temp_dict['delta_eta'],
                      temp_dict['delta_phi']))
@@ -105,8 +118,9 @@ class CellGenerator(object):
             self.get_layer_info(layer)
 
             # Get the cell centers and the boundaries
-            self.layer_dict[layer]['eta_centers'] = self.calculate_cell_centers(is_eta=True)
-            self.layer_dict[layer]['eta_bounds']  = self.get_eta_bounds()
+            self.layer_dict[layer]['eta_centers'] = self.calculate_cell_centers(eta_lims=eta_lims,is_eta=True)
+            if eta_lims is not None: print(self.layer_dict[layer]['eta_centers'])
+            self.layer_dict[layer]['eta_bounds']  = self.get_eta_bounds() # this is wrong for the _extended layers
             self.layer_dict[layer]['phi_centers'] = self.calculate_cell_centers(is_eta=False)
             self.layer_dict[layer]['phi_bounds']  = self.get_phi_bounds()
             logging.info(60*'-')
@@ -142,14 +156,14 @@ class CellGenerator(object):
 
 
             s = "L {LAYER_ID} {ETA_MIN} {ETA_MAX} {ETA_BINS} {PHI_MIN} {PHI_MAX} {PHI_BINS} {RMIN} {RMAX}\n".format( LAYER_ID = layer_id,
-                                                                      ETA_MIN = round(eta_min,3),
-                                                                      ETA_MAX = round(eta_max,3),
+                                                                      ETA_MIN = round(eta_min,8),
+                                                                      ETA_MAX = round(eta_max,8),
                                                                       ETA_BINS = eta_bins,
-                                                                      PHI_MIN = round(phi_min,3),
-                                                                      PHI_MAX = round(phi_max,3),
+                                                                      PHI_MIN = round(phi_min,8),
+                                                                      PHI_MAX = round(phi_max,8),
                                                                       PHI_BINS = phi_bins,
-                                                                      RMIN = round(self.layer_dict[layer]['min_dist_to_ip'],3),
-                                                                      RMAX = round(self.layer_dict[layer]['max_dist_to_ip'],3),
+                                                                      RMIN = round(self.layer_dict[layer]['min_dist_to_ip'],8),
+                                                                      RMAX = round(self.layer_dict[layer]['max_dist_to_ip'],8),
                                                                       )
             file.write(s)
             
@@ -162,12 +176,12 @@ class CellGenerator(object):
                 cell_hash = 'layer%d_eta%d_phi%d' % (layer_id, eta_i, phi_i)
                 s = "C {LAYER_ID} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {CELL_HASH}\n".format( 
                                                                         LAYER_ID = layer_id,
-                                                                        ETA=round(eta,3), 
-                                                                        PHI=round(phi,3),
-                                                                        DETA = round(self.layer_dict[layer]['delta_eta'],3),
-                                                                        DPHI = round(self.layer_dict[layer]['delta_phi'],3),
-                                                                        RMIN = round(self.layer_dict[layer]['min_dist_to_ip'],3),
-                                                                        RMAX = round(self.layer_dict[layer]['max_dist_to_ip'],3),
+                                                                        ETA=round(eta,8), 
+                                                                        PHI=round(phi,8),
+                                                                        DETA = round(self.layer_dict[layer]['delta_eta'],8),
+                                                                        DPHI = round(self.layer_dict[layer]['delta_phi'],8),
+                                                                        RMIN = round(self.layer_dict[layer]['min_dist_to_ip'],8),
+                                                                        RMAX = round(self.layer_dict[layer]['max_dist_to_ip'],8),
                                                                         CELL_HASH = cell_hash
                                                                         )
                 file.write(s)
@@ -219,64 +233,106 @@ cm = 10
 #  +    +--------------------------------------------------+
 
 
-nominal_radius  = 90*cm
+ps_nominal_radius = 146*cm
+em_nominal_radius  = 150*cm
+had_nominal_radius  = 228*cm
 
 # LAr 28.5 X0, 0.71X0 per cm
-calo_radius = np.array( [4*cm, 42*cm, 2*cm, 40*cm, 40*cm, 20*cm] )
-
-
-
+#calo_radius = np.array( [10*cm, 33*cm, 5*cm, 40*cm, 40*cm, 20*cm] )
+#calo_radius = np.array( [4.8*cm, 37.8*cm, 5.4*cm, 40*cm, 40*cm, 20*cm] )
+#calo_radius = np.array( [3*cm, 39.6*cm, 5.4*cm, 40*cm, 40*cm, 20*cm] )
+em_calo_radius = np.array( [1.1*cm, 9.6*cm, 33*cm, 5.4*cm] )
+had_calo_radius = np.array( [40*cm, 110*cm, 50*cm] )
 
 
 config = {
-    'nominal_size'       : 3.06*m,
+    'nominal_size'       : 3.4*m,
+    #'PS'  : {
+    #    'min_dist_to_ip' : ps_nominal_radius*cm,
+    #    'max_dist_to_ip' : ps_nominal_radius*cm + em_calo_radius[0].sum(),
+    #    'delta_eta'      : 0.025,
+    #    'delta_phi'      : pi/32,
+    #    'layer_id'       : 0,
+    #},
     # Electromagnetic Layers
     'EM1'  : {
-        'min_dist_to_ip' : nominal_radius,
-        'max_dist_to_ip' : nominal_radius + calo_radius[0].sum(),
-        'delta_eta'      : 0.003,
-        'delta_phi'      : 0.1,
+        'min_dist_to_ip' : em_nominal_radius,
+        'max_dist_to_ip' : em_nominal_radius + em_calo_radius[1].sum(),
+        'delta_eta'      : 0.00325,
+        'delta_phi'      : pi/32,
+        #'delta_eta'      : 0.00650,
+        #'delta_phi'      : 0.1,
+        #'delta_eta'      : 0.025,
+        #'delta_phi'      : 0.025,
         'layer_id'       : 1,
-    }, 
+    },
     'EM2'  : {
-        'min_dist_to_ip' : nominal_radius + calo_radius[:1].sum(),
-        'max_dist_to_ip' : nominal_radius + calo_radius[:2].sum(),
+        'min_dist_to_ip' : em_nominal_radius + em_calo_radius[1:2].sum(),
+        'max_dist_to_ip' : em_nominal_radius + em_calo_radius[1:3].sum(),
         'delta_eta'      : 0.025,
-        'delta_phi'      : 0.025,
+        'delta_phi'      : pi/128,
         'layer_id'       : 2,
     },
     'EM3'  : {
-        'min_dist_to_ip' : nominal_radius + calo_radius[:2].sum(),
-        'max_dist_to_ip' : nominal_radius + calo_radius[:3].sum(),
+        'min_dist_to_ip' : em_nominal_radius + em_calo_radius[1:3].sum(),
+        'max_dist_to_ip' : em_nominal_radius + em_calo_radius[1:4].sum(),
         'delta_eta'      : 0.050,
-        'delta_phi'      : 0.025,
+        'delta_phi'      : pi/128,
         'layer_id'       : 3,
     },
     # Hadronic Layers
     'HAD1'  : {
-        'min_dist_to_ip' : nominal_radius + calo_radius[:3].sum(),
-        'max_dist_to_ip' : nominal_radius + calo_radius[:4].sum(),
+        'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:0].sum(),
+        'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:1].sum(),
         'delta_eta'      : 0.1,
-        'delta_phi'      : 0.1,
+        'delta_phi'      : pi/32,
         'layer_id'       : 4,
-    }, 
+    },
     'HAD2'  : {
-        'min_dist_to_ip' : nominal_radius + calo_radius[:4].sum(),
-        'max_dist_to_ip' : nominal_radius + calo_radius[:5].sum(),
+        'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:1].sum(),
+        'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:2].sum(),
         'delta_eta'      : 0.1,
-        'delta_phi'      : 0.1,
+        'delta_phi'      : pi/32,
         'layer_id'       : 5,
     },
     'HAD3'  : {
-        'min_dist_to_ip' : nominal_radius + calo_radius[:5].sum(),
-        'max_dist_to_ip' : nominal_radius + calo_radius.sum(),
+        'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:2].sum(),
+        'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:3].sum(),
         'delta_eta'      : 0.2,
-        'delta_phi'      : 0.1,
+        'delta_phi'      : pi/32,
         'layer_id'       : 6,
-    }
+    },
+    #'HAD1_Extended'  : {
+    #    'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:0].sum(),
+    #    'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:1].sum(),
+    #    'delta_eta'      : 0.1,
+    #    'delta_phi'      : pi/32,
+    #    'layer_id'       : 7,
+    #    'eta_min'        : 1.3453172584676594,
+    #    'eta_max'        : 1.8281107528183245,
+    #},
+    #'HAD2_Extended'  : {
+    #    'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:1].sum(),
+    #    'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:2].sum(),
+    #    'delta_eta'      : 0.1,
+    #    'delta_phi'      : pi/32,
+    #    'layer_id'       : 8,
+    #    'eta_min'        : 1.3453172584676594,
+    #    'eta_max'        : 1.8281107528183245,
+    #},
+    #'HAD3_Extended'  : {
+    #    'min_dist_to_ip' : had_nominal_radius + had_calo_radius[:2].sum(),
+    #    'max_dist_to_ip' : had_nominal_radius + had_calo_radius[:3].sum(),
+    #    'delta_eta'      : 0.2,
+    #    'delta_phi'      : pi/32,
+    #    'layer_id'       : 9,
+    #    'eta_min'        : 1.3453172584676594,
+    #    'eta_max'        : 1.8281107528183245,
+    #},
 }
 
-
+from pprint import pprint
+pprint(config)
 
 
 

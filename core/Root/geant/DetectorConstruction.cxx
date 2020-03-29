@@ -19,6 +19,10 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "G4UniformMagField.hh"
+#include "G4TransportationManager.hh"
+#include "G4FieldManager.hh"
+
 #include <string>
 #include <sstream>
 
@@ -52,7 +56,22 @@ void DetectorConstruction::DefineMaterials()
   G4NistManager* nistManager = G4NistManager::Instance();
   nistManager->FindOrBuildMaterial("G4_Pb");
   nistManager->FindOrBuildMaterial("G4_Fe");
+  nistManager->FindOrBuildMaterial("G4_Al");
   nistManager->FindOrBuildMaterial("G4_CESIUM_IODIDE");
+  nistManager->FindOrBuildMaterial("PLASTIC SCINTILLATOR");
+  G4Element* elH = new G4Element("Hydrogen", "H", 1., 1.0079 * g/mole);
+  G4Element* elC = new G4Element("Carbon", "C", 6., 12.011 * g/mole);
+
+  //density = 1.032*g/cm3;
+  //G4Material* scinti = new G4Material(name="PLASTIC SCINTILLATOR", density, nel=2);
+  //scinti->AddElement(elC, 9);
+  //scinti->AddElement(elH, 10);
+  G4Material* scinti = new G4Material("PLASTIC SCINTILLATOR", 1.032 * g/cm3, 2); // Organic plastic scintillator, polystyrene
+  scinti->AddElement(elH, 8.5*perCent);
+  scinti->AddElement(elC, 91.5*perCent);
+  //G4Material* scinti = new G4Material("Polystyrene", density= 1.032*g/cm3, ncomponents=2);
+  //scinti->AddElement(C, natoms=1);
+  //scinti->AddElement(H, natoms=1);
 
   // Liquid argon material
   G4double a;  // mass of a mole;
@@ -88,7 +107,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                                  10000*cm,    // Z max
                                  0*deg,       // phi_min
                                  360*deg      // phi_max
-                                 ); 
+                                 );
 
   G4LogicalVolume* worldLV = new G4LogicalVolume(
                                  worldS,           // its solid
@@ -108,40 +127,230 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 
 
 
-  
- 
+  // Create a region
+  G4Region* deadMatBeforeCal = new G4Region("DeadMatBeforeECal");
   //
   // Barrel
   //
+  CreateBarrel( worldLV,
+                "DeadMaterial",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Al"), // absorber
+                G4Material::GetMaterial("Galactic"), // gap
+                2, // ATLAS-like
+                7.7*cm, // abso
+                10*cm, // gap
+                110.*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                deadMatBeforeCal );
+
+  G4Region* ps = new G4Region("PS");
+
+  // Create Pre-sampler calorimeter
+  CreateBarrel( worldLV,
+                "PS",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("Galactic"), // absorber
+                G4Material::GetMaterial("liquidArgon"), // gap
+                1, // layers
+                0.01*mm, // abso
+                1.1*cm, // gap
+                146.*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                ps );
+
+  G4Region* em1 = new G4Region("EM1");
+  G4Region* em2 = new G4Region("EM2");
+  G4Region* em3 = new G4Region("EM3");
+
   // Create Eletromagnetic calorimeter
   CreateBarrel( worldLV,
-                "ECal",
+                "EM1",
                 G4Material::GetMaterial("Galactic"), // default
                 G4Material::GetMaterial("G4_Pb"), // absorber
                 G4Material::GetMaterial("liquidArgon"), // gap
-                80, // layers,
-                2.*mm, // abso
-                4.*mm, // gap
-                90.*cm, // start radio,
-                6.12*m ,// z
-                G4ThreeVector(0,0,0));
+                16, // layers
+                2.2*mm, // abso
+                3.8*mm, // gap
+                150.*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                em1 );
 
-  
-  /*
+  CreateBarrel( worldLV,
+                "EM2",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Pb"), // absorber
+                G4Material::GetMaterial("liquidArgon"), // gap
+                55, // layers
+                1.7*mm, // abso
+                4.3*mm, // gap
+                150.*cm + 9.6*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                em2  );
+
+  CreateBarrel( worldLV,
+                "EM3",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Pb"), // absorber
+                G4Material::GetMaterial("liquidArgon"), // gap
+                9, // layers
+                1.7*mm, // abso
+                4.3*mm, // gap
+                150.*cm + 9.6*cm + 33*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                em3 );
+
+  G4Region* deadMaterialBeforeHCal = new G4Region("DeadMaterialBeforeHCal");
+  CreateBarrel( worldLV,
+                "ECal_Boundary",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Pb"), // absorber
+                G4Material::GetMaterial("Galactic"), // gap
+                1, // layers
+                10*cm, // abso
+                3*mm, // gap
+                198.3*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                deadMaterialBeforeHCal );
+
+  CreateBarrel( worldLV,
+                "Hcal_Boundary",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Pb"), // absorber
+                G4Material::GetMaterial("Galactic"), // gap
+                1, // layers
+                10*cm, // abso
+                3*mm, // gap
+                218*cm, // start radio,
+                6.8*m ,// z
+                G4ThreeVector(0,0,0),
+                deadMaterialBeforeHCal );
+
+
+  G4Region* had1 = new G4Region("HAD1");
+  G4Region* had2 = new G4Region("HAD2");
+  G4Region* had3 = new G4Region("HAD3");
+
   // Create Hadronic calorimeter
   CreateBarrel( worldLV,
-                "HCal",
+                "HAD1",
                 G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_CESIUM_IODIDE"), // absorber
-                G4Material::GetMaterial("G4_Fe"), // gap
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                4, // layers,
+                6.0*cm, // abso
+                4.0*cm, // gap
+                228*cm, // start radio,
+                6.8*m, // z
+                G4ThreeVector(0,0,0),
+                had1 );
+  CreateBarrel( worldLV,
+                "HAD2",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                11, // layers,
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm, // start radio,
+                6.8*m, // z
+                G4ThreeVector(0,0,0),
+                had2 );
+  CreateBarrel( worldLV,
+                "HAD3",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
                 5, // layers,
-                10.*cm, // abso
-                10.*cm, // gap
-                90*cm + 48*cm, // start radio,
-                6.12*m, // z
-                G4ThreeVector(0,0,0));
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm + 110*cm, // start radio,
+                6.8*m, // z
+                G4ThreeVector(0,0,0),
+                had3 );
 
-  */
+	const auto extended_barrel_size = 2.83*m;
+  const auto extended_barrel_pos = 5.495*m;
+
+  // Extended barrel
+  CreateBarrel( worldLV,
+                "HAD1_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                4, // layers,
+                6.0*cm, // abso
+                4.0*cm, // gap
+                228*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,extended_barrel_pos),
+                had1 );
+  CreateBarrel( worldLV,
+                "HAD2_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                11, // layers,
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,extended_barrel_pos),
+                had2 );
+  CreateBarrel( worldLV,
+                "HAD3_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                5, // layers,
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm + 110*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,extended_barrel_pos),
+                had3 );
+  CreateBarrel( worldLV,
+                "HAD1_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                4, // layers,
+                6.0*cm, // abso
+                4.0*cm, // gap
+                228*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,-extended_barrel_pos),
+                had1 );
+  CreateBarrel( worldLV,
+                "HAD2_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                11, // layers,
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,-extended_barrel_pos),
+                had2 );
+  CreateBarrel( worldLV,
+                "HAD3_Extended",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("G4_Fe"), // absorber
+                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                5, // layers,
+                6.2*cm, // abso
+                3.8*cm, // gap
+                228*cm + 40*cm + 110*cm, // start radio,
+                extended_barrel_size, // z
+                G4ThreeVector(0,0,-extended_barrel_pos),
+                had3 );
 
 
 
@@ -213,17 +422,12 @@ void DetectorConstruction::ConstructSDandField()
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
-  G4ThreeVector fieldValue = G4ThreeVector();
+  //G4ThreeVector fieldValue = G4ThreeVector(0.,0.,0.);
+  G4ThreeVector fieldValue = G4ThreeVector(0.,0.,2.0*tesla);
   m_magFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   m_magFieldMessenger->SetVerboseLevel(1);
-
-  // Register the field messenger for deleting
-  G4AutoDelete::Register(m_magFieldMessenger);
+  ////// Create magnetic field
 }
-
-
-
-
 
 void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
                                           std::string name,  
@@ -235,7 +439,8 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                           double gapThickness,
                                           double calorRmin,
                                           double calorZ,
-                                          G4ThreeVector center_pos
+                                          G4ThreeVector center_pos,
+                                          G4Region *layer
                                           ) 
 
 {
@@ -271,6 +476,7 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                  false,             // no boolean operation
                  0,                 // copy number
                  m_checkOverlaps);  // checking overlaps
+  layer->AddRootLogicalVolume(calorLV);
 
 
 

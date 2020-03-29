@@ -48,6 +48,8 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_rphi, setRphi, rphi );
       /** set/get f1 **/ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_f1, setF1, f1 );
+      /** set/get f1 **/ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_f2, setF2, f2 );
       /** set/get f3 **/ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_f3, setF3, f3 );
       /** set/get rhad **/
@@ -86,6 +88,7 @@ namespace xAOD{
       float m_rhad;
       float m_eratio;
       float m_f1;
+      float m_f2;
       float m_f3;
    
       const xAOD::CaloCluster *m_caloCluster;

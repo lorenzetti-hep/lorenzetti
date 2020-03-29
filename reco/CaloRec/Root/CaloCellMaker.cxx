@@ -1,5 +1,5 @@
 #include "CaloRec/CaloCellMaker.h"
-#include "TLorentzVector.h"
+#include "TVector3.h"
 #include "TPulseGenerator.h"
 
 
@@ -143,7 +143,7 @@ StatusCode CaloCellMaker::execute( EventContext *ctx )
 
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
-  auto vpos = TLorentzVector( pos.x(), pos.y(), pos.z(), 0);
+  auto vpos = TVector3( pos.x(), pos.y(), pos.z());
 
   // This object can not be const since we will change the intenal value
   xAOD::CaloCell *cell=nullptr;

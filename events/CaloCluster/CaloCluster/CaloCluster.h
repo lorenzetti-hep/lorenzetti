@@ -37,6 +37,8 @@ namespace xAOD{
       /** set/get transverse energy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
       /** set/get total energy in first eletromagnetic layer **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_e0, setE0, e0 );
+      /** set/get total energy in pre-sampler **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_e1, setE1, e1 );
       /** set/get total energy in second eletromagnetic layer **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_e2, setE2, e2 );
@@ -68,8 +70,12 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_reta, setReta, reta );
       /** set/get rphi **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_rphi, setRphi, rphi );
+      /** set/get f0 **/ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_f0, setF0, f0 );
       /** set/get f1 **/ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_f1, setF1, f1 );
+      /** set/get f2 **/ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_f2, setF2, f2 );
       /** set/get f3 **/ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_f3, setF3, f3 );
       /** set/get rhad **/
@@ -91,6 +97,7 @@ namespace xAOD{
     private:
 
       float m_et;
+      float m_e0;
       float m_e1;
       float m_e2;
       float m_e3;
@@ -108,7 +115,9 @@ namespace xAOD{
       float m_rphi;
       float m_rhad;
       float m_eratio;
+      float m_f0;
       float m_f1;
+      float m_f2;
       float m_f3;
       float m_eta;
       float m_phi;

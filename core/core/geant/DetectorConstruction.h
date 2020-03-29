@@ -5,6 +5,7 @@
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"
+#include "G4Region.hh"
 #include "globals.hh"
 
 
@@ -42,7 +43,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction
                         double gapThickness,
                         double calorRmin,
                         double calorZ,
-                        G4ThreeVector center_pos
+                        G4ThreeVector center_pos,
+                        G4Region* layer
                         ); 
 
 

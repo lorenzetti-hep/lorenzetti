@@ -15,12 +15,29 @@
 /vis/scene/endOfEventAction accumulate
 /vis/geometry/set/visibility World 0 false
 #/vis/geometry/set/colour ECal 0 green
-/vis/geometry/set/colour ECal_Abso 0 red
-/vis/geometry/set/colour ECal_EndCap_B_Abso 0 blue
+/vis/geometry/set/colour DeadMaterial_Abso 0 grey
+/vis/geometry/set/colour EM1_Abso 0 aquamarine
+/vis/geometry/set/colour EM2_Abso 0 cornflowerblue
+/vis/geometry/set/colour EM3_Abso 0 cyan
+/vis/geometry/set/colour ECal_Boundary_Abso 0 grey
+/vis/geometry/set/colour HCal_Boundary_Abso 0 grey
+/vis/geometry/set/colour HAD1_Abso 0 salmon
+/vis/geometry/set/colour HAD1_Gap 0 salmon
+/vis/geometry/set/colour HAD2_Abso 0 violetred
+/vis/geometry/set/colour HAD2_Gap 0 violetred
+/vis/geometry/set/colour HAD3_Abso 0 orangered
+/vis/geometry/set/colour HAD3_Gap 0 orangered
+/vis/geometry/set/colour HAD1_Extended_Abso 0 salmon
+/vis/geometry/set/colour HAD1_Extended_Gap 0 salmon
+/vis/geometry/set/colour HAD2_Extended_Abso 0 violetred
+/vis/geometry/set/colour HAD2_Extended_Gap 0 violetred
+/vis/geometry/set/colour HAD3_Extended_Abso 0 orangered
+/vis/geometry/set/colour HAD3_Extended_Gap 0 orangered
+#/vis/geometry/set/colour EM1_EndCap_B_Abso 0 blue
 #/vis/geometry/set/colour HCal 0 yellow
 #/vis/geometry/set/colour HCal_Layer 0 blue
-/vis/geometry/set/colour HCal_Abso 0 green
-/vis/geometry/set/colour HCal_EndCap_B_Abso 0 yellow
+#/vis/geometry/set/colour HCal_Abso 0 green
+#/vis/geometry/set/colour HCal_EndCap_B_Abso 0 yellow
 /vis/viewer/set/autoRefresh true
 /vis/verbose warnings
 
@@ -41,9 +58,12 @@
 #############################################
 /generator/select particleGun
 /gps/particle e-
-/gps/energy 50 GeV
+/gps/energy 100 GeV
 /gps/position 0.0 0.0 0.0
+#/gps/direction 0 1 0
 /gps/direction 0 1 0
+#/gps/direction 0 0.5522861542782048 0.8336546070121552 # eta=1.2
+#/gps/direction 0 0.38797818987448945 0.9216685544064713 # eta=1.6
 /gps/number 1 
 /run/beamOn 1
 
