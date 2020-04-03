@@ -2,8 +2,8 @@
 #define CaloCell_h
 
 /** simulator includes **/
-#include "core/enumeration.h"
-#include "core/macros.h"
+#include "CaloCell/enumeration.h"
+#include "GaugiKernel/macros.h"
 
 /** geant 4 includes **/
 #include "G4Step.hh"
@@ -27,7 +27,7 @@ namespace xAOD{
                 float delta_eta, float delta_phi, 
                 float rmin, float rmax,
                 CaloSampling::CaloSample sampling,
-                std::vector<float> t,
+                std::vector<float> time,
                 std::string cell_hash);
 
       /** Destructor **/
@@ -65,7 +65,7 @@ namespace xAOD{
       /** The sampling (EM1,EM2,EM3,HAD1,HAD2 or HAD3) **/
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample, m_sampling, setSampling, sampling );
       /** The sampling (EM1,EM2,EM3,HAD1,HAD2 or HAD3) **/
-      PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_t , setT , t   );
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_time , setTime , time   );
       
 
       /** Get the calorimeter layer (LAr or Tile) **/
@@ -88,15 +88,20 @@ namespace xAOD{
       float m_dphi;
       float m_rmin; // In xy plane 
       float m_rmax; // In xy plane
+      /*! Estimated energy */
       float m_et;
       float m_energy;
+      /*! Raw information from energy deposit */
       float m_rawEt;
       float m_rawEnergy;
       float m_truthRawEnergy;
       
+
       std::vector<float> m_rawEnergySamples;
-      std::vector<float> m_t;
+      std::vector<float> m_time;
       std::vector<float> m_pulse;
+
+      /*! Access information */
       std::string m_hash;
   };
 

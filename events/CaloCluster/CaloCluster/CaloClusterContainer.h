@@ -6,6 +6,6 @@
 #include "GaugiKernel/DataVector.h"
 
 namespace xAOD{
-  typedef DataVector<const xAOD::CaloCluster> CaloClusterContainer;
+  typedef SG::DataVector<xAOD::CaloCluster> CaloClusterContainer;
 }
 #endif

@@ -2,7 +2,7 @@
 #define EventInfo_h
 
 /** simulator libs **/
-#include "core/macros.h"
+#include "GaugiKernel/macros.h"
 
 /** geant 4 libs **/
 #include "globals.hh"
@@ -24,6 +24,7 @@ namespace xAOD{
       EventInfo();
       /** Destructor **/
       ~EventInfo();
+
       /** Average mu from the pythia generator **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_avgmu, setAvgmu, avgmu );
       /** Event number form geant4 **/

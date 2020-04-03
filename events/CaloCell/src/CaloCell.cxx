@@ -1,11 +1,10 @@
 
 #include "CaloCell/CaloCell.h"
-#include "core/enumeration.h"
-#include "core/constants.h"
+#include "CaloCell/enumeration.h"
 
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-
+#define BC_TRUTH_EVENT -999
 
 using namespace xAOD;
 
@@ -20,7 +19,7 @@ CaloCell::CaloCell( float eta,
                     float rmin, 
                     float rmax,
                     CaloSampling::CaloSample sampling, 
-                    std::vector<float> t,
+                    std::vector<float> time,
                     std::string hash): 
 
   m_sampling(sampling),
@@ -33,7 +32,7 @@ CaloCell::CaloCell( float eta,
   m_rawEnergy(0),
   m_truthRawEnergy(0),
   m_rawEnergySamples( t.size()-1, 0 ),
-  m_t(t),
+  m_time(time),
   m_hash(hash)
 {;}
 
@@ -78,7 +77,7 @@ void CaloCell::Fill( const G4Step* step )
 
   int bin=-1;
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
-    if( t >= m_t[sample] && t < m_t[sample+1]){
+    if( t >= m_time[sample] && t < m_time[sample+1]){
       bin=sample; break;
     }
   }

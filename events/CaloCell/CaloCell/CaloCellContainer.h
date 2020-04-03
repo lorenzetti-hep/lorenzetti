@@ -3,9 +3,10 @@
 
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
-#include "core/DataVector.h"
+#include "GaugiKernel/DataVector.h"
 
 namespace xAOD{
-  typedef DataVector<const xAOD::CaloCell> CaloCellContainer;
+  // All objects inside of the data vector will be const
+  typedef SG::DataVector<xAOD::CaloCell> CaloCellContainer;
 }
 #endif

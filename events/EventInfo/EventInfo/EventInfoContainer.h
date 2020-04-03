@@ -3,9 +3,10 @@
 
 /** simulator includes **/
 #include "EventInfo/EventInfo.h"
-#include "core/DataVector.h"
+#include "GaugiKernel/DataVector.h"
+
 
 namespace xAOD{
-  typedef DataVector<const xAOD::EventInfo> EventInfoContainer;
+  typedef SG::DataVector<xAOD::EventInfo> EventInfoContainer;
 }
 #endif

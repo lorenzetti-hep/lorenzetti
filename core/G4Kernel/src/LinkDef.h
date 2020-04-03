@@ -1,4 +1,6 @@
 
+#include "G4Kernel/RunManager.h"
+
 
 #ifdef __CINT__
 
@@ -8,6 +10,6 @@
 #pragma link C++ nestedclass;
 
 
-//#pragma link C++ class AlgTool+;
+#pragma link C++ class RunManager+;
 
 #endif

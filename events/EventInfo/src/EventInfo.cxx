@@ -10,16 +10,15 @@ EventInfo::EventInfo():
 {;}
 
 
-
 EventInfo::~EventInfo()
 {;}
-
 
 
 void EventInfo::clear()
 {
   m_seed.clear();
 }
+
 
 void EventInfo::push_back( const seed_t seed )
 {

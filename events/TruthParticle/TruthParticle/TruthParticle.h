@@ -4,7 +4,7 @@
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
 #include "CaloCluster/CaloCluster.h"
-#include "core/macros.h"
+#include "GaugiKernel/macros.h"
 
 /** geant 4 includes **/
 #include "globals.hh"

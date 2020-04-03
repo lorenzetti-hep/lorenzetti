@@ -1,7 +1,7 @@
 
 
 #include "CaloCluster/CaloCluster.h"
-#include "G4Kernel/macros.h"
+//#include "G4Kernel/macros.h"
 
 
 using namespace xAOD;
@@ -42,7 +42,7 @@ size_t CaloCluster::size()
 }
 
 
-std::vector<const xAOD::CaloCell*> CaloCluster::operator*()
+std::vector<const xAOD::CaloCell*> CaloCluster::allCells()
 {
   return m_container;
 }
@@ -50,6 +50,7 @@ std::vector<const xAOD::CaloCell*> CaloCluster::operator*()
 
 void CaloCluster::Print()
 {
+  /*
   G4_MSG_VERBOSE( "Et       : " << et() );
   G4_MSG_VERBOSE( "Eta      : " << eta() );
   G4_MSG_VERBOSE( "Phi      : " << phi() );
@@ -74,6 +75,7 @@ void CaloCluster::Print()
   G4_MSG_VERBOSE( "e233     : " << e233() );
   G4_MSG_VERBOSE( "e237     : " << e237() );
   G4_MSG_VERBOSE( "e277     : " << e277() );
+  */
 }
 
 

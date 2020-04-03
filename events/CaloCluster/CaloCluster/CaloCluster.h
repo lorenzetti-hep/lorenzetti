@@ -62,7 +62,7 @@ namespace xAOD{
       /*! set/get Energy in a 3x7 cluster (no calibration) around hottest cell */
       PRIMITIVE_SETTER_AND_GETTER( float, m_e237, setE237, e237 );
       /*! set/get Energy in a 3x3 cluster (no calibration) around hottest cell */
-      PRMITIVE_SETTER_AND_GETTER( float, m_e233, setE233, e233 );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_e233, setE233, e233 );
       /*! set/get Energy in a 7x7 cluster (no calibration) around hottest cell */
       PRIMITIVE_SETTER_AND_GETTER( float, m_e277, setE277, e277 );
       /*! set/get eratio */

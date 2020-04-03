@@ -75,15 +75,18 @@ void RunManager::run( std::string macro )
   G4RunManager * runManager = new G4RunManager;
 #endif
 
+  MSG_INFO( "Building the detector..." );
   DetectorConstruction* detConstruction = new DetectorConstruction();
   runManager->SetUserInitialization(detConstruction);
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
 
+  MSG_INFO( "Creating the action initalizer..." );
   ActionInitialization* actionInitialization = new ActionInitialization(m_acc, m_output);
   runManager->SetUserInitialization(actionInitialization);
 
+  MSG_INFO( "Creating the vis executive...");
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
@@ -91,8 +94,10 @@ void RunManager::run( std::string macro )
 
   if ( macro != "" ) {
     G4String command = "/control/execute ";
+    MSG_INFO("Apply my macro");
     UImanager->ApplyCommand(command+macro);
   } else  {
+    MSG_INFO("Apply my vis macro");
     UImanager->ApplyCommand("/control/execute "+m_visMacro);
     ui->SessionStart();
     delete ui;

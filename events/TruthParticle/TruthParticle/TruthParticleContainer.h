@@ -3,9 +3,9 @@
 
 /** simulator includes **/
 #include "TruthParticle/TruthParticle.h"
-#include "core/DataVector.h"
+#include "GaugiKernel/DataVector.h"
 
 namespace xAOD{
-  typedef DataVector<const xAOD::TruthParticle> TruthParticleContainer;
+  typedef SG::DataVector<xAOD::TruthParticle> TruthParticleContainer;
 }
 #endif
