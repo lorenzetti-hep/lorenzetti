@@ -1,0 +1,132 @@
+#ifndef DataHandle_icc
+#define DataHandle_icc
+
+#include "GaugiKernel/MsgStream.h"
+#include "GaugiKernel/DataVector.h"
+#include <string>
+#include <map>
+#include <memory>
+
+
+namespace SG{
+
+  /*
+   * Event Context 
+   */
+
+  template<class T>
+  void EventContext::record( std::string &sgkey, std::unique_ptr<T> &container  )
+  {
+    // Make this as const
+    const DataVectorBase *ptr = dynamic_cast<DataVectorBase*>(container.get());
+    auto it = m_storable_ptr.find(sgkey);
+    if ( it == m_storable_ptr.end() ){
+      m_storable_ptr.insert( std::make_pair(sgkey, std::unique_ptr<const DataVectorBase>(ptr) ) );
+      container.release(); // release the pointer ownship
+    }else{
+      MSG_WARNING( "The key (" << sgkey << ") exist into the event context. Its not possible to record this container" );
+    }
+  }
+
+
+  template<class T>
+  const T* EventContext::get( std::string &sgkey )
+  {
+    auto it = m_storable_ptr.find(sgkey);
+    if ( it != m_storable_ptr.end() ){
+      return  static_cast<const T*> ( m_storable_ptr.at( sgkey ).get() );
+    }else{
+      MSG_WARNING( "The key (" << sgkey << ") exist into the event context. Its not possible to get this container" );
+      return nullptr;
+    }
+  }
+  
+
+  /*
+   * Read Handle
+   */
+
+
+  template<class T>
+  ReadHandle<T>::ReadHandle( std::string sgkey, EventContext &ctx ):
+    m_sgkey(sgkey)
+  {
+    m_ptr = ctx.get<T>( sgkey );
+    m_isValid = m_ptr!=nullptr ? true : false;
+  }
+  
+  template<class T>
+  ReadHandle<T>::~ReadHandle()
+  {}
+  
+  
+  template<class T>
+  const T* ReadHandle<T>::operator->()
+  {
+    return m_ptr;
+  }
+  
+  
+  template<class T>
+  std::string ReadHandle<T>::key()
+  {
+    return m_sgkey;
+  }
+  
+  
+  template<class T>
+  bool ReadHandle<T>::isValid()
+  {
+    return m_isValid;
+  }
+  
+  
+  /*
+   * WriteHandle
+   */
+  
+  /*! Constructor */
+  template<class T>
+  WriteHandle<T>::WriteHandle( std::string sgkey, EventContext &ctx ):
+    m_sgkey(sgkey),
+    m_ctx(&ctx)
+  {;}
+  
+  
+  /*! Destructor */
+  template<class T>
+  WriteHandle<T>::~WriteHandle()
+  {
+    m_ctx->record<T>(m_sgkey,m_ptr);
+  }
+  
+  /*! transfer the pointer to context */
+  template<class T>
+  void WriteHandle<T>::record( std::unique_ptr<T> ptr )
+  {
+    m_ptr = std::move(ptr);  
+  }
+  
+  /*! return the pointer */
+  template<class T>
+  T* WriteHandle<T>::operator->()
+  {
+    return m_ptr.get();
+  }
+  
+  
+  template<class T>
+  T& WriteHandle<T>::operator*()
+  {
+    return *m_ptr.get();
+  }
+  
+
+
+
+}
+
+
+
+#endif
+
