@@ -169,8 +169,8 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 G4Material::GetMaterial("G4_Pb"), // absorber
                 G4Material::GetMaterial("liquidArgon"), // gap
                 16, // layers
-                2.2*mm, // abso
-                3.8*mm, // gap
+                1.51*mm, // abso
+                4.49*mm, // gap
                 150.*cm, // start radio,
                 6.8*m ,// z
                 G4ThreeVector(0,0,0),
