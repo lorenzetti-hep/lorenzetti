@@ -1,12 +1,13 @@
 
 #include "CaloCell/CaloCell.h"
 #include "CaloCell/enumeration.h"
-
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-#define BC_TRUTH_EVENT -999
+
+
 
 using namespace xAOD;
+using namespace CaloSampling;
 
 CaloCell::CaloCell()
 {;}
@@ -16,25 +17,41 @@ CaloCell::CaloCell( float eta,
                     float phi, 
                     float deta, 
                     float dphi, 
-                    float rmin, 
-                    float rmax,
-                    CaloSampling::CaloSample sampling, 
-                    std::vector<float> time,
-                    std::string hash): 
-
-  m_sampling(sampling),
+                    float radius_min, 
+                    float radius_max,
+                    std::string hash,
+                    CaloSample sampling, 
+                    float bc_duration
+                    int bc_nsamples,
+                    int bcid_start,
+                    int bcid_end,
+                    int bcid_truth
+                    ):
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
-  m_rmin(rmin),
-  m_rmax(rmax),
+  m_radius_min(rmin),
+  m_radius_max(rmax),
+  m_sampling(sampling),
+  m_hash(hash),
+  /* Bunch crossing information */
+  m_bc_duration( bc_duration ),
+  m_bc_nsamples( bc_nsamples ),
+  m_bcid_start( bcid_start ),
+  m_bcid_end( bcid_start ),
+  m_bcid_truth( bcid_truth ),
+  // Cell's information
   m_rawEnergy(0),
   m_truthRawEnergy(0),
-  m_rawEnergySamples( t.size()-1, 0 ),
-  m_time(time),
-  m_hash(hash)
-{;}
+  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 ),
+{
+  // Initalize the time vector using the bunch crossing informations
+  float start = m_bcid_start * m_bc_duration;
+  float step  = m_bc_duration / m_bc_nsamples;
+  int total   = ((m_bcid_end - m_bcid_start) + 1) * m_bc_nsamples;
+  for (int t = 0; t < total; ++t) m_time.push_back( (start + step*t) );
+}
 
 
 
@@ -55,13 +72,6 @@ void CaloCell::clear()
 
 
 
-CaloSampling::CaloLayer CaloCell::layer()
-{
-  return ((int)m_sampling < 4) ? CaloSampling::CaloLayer::ECal : CaloSampling::CaloLayer::HCal;
-}
-
-
-
 
 void CaloCell::Fill( const G4Step* step )
 {
@@ -73,20 +83,14 @@ void CaloCell::Fill( const G4Step* step )
   // Get the particle time
   float t = (float)point->GetGlobalTime()*mm/c_light; // mm to ns
 
-  float bc_duration = abs(m_t[1]-m_t[0]);
-
-  int bin=-1;
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
     if( t >= m_time[sample] && t < m_time[sample+1]){
-      bin=sample; break;
+      m_rawEnergySamples[sample]+=edep;
+      break;
     }
   }
 
-  if(bin>=0)
-    m_rawEnergySamples[bin]+=edep;
-  
-  // Accumulate the truth energy bc+-15ns
-  if ( t >= (BC_TRUTH_EVENT*bc_duration - 20) && t < (BC_TRUTH_EVENT*bc_duration) + 20 ){
+  if ( t >= ( (m_bcid_truth-1)*bc_duration) && t < ((m_bcid_truth+1)*bc_duration)){
     m_truthRawEnergy+=edep;
   }else{
     m_rawEnergy+=edep;
@@ -102,6 +106,7 @@ void CaloCell::Fill( const G4Step* step )
 xAOD::CaloCell* CaloCell::copy()
 {
   auto newcell = new xAOD::CaloCell();
+  
   // Cell location parameters
   newcell->setEta(eta());
   newcell->setPhi(phi());
@@ -110,15 +115,26 @@ xAOD::CaloCell* CaloCell::copy()
   newcell->setRmin( rmin() );
   newcell->setRmax( rmax() );
   newcell->setHash( hash() );
+  newcell->setSampling(sampling());
+
+  // Cell energy parameters
   newcell->setEt( et() );
   newcell->setEnergy( energy() );
   newcell->setRawEt( rawEt() );
   newcell->setRawEnergy( rawEnergy() );
   newcell->setTruthRawEnergy( truthRawEnergy() );
   newcell->setRawEnergySamples( rawEnergySamples() );
+
+  // Bunch crossing parameters
+  newcell->set_bcid_start( bcid_start() );
+  newcell->set_bcid_end( bcid_end() );
+  newcell->set_bcid_truth( bcid_truth() );
+  newcell->set_bc_nsamples( bc_nsamples() );
+  newcell->set_bc_duration( bc_duration() );
+
+  // Pulse parameters
   newcell->setPulse( pulse() );
-  newcell->setSampling(sampling());
-  newcell->setT( t() );
+  newcell->setTime( time() );
   return newcell;
 }
 
