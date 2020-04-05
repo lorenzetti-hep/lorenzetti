@@ -1,76 +1,85 @@
 #ifndef CaloCellMaker_h
 #define CaloCellMaker_h
 
-/** Simulator includes **/
-#include "core/macros.h"
-#include "core/AlgTool.h"
-#include "core/EventContext.h"
-#include "core/macros.h"
+#include "GaugiKernel/AlgTool.h"
+#include "GaugiKernel/Algorithm.h"
+#include "GaugiKernel/DataHandle.h"
 #include "CaloCell/CaloCell.h"
-#include "CaloCell/CaloCellCollection.h"
-
-/** Pulse generator **/
-#include "TPulseGenerator.h"
-
-/** Geant 4 includes **/
-#include "G4PhysicalConstants.hh"
-#include "G4SystemOfUnits.hh"
-
-/** Standard includes **/
-#include <vector>
-#include <string>
+#include "CaloCellCollection.h"
 
 
-class CaloCellMaker : public AlgTool
+class CaloCellMaker : public Gaugi::Algorithm
 {
   public:
   
     /** Contructor **/
     CaloCellMaker( std::string );
+    
     /** Destructor **/
     ~CaloCellMaker();
     
-    
-    /** initialize the algorithm **/
+    /*! initialize the algorithm **/
     virtual StatusCode initialize() override;
-    /** Execute in step action step from geant core **/
-    virtual StatusCode execute( EventContext *ctx ) override;
-    /** execute before start the step action **/
-    virtual StatusCode pre_execute( EventContext *ctx ) override;
-    /** execute after the step action **/ 
-    virtual StatusCode post_execute( EventContext *ctx ) override;
-    /** fill hisogram in the end **/
-    virtual StatusCode fillHistograms( EventContext *ctx ) override;
-    /** finalize the algorithm **/ 
+    
+    /*! Execute in step action step from geant core **/
+    virtual StatusCode execute( EventContext *ctx , const G4Step *step) const override;
+    
+    /*! execute before start the step action **/
+    virtual StatusCode pre_execute( EventContext *ctx ) const override;
+    
+    /*! execute after the step action **/ 
+    virtual StatusCode post_execute( EventContext *ctx ) const override;
+    
+    /*! fill hisogram in the end **/
+    virtual StatusCode fillHistograms( EventContext *ctx ) const override;
+    
+    /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
 
 
-
-    PRIMITIVE_SETTER_AND_GETTER( std::string, m_calibPath, SetCalibPath, GetCalibPath);
-
+    /*! Add tools to be executed into the post execute step. The order is matter here */
+    void push_back( Gaugi::AlgTool *tool ){ m_toolHandles.push_back(tool); };
 
 
   private:
    
+    /*
+     * Properties
+     */
 
-
-    void GeneratePulse( xAOD::CaloCell * );
-    void CalculateEnergy( xAOD::CaloCell * );
-
-    
-    xAOD::CaloCellCollection m_collection;
-    
-    std::string m_inputKey;
     std::string m_outputKey;
-    std::string m_calibPath;
- 
-    int m_bc_id_start;
-    int m_bc_id_end;
+    
+    /*! The tool list that will be executed into the post execute step */
+    std::vector< Gaugi::AlgTool* > m_toolHandles;
+    
+
+    /*
+     * Internal usage
+     */
+
+    /*! Sampling id for this reconstruction */
+    int m_sampling;
+    /*! The start bunch crossing id for energy estimation */
+    int m_bcid_start;
+    /*! The end bunch crossing id for energy estimation */
+    int m_bcid_end;
+    /*! The truth bunch crossing id */
+    int m_bcid_truth;
+    /*! The number of samples per bunch crossing */
     int m_bc_nsamples;
+    /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
 
-    std::map<CaloSampling::CaloLayer, CPK::TPulseGenerator*> m_pulseGenerator;
-    std::map<CaloSampling::CaloLayer, std::vector<float>> m_ofweights;
+  
+    float m_eta_min;
+    float m_eta_max, 
+    float m_eta_bins, 
+    float m_phi_min, 
+    float m_phi_max, 
+    float m_phi_bins, 
+    float m_rmin, 
+    float m_rmax;
+  
 };
 
 

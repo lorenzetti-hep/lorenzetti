@@ -1,14 +1,22 @@
-#include "CaloRec/CaloCellMaker.h"
-#include "TVector3.h"
-#include "TPulseGenerator.h"
 
+
+
+
+#include "CaloCellMaker.h"
+#include "TVector3.h"
+#include <cstdlib>
+
+using namespace Gaugi;
+using namespace SG;
+using namespace CaloSampling;
 
 
 CaloCellMaker::CaloCellMaker( std::string name ) : 
-  AlgTool( name ),
-  m_inputKey("G4_Step"),
-  m_outputKey("xAOD__CaloCellContainer")
+  Algorithm( name ),
 {
+  declareProperty( "OutputKey"        , m_outputKey , "xAOD__CaloCellCollection"  );
+  declareProperty( "HistPath"         , m_histPath  , "/CaloCellMaker"            );
+  declareProperty( "CardPath"         , m_card      , ""                          );
 }
 
 
@@ -18,244 +26,205 @@ CaloCellMaker::~CaloCellMaker()
 
 
 
+StatusCode CaloCellMaker::createCollection( EventContext *ctx )
+{
+
 
 
 StatusCode CaloCellMaker::initialize()
 {
-  auto store = getStoreGateSvc();
-  store->mkdir( "cells" );
-
-  MSG_INFO( "Pushing all configurations from: " << m_calibPath );
-  
-  std::ifstream bc_file( m_calibPath +"/bunch.dat");
-  bc_file >> m_bc_id_start >> m_bc_id_end >> m_bc_duration >> m_bc_nsamples;
+  // This is a default path
+  std::ifstream bc_file( std::string(std::getenv("CALOSIM")) +"/resontruction/CaloRec/data/bunch.dat");
+  bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
   bc_file.close();
   
-  
-  
-  // This configuration is fixed for each event and can not be changed
-  float start = m_bc_id_start * m_bc_duration;
-  float step  = m_bc_duration / m_bc_nsamples;
-  int nbins   = (m_bc_id_end - m_bc_id_start) + 1;
+  auto store = getStoreGateSvc();
+  store->mkdir( m_histPath );
 
-  std::vector<float> tbins;
-  for (int b=0; b< nbins; ++b){
-    tbins.push_back( (start + step*b) );
-  }
- 
 
   // Read the file
-  std::ifstream det_file( m_calibPath +"/detector.dat");
+  std::ifstream file(m_card);
 
 	std::string line;
-	while (std::getline(det_file, line))
+	while (std::getline(file, line))
 	{
     std::string command;
     // Get the command
-    det_file >> command;
-
-    if (command=="#"){
-      // This is a comment line
-      continue;
-    
-    // Cell configuration
-    }else if (command=="C"){
-      float  eta_center, phi_center, delta_eta, delta_phi, rmin, rmax;
-      int sampling; // Calorimeter layer
-      std::string cell_hash;
-      det_file >> sampling >> eta_center >> phi_center >> delta_eta >> delta_phi >> rmin >> rmax >> cell_hash;
-
-      // Create the calorimeter cell
-      auto *cell = new xAOD::CaloCell( eta_center, phi_center, delta_eta , delta_phi, 
-                                       rmin, rmax, (CaloSampling::CaloSample)sampling,
-                                       tbins, cell_hash);
-      m_collection.push_back( cell );
-    
+    file >> command;
     // Layer configuration
-    }else if (command=="L"){
-
-      int sampling;
-		  float  eta_min, eta_max, eta_bins, phi_min, phi_max, phi_bins, rmin, rmax;
-      det_file >> sampling >> eta_min >> eta_max >> eta_bins >> phi_min >> phi_max >> phi_bins >> rmin >> rmax;
-      // Create the layer accessor to generate the correct cell hash
-      auto *acc = new xAOD::CaloCellAccessor(eta_min, eta_max, eta_bins, phi_min, phi_max, phi_bins, rmin, rmax, sampling );
-      m_collection.push_back(acc);
-     
-      // Crrate the histogram name
-      std::stringstream ss; ss << "layer_" << sampling;
-      
-      // Create the histogram
-      store->AddHistogram(ss.str(), "", eta_bins, eta_min, eta_max, phi_bins, phi_min, phi_max);
+    if (command=="L"){
+      file >> m_sampling >> m_eta_min >> m_eta_max >> m_eta_bins >> m_phi_min >> m_phi_max >> m_phi_bins >> m_rmin >> m_rmax;
+      break;
     }
 	}
+  file.close();
 
-  det_file.close();
+  // Create the 2D histogram for monitoring purpose
+  store += (new TH2F( "cells_etaVsPhi_layer_"+ m_sampling, "Cell Energy; #eta; #phi; Energy [GeV]", m_eta_bins, m_eta_min, m_eta_max, 
+                      m_phi_bins, m_phi_min, m_phi_max) );
+  
+  for ( auto tool : m_toolHandles )
+  {
+    // StoreGate link
+    tool->setStoreGateSvc( store );
+    if (tool->initialize().isFailure() )
+    {
+      MSG_FATAL( "It's not possible to iniatialize " << tool->name() << " tool." );
+    }
 
+  }
 
-  // Pulse generator from: https://gitlab.cern.ch/ginaciog/calopulsekit
-  // Initalize the pulse generator for eletromagnetic and hadronic calorimeters
-  // Add shaper for LAr (eletromagnetic calorimeter)
-  m_pulseGenerator[ CaloSampling::CaloLayer::ECal ] = new CPK::TPulseGenerator( 7, (m_calibPath+"/larcalorimeter_pulse_shape.dat").c_str());
-  // Add shaper for hadronic layer
-  m_pulseGenerator[ CaloSampling::CaloLayer::HCal ] = new CPK::TPulseGenerator( 7, (m_calibPath+"/tilecalorimeter_pulse_shape.dat").c_str());
-	m_ofweights[ CaloSampling::CaloLayer::ECal ] = {-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292};
-	m_ofweights[ CaloSampling::CaloLayer::HCal ] = {-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292};
-
-  return ErrorCode::SUCCESS;
+  return StatusCode::SUCCESS;
 }
 
 
 
 StatusCode CaloCellMaker::finalize()
 {
-  // Destroy all cells into the collection
-  m_collection.release();
-
-  return ErrorCode::SUCCESS;
-}
-
-
-
-
-
-StatusCode CaloCellMaker::pre_execute( EventContext *ctx )
-{
-  // Zeroize all cells into the collection
-  m_collection.clear();
-
-  return ErrorCode::SUCCESS;
-}
-
-
-
-
-StatusCode CaloCellMaker::execute( EventContext *ctx )
-{
-  const G4Step* step = nullptr; 
-    
-  ctx->retrieve( step , m_inputKey);
-  if( !step ){
-    MSG_ERROR("It's not possible to retrieve the G4Step.")
-    return ErrorCode::FAILURE;
+  for ( auto tool : m_toolHandles )
+  {
+    if (tool->finalize().isFailure() )
+    {
+      MSG_ERROR( "It's not possible to iniatialize " << tool->name() << " tool." );
+    }
   }
+  return StatusCode::SUCCESS;
+}
+
+
+
+
+
+StatusCode CaloCellMaker::pre_execute( EventContext *ctx ) const
+{
+  // Build the CaloCellCollection and attach into the EventContext
+  // Create the cell collection into the event context
+  SG::WriteHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+  collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection());
+
+   
+  // Read the file
+  std::ifstream file( m_caloPath );
+
+	std::string line;
+	while (std::getline(file, line))
+	{
+    std::string command;
+    // Get the command
+    file >> command;
+    // Get only cell config 
+    if (command=="C"){
+      float  eta, phi, deta, dphi, rmin, rmax;
+      int sampling; // Calorimeter layer
+      std::string hash;
+      file >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> hash;
+
+      // Create the calorimeter cell
+      auto *cell = new xAOD::CaloCell( eta, 
+                                       phi, 
+                                       delta_eta , 
+                                       delta_phi,  
+                                       rmin, 
+                                       rmax, 
+                                       hash,
+                                       (CaloSample)sampling,
+                                       m_bc_duration,
+                                       m_bc_nsamples,
+                                       m_bcid_start,
+                                       m_bcid_end,
+                                       m_bcid_truth);
+      
+      // Add the CaloCell into the collection
+      collection->push_back( cell );
+    } 
+	}
+  file.close();
+  return StatusCode::SUCCESS;
+}
+
+
+
+  
+StatusCode CaloCellMaker::execute( EventContext *ctx , const G4Step *step ) const
+{
+   
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+
+  if( !collection.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
+  }
+
   // Get the position
   G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
-
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());
 
   // This object can not be const since we will change the intenal value
   xAOD::CaloCell *cell=nullptr;
-  m_collection.retrieve( vpos, cell );
+  collection->retrieve( vpos, cell );
   
-  if(cell)  cell->Fill( step );
+  if(cell)  
+    cell->Fill( step );
   
-  return ErrorCode::SUCCESS;
+  return StatusCode::SUCCESS;
 }
 
 
 
 
-StatusCode CaloCellMaker::post_execute( EventContext *ctx )
+StatusCode CaloCellMaker::post_execute( EventContext *ctx ) const
 {
   
-  xAOD::CaloCellContainer *container=new xAOD::CaloCellContainer();
-
-  for ( const auto& c : m_collection.all() )
-  {
-    auto cell = c->copy();
-
-    // Generate the pulse for each bunch crossing and integratet
-    GeneratePulse( cell );
-    // Estimate the cell energy from the pulse
-    CalculateEnergy( cell );
-    // Transverse energy from integrated energy for all step point
-    cell->setRawEt( cell->eta() != 0.0 ? cell->rawEnergy()/cosh(fabs(cell->eta()))  : 0.0); 
-    // Transverse energy with cell estimation from pulse
-    cell->setEt( cell->eta() != 0.0 ? cell->energy()/cosh(fabs(cell->eta())) : 0.0); 
-    // make this const and add to the container
-    container->push_back( cell );
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+ 
+  if( !collection.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
   }
 
-  ctx->attach( container, m_outputKey );
+
+  for ( const auto& p : *collection )
+  {
+    for ( auto tool : m_toolHandles )
+    {
+      if( tool->executeTool( p.second ).isFailure() ){
+        MSG_ERROR( "It's not possible to execute the tool with name " << tool->name() );
+        return StatusCode::FAILURE;
+      }
+    }
+  }
+
   return ErrorCode::SUCCESS;
 }
 
 
 
 
-StatusCode CaloCellMaker::fillHistograms( EventContext *ctx )
+StatusCode CaloCellMaker::fillHistograms( EventContext *ctx ) const
 {
-  const xAOD::CaloCellContainer *container = nullptr; 
   
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+ 
+  if( !collection.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
+  }
+
   auto store = getStoreGateSvc();
 
-  ctx->retrieve( container, m_outputKey );
-
-  if( !container ){
-    MSG_ERROR( "It's not possible to retrieve calo cell container");
-    return ErrorCode::FAILURE;
-  }
-
-
-  for ( const auto& cell : container->all() ){ 
+  
+  for ( const auto& p : *collection ){ 
+    const auto *cell = p.second;
     // Skip cells with energy equal zero
     std::stringstream ss; ss << "cells/layer_" << (int)cell->sampling();
     int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
     int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
     int bin = store->hist2(ss.str())->GetBin(x,y,0);
     float energy = store->hist2(ss.str())->GetBinContent( bin );
-    // move average
     store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
   }
 
-  return ErrorCode::SUCCESS;
+  return StatusCode::SUCCESS;
 }
 
 
-
-
-void CaloCellMaker::GeneratePulse( xAOD::CaloCell *cell )
-{
-  auto pulse_size = m_pulseGenerator[cell->layer()]->GetPulseSize();
-  
-  // Get all energies for each bunch crossing 
-  auto rawEnergySamples = cell->rawEnergySamples();
-  
-  // Create an pulse with zeros with n samples
-  std::vector<float> pulse_sum(pulse_size, 0.0);
-  // Loop over each bunch crossing
-  for ( int bc = m_bc_id_start, i=0;  bc <= m_bc_id_end; ++bc, ++i )
-  {
-    // Generate the pulse
-    auto pulse = m_pulseGenerator[cell->layer()]->GenerateDeterministicPulse( rawEnergySamples[i], 0, bc*m_bc_duration );
-    // Add gaussian noise
-    //m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
-    // Accumulate into pulse sum (Sum all pulses)
-    for ( unsigned j=0; j < pulse_size; ++j )
-      pulse_sum[j] += (float)pulse->operator[](j);
-  }
-
-  // Add the pulse centered in the bunch crossing zero
-  cell->setPulse( pulse_sum );
-}
-
-
-
-void CaloCellMaker::CalculateEnergy( xAOD::CaloCell *cell )
-{
-	auto pulse = cell->pulse();
-	auto weights = m_ofweights[cell->layer()];
-	float energy=0.0;
-
-	if( weights.size() != pulse.size() ){
-		MSG_ERROR( "The ofweights size its different than the pulse size." );
-	}else{
-		for( unsigned sample=0; sample < pulse.size(); ++sample) 
-			energy += pulse[sample]*weights[sample];
-	}
-	
-	cell->setEnergy(energy);		
-}
 
