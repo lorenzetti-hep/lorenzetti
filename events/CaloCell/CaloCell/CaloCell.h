@@ -29,7 +29,6 @@ namespace xAOD{
                 float radius_max,
                 std::string hash,
                 CaloSampling::CaloSample sampling,
-                std::vector<float> time,
                 float bc_duration,
                 int bc_nsamples,
                 int bcid_start,
@@ -75,28 +74,28 @@ namespace xAOD{
        * Estimated energy
        */
 
-      /*! Estimated Tranverse energy */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
       /*! Estimated energy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
+      
       
       /*
        * Raw energy
        */
 
-      /*! Raw transverse energy (without estimation) */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_rawEt, setRawEt, rawEt );
       /*! Raw energy (without estimation) */
       PRIMITIVE_SETTER_AND_GETTER( float, m_rawEnergy, setRawEnergy, rawEnergy );
-      
+      PRIMITIVE_SETTER_AND_GETTER( float, m_rawEt, setRawEt, rawEt );
+     
+
+
       /*
        * Truth energy extracted from the main event without any contamination 
        */
 
       /*! Truth raw energy calculated on top of the special bunch crossing */ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_truthRawEnergy, setTruthRawEnergy, truthRawEnergy );
-      /*! Truth bcid for energy calculation */
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_truth , set_bcid_truth , get_bcid_truth );
+
       
       
       
@@ -104,9 +103,11 @@ namespace xAOD{
        * Bunch crossing information
        */
 
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , get_bcid_start    );
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_end    , set_bcid_end    , get_bcid_end      );
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bc_nsamples , set_bc_nsamples , get_bc_nsamples   );
+      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , bcid_start    );
+      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_end    , set_bcid_end    , bcid_end      );
+      PRIMITIVE_SETTER_AND_GETTER( int, m_bc_nsamples , set_bc_nsamples , bc_nsamples   );
+      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_truth , set_bcid_truth , bcid_truth );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_bc_duration , set_bc_duration , bc_duration );
 
 
       /*
@@ -145,19 +146,29 @@ namespace xAOD{
       float m_radius_max;
 
 
+      float m_energy;
+      float m_rawEnergy;
+      float m_truthRawEnergy;
+
+      
+      float m_rawEt;
+      float m_et;
+
+
       /*
        * Bunch crossing information 
        */
 
       /*! bunch crossing start id */
-      int m_bc_start;
+      int m_bcid_start;
       /*! bunch crossing end id */
-      int m_bc_end;
+      int m_bcid_end;
       /*! number of samples per bunch crossing */
       int m_bc_nsamples;
       /*! truth bunch crossing */
       int m_bcid_truth;
-
+      /*! bunch crossing space in ns between two bunchs */
+      float m_bc_duration;
 
       /*
        * Pulse information

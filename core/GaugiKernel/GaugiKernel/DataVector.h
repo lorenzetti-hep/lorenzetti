@@ -1,22 +1,16 @@
 #ifndef DataVector_h
 #define DataVector_h
 
+
+#include "GaugiKernel/DataHandle.h"
 #include <vector>
 #include <memory>
 
 namespace SG
 {
 
-  // Base class for downcast 
-  class DataVectorBase{
-    public:
-      DataVectorBase(){};
-      ~DataVectorBase(){};
-  };
-
-
   template<class T>
-  class DataVector : public DataVectorBase{  
+  class DataVector : public DataHandle{  
     public:
       
       /*! Constructor */

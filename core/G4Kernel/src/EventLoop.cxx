@@ -35,7 +35,7 @@ void EventLoop::BeginOfEvent()
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
   for( auto &toolHandle : m_toolHandles){
-    if (toolHandle->execute( m_ctx ).isFailure() ){
+    if (toolHandle->execute( m_ctx, step ).isFailure() ){
       MSG_FATAL("Execution failure for  " << toolHandle->name());
     }
   }

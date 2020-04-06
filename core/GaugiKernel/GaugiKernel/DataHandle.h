@@ -2,13 +2,21 @@
 #define DataHandle_h
 
 #include "GaugiKernel/MsgStream.h"
-#include "GaugiKernel/DataVector.h"
 #include <string>
 #include <map>
 #include <memory>
 
 
 namespace SG{
+
+
+  // Base class for downcast 
+  class DataHandle{
+    public:
+      DataHandle(){};
+      ~DataHandle(){};
+  };
+
 
 
   class EventContext : public MsgService
@@ -31,7 +39,7 @@ namespace SG{
         
     private:
 
-      std::map< std::string, std::unique_ptr<const DataVectorBase> > m_storable_ptr;
+      std::map< std::string, std::unique_ptr<const DataHandle > > m_storable_ptr;
   };
 
 
@@ -55,9 +63,11 @@ namespace SG{
       /*
        * @brief Dereference the pointer.
        */
-      const T& operator*();
+      const T* operator*();
 
-        
+
+      const T* ptr();
+
       std::string key();
 
 

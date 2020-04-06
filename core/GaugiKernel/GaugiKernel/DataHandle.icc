@@ -3,6 +3,7 @@
 
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/DataVector.h"
+#include "GaugiKernel/DataHandle.h"
 #include <string>
 #include <map>
 #include <memory>
@@ -18,10 +19,10 @@ namespace SG{
   void EventContext::record( std::string &sgkey, std::unique_ptr<T> &container  )
   {
     // Make this as const
-    const DataVectorBase *ptr = dynamic_cast<DataVectorBase*>(container.get());
+    const DataHandle *ptr = dynamic_cast<DataHandle*>(container.get());
     auto it = m_storable_ptr.find(sgkey);
     if ( it == m_storable_ptr.end() ){
-      m_storable_ptr.insert( std::make_pair(sgkey, std::unique_ptr<const DataVectorBase>(ptr) ) );
+      m_storable_ptr.insert( std::make_pair(sgkey, std::unique_ptr<const DataHandle>(ptr) ) );
       container.release(); // release the pointer ownship
     }else{
       MSG_WARNING( "The key (" << sgkey << ") exist into the event context. Its not possible to record this container" );
@@ -67,6 +68,19 @@ namespace SG{
   }
   
   
+  template<class T>
+  const T* ReadHandle<T>::operator*()
+  {
+    return m_ptr;
+  }
+
+  template<class T>
+  const T* ReadHandle<T>::ptr()
+  {
+    return m_ptr;
+  }
+
+
   template<class T>
   std::string ReadHandle<T>::key()
   {

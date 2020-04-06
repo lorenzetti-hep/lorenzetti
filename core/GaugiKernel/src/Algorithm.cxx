@@ -7,12 +7,9 @@ using namespace Gaugi;
 
 
 
-Algorithm::Algorithm( std::string &name, MSG::Level level ): 
-  IMsgService(name),
-  MsgService(level),
-  m_name(name)
+Algorithm::Algorithm( std::string &name ): 
+  IMsgService(name)
 {;}
-
 
   
 
@@ -22,14 +19,14 @@ void Algorithm::setStoreGateSvc( SG::StoreGate *store )
 }
 
 
-SG::StoreGate* Algorithm::getStoreGateSvc()
+SG::StoreGate* Algorithm::getStoreGateSvc() const
 {
   return m_store;
 }
 
-std::string Algorithm::name()
+const std::string& Algorithm::name() const
 {
-  return m_name;
+  return getLogName();
 }
 
 

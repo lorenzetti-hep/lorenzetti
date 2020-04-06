@@ -12,7 +12,7 @@ class PulseGenerator : public ICaloCellTool
 
   public:
     /** Constructor **/
-    PulseGenerator( std::string name, int msglevel=0 );
+    PulseGenerator( std::string name );
     virtual ~PulseGenerator();
     
     virtual StatusCode initialize() override;
@@ -26,9 +26,11 @@ class PulseGenerator : public ICaloCellTool
     /*! Number of samples to be generated */
     int m_nsamples;
     /*! The shaper configuration path */
-    std::string m_card;
+    std::string m_shaperFile;
     /*! Pulse generator */
     CPK::TPulseGenerator  *m_pulseGenerator;
+    /*! Output level message */
+    int m_outputLevel;
 };
 
 #endif

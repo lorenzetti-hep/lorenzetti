@@ -4,11 +4,12 @@
 using namespace Gaugi;
 
 
-PulseGenerator::PulseGenerator( std::string name , int msglevel) : 
-  ICaloCellTool( name, (MSG::Level)msglevel )
+PulseGenerator::PulseGenerator( std::string name ) : 
+  ICaloCellTool( name )
 {
-  declareProperty( "NSamples", m_nsamples , 7   );
-  declareProperty( "CardPath", m_card     , ""  ) ;
+  declareProperty( "NSamples"     , m_nsamples=7              );
+  declareProperty( "ShaperFile"   , m_shaperFile              );
+  declareProperty( "OutputLevel"  , m_outputLevel = MSG::INFO );
 }
 
 
@@ -21,8 +22,8 @@ PulseGenerator::~PulseGenerator()
 
 StatusCode PulseGenerator::initialize()
 {
-
-  m_pulseGenerator = new CPK::TPulseGenerator( m_nsamples, m_card.c_str());
+  setMsgLevel( (MSG::Level)m_outputLevel );
+  m_pulseGenerator = new CPK::TPulseGenerator( m_nsamples, m_shaperFile.c_str());
   return StatusCode::SUCCESS;
 }
 

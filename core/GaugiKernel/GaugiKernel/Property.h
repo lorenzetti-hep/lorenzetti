@@ -39,28 +39,40 @@ namespace Gaugi{
       ~PropertyService()=default;
   
       /* Declare */
-      void declareProperty( std::string name, int          &value, int         result );
-      void declareProperty( std::string name, float        &value, float       result );
-      void declareProperty( std::string name, bool         &value, bool        result );
-      void declareProperty( std::string name, std::string  &value, std::string result );
+      void declareProperty( std::string name, int                       &value );
+      void declareProperty( std::string name, float                     &value );
+      void declareProperty( std::string name, bool                      &value );
+      void declareProperty( std::string name, std::string               &value );
+      void declareProperty( std::string name, std::vector<int>          &value );
+      void declareProperty( std::string name, std::vector<bool>         &value );
+      void declareProperty( std::string name, std::vector<float>        &value );
+      void declareProperty( std::string name, std::vector<std::string>  &value );
       
       /* Setter */
-      void setProperty( std::string name, int          value );
-      void setProperty( std::string name, float        value );
-      void setProperty( std::string name, bool         value );
-      void setProperty( std::string name, std::string  value );
+      void setProperty( std::string name, int                       value );
+      void setProperty( std::string name, float                     value );
+      void setProperty( std::string name, bool                      value );
+      void setProperty( std::string name, std::string               value );
+      void setProperty( std::string name, std::vector<int>          value );
+      void setProperty( std::string name, std::vector<bool>         value );
+      void setProperty( std::string name, std::vector<float>        value );
+      void setProperty( std::string name, std::vector<std::string>  value );
 
       /* Getter */
-      void getProperty( std::string name, int          &value );
-      void getProperty( std::string name, float        &value );
-      void getProperty( std::string name, bool         &value );
-      void getProperty( std::string name, std::string  &value );
+      void getProperty( std::string name, int                       &value );
+      void getProperty( std::string name, float                     &value );
+      void getProperty( std::string name, bool                      &value );
+      void getProperty( std::string name, std::string               &value );
+      void getProperty( std::string name, std::vector<int>          &value );
+      void getProperty( std::string name, std::vector<bool>         &value );
+      void getProperty( std::string name, std::vector<float>        &value );
+      void getProperty( std::string name, std::vector<std::string>  &value );
   
 
     private:
 
       /* Template specification for any type of declare property */
-      template<typename T> void __declareProperty( std::string name, T &value, T result );
+      template<typename T> void __declareProperty( std::string name, T &value );
       /* Template specification for any type of set property */
       template<typename T> void __setProperty( std::string name, T &value );
       /* Template specification for any type of get property */
@@ -75,18 +87,24 @@ namespace Gaugi{
   
   /** Declare property **/
 
-  template<class T> inline void PropertyService::__declareProperty( std::string name, T &value,  T result ) 
+  template<class T> inline void PropertyService::__declareProperty( std::string name, T &value ) 
   {
     auto property = new Property<T>(value); 
-    property->setValue( result ); 
     m_properties.insert( std::pair<std::string, std::unique_ptr<PropertyBase>>(name,property) );
   }
    
-  inline void PropertyService::declareProperty( std::string name, int          &value, int         result ){__declareProperty<int>(name,value,result);}
-  inline void PropertyService::declareProperty( std::string name, float        &value, float       result ){__declareProperty<float>(name,value,result);}
-  inline void PropertyService::declareProperty( std::string name, bool         &value, bool        result ){__declareProperty<bool>(name,value,result);}
-  inline void PropertyService::declareProperty( std::string name, std::string  &value, std::string result ){__declareProperty<std::string>(name,value,result);}
+  inline void PropertyService::declareProperty( std::string name, int          &value              ){__declareProperty<int>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, float        &value              ){__declareProperty<float>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, bool         &value              ){__declareProperty<bool>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, std::string  &value              ){__declareProperty<std::string>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, std::vector<int>          &value ){__declareProperty<std::vector<int>>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, std::vector<bool>         &value ){__declareProperty<std::vector<bool>>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, std::vector<float>        &value ){__declareProperty<std::vector<float>>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, std::vector<std::string>  &value ){__declareProperty<std::vector<std::string>>(name,value);}
   
+
+
+
   
   /** Setter **/
 
@@ -95,10 +113,14 @@ namespace Gaugi{
     dynamic_cast<Property<T>&>(*m_properties[name]).setValue(value);
   }
   
-  inline void PropertyService::setProperty( std::string name, int          value ){__setProperty<int>(name,value);}
-  inline void PropertyService::setProperty( std::string name, float        value ){__setProperty<float>(name,value);}
-  inline void PropertyService::setProperty( std::string name, bool         value ){__setProperty<bool>(name,value);}
-  inline void PropertyService::setProperty( std::string name, std::string  value ){__setProperty<std::string>(name,value);}
+  inline void PropertyService::setProperty( std::string name, int                       value ){__setProperty<int>(name,value);}
+  inline void PropertyService::setProperty( std::string name, float                     value ){__setProperty<float>(name,value);}
+  inline void PropertyService::setProperty( std::string name, bool                      value ){__setProperty<bool>(name,value);}
+  inline void PropertyService::setProperty( std::string name, std::string               value ){__setProperty<std::string>(name,value);}
+  inline void PropertyService::setProperty( std::string name, std::vector<int>          value ){__setProperty<std::vector<int>>(name,value);}
+  inline void PropertyService::setProperty( std::string name, std::vector<bool>         value ){__setProperty<std::vector<bool>>(name,value);}
+  inline void PropertyService::setProperty( std::string name, std::vector<float>        value ){__setProperty<std::vector<float>>(name,value);}
+  inline void PropertyService::setProperty( std::string name, std::vector<std::string>  value ){__setProperty<std::vector<std::string>>(name,value);}
   
   
   /** Getter **/
@@ -108,10 +130,14 @@ namespace Gaugi{
     value = dynamic_cast<Property<T>&>(*m_properties[name]).getValue(); 
   }
    
-  inline void PropertyService::getProperty( std::string name, int          &value ){__getProperty<int>(name,value);}
-  inline void PropertyService::getProperty( std::string name, float        &value ){__getProperty<float>(name,value);}
-  inline void PropertyService::getProperty( std::string name, bool         &value ){__getProperty<bool>(name,value);}
-  inline void PropertyService::getProperty( std::string name, std::string  &value ){__getProperty<std::string>(name,value);}
+  inline void PropertyService::getProperty( std::string name, int                       &value ){__getProperty<int>(name,value);}
+  inline void PropertyService::getProperty( std::string name, float                     &value ){__getProperty<float>(name,value);}
+  inline void PropertyService::getProperty( std::string name, bool                      &value ){__getProperty<bool>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::string               &value ){__getProperty<std::string>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::vector<int>          &value ){__getProperty<std::vector<int>>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::vector<bool>         &value ){__getProperty<std::vector<bool>>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::vector<float>        &value ){__getProperty<std::vector<float>>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::vector<std::string>  &value ){__getProperty<std::vector<std::string>>(name,value);}
 
 
 

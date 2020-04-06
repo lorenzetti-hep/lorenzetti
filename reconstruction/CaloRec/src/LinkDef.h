@@ -2,6 +2,7 @@
 #include "src/CaloCellMaker.h"
 #include "src/PulseGenerator.h"
 #include "src/OptimalFilter.h"
+#include "src/ICaloCellTool.h"
 
 #ifdef __CINT__
 
@@ -14,5 +15,6 @@
 #pragma link C++ class CaloCellMaker+;
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
+#pragma link C++ class ICaloCellTool+;
 
 #endif

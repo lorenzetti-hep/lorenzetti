@@ -2,6 +2,8 @@
 #include "GaugiKernel/Test.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Property.h"
+#include "GaugiKernel/Algorithm.h"
+#include "GaugiKernel/AlgTool.h"
 
 #ifdef __CINT__
 
@@ -15,6 +17,8 @@
 #pragma link C++ class MsgService+;
 #pragma link C++ class IMsgService+;
 #pragma link C++ class PropertyService+;
+#pragma link C++ class Algorithm+;
+#pragma link C++ class AlgTool+;
 
 
 #endif

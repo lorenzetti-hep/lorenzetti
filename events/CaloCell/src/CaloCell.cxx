@@ -21,7 +21,7 @@ CaloCell::CaloCell( float eta,
                     float radius_max,
                     std::string hash,
                     CaloSample sampling, 
-                    float bc_duration
+                    float bc_duration,
                     int bc_nsamples,
                     int bcid_start,
                     int bcid_end,
@@ -31,8 +31,8 @@ CaloCell::CaloCell( float eta,
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
-  m_radius_min(rmin),
-  m_radius_max(rmax),
+  m_radius_min(radius_min),
+  m_radius_max(radius_max),
   m_sampling(sampling),
   m_hash(hash),
   /* Bunch crossing information */
@@ -44,7 +44,7 @@ CaloCell::CaloCell( float eta,
   // Cell's information
   m_rawEnergy(0),
   m_truthRawEnergy(0),
-  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 ),
+  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 )
 {
   // Initalize the time vector using the bunch crossing informations
   float start = m_bcid_start * m_bc_duration;
@@ -90,7 +90,7 @@ void CaloCell::Fill( const G4Step* step )
     }
   }
 
-  if ( t >= ( (m_bcid_truth-1)*bc_duration) && t < ((m_bcid_truth+1)*bc_duration)){
+  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
     m_truthRawEnergy+=edep;
   }else{
     m_rawEnergy+=edep;

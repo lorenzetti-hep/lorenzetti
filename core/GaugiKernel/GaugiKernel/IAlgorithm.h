@@ -1,3 +1,7 @@
+/*
+  Copyright (C) 2020-2020
+*/
+
 #ifndef IAlgService_h
 #define IAlgService_h
 
@@ -7,16 +11,24 @@
 #include "GaugiKernel/Property.h"
 #include "GaugiKernel/MsgStream.h"
 
+#include "G4Step.hh"
+
+/*
+ * @file IAlgorithm.h
+ * @brief Designed to be the interface class of all reconstruction algorithms
+ * @author joao victor pinto (jodafons@cern.ch)
+ */
 
 
-
+/// namespace
 namespace Gaugi{
 
-
-	/* Algortihm base service for all recontruction algorithms */
+  /* 
+   * @class IAlgorithm
+   * @brief Designed to be the interface class of all reconstruction algorithms
+   */
 	class IAlgorithm
-	{
-	
+	{	
 	  public:
 	    
 			/*! Destructor */
@@ -29,22 +41,18 @@ namespace Gaugi{
 			virtual StatusCode finalize()=0;
 	
 			/*! This step will be executed before Geant step action */
-	    virtual StatusCode pre_execute( SG::EventContext & /*ctx*/ )=0;
+	    virtual StatusCode pre_execute( SG::EventContext & /*ctx*/ ) const=0;
 			
 			/*! This step will be executed during the Geant step action */
-			virtual StatusCode execute( SG::EventContext &/*ctx*/ )=0;
+			virtual StatusCode execute( SG::EventContext &/*ctx*/, const G4Step * ) const=0;
 			
 			/*! This step will be executed after the Geant step action */
-	    virtual StatusCode post_execute( SG::EventContext & /*ctx*/ )=0;
+	    virtual StatusCode post_execute( SG::EventContext & /*ctx*/ ) const=0;
 	    
 			/*! Fill all monitoring histograms here */
-	    virtual StatusCode fillHistograms( SG::EventContext & /*ctx*/ )=0;
+	    virtual StatusCode fillHistograms( SG::EventContext & /*ctx*/ )const =0;
 	
-
-
 	};
-
-	
 
 }// namespace
 #endif

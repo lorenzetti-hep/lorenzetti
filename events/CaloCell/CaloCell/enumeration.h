@@ -2,7 +2,6 @@
 #define enumeration_h
 
 
-// Event Object Data
 namespace CaloSampling{
 
   enum CaloSample{

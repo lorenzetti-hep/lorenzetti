@@ -8,14 +8,15 @@ using namespace SG;
 using namespace CaloSampling;
 
 
-CaloCellMaker::CaloCellMaker( std::string name , int msglevel ) : 
-  Algorithm( name , (MSG::Level)msglevel )
+CaloCellMaker::CaloCellMaker( std::string name ) : 
+  Algorithm( name )
 {
 
-  declareProperty( "HistPath"         , m_histPath      , "/CaloCellMaker"            );
-  declareProperty( "CellConfig"       , m_cellConfig    , ""                          );
-  declareProperty( "BunchConfig"      , m_bunchConfig   , ""                          );
-  declareProperty( "CollectionKey"    , m_collectionKey , "xAOD__CaloCellCollection"  );
+  declareProperty( "HistogramPath"    , m_histPath="/CaloCellMaker"           );
+  declareProperty( "CaloCellFile"     , m_caloCellFile                        );
+  declareProperty( "CollectionKey"    , m_collectionKey="CaloCellCollection"  );
+  declareProperty( "OutputLevel"      , m_outputLevel=MSG::INFO               );
+  
 }
 
 
@@ -29,8 +30,11 @@ CaloCellMaker::~CaloCellMaker()
 
 StatusCode CaloCellMaker::initialize()
 {
+  // Set message level
+  setMsgLevel( (MSG::Level)m_outputLevel );
+  std::string basepath(std::getenv("LZT_PATH"));
   // This is a default path
-  std::ifstream bc_file( m_bunchConfig );
+  std::ifstream bc_file( basepath + "/reconstruction/CaloRec/data/bunch.dat" );
   bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
   bc_file.close();
   
@@ -39,7 +43,7 @@ StatusCode CaloCellMaker::initialize()
 
 
   // Read the file
-  std::ifstream file(m_cellConfig);
+  std::ifstream file(m_caloCellFile);
 
 	std::string line;
 	while (std::getline(file, line))
@@ -55,7 +59,7 @@ StatusCode CaloCellMaker::initialize()
 	}
   file.close();
 
-  std::stringstream ss; ss << "cell_etaVsPhi_sampling_" << m_sampling;
+  std::stringstream ss; ss << "cells_layer_" << m_sampling;
   // Create the 2D histogram for monitoring purpose
   store->add(new TH2F( ss.str().c_str(), "Cell Energy; #eta; #phi; Energy [GeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
@@ -110,7 +114,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 
    
   // Read the file
-  std::ifstream file( m_cellConfig );
+  std::ifstream file( m_caloCellFile );
 
 	std::string line;
 	while (std::getline(file, line))
@@ -215,13 +219,13 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
+  /*
   auto store = getStoreGateSvc();
 
-  /* 
   for ( const auto& p : *collection ){ 
     const auto *cell = p.second;
     // Skip cells with energy equal zero
-    std::stringstream ss; ss << "cells/layer_" << (int)cell->sampling();
+    std::stringstream ss; ss << m_histPath+"/cells_layer_" << (int)cell->sampling();
     int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
     int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
     int bin = store->hist2(ss.str())->GetBin(x,y,0);

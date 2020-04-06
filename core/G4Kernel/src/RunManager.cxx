@@ -29,10 +29,10 @@ RunManager::RunManager( std::string name ):
 {
   
 #ifdef G4MULTITHREADED
-  declareProperty( "NumberOfThreads", m_nThreads, 1             );
+  declareProperty( "NumberOfThreads", m_nThreads=1              );
 #endif
-  declareProperty( "Output"         , m_output  , "Example.root");
-  declareProperty( "VisMacro"       , m_visMacro, "vis.mac"     );
+  declareProperty( "Output"         , m_output="Example.root"   );
+  declareProperty( "VisMacro"       , m_visMacro="vis.mac"      );
 
 }
 

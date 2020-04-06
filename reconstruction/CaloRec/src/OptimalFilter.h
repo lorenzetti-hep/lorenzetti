@@ -10,7 +10,7 @@ class OptimalFilter : public ICaloCellTool
 
   public:
     /** Constructor **/
-    OptimalFilter( std::string name, int msglevel=1 );
+    OptimalFilter( std::string name );
     virtual ~OptimalFilter();
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
@@ -18,6 +18,8 @@ class OptimalFilter : public ICaloCellTool
 
 
   private:
+
+    /*! optimal filter weights */
     std::vector<float> m_ofweights; 
 };
 

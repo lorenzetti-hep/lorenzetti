@@ -131,14 +131,16 @@ class CellGenerator(object):
 
     def dump(self):
 
-        file = open( 'detector.dat', 'w' )
-        file.write("# layer_id eta phi delta_eta delta_phi rmin rmax\n")
+
+
         from pprint import pprint
 
         for layer in self.layer_dict.keys():
             if layer == 'nominal_size':
               continue
 
+            
+           
             layer_id = self.layer_dict[layer]['layer_id']
 
             eta_bins = len(self.layer_dict[layer]['eta_centers'])
@@ -153,8 +155,11 @@ class CellGenerator(object):
             phi_min = phi[0] - delta_phi
             phi_max = phi[-1] + delta_phi
 
+            output = 'detector_sampling_%d.dat' % layer_id
 
-
+            file = open( output, 'w' )
+            file.write("# layer_id eta phi delta_eta delta_phi rmin rmax\n")
+ 
             s = "L {LAYER_ID} {ETA_MIN} {ETA_MAX} {ETA_BINS} {PHI_MIN} {PHI_MAX} {PHI_BINS} {RMIN} {RMAX}\n".format( LAYER_ID = layer_id,
                                                                       ETA_MIN = round(eta_min,8),
                                                                       ETA_MAX = round(eta_max,8),
@@ -186,7 +191,7 @@ class CellGenerator(object):
                                                                         )
                 file.write(s)
 
-        file.close()
+            file.close()
     
 
 

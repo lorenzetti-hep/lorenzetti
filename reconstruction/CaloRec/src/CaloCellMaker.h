@@ -13,7 +13,7 @@ class CaloCellMaker : public Gaugi::Algorithm
   public:
   
     /** Contructor **/
-    CaloCellMaker( std::string name, int msglevel=1 );
+    CaloCellMaker( std::string name );
     
     /** Destructor **/
     ~CaloCellMaker();
@@ -47,15 +47,14 @@ class CaloCellMaker : public Gaugi::Algorithm
      * Properties
      */
 
+    /*! collection key */
     std::string m_collectionKey;
+    /*! Base histogram path */
     std::string m_histPath;
-    std::string m_cellConfig;
-    std::string m_bunchConfig;
+    /*! The path to the cell configuration file */
+    std::string m_caloCellFile;
     
-
-    /*! The tool list that will be executed into the post execute step */
-    std::vector< ICaloCellTool* > m_toolHandles;
-    
+   
 
     /*
      * Internal usage
@@ -74,7 +73,12 @@ class CaloCellMaker : public Gaugi::Algorithm
     /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
 
-  
+ 
+    /*! The tool list that will be executed into the post execute step */
+    std::vector< ICaloCellTool* > m_toolHandles;
+
+
+
     float m_eta_min;
     float m_eta_max; 
     float m_eta_bins; 

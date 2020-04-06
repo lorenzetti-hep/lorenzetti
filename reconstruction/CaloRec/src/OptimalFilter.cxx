@@ -3,9 +3,11 @@
 using namespace Gaugi;
 
 
-OptimalFilter::OptimalFilter( std::string name, int msglevel ) : 
-  ICaloCellTool( name , (MSG::Level)msglevel )
-{}
+OptimalFilter::OptimalFilter( std::string name ) : 
+  ICaloCellTool( name )
+{
+  declareProperty( "OutputLevel", m_outputLevel=MSG::INFO );
+}
 
 
 
@@ -15,7 +17,7 @@ OptimalFilter::~OptimalFilter()
 
 StatusCode OptimalFilter::initialize()
 {
-
+  setMsgLevel((MSG::Level)m_outputLevel);
   m_ofweights = {-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292};
   return StatusCode::SUCCESS;
 }
