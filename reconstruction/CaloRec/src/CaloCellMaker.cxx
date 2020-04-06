@@ -1,4 +1,5 @@
 
+#include "G4Kernel/EventReader.h"
 #include "CaloCellMaker.h"
 #include "TVector3.h"
 #include <cstdlib>
@@ -8,8 +9,11 @@ using namespace SG;
 using namespace CaloSampling;
 
 
+
+
 CaloCellMaker::CaloCellMaker( std::string name ) : 
-  Algorithm( name )
+  Algorithm( name ),
+  m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
 
   declareProperty( "HistogramPath"    , m_histPath="/CaloCellMaker"           );
@@ -26,6 +30,10 @@ CaloCellMaker::~CaloCellMaker()
 
 
 
+void CaloCellMaker::push_back( CaloRecTool* tool )
+{
+  m_toolHandles.push_back(tool);
+}
 
 
 StatusCode CaloCellMaker::initialize()
@@ -37,6 +45,8 @@ StatusCode CaloCellMaker::initialize()
   std::ifstream bc_file( basepath + "/reconstruction/CaloRec/data/bunch.dat" );
   bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
   bc_file.close();
+
+
   
   auto store = getStoreGateSvc();
   store->mkdir( m_histPath );
@@ -61,7 +71,7 @@ StatusCode CaloCellMaker::initialize()
 
   std::stringstream ss; ss << "cells_layer_" << m_sampling;
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( ss.str().c_str(), "Cell Energy; #eta; #phi; Energy [GeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  store->add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
   
   for ( auto tool : m_toolHandles )
@@ -101,6 +111,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
   // Build the CaloCellCollection and attach into the EventContext
   // Create the cell collection into the event context
   SG::WriteHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+  
   collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection(m_eta_min,
                                                                                             m_eta_max,
                                                                                             m_eta_bins,
@@ -164,6 +175,8 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
+  //MSG_INFO( "Looking into "<< m_collectionKey << " With " << collection->size() << " Cells");
+
   // Get the position
   G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
@@ -219,10 +232,10 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
-  /*
+  
   auto store = getStoreGateSvc();
 
-  for ( const auto& p : *collection ){ 
+  for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
     // Skip cells with energy equal zero
     std::stringstream ss; ss << m_histPath+"/cells_layer_" << (int)cell->sampling();
@@ -231,7 +244,7 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     int bin = store->hist2(ss.str())->GetBin(x,y,0);
     float energy = store->hist2(ss.str())->GetBinContent( bin );
     store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
-  }*/
+  }
 
   return StatusCode::SUCCESS;
 }

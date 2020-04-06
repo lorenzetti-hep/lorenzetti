@@ -68,7 +68,7 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell ) const
       for ( unsigned phi_bin = 0 ; phi_bin < m_phi_bins.size()-1; ++phi_bin ){
         if ( phi > m_phi_bins[phi_bin] && phi <= m_phi_bins[phi_bin+1]){
           std::stringstream ss;
-          ss << "layer" << m_sampling << "_eta" << eta_bin << "_phi" << phi_bin;
+          ss << "layer" << (int)m_sampling << "_eta" << eta_bin << "_phi" << phi_bin;
           //cell = m_collection[ss.str()].get();
           cell = m_collection.at(ss.str());
           return true;
@@ -92,6 +92,14 @@ const CaloCellCollection::collection_map_t& CaloCellCollection::operator*() cons
   return m_collection;
 }
 
+
+float CaloCellCollection::totalEnergy() const 
+{
+  float total=0;
+  for(auto& p : m_collection)
+    if(p.second) total+=p.second->rawEnergy();
+  return total;
+}
 
 
 

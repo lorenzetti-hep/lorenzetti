@@ -5,7 +5,7 @@ using namespace Gaugi;
 
 
 PulseGenerator::PulseGenerator( std::string name ) : 
-  ICaloCellTool( name )
+  CaloRecTool( name )
 {
   declareProperty( "NSamples"     , m_nsamples=7              );
   declareProperty( "ShaperFile"   , m_shaperFile              );
@@ -51,7 +51,7 @@ StatusCode PulseGenerator::executeTool( xAOD::CaloCell *cell ) const
     // Add gaussian noise
     // m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
     // Accumulate into pulse sum (Sum all pulses)
-    for ( unsigned j=0; j < pulse_size; ++j )
+    for ( int j=0; j < pulse_size; ++j )
       pulse_sum[j] += (float)pulse->operator[](j);
   }
 

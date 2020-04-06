@@ -1,11 +1,11 @@
 #ifndef OptimalFilter_h
 #define OptimalFilter_h
 
-#include "ICaloCellTool.h"
+#include "CaloRecTool.h"
 
 
 
-class OptimalFilter : public ICaloCellTool
+class OptimalFilter : public CaloRecTool
 {
 
   public:

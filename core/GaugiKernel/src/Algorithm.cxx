@@ -7,8 +7,9 @@ using namespace Gaugi;
 
 
 
-Algorithm::Algorithm( std::string &name ): 
-  IMsgService(name)
+Algorithm::Algorithm( std::string name ): 
+  IMsgService(name),
+  PropertyService()
 {;}
 
   

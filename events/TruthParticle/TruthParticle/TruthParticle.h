@@ -4,13 +4,10 @@
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
 #include "CaloCluster/CaloCluster.h"
-#include "GaugiKernel/macros.h"
 
 /** geant 4 includes **/
 #include "globals.hh"
 
-/** standard includes **/
-#include <vector>
 
 // Event Object Data
 namespace xAOD{
@@ -66,11 +63,10 @@ namespace xAOD{
       void clear();
       /** Get all cells **/
       std::vector<const xAOD::CaloCell*> allCells();
-      /** Print cluster information **/
-      void Print();
 
 
       void setCaloCluster( const xAOD::CaloCluster *clus ){ m_caloCluster=clus; };
+      
       const xAOD::CaloCluster* caloCluster() const { return m_caloCluster; };
 
     private:

@@ -4,7 +4,7 @@ using namespace Gaugi;
 
 
 OptimalFilter::OptimalFilter( std::string name ) : 
-  ICaloCellTool( name )
+  CaloRecTool( name )
 {
   declareProperty( "OutputLevel", m_outputLevel=MSG::INFO );
 }
@@ -42,7 +42,7 @@ StatusCode OptimalFilter::executeTool( xAOD::CaloCell *cell ) const
 		for( unsigned sample=0; sample < pulse.size(); ++sample) 
 			energy += pulse[sample]*m_ofweights[sample];
 	}
-	
+
 	cell->setEnergy(energy);
 	return StatusCode::SUCCESS;
 }

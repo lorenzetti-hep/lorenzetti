@@ -51,16 +51,6 @@ std::vector<const xAOD::CaloCell*> TruthParticle::allCells()
 
 
 
-void TruthParticle::Print()
-{
-  MSG_INFO( "Et       : " << et() );
-  MSG_INFO( "Eta      : " << eta() );
-  MSG_INFO( "Phi      : " << phi() );
-  MSG_INFO( "Reta     : " << reta() );
-  MSG_INFO( "Rphi     : " << rphi() );
-}
-
-
 
 
 

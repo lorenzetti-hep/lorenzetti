@@ -46,6 +46,7 @@ namespace xAOD{
       const collection_map_t& operator*() const;
 
      
+      float totalEnergy() const ;
     private:
 
       /*! Cell map into strings to faster access */

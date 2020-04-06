@@ -26,13 +26,13 @@ StoreGate::~StoreGate()
 }
 
 
-void StoreGate::mkdir( std::string &path ){
+void StoreGate::mkdir( std::string path ){
   m_file->mkdir(path.c_str());
   m_currentPath = path;
 }
 
 
-void StoreGate::cd( std::string &path ){
+void StoreGate::cd( std::string path ){
   m_currentPath = path;
 }
 
@@ -41,7 +41,8 @@ void StoreGate::cd( std::string &path ){
 bool StoreGate::add( TObject* obj){  
 	std::string feature(obj->GetName());
   std::string fullpath = m_currentPath + "/" + feature;
-	if( m_objs.find( fullpath ) != m_objs.end() ) 
+	MSG_INFO( "Attaching into " << fullpath );
+  if( m_objs.find( fullpath ) != m_objs.end() ) 
   {
     MSG_WARNING("It's not possible to attach the histogram with name " << feature << " into this path " << m_currentPath);
 		return false;
@@ -51,25 +52,28 @@ bool StoreGate::add( TObject* obj){
 }
 
 
-TH1F* StoreGate::hist1( std::string &path )
+TH1F* StoreGate::hist1( std::string path )
 {
-	if( m_objs.find( path ) != m_objs.end() )  
+	if( m_objs.find( path ) == m_objs.end() )  
     MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
   return ((TH1F*)m_objs[path]);
 }
 
 
-TH2F* StoreGate::hist2( std::string &path )
+TH2F* StoreGate::hist2( std::string path )
 {
-	if( m_objs.find( path ) != m_objs.end() )  
-    MSG_FATAL("It's not possible to retrieve the 2D histogram with abspath " << path << " from the StoreGate");
+	//if( m_objs.find( path ) == m_objs.end() )  
+  //  MSG_FATAL("It's not possible to retrieve the 2D histogram with abspath " << path << " from the StoreGate");
+  //MSG_INFO( "Getting path " << path );
+
+  //MSG_INFO( m_objs[path] );
   return ((TH2F*)m_objs[path]);
 }
 
 
-TTree* StoreGate::tree( std::string &path )
+TTree* StoreGate::tree( std::string path )
 {
-	if( m_objs.find( path ) != m_objs.end() )  
+	if( m_objs.find( path ) == m_objs.end() )  
     MSG_FATAL("It's not possible to retrieve the TTree with abspath " << path << " from the StoreGate");
   return ((TTree*)m_objs[path]);
 }

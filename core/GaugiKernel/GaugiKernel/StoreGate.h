@@ -28,22 +28,22 @@ namespace SG
       ~StoreGate();     
       
       /** Create directory **/
-      void mkdir(std::string& );
+      void mkdir(std::string );
       
       /** Move between directories **/
-      void cd(std::string& );
+      void cd(std::string );
       
       /** Create 1D histogram **/
       bool add( TObject *);
       
       /** Get 1D pointer **/
-      TH1F* hist1( std::string& );
+      TH1F* hist1( std::string );
       
       /** Get 2D pointer **/
-      TH2F* hist2( std::string& );
+      TH2F* hist2( std::string );
       
       /** Get 2D pointer **/
-      TTree* tree( std::string& );
+      TTree* tree( std::string );
   
     private:
 

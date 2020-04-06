@@ -13,5 +13,9 @@ from . import CaloCellMaker
 __all__.extend(CaloCellMaker.__all__)
 from .CaloCellMaker import *
 
+from . import CaloCellBuilder
+__all__.extend(CaloCellBuilder.__all__)
+from .CaloCellBuilder import *
+
 
 

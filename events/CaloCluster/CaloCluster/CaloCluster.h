@@ -91,8 +91,6 @@ namespace xAOD{
       void clear();
       /*! Get all cells **/
       std::vector<const xAOD::CaloCell*> allCells();
-      /*! Print cluster information **/
-      void Print();
 
 
     private:

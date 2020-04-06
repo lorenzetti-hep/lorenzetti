@@ -19,8 +19,6 @@ EventLoop::~EventLoop()
 
 void EventLoop::BeginOfEvent()
 {
-
-
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Execute pre-execute for " << toolHandle->name() );

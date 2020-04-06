@@ -29,7 +29,8 @@ class CaloCellMaker( Logger ):
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      self.__core.push_back(tool)
+      print(type(tool))
+      self.__core.push_back(tool.core())
     return self.__core
 
 

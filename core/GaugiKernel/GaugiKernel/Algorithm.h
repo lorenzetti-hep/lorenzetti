@@ -39,7 +39,7 @@ namespace Gaugi{
     public:
 
       /*! Constructor */
-      Algorithm( std::string &name );
+      Algorithm( std::string name );
       
       /*! Destructor */
       virtual ~Algorithm() {};

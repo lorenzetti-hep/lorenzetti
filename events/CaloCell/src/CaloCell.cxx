@@ -90,11 +90,10 @@ void CaloCell::Fill( const G4Step* step )
     }
   }
 
-  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
+  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration))
     m_truthRawEnergy+=edep;
-  }else{
+  else
     m_rawEnergy+=edep;
-  }
 }
 
 

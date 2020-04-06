@@ -1,7 +1,7 @@
 #ifndef CaloCellMaker_h
 #define CaloCellMaker_h
 
-#include "ICaloCellTool.h"
+#include "CaloRecTool.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 #include "CaloCell/CaloCell.h"
@@ -38,7 +38,7 @@ class CaloCellMaker : public Gaugi::Algorithm
 
 
     /*! Add tools to be executed into the post execute step. The order is matter here */
-    void push_back( ICaloCellTool *tool ){ m_toolHandles.push_back(tool); };
+    void push_back( CaloRecTool *);
 
 
   private:
@@ -75,7 +75,7 @@ class CaloCellMaker : public Gaugi::Algorithm
 
  
     /*! The tool list that will be executed into the post execute step */
-    std::vector< ICaloCellTool* > m_toolHandles;
+    std::vector< CaloRecTool* > m_toolHandles;
 
 
 
