@@ -1,7 +1,4 @@
 
-
-
-
 #include "CaloCellMaker.h"
 #include "TVector3.h"
 #include <cstdlib>
@@ -11,12 +8,14 @@ using namespace SG;
 using namespace CaloSampling;
 
 
-CaloCellMaker::CaloCellMaker( std::string name ) : 
-  Algorithm( name ),
+CaloCellMaker::CaloCellMaker( std::string name , int msglevel ) : 
+  Algorithm( name , (MSG::Level)msglevel )
 {
-  declareProperty( "OutputKey"        , m_outputKey , "xAOD__CaloCellCollection"  );
-  declareProperty( "HistPath"         , m_histPath  , "/CaloCellMaker"            );
-  declareProperty( "CardPath"         , m_card      , ""                          );
+
+  declareProperty( "HistPath"         , m_histPath      , "/CaloCellMaker"            );
+  declareProperty( "CellConfig"       , m_cellConfig    , ""                          );
+  declareProperty( "BunchConfig"      , m_bunchConfig   , ""                          );
+  declareProperty( "CollectionKey"    , m_collectionKey , "xAOD__CaloCellCollection"  );
 }
 
 
@@ -26,15 +25,12 @@ CaloCellMaker::~CaloCellMaker()
 
 
 
-StatusCode CaloCellMaker::createCollection( EventContext *ctx )
-{
-
 
 
 StatusCode CaloCellMaker::initialize()
 {
   // This is a default path
-  std::ifstream bc_file( std::string(std::getenv("CALOSIM")) +"/resontruction/CaloRec/data/bunch.dat");
+  std::ifstream bc_file( m_bunchConfig );
   bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
   bc_file.close();
   
@@ -43,7 +39,7 @@ StatusCode CaloCellMaker::initialize()
 
 
   // Read the file
-  std::ifstream file(m_card);
+  std::ifstream file(m_cellConfig);
 
 	std::string line;
 	while (std::getline(file, line))
@@ -59,9 +55,10 @@ StatusCode CaloCellMaker::initialize()
 	}
   file.close();
 
+  std::stringstream ss; ss << "cell_etaVsPhi_sampling_" << m_sampling;
   // Create the 2D histogram for monitoring purpose
-  store += (new TH2F( "cells_etaVsPhi_layer_"+ m_sampling, "Cell Energy; #eta; #phi; Energy [GeV]", m_eta_bins, m_eta_min, m_eta_max, 
-                      m_phi_bins, m_phi_min, m_phi_max) );
+  store->add(new TH2F( ss.str().c_str(), "Cell Energy; #eta; #phi; Energy [GeV]", m_eta_bins, m_eta_min, m_eta_max, 
+                       m_phi_bins, m_phi_min, m_phi_max) );
   
   for ( auto tool : m_toolHandles )
   {
@@ -95,16 +92,25 @@ StatusCode CaloCellMaker::finalize()
 
 
 
-StatusCode CaloCellMaker::pre_execute( EventContext *ctx ) const
+StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 {
   // Build the CaloCellCollection and attach into the EventContext
   // Create the cell collection into the event context
-  SG::WriteHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
-  collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection());
+  SG::WriteHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+  collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection(m_eta_min,
+                                                                                            m_eta_max,
+                                                                                            m_eta_bins,
+                                                                                            m_phi_min,
+                                                                                            m_phi_max,
+                                                                                            m_phi_bins,
+                                                                                            m_rmin,
+                                                                                            m_rmax,
+                                                                                            (CaloSample)m_sampling)
+                                                              ) );
 
    
   // Read the file
-  std::ifstream file( m_caloPath );
+  std::ifstream file( m_cellConfig );
 
 	std::string line;
 	while (std::getline(file, line))
@@ -122,8 +128,8 @@ StatusCode CaloCellMaker::pre_execute( EventContext *ctx ) const
       // Create the calorimeter cell
       auto *cell = new xAOD::CaloCell( eta, 
                                        phi, 
-                                       delta_eta , 
-                                       delta_phi,  
+                                       deta , 
+                                       dphi,  
                                        rmin, 
                                        rmax, 
                                        hash,
@@ -145,13 +151,13 @@ StatusCode CaloCellMaker::pre_execute( EventContext *ctx ) const
 
 
   
-StatusCode CaloCellMaker::execute( EventContext *ctx , const G4Step *step ) const
+StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
    
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
 
   if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
   // Get the position
@@ -173,17 +179,17 @@ StatusCode CaloCellMaker::execute( EventContext *ctx , const G4Step *step ) cons
 
 
 
-StatusCode CaloCellMaker::post_execute( EventContext *ctx ) const
+StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 {
   
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
 
-  for ( const auto& p : *collection )
+  for ( const auto& p : **collection.ptr() )
   {
     for ( auto tool : m_toolHandles )
     {
@@ -194,24 +200,24 @@ StatusCode CaloCellMaker::post_execute( EventContext *ctx ) const
     }
   }
 
-  return ErrorCode::SUCCESS;
+  return StatusCode::SUCCESS;
 }
 
 
 
 
-StatusCode CaloCellMaker::fillHistograms( EventContext *ctx ) const
+StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {
   
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_outputKey, *ctx );
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_outputKey);
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
   auto store = getStoreGateSvc();
 
-  
+  /* 
   for ( const auto& p : *collection ){ 
     const auto *cell = p.second;
     // Skip cells with energy equal zero
@@ -221,7 +227,7 @@ StatusCode CaloCellMaker::fillHistograms( EventContext *ctx ) const
     int bin = store->hist2(ss.str())->GetBin(x,y,0);
     float energy = store->hist2(ss.str())->GetBinContent( bin );
     store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
-  }
+  }*/
 
   return StatusCode::SUCCESS;
 }

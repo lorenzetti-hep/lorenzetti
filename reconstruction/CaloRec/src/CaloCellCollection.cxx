@@ -2,7 +2,7 @@
 #include "CaloCellCollection.h"
 
 using namespace xAOD;
-
+using namespace CaloSampling;
 
 CaloCellCollection::CaloCellCollection( float etamin, 
                                         float etamax, 
@@ -12,7 +12,8 @@ CaloCellCollection::CaloCellCollection( float etamin,
                                         float phibins, 
                                         float rmin, 
                                         float rmax, 
-                                        int sampling):
+                                        CaloSample sampling
+                                        ):
   m_radius_min(rmin), m_radius_max(rmax), m_sampling(sampling)
 {
   float deta = (etamax-etamin)/etabins;
@@ -23,21 +24,30 @@ CaloCellCollection::CaloCellCollection( float etamin,
 
 
 
-void CaloCellCollection::~CaloCellCellection()
+CaloCellCollection::~CaloCellCollection()
 {
+  for(auto& p : m_collection)
+    if(p.second)  delete p.second;
   m_collection.clear();
+}
+
+
+CaloSample CaloCellCollection::sampling() const
+{
+  return m_sampling;
 }
 
 
 void CaloCellCollection::push_back( xAOD::CaloCell *cell )
 {
   // This collection will be responsible to manager the memory allocated for each cell
-  m_collection.insert( std::make_pair( cell->hash(), std::unique_ptr<xAOD::CaloCell*>(cell) ) );
+  //m_collection.insert( std::make_pair( cell->hash(), std::unique_ptr<xAOD::CaloCell>(cell) ) );
+  m_collection.insert( std::make_pair( cell->hash(), cell ) );
 }
 
 
 
-bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell )
+bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell ) const
 {
   // Retrun nullptr in case of not match
   cell = nullptr;
@@ -59,7 +69,8 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell )
         if ( phi > m_phi_bins[phi_bin] && phi <= m_phi_bins[phi_bin+1]){
           std::stringstream ss;
           ss << "layer" << m_sampling << "_eta" << eta_bin << "_phi" << phi_bin;
-          cell = m_collection[ss.str()].get();
+          //cell = m_collection[ss.str()].get();
+          cell = m_collection.at(ss.str());
           return true;
         }
       }
@@ -70,15 +81,15 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell )
 }
 
 
-size_t CaloCellCollection::size()
+size_t CaloCellCollection::size() const
 {
   return m_collection.size();
 }
 
 
-collection_map_t& CaloCellCollection::*operator()
+const CaloCellCollection::collection_map_t& CaloCellCollection::operator*() const
 {
-  return *m_collection;
+  return m_collection;
 }
 
 

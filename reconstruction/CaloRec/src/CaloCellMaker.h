@@ -1,7 +1,7 @@
 #ifndef CaloCellMaker_h
 #define CaloCellMaker_h
 
-#include "GaugiKernel/AlgTool.h"
+#include "ICaloCellTool.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 #include "CaloCell/CaloCell.h"
@@ -13,7 +13,7 @@ class CaloCellMaker : public Gaugi::Algorithm
   public:
   
     /** Contructor **/
-    CaloCellMaker( std::string );
+    CaloCellMaker( std::string name, int msglevel=1 );
     
     /** Destructor **/
     ~CaloCellMaker();
@@ -22,23 +22,23 @@ class CaloCellMaker : public Gaugi::Algorithm
     virtual StatusCode initialize() override;
     
     /*! Execute in step action step from geant core **/
-    virtual StatusCode execute( EventContext *ctx , const G4Step *step) const override;
+    virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
     
     /*! execute before start the step action **/
-    virtual StatusCode pre_execute( EventContext *ctx ) const override;
+    virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
     
     /*! execute after the step action **/ 
-    virtual StatusCode post_execute( EventContext *ctx ) const override;
+    virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
     
     /*! fill hisogram in the end **/
-    virtual StatusCode fillHistograms( EventContext *ctx ) const override;
+    virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     
     /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
 
 
     /*! Add tools to be executed into the post execute step. The order is matter here */
-    void push_back( Gaugi::AlgTool *tool ){ m_toolHandles.push_back(tool); };
+    void push_back( ICaloCellTool *tool ){ m_toolHandles.push_back(tool); };
 
 
   private:
@@ -47,10 +47,14 @@ class CaloCellMaker : public Gaugi::Algorithm
      * Properties
      */
 
-    std::string m_outputKey;
+    std::string m_collectionKey;
+    std::string m_histPath;
+    std::string m_cellConfig;
+    std::string m_bunchConfig;
     
+
     /*! The tool list that will be executed into the post execute step */
-    std::vector< Gaugi::AlgTool* > m_toolHandles;
+    std::vector< ICaloCellTool* > m_toolHandles;
     
 
     /*
@@ -72,12 +76,12 @@ class CaloCellMaker : public Gaugi::Algorithm
 
   
     float m_eta_min;
-    float m_eta_max, 
-    float m_eta_bins, 
-    float m_phi_min, 
-    float m_phi_max, 
-    float m_phi_bins, 
-    float m_rmin, 
+    float m_eta_max; 
+    float m_eta_bins; 
+    float m_phi_min;
+    float m_phi_max; 
+    float m_phi_bins; 
+    float m_rmin;
     float m_rmax;
   
 };

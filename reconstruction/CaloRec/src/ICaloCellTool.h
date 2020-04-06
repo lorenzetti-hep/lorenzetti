@@ -2,16 +2,16 @@
 #define ICaloCellTool_h
 
 #include "GaugiKernel/AlgTool.h"
+#include "CaloCell/CaloCell.h"
 
-
-class ICaloCellTool : public AlgTool
+class ICaloCellTool : public Gaugi::AlgTool
 {
 
   public:
     /** Constructor **/
-    ICaloCellTool( std::string name) : AlgTool(name){};
+    ICaloCellTool( std::string name, MSG::Level msglevel) : Gaugi::AlgTool(name, msglevel ){};
     
-    virtual StatusCode executeTool( CaloCell * ) const = 0;
+    virtual StatusCode executeTool( xAOD::CaloCell * ) const = 0;
 
 };
 

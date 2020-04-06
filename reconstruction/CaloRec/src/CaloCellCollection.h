@@ -7,20 +7,27 @@
 #include "TVector3.h"
 #include <string>
 #include <map>
-
+#include <memory>
 
 namespace xAOD{
 
-  class CaloCellCollection : public DataHandle
+  class CaloCellCollection : public SG::DataHandle
   {  
-    typedef std::map<std::string, std::unique_ptr<xAOD::CaloCell> > collection_map_t;
+    //typedef std::map<std::string, std::unique_ptr<xAOD::CaloCell> > collection_map_t;
+    typedef std::map<std::string, xAOD::CaloCell* > collection_map_t;
 
     public:
 
       /*! Contructor */
-      CaloCellCollection( float etamin, float etamax , float etabins, 
-                          float phimin, float phimax , float phibins, 
-                          float rmin  , float rmax   , int   sampling);
+      CaloCellCollection( float etamin, 
+                          float etamax, 
+                          float etabins, 
+                          float phimin, 
+                          float phimax, 
+                          float phibins, 
+                          float rmin, 
+                          float rmax, 
+                          CaloSampling::CaloSample sampling);
  
       /*! Destructor */
       ~CaloCellCollection();
@@ -29,12 +36,14 @@ namespace xAOD{
       void push_back( xAOD::CaloCell* );
       /*! Zeroize all calo cells */
       void clear();
+      /*! Sampling */
+      CaloSampling::CaloSample sampling() const;
       /*! Return the number of cells into this collection */
-      size_t size();
+      size_t size() const;
       /*! Retreive the correct cell given the step position */
-      bool retrieve( TVector3 &, xAOD::CaloCell*& );
+      bool retrieve( TVector3 &, xAOD::CaloCell*& ) const;
       /*! Get the cell map */ 
-      collection_map_t& operator*();
+      const collection_map_t& operator*() const;
 
      
     private:
@@ -48,14 +57,10 @@ namespace xAOD{
       /*! In plan xy */
       float m_radius_min;
       /*! In plan xy */
-      float m_radius_rmax;
+      float m_radius_max;
       /*! Calorimeter sampling id */
-      int m_sampling;
-
+      CaloSampling::CaloSample m_sampling;
   };
-
-
-
 
 
 }// namespace
