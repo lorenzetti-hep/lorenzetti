@@ -2,15 +2,9 @@
 #define CaloRings_h
 
 
-/** simulator includes **/
 #include "CaloCell/CaloCell.h"
 #include "GaugiKernel/macros.h"
 
-/** geant 4 includes **/
-#include "globals.hh"
-
-/** standard includes **/
-#include <vector>
 
 
 // Event Object Data
@@ -21,15 +15,27 @@ namespace xAOD{
     public:
       
       /*! Contructor */
-      CaloRings()=default;
+      CaloRings():m_caloCluster(nullptr) {};
       /*! Destructor */
       ~CaloRings()=default;
 
+      /*! Rings energy */
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_rings, setRings, rings );
 
-   
+      /*! Set the associated CaloCluster to this CaloRings */
+      void setCaloCluster( const xAOD::CaloCluster *clus ){ m_caloCluster=clus; };
+      
+      /*! Get the associated cluster to this CaloRings */
+      const xAOD::CaloCluster* caloCluster() const { return m_caloCluster; };
+
 
     private:
-      
+
+      // Rings shape
+      std::vector<float> m_rings;
+      // CaloCluster used to build the rings
+      const xAOD::CaloCluster *m_caloCluster;
+
   };
 
 
@@ -40,16 +46,16 @@ namespace xAOD{
       RingSet( CaloSampling::CaloSample , unsigned nrings, float deta, float dphi );
       RingSet()=default;
 
-      void push_back( const xAOD::CaloCell * );
+      void add( const xAOD::CaloCell *, float eta_center, float phi_center , bool truth=false);
 
-      const std::vector<float>& rings() const;
+      const std::vector<float>& pattern() const;
 
       size_t size() const;
   
 
     private:
 
-      std::vector<float> m_rings;
+      std::vector<float> m_pattern;
       /*! Delta eta */
       float m_deta;
       /*! Delta phi */
@@ -63,7 +69,7 @@ namespace xAOD{
 
 
 
-  void RingSet::add( const xAOD::CaloCell *cell , const float eta_center, const float phi_center, bool truth)
+  void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_center, bool truth)
   {
     // This cell does not allow to this RingSet
     if( cell->sampling() != m_sampling )  return;
@@ -72,8 +78,8 @@ namespace xAOD{
     float deltaGreater = std::max(deta, dphi)
     int i = static_cast<unsigned int>( std::floor(deltaGreater) );
     
-    if( i < m_rings.size() ){
-      m_rings[i] += cell->energy() / std::cosh(std::abs(eta_center));
+    if( i < m_pattern.size() ){
+      m_pattern[i] += (truth? cell->truthRawEnergy() : cell->energy()  ) / std::cosh(std::abs(eta_center));
     }
   }
 
@@ -84,9 +90,9 @@ namespace xAOD{
   }
 
 
-  const std::vector<float>& RingSet::rings() const
+  const std::vector<float>& RingSet::pattern() const
   {
-    return m_rings;
+    return m_pattern;
   }
 
 
