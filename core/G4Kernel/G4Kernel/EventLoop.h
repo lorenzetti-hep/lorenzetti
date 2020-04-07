@@ -37,6 +37,9 @@ class EventLoop : public G4Run, public MsgService
     void EndOfEvent();
 
 
+    SG::EventContext& getContext();
+
+
   private:
 
     // the event context

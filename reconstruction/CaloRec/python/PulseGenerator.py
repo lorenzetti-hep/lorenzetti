@@ -26,7 +26,6 @@ class PulseGenerator( Logger ):
 
 
   def core(self):
-    print (type(self.__core))
     return self.__core
 
 
@@ -34,14 +33,14 @@ class PulseGenerator( Logger ):
     if key in self.__allow_keys:
       self.core().setProperty( key, value )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
      
 

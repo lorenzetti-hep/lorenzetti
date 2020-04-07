@@ -1,5 +1,6 @@
 
 #include "CaloCell/CaloCell.h"
+#include "CaloCell/RawCell.h"
 #include "CaloCell/enumeration.h"
 
 using namespace xAOD;
@@ -10,27 +11,22 @@ CaloCell::CaloCell( float eta,
                     float phi, 
                     float deta, 
                     float dphi, 
-                    float radius_min, 
-                    float radius_max,
-                    std::string hash,
                     CaloSample sampling ):
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
-  m_radius_min(radius_min),
-  m_radius_max(radius_max),
   m_sampling(sampling)
 {;}
 
 
-const xAOD::RawEnergy* CaloCell::parent() const
+const xAOD::RawCell* CaloCell::parent() const
 {
   return m_parent;
 }
 
 
-void CaloCell::setParent( const xAOD::RawEnergy *parent )
+void CaloCell::setParent( const xAOD::RawCell *parent )
 {
   m_parent=parent;
 }

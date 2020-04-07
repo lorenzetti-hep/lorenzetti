@@ -50,27 +50,31 @@ link_directories( ${Boost_LIBRARY_DIR} )
 
 
 
-
-#add_subdirectory( external/cpk )
-#add_subdirectory( events/CaloCell )
-add_subdirectory( events/CaloCluster )
-add_subdirectory( events/EventInfo )
-#add_subdirectory( events/TruthParticle )
-
 add_subdirectory( core/GaugiKernel )
 add_subdirectory( core/G4Kernel )
-#add_subdirectory( reco/CaloRec )
+add_subdirectory( external/cpk )
+add_subdirectory( events/CaloCell )
+add_subdirectory( events/CaloCluster )
+add_subdirectory( events/EventInfo )
+add_subdirectory( events/TruthParticle )
+add_subdirectory( events/CaloRings )
+add_subdirectory( reconstruction/CaloRec )
+add_subdirectory( reconstruction/CaloRingerBuilder )
 
 
 add_library(lorenzetti SHARED
-  #$<TARGET_OBJECTS:CaloCell>
-  $<TARGET_OBJECTS:CaloCluster>
-  $<TARGET_OBJECTS:EventInfo>
-  #$<TARGET_OBJECTS:TruthParticle>
+  
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
-  #$<TARGET_OBJECTS:CaloRec>
-  #$<TARGET_OBJECTS:cpk>
+  $<TARGET_OBJECTS:cpk>
+  $<TARGET_OBJECTS:CaloCell>
+  $<TARGET_OBJECTS:CaloCluster>
+  $<TARGET_OBJECTS:EventInfo>
+  $<TARGET_OBJECTS:TruthParticle>
+  $<TARGET_OBJECTS:CaloRings>
+  $<TARGET_OBJECTS:CaloRec>
+  $<TARGET_OBJECTS:CaloRingerBuilder>
+
 )
 
 

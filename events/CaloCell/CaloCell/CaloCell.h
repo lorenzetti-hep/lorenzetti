@@ -34,9 +34,9 @@ namespace xAOD{
       /*! Tranverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
       /*! Get the associated Raw information */ 
-      const RawCell* parent() const;
+      const xAOD::RawCell* parent() const;
       /*! Set the associated Raw information */ 
-      void setParent( const RawCell* );
+      void setParent( const xAOD::RawCell* );
 
     private:
  

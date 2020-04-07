@@ -114,7 +114,8 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
 
 // Just for python import in ROOT
 StatusCode ShowerShapes::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode OptimalFilter::executeTool( xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
+StatusCode ShowerShapes::executeTool( xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
+StatusCode ShowerShapes::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 
 
 

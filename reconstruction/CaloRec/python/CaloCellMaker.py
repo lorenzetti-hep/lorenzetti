@@ -23,13 +23,12 @@ class CaloCellMaker( Logger ):
         setattr( self, '__' + key , value )
         self.__core.setProperty( key, value )
       else:
-        MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+        MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
 
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      print(type(tool))
       self.__core.push_back(tool.core())
     return self.__core
 
@@ -38,14 +37,14 @@ class CaloCellMaker( Logger ):
     if key in self.__allow_keys:
       self.core().setProperty( key, value )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
 
   

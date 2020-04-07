@@ -25,6 +25,9 @@ namespace SG
       /*! Add a new object into the container */
       void push_back( const T* obj );
 
+
+      const std::vector<const T*>& operator*() const;
+
     private:
 
       /*! Hold all object pointers */
@@ -34,7 +37,13 @@ namespace SG
 
 
   template<class T>
-  inline DataVector<T>::~DataVector(){}
+  inline DataVector<T>::~DataVector()
+  {
+    for(auto obj : m_data )
+    {
+      if(obj) delete obj;
+    }
+  }
   
   
   
@@ -48,10 +57,13 @@ namespace SG
   inline void DataVector<T>::push_back( const T* obj )
   {
     m_data.push_back( obj );
-    //m_data.push_back( std::unique_ptr<T>(obj) );
   }
 
-
+  template<class T>
+  inline const std::vector<const T*>& DataVector<T>::operator*() const
+  {
+    return m_data;
+  }
 }
 #endif
 

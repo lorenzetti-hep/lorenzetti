@@ -70,7 +70,7 @@ StatusCode PulseGenerator::executeTool( xAOD::RawCell *cell ) const
 
 
 // Just for python import in ROOT
-StatusCode OptimalFilter::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
+StatusCode PulseGenerator::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
 StatusCode PulseGenerator::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
 StatusCode PulseGenerator::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 

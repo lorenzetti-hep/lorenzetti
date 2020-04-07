@@ -14,10 +14,8 @@
 
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/macros.h"
-//#include "EventInfo/EventInfo.h"
-//#include "EventInfo/EventInfoContainer.h"
-//#include "TruthParticle/TruthParticle.h"
-//#include "TruthParticle/TruthParticleContainer.h"
+#include "EventInfo/EventInfo.h"
+#include "EventInfo/EventInfoContainer.h"
 
 
 const int special_bcid_for_truth_reconstruction = -999;
@@ -60,13 +58,13 @@ class EventReader : public G4VPrimaryGenerator, public MsgService
     // can be implemented in your own class.
     bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
     
-    //void Load( G4Event *, xAOD::EventInfo *);
+    void Load( G4Event *, xAOD::EventInfo *);
 
-    //bool Add( G4Event* g4event , int i, int bc_id );
+    bool Add( G4Event* g4event , int i, int bc_id );
 
     unsigned int           m_evt;
     std::string            m_filename;
-    std::string            m_outputEventKey;
+    std::string            m_eventKey;
     int                    m_verbose;
     EventReaderMessenger  *m_messenger;
 

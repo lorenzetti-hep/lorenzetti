@@ -1,32 +1,25 @@
-__all__ = ["CaloClusterMaker"]
+__all__ = ["CaloCellMerge"]
 
 from Gaugi import Logger, list_to_stdvector
 from Gaugi.messenger.macros import *
 
-class CaloClusterMaker( Logger ):
+class CaloCellMerge( Logger ):
 
-  __allow_keys = ["EnergyThreshold", 
+  __allow_keys = [
                   "CollectionKeys", 
-                  "ClusterKey", 
-                  "EventKey", 
-                  "TruthKey", 
-                  "EtaWindow" , 
-                  "PhiWindow", 
-                  "DeltaR", 
-                  "ForceTruthMatch" , 
+                  "CellsKey", 
+                  "TruthCellsKey", 
                   "OutputLevel", 
-                  "HistogramPath"]
+                  ]
 
   def __init__( self, name, **kw ): 
     
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloClusterMaker
+    from ROOT import CaloCellMerge
     # Create the algorithm
-    self.__core = CaloClusterMaker(name)
-
-    self.Tools = []
+    self.__core = CaloCellMerge(name)
 
     for key, value in kw.items():
       if key in self.__allow_keys:

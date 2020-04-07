@@ -42,7 +42,7 @@ size_t CaloCluster::size()
 }
 
 
-std::vector<const xAOD::CaloCell*> CaloCluster::allCells()
+const std::vector<const xAOD::CaloCell*>& CaloCluster::allCells() const
 {
   return m_container;
 }

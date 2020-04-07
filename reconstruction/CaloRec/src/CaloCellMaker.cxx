@@ -1,5 +1,6 @@
+#include "CaloCellCollection.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "CaloCell/G4CaloCell.h"
+#include "CaloCell/RawCell.h"
 #include "G4Kernel/EventReader.h"
 #include "CaloCellMaker.h"
 #include "TVector3.h"

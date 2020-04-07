@@ -129,37 +129,39 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
     for( auto& caloCluster : clusters_vec )
     {
-      for( auto& particle : particles_vec )
+      for( auto& particlePair : particles_vec )
       {
-        if( particle->caloCluster() ){
-          fillCluster( ctx, particle->caloCluster() );
-          m_showerShapes->executeTool( particle->caloCluster() );
+        if( particlePair.second ){
+          fillCluster( ctx, particlePair.second , m_truthCellsKey );
+          m_showerShapes->executeTool( particlePair.second );
     
-          MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
-          if( dR( particle->caloCluster()->eta(), caloCluster->eta(),
-                  particle->caloCluster()->phi(), caloCluster->phi()) < m_dR )
+          //MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
+          if( dR( particlePair.second->eta(), caloCluster->eta(),
+                  particlePair.second->phi(), caloCluster->phi()) < m_dR )
           {
-            fillCluster( ctx, caloCluster );
+            fillCluster( ctx, caloCluster, m_cellsKey );
             // Calculate all shower shapes
             m_showerShapes->executeTool( caloCluster );
             clusters->push_back( caloCluster );
           }
-          particles->push_back( particle );
-          truth_clusters->push_back( particle->caloCluster() );
+          particlePair.first->setCaloCluster( particlePair.second );
+          particles->push_back( particlePair.first );
+          truth_clusters->push_back( particlePair.second );
         }
       }
     }
   }else{
     for( auto& caloCluster : clusters_vec ){
-      fillCluster( ctx, caloCluster );
+      fillCluster( ctx, caloCluster, m_cellsKey );
       m_showerShapes->executeTool( caloCluster );
       clusters->push_back( caloCluster );
     }
-    for( auto& particle : particles_vec ){
-      fillCluster( ctx, particle->caloCluster() );
-      m_showerShapes->executeTool( particle );
-      particles->push_back( particle );
-      truth_clusters->push_back( particle->caloCluster() );
+    for( auto& particlePair : particles_vec ){
+      fillCluster( ctx, particlePair.second, m_truthCellsKey );
+      m_showerShapes->executeTool( particlePair.second  );
+      particlePair.first->setCaloCluster( particlePair.second );
+      particles->push_back( particlePair.first );
+      truth_clusters->push_back( particlePair.second );
     }
   }
 
@@ -173,9 +175,9 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
 
 
-std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventContext &ctx ) const
+std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > CaloClusterMaker::getAllParticles( EventContext &ctx ) const
 {
-  std::vector< xAOD::TruthParticle* > particles;
+  std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > particles;
   
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
   SG::ReadHandle<xAOD::CaloCellContainer> container( m_truthCellsKey, ctx );
@@ -211,8 +213,8 @@ std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventCont
         maxDeltaR=deltaR;
       }
     }
-    p->setCaloCluster( new xAOD::CaloCluster( closest_cell->energy(), closest_cell->eta(), closest_cell->phi(), m_etaWindow/2., m_phiWindow/2. ) );
-    particles.push_back( p );
+    auto *clus  = new xAOD::CaloCluster( closest_cell->energy(), closest_cell->eta(), closest_cell->phi(), m_etaWindow/2., m_phiWindow/2. ) ;
+    particles.push_back( std::make_pair(p,clus) );
   }
 
   return particles;
@@ -229,7 +231,7 @@ std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( EventContext
   if( !container.isValid() )
   {
     MSG_WARNING("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
-    return vec_clusters;
+    return vec_cluster;
   }
 
 
@@ -270,7 +272,7 @@ std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( EventContext
 
 
 
-void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, std::string &key) const
+void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, std::string key) const
 {
   SG::ReadHandle<xAOD::CaloCellContainer> container(key, ctx);
   if( !container.isValid() ){

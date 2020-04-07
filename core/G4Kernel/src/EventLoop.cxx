@@ -58,6 +58,10 @@ void EventLoop::EndOfEvent()
 }
 
 
+SG::EventContext & EventLoop::getContext()
+{
+  return m_ctx;
+}
 
 
 

@@ -27,7 +27,7 @@ EventReader::EventReader():
     m_evt(0),
     m_filename("hepmc_input.root"), 
     m_verbose(0),
-    m_outputEventKey("xAOD__EventInfoContainer")
+    m_eventKey("EventInfo")
 {
   m_messenger= new EventReaderMessenger(this);
 }
@@ -161,29 +161,26 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   clear();
   m_evt = anEvent->GetEventID();
   
-  EventLoop *sequence = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  EventLoop *loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   if ( m_evt <  m_ttree->GetEntries() ){
 
     MSG_INFO( "Get event (EventReader) with number " << m_evt )
     m_ttree->GetEntry(m_evt);
     
-    // Get the event context into the main sequence
-    //EventContext *ctx = sequence->getContext();
-    //xAOD::EventInfoContainer *eventContainer = new xAOD::EventInfoContainer();
-    //xAOD::EventInfo *event = new xAOD::EventInfo();
+    SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, loop->getContext());
+    event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
 
-    //event->setEventNumber( m_evt );
-    //event->setAvgmu( m_avgmu );
+    xAOD::EventInfo *evt = new xAOD::EventInfo();
+    evt->setEventNumber( m_evt );
+    evt->setAvgmu( m_avgmu );
     
-    //Load( anEvent, event );
+    Load( anEvent, evt );
 
-    //MSG_INFO( "Event id         : " << event->eventNumber() );
-    //MSG_INFO( "Avgmu            : " << event->avgmu() );
-    //MSG_INFO( "Number of seeds  : " << event->size() );
-
-    //eventContainer->push_back(event);
-    //ctx->attach( eventContainer, m_outputEventKey );
+    MSG_INFO( "Event id         : " << evt->eventNumber() );
+    MSG_INFO( "Avgmu            : " << evt->avgmu() );
+    MSG_INFO( "Number of seeds  : " << evt->size() );
+    event->push_back(evt);
 
 
   }else{
@@ -204,10 +201,8 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
-/*
 void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 {
-  MSG_INFO( "AKI "<< m_p_bc_id->size());
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
@@ -218,17 +213,16 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
    
     if( m_p_isMain->at(i) ){
       Add( g4event, i, bc_id );
-      Add( g4event, i, BC_TRUTH_EVENT );
+      Add( g4event, i, special_bcid_for_truth_reconstruction );
     }else{
       Add( g4event, i, bc_id );
     }
 
   }
 
-}*/
+}
 
 
-/*
 bool EventReader::Add( G4Event* g4event , int i, int bc_id )
 {
   G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
@@ -241,5 +235,4 @@ bool EventReader::Add( G4Event* g4event , int i, int bc_id )
   g4event->AddPrimaryVertex(g4vtx);
   return true;
 }
-*/
 

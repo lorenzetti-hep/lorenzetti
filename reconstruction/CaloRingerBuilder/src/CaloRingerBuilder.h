@@ -5,9 +5,8 @@
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
-#include "CaloCell/CaloCellContainer.h"
+#include "CaloRings/CaloRingsContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "TruthParticle/TruthParticleContainer.h"
 
 
 class CaloRingerBuilder : public Gaugi::Algorithm
@@ -35,23 +34,23 @@ class CaloRingerBuilder : public Gaugi::Algorithm
 
   private:
  
-    
+    int m_maxRingSets;    
+    int m_maxRingsAccumulated;
+
     const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , CaloSampling::CaloSample ) const;
-    const xAOD::CaloCell* maxCell( const xAOD::TruthParticle* , CaloSampling::CaloSample ) const;
     
-
-
     std::string m_clusterKey;
     std::string m_ringerKey;
-    std::string m_truthKey;
-    std::string m_histPath;
 
+    std::vector<float>  m_detaRings;
+    std::vector<float>  m_dphiRings;
+    std::vector<int>    m_nRings;
+    std::vector<int>    m_layerRings;
 
-
-
-
-
+    int m_outputLevel;
 };
+
+
 
 #endif
 

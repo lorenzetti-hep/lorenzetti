@@ -1,4 +1,5 @@
 #include "CaloCluster/CaloClusterContainer.h"
+#include "CaloCell/CaloCellContainer.h"
 #include "G4Kernel/EventReader.h"
 #include "CaloCellMerge.h"
 #include "TVector3.h"
@@ -13,7 +14,7 @@ using namespace CaloSampling;
 
 CaloCellMerge::CaloCellMerge( std::string name ) : 
   Algorithm( name ),
-  IMsgService(name),
+  IMsgService(name)
 {
   declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
   declareProperty( "CellsKey"         , m_cellsKey="Cells"            );
@@ -21,6 +22,9 @@ CaloCellMerge::CaloCellMerge( std::string name ) :
   declareProperty( "OutputLevel"      , m_outputLevel=1               );
 
 }
+
+CaloCellMerge::~CaloCellMerge()
+{;}
 
 
 StatusCode CaloCellMerge::initialize()
@@ -75,8 +79,8 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setDeltaEta( raw->deltaEta() );
       truth_cell->setDeltaPhi( raw->deltaPhi() );
       truth_cell->setSampling( raw->sampling() );
-      truth_cell->setEnergy( raw->truthEnergy() );
-      truth_cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
+      truth_cell->setEnergy( raw->truthRawEnergy() );
+      //truth_cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
       truth_cell->setParent( raw );
       truthContainer->push_back( truth_cell );
 
@@ -88,8 +92,8 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       cell->setDeltaEta( raw->deltaEta() );
       cell->setDeltaPhi( raw->deltaPhi() );
       cell->setSampling( raw->sampling() );
-      cell->setEnergy( raw->estimatedEnergy() );
-      cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
+      cell->setEnergy( raw->energy() );
+      //cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
       cell->setParent( raw );
       recoContainer->push_back( cell );
 

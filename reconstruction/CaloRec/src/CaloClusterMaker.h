@@ -38,13 +38,13 @@ class CaloClusterMaker : public Gaugi::Algorithm
   private:
  
     
-    void fillCluster( SG::EventContext &ctx,  xAOD::CaloCluster *clus, std::string &key ) const;
+    void fillCluster( SG::EventContext &ctx,  xAOD::CaloCluster *clus, std::string key ) const;
     
     float dR( float eta1, float phi1, float eta2, float phi2 ) const;
  
     std::vector<xAOD::CaloCluster*> getAllClusters( SG::EventContext &ctx ) const;
     
-    std::vector<xAOD::TruthParticle*> getAllParticles( SG::EventContext &ctx ) const;
+    std::vector<std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*>> getAllParticles( SG::EventContext &ctx ) const;
       
     // input keys
     std::string m_cellsKey;

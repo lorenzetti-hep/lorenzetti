@@ -18,16 +18,21 @@ StoreGate::StoreGate( std::string &outputfile):
 
 StoreGate::~StoreGate()
 {
+  MSG_INFO( "Writing all root objects into the file" ); 
   m_file->Write();
+  /*
   for( const auto &o : m_objs){
+    //o.second->Write();
+    MSG_INFO( o->GetName() << " With " << o->GetEntries() << " entries." );
     delete o.second;
-  }
+  }*/
   m_file->Close();
 }
 
 
 void StoreGate::mkdir( std::string path ){
   m_file->mkdir(path.c_str());
+  m_file->cd(path.c_str());
   m_currentPath = path;
 }
 
@@ -54,8 +59,8 @@ bool StoreGate::add( TObject* obj){
 
 TH1F* StoreGate::hist1( std::string path )
 {
-	if( m_objs.find( path ) == m_objs.end() )  
-    MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
+	//if( m_objs.find( path ) == m_objs.end() )  
+  //  MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
   return ((TH1F*)m_objs[path]);
 }
 

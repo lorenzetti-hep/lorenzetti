@@ -51,7 +51,12 @@ namespace xAOD{
       const std::vector<float>& pattern() const;
       /*! The number of rings in this RingSet */
       size_t size() const;
-  
+      /*! Sampling id */
+      CaloSampling::CaloSample sampling() const;
+      /*! Zeroize all energy values */
+      void clear();
+
+
     private:
 
       std::vector<float> m_pattern;
@@ -63,37 +68,6 @@ namespace xAOD{
       CaloSampling::CaloSample m_sampling;
   };
 
-
-  RingSet::RingSet( CaloSampling::CaloSample sampling, unsigned nrings, float deta, float dphi ):
-    m_sampling(sampling), m_pattern(nrings,0), m_deta(deta), m_dphi(dphi)
-  {;}
-
-
-  void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_center, bool truth)
-  {
-    // This cell does not allow to this RingSet
-    if( cell->sampling() != m_sampling )  return;
-    float deta = std::abs( eta_center - cell->eta() ) / m_deta;
-    float dphi = std::abs( phi_center - cell->phi() ) / m_dphi;
-    float deltaGreater = std::max(deta, dphi);
-    int i = static_cast<unsigned int>( std::floor(deltaGreater) );
-    
-    if( i < m_pattern.size() ){
-      m_pattern[i] += (truth? cell->truthRawEnergy() : cell->energy()  ) / std::cosh(std::abs(eta_center));
-    }
-  }
-
-
-  size_t RingSet::size() const
-  {
-    return m_pattern.size();
-  }
-
-
-  const std::vector<float>& RingSet::pattern() const
-  {
-    return m_pattern;
-  }
 
 }
 #endif

@@ -41,25 +41,31 @@ class CaloCellBuilder( Logger ):
 
   def configure(self):
 
-    from CaloRec import CaloCellMaker, PulseGenerator, OptimalFilter
+    from CaloRec import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
     for idx, config in enumerate( self.__detectors ):
-
       suffix = config[0].split('_')
-      print(suffix)
       pulse = PulseGenerator("PulseGenerator", NSamples = config[3], ShaperFile = self.__basepath+config[2])
       of = OptimalFilter("OptimalFilter")
-
-      alg = CaloCellMaker("CaloCellMaker", CollectionKey = config[0], CaloCellFile = self.__basepath+config[1], HistogramPath = '/CaloCellMaker')
+      alg = CaloCellMaker("CaloCellMaker_"+suffix[3]+'_'+suffix[4], 
+                          CollectionKey = config[0], 
+                          CaloCellFile = self.__basepath+config[1], 
+                          HistogramPath = 'CaloCellMaker')
       alg.Tools = [pulse, of]
       self.__recoAlgs.append( alg )
-    
+  
+
+    # Merge all collection into a container and split between truth and reco
+    mergeAlg = CaloCellMerge( "CaloCellMerge" , CollectionKeys = self.keys() )
+    self.__recoAlgs.append( mergeAlg )
+
 
   def merge( self, acc ):
     for reco in self.__recoAlgs:
       acc+=reco 
 
 
-
+  def keys(self):
+    return [config[0] for config in self.__detectors]
 
 
 
