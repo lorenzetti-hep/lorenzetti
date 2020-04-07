@@ -1,4 +1,4 @@
-
+#include "CaloCluster/CaloClusterContainer.h"
 #include "G4Kernel/EventReader.h"
 #include "CaloCellMaker.h"
 #include "TVector3.h"
@@ -13,6 +13,7 @@ using namespace CaloSampling;
 
 CaloCellMaker::CaloCellMaker( std::string name ) : 
   Algorithm( name ),
+  IMsgService(name),
   m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
 
@@ -216,6 +217,8 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
       }
     }
   }
+
+ 
 
   return StatusCode::SUCCESS;
 }

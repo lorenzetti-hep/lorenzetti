@@ -3,7 +3,7 @@
 
 
 #include "GaugiKernel/DataHandle.h"
-#include "CaloCell/CaloCell.h"
+#include "CaloCell/G4CaloCell.h"
 #include "TVector3.h"
 #include <string>
 #include <map>
@@ -14,7 +14,7 @@ namespace xAOD{
   class CaloCellCollection : public SG::DataHandle
   {  
     //typedef std::map<std::string, std::unique_ptr<xAOD::CaloCell> > collection_map_t;
-    typedef std::map<std::string, xAOD::CaloCell* > collection_map_t;
+    typedef std::map<std::string, xAOD::G4CaloCell* > collection_map_t;
 
     public:
 
@@ -33,7 +33,7 @@ namespace xAOD{
       ~CaloCellCollection();
 
       /*! Add a new calo cell into the collection */
-      void push_back( xAOD::CaloCell* );
+      void push_back( xAOD::G4CaloCell* );
       /*! Zeroize all calo cells */
       void clear();
       /*! Sampling */
@@ -41,7 +41,7 @@ namespace xAOD{
       /*! Return the number of cells into this collection */
       size_t size() const;
       /*! Retreive the correct cell given the step position */
-      bool retrieve( TVector3 &, xAOD::CaloCell*& ) const;
+      bool retrieve( TVector3 &, xAOD::G4CaloCell*& ) const;
       /*! Get the cell map */ 
       const collection_map_t& operator*() const;
 

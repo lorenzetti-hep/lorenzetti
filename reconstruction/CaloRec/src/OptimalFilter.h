@@ -15,6 +15,8 @@ class OptimalFilter : public CaloRecTool
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
     virtual StatusCode executeTool( xAOD::CaloCell * ) const override;
+    virtual StatusCode executeTool( xAOD::CaloCluster * ) const override;
+    virtual StatusCode executeTool( xAOD::TruthParticle * ) const override;
 
 
   private:

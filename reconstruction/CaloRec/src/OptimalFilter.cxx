@@ -4,7 +4,8 @@ using namespace Gaugi;
 
 
 OptimalFilter::OptimalFilter( std::string name ) : 
-  CaloRecTool( name )
+  CaloRecTool( name ),
+  IMsgService(name)
 {
   declareProperty( "OutputLevel", m_outputLevel=MSG::INFO );
 }
@@ -46,4 +47,8 @@ StatusCode OptimalFilter::executeTool( xAOD::CaloCell *cell ) const
 	cell->setEnergy(energy);
 	return StatusCode::SUCCESS;
 }
+
+StatusCode OptimalFilter::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
+StatusCode OptimalFilter::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
+
 

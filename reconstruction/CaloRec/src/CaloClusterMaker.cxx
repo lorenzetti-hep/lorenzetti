@@ -14,17 +14,18 @@ using namespace CaloSampling;
 
 
 CaloClusterMaker::CaloClusterMaker( std::string name ) : 
-  Gaugi::Algorithm( name )
+  Gaugi::Algorithm( name ),
+  IMsgService(name)
 {
   declareProperty( "EnergyThreshold", m_energyThreshold=3*GeV );
   declareProperty( "CollectionKeys" , m_collectionKeys={}     );
   declareProperty( "ClusterKey"     , m_clusterKey="Clusters" );
-  declareProperty( "EventKey"       , m_eventKey="Event"      );
+  declareProperty( "EventKey"       , m_eventKey="EventInfo"  );
   declareProperty( "TruthKey"       , m_truthKey="Particles"  );
   declareProperty( "EtaWindow"      , m_etaWindow=0.4         );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4         );
   declareProperty( "DeltaR"         , m_dR=0.15               );            
-  declareProperty( "ForceTruthMatch", m_forceTruthMatch=true  );
+  declareProperty( "ForceTruthMatch", m_forceTruthMatch=false  );
   declareProperty( "OutputLevel"    , m_outputLevel=MSG::INFO );
   declareProperty( "HistogramPath"  , m_histPath="Clusters"   );
 }
@@ -32,9 +33,7 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
 
 
 CaloClusterMaker::~CaloClusterMaker()
-{
-  delete m_showerShapes;
-}
+{;}
 
 
 StatusCode CaloClusterMaker::initialize()
@@ -50,8 +49,6 @@ StatusCode CaloClusterMaker::initialize()
   store->add( new TH1F("mc_reta", "Count;R_{#eta};", 100, 0.5, 1.1) );
   store->add( new TH1F("mc_rphi", "Count;R_{#phi};", 100, 0.5, 1.1) );
   store->add( new TH1F("mc_rhad", "Count;R_{had};", 100, 0.1, 1.1) );
-  
-  
   store->add( new TH1F("cl_et", "Count;E_{T};", 100, 0, 100) );
   store->add( new TH1F("cl_eta", "Count;#eta;", 100, -1.5, 1.5) );
   store->add( new TH1F("cl_phi", "Count;#phi;", 100, -3.2, 3.2) );
@@ -59,20 +56,17 @@ StatusCode CaloClusterMaker::initialize()
   store->add( new TH1F("cl_reta", "Count;R_{#eta};", 100, 0.5, 1.1) );
   store->add( new TH1F("cl_rphi", "Count;R_{#phi};", 100, 0.5, 1.1) );
   store->add( new TH1F("cl_rhad", "Count;R_{had};", 100, 0.1, 1.1) );
-  
-  
-  
   store->add( new TH1F("res_eta"    , "Count;res_{#eta};",100, -1, 1 ) );
   store->add( new TH1F("res_phi"    , "Count;res_{#phi};",100, -3.2, 3.2 ) );
   store->add( new TH1F("res_eratio" , "Count;res_{E_{ratio}};",100, -1, 1 ) );
   
 
-  //m_showerShapes = new ShowerShapes( "ShowerShapes" );
+  m_showerShapes = new ShowerShapes( "ShowerShapes" );
   
   //if ( m_showerShapes->initialize().isFailure() )
   //  MSG_FATAL("It's not possible to initialize the ShowerShapes tool");
 
-
+  MSG_INFO("CaloClusterMaker was completed initialized.");
   return StatusCode::SUCCESS;
 }
 
@@ -90,9 +84,9 @@ StatusCode CaloClusterMaker::execute( EventContext &/*ctx*/, const G4Step * /*st
 
 StatusCode CaloClusterMaker::finalize()
 {
-  if ( m_showerShapes->finalize().isFailure() )
-    MSG_FATAL("It's not possible to finalize the ShowerShapes tool");
-
+  //if ( m_showerShapes->finalize().isFailure() )
+  //  MSG_FATAL("It's not possible to finalize the ShowerShapes tool");
+  //delete m_showerShapes;
   return StatusCode::SUCCESS;
 }
 
@@ -130,13 +124,13 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
       for( auto& particle : particles_vec )
       {
         fillCluster<xAOD::TruthParticle>( ctx, particle );
-        //calculate( particle );
+        m_showerShapes->executeTool( particle );
     
         MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
         if( !particle->caloCluster() && dR( caloCluster, particle ) < m_dR ){
           fillCluster<xAOD::CaloCluster>( ctx, caloCluster );
           // Calculate all shower shapes
-          //m_showerShapes->executeTool( caloCluster )
+          m_showerShapes->executeTool( caloCluster );
           particle->setCaloCluster( caloCluster );
           clusters->push_back( caloCluster );
         }
@@ -147,13 +141,13 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   }else{
     for( auto& caloCluster : clusters_vec ){
       fillCluster<xAOD::CaloCluster>( ctx, caloCluster );
-      //m_showerShapes->executeTool( caloCluster )
+      m_showerShapes->executeTool( caloCluster );
       clusters->push_back( caloCluster );
     }
 
     for( auto& particle : particles_vec ){
       fillCluster<xAOD::TruthParticle>( ctx, particle );
-      //m_showerShapes->executeTool( particle )
+      m_showerShapes->executeTool( particle );
       particles->push_back( particle );
     }
   }
@@ -163,13 +157,12 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
   MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
 
+  
   for (auto& particle : **particles)
   {
     bool matched = particle->caloCluster()?true:false;
     MSG_INFO( "Particle in (eta="<<particle->eta() << ",phi="<< particle->phi()<< ") with " << particle->et()<< ". With cluster? " << (matched?"Yes":"No") );
   }
-
-
 
   return StatusCode::SUCCESS;
 }
@@ -184,7 +177,7 @@ std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventCont
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
 
   if( !event.isValid() ){
-    MSG_WARNING( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
+    MSG_WARNING( "It's not possible to read the xAOD::EventInfoContainer from this Context using this key: " << m_eventKey );
     return particles;
   }
 
@@ -296,6 +289,7 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, T* clus) const
 
 StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
 {
+  MSG_INFO( "Fill all histograms" );
   auto store = getStoreGateSvc();
   
   SG::ReadHandle<xAOD::CaloClusterContainer> clusters( m_clusterKey, ctx );
@@ -308,6 +302,8 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
   }
 
   for( const auto& clus : **clusters.ptr() ){
+    MSG_INFO( "Cluster with Et = " << clus->et()/1.e3 );
+    MSG_INFO( "Cluster with ERatio = " << clus->eratio() );
     store->hist1(m_histPath+"/cl_et")->Fill( clus->et() / 1.e3);
     store->hist1(m_histPath+"/cl_eta")->Fill( clus->eta() );
     store->hist1(m_histPath+"/cl_phi")->Fill( clus->phi() );
@@ -317,6 +313,8 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
     store->hist1(m_histPath+"/cl_eratio")->Fill( clus->eratio() );
   }
 
+
+  MSG_INFO( "AKI = " << store->hist1(m_histPath+"/cl_et")->GetEntries() );
   return StatusCode::SUCCESS;
 }
 

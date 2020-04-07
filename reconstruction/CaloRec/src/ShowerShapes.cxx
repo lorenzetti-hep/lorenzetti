@@ -10,7 +10,8 @@ using namespace CaloSampling;
 
 
 ShowerShapes::ShowerShapes( std::string name ) : 
-  CaloRecTool( name )
+  CaloRecTool( name ),
+  IMsgService(name)
 {;}
 
 
@@ -206,6 +207,10 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
   }
   return energy;
 }
+
+
+
+StatusCode ShowerShapes::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
 
 
 

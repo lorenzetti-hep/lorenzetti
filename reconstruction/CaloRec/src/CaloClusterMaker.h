@@ -59,7 +59,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
     std::string m_histPath;
 
 
-    CaloRecTool *m_showerShapes;
+    ShowerShapes *m_showerShapes;
 
 
 

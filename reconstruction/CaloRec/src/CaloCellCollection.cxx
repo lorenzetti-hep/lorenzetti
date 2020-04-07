@@ -38,7 +38,7 @@ CaloSample CaloCellCollection::sampling() const
 }
 
 
-void CaloCellCollection::push_back( xAOD::CaloCell *cell )
+void CaloCellCollection::push_back( xAOD::G4CaloCell *cell )
 {
   // This collection will be responsible to manager the memory allocated for each cell
   //m_collection.insert( std::make_pair( cell->hash(), std::unique_ptr<xAOD::CaloCell>(cell) ) );
@@ -47,7 +47,7 @@ void CaloCellCollection::push_back( xAOD::CaloCell *cell )
 
 
 
-bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloCell *&cell ) const
+bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::G4CaloCell *&cell ) const
 {
   // Retrun nullptr in case of not match
   cell = nullptr;
@@ -91,15 +91,5 @@ const CaloCellCollection::collection_map_t& CaloCellCollection::operator*() cons
 {
   return m_collection;
 }
-
-
-float CaloCellCollection::totalEnergy() const 
-{
-  float total=0;
-  for(auto& p : m_collection)
-    if(p.second) total+=p.second->rawEnergy();
-  return total;
-}
-
 
 

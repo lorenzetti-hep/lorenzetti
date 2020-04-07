@@ -5,7 +5,8 @@ using namespace Gaugi;
 
 
 PulseGenerator::PulseGenerator( std::string name ) : 
-  CaloRecTool( name )
+  CaloRecTool( name ),
+  IMsgService(name)
 {
   declareProperty( "NSamples"     , m_nsamples=7              );
   declareProperty( "ShaperFile"   , m_shaperFile              );
@@ -22,6 +23,7 @@ PulseGenerator::~PulseGenerator()
 
 StatusCode PulseGenerator::initialize()
 {
+  MSG_INFO( "Reading shaper values from: " << m_shaperFile );
   setMsgLevel( (MSG::Level)m_outputLevel );
   m_pulseGenerator = new CPK::TPulseGenerator( m_nsamples, m_shaperFile.c_str());
   return StatusCode::SUCCESS;
@@ -40,7 +42,12 @@ StatusCode PulseGenerator::executeTool( xAOD::CaloCell *cell ) const
   
   // Get all energies for each bunch crossing 
   auto rawEnergySamples = cell->rawEnergySamples();
-  
+
+  //std::cout << "RawEnergySamples = ";
+  //for (auto v : rawEnergySamples )
+  //  std::cout << v << " ";
+  //std::cout << std::endl;
+
   // Create an pulse with zeros with n samples
   std::vector<float> pulse_sum(pulse_size, 0.0);
   // Loop over each bunch crossing
@@ -59,6 +66,19 @@ StatusCode PulseGenerator::executeTool( xAOD::CaloCell *cell ) const
   cell->setPulse( pulse_sum );
   return StatusCode::SUCCESS;
 }
+
+
+
+
+StatusCode PulseGenerator::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
+StatusCode PulseGenerator::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
+
+
+
+
+
+
+
 
 
 

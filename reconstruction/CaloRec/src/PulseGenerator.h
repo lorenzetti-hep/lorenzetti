@@ -19,6 +19,9 @@ class PulseGenerator : public CaloRecTool
     virtual StatusCode finalize() override;
 
     virtual StatusCode executeTool( xAOD::CaloCell * ) const override;
+    virtual StatusCode executeTool( xAOD::CaloCluster * ) const override;
+    virtual StatusCode executeTool( xAOD::TruthParticle * ) const override;
+
 
 
   private:
