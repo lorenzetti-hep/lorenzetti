@@ -4,16 +4,9 @@
 using namespace xAOD;
 using namespace CaloSampling;
 
-CaloCellCollection::CaloCellCollection( float etamin, 
-                                        float etamax, 
-                                        float etabins, 
-                                        float phimin, 
-                                        float phimax, 
-                                        float phibins, 
-                                        float rmin, 
-                                        float rmax, 
-                                        CaloSample sampling
-                                        ):
+
+CaloCellCollection::CaloCellCollection( float etamin, float etamax, float etabins, float phimin, float phimax, 
+                                        float phibins,float rmin,   float rmax, CaloSample sampling ):
   m_radius_min(rmin), m_radius_max(rmax), m_sampling(sampling)
 {
   float deta = (etamax-etamin)/etabins;
@@ -21,7 +14,6 @@ CaloCellCollection::CaloCellCollection( float etamin,
   for (unsigned eta_idx=0 ; eta_idx<etabins+1; ++eta_idx) m_eta_bins.push_back( etamin + deta * eta_idx );
   for (unsigned phi_idx=0 ; phi_idx<phibins+1; ++phi_idx) m_phi_bins.push_back( phimin + dphi * phi_idx );
 }
-
 
 
 CaloCellCollection::~CaloCellCollection()
@@ -38,16 +30,13 @@ CaloSample CaloCellCollection::sampling() const
 }
 
 
-void CaloCellCollection::push_back( xAOD::G4CaloCell *cell )
+void CaloCellCollection::push_back( xAOD::RawCell *cell )
 {
-  // This collection will be responsible to manager the memory allocated for each cell
-  //m_collection.insert( std::make_pair( cell->hash(), std::unique_ptr<xAOD::CaloCell>(cell) ) );
   m_collection.insert( std::make_pair( cell->hash(), cell ) );
 }
 
 
-
-bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::G4CaloCell *&cell ) const
+bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::RawCell *&cell ) const
 {
   // Retrun nullptr in case of not match
   cell = nullptr;

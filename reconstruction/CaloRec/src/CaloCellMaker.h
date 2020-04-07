@@ -4,8 +4,6 @@
 #include "CaloRecTool.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
-#include "CaloCell/CaloCell.h"
-#include "CaloCellCollection.h"
 
 
 class CaloCellMaker : public Gaugi::Algorithm
@@ -14,52 +12,32 @@ class CaloCellMaker : public Gaugi::Algorithm
   
     /** Contructor **/
     CaloCellMaker( std::string name );
-    
     /** Destructor **/
-    ~CaloCellMaker();
+    ~CaloCellMaker()=default;
     
     /*! initialize the algorithm **/
     virtual StatusCode initialize() override;
-    
     /*! Execute in step action step from geant core **/
     virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
-    
     /*! execute before start the step action **/
     virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
-    
     /*! execute after the step action **/ 
     virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
-    
     /*! fill hisogram in the end **/
     virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
-    
     /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
-
-
     /*! Add tools to be executed into the post execute step. The order is matter here */
     void push_back( CaloRecTool *);
 
-
   private:
    
-    /*
-     * Properties
-     */
-
     /*! collection key */
     std::string m_collectionKey;
     /*! Base histogram path */
     std::string m_histPath;
     /*! The path to the cell configuration file */
     std::string m_caloCellFile;
-    
-   
-
-    /*
-     * Internal usage
-     */
-
     /*! Sampling id for this reconstruction */
     int m_sampling;
     /*! The start bunch crossing id for energy estimation */
@@ -72,11 +50,8 @@ class CaloCellMaker : public Gaugi::Algorithm
     int m_bc_nsamples;
     /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
-
- 
     /*! The tool list that will be executed into the post execute step */
     std::vector< CaloRecTool* > m_toolHandles;
-
 
 
     float m_eta_min;
@@ -86,8 +61,7 @@ class CaloCellMaker : public Gaugi::Algorithm
     float m_phi_max; 
     float m_phi_bins; 
     float m_rmin;
-    float m_rmax;
-  
+    float m_rmax;  
 };
 
 

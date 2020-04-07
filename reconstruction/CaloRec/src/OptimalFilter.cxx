@@ -31,7 +31,7 @@ StatusCode OptimalFilter::finalize()
 
 
 
-StatusCode OptimalFilter::executeTool( xAOD::CaloCell *cell ) const
+StatusCode OptimalFilter::executeTool( xAOD::RawCell *cell ) const
 {
 	auto pulse = cell->pulse();
 	float energy=0.0;
@@ -48,6 +48,9 @@ StatusCode OptimalFilter::executeTool( xAOD::CaloCell *cell ) const
 	return StatusCode::SUCCESS;
 }
 
+
+// Just for python import in ROOT
+StatusCode OptimalFilter::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
 StatusCode OptimalFilter::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
 StatusCode OptimalFilter::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 

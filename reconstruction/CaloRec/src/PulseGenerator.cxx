@@ -36,7 +36,7 @@ StatusCode PulseGenerator::finalize()
 }
 
 
-StatusCode PulseGenerator::executeTool( xAOD::CaloCell *cell ) const
+StatusCode PulseGenerator::executeTool( xAOD::RawCell *cell ) const
 {
   auto pulse_size = m_pulseGenerator->GetPulseSize();
   
@@ -69,7 +69,8 @@ StatusCode PulseGenerator::executeTool( xAOD::CaloCell *cell ) const
 
 
 
-
+// Just for python import in ROOT
+StatusCode OptimalFilter::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
 StatusCode PulseGenerator::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
 StatusCode PulseGenerator::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 

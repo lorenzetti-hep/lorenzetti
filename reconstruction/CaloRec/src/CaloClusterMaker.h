@@ -38,27 +38,33 @@ class CaloClusterMaker : public Gaugi::Algorithm
   private:
  
     
-    template<class T> void fillCluster( SG::EventContext &ctx,  T* clus ) const;
+    void fillCluster( SG::EventContext &ctx,  xAOD::CaloCluster *clus, std::string &key ) const;
     
-    float dR( const xAOD::CaloCluster *, const xAOD::TruthParticle *) const;
+    float dR( float eta1, float phi1, float eta2, float phi2 ) const;
  
     std::vector<xAOD::CaloCluster*> getAllClusters( SG::EventContext &ctx ) const;
     
     std::vector<xAOD::TruthParticle*> getAllParticles( SG::EventContext &ctx ) const;
       
-    
-    float m_energyThreshold;
-    std::vector<std::string> m_collectionKeys;
-    std::string m_clusterKey;
+    // input keys
+    std::string m_cellsKey;
+    std::string m_truthCellsKey;
     std::string m_eventKey;
+    
+    // output keys
     std::string m_truthKey;
+    std::string m_truthClusterKey;
+    std::string m_clusterKey;
+
+    // cluster configuration
+    float m_energyThreshold;
     float m_etaWindow;
     float m_phiWindow;
     float m_dR;
     bool m_forceTruthMatch;
     std::string m_histPath;
 
-
+    // Shower shaper calculator
     ShowerShapes *m_showerShapes;
 
 

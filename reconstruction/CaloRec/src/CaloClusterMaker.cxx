@@ -17,17 +17,22 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   Gaugi::Algorithm( name ),
   IMsgService(name)
 {
-  declareProperty( "EnergyThreshold", m_energyThreshold=3*GeV );
-  declareProperty( "CollectionKeys" , m_collectionKeys={}     );
-  declareProperty( "ClusterKey"     , m_clusterKey="Clusters" );
-  declareProperty( "EventKey"       , m_eventKey="EventInfo"  );
-  declareProperty( "TruthKey"       , m_truthKey="Particles"  );
-  declareProperty( "EtaWindow"      , m_etaWindow=0.4         );
-  declareProperty( "PhiWindow"      , m_phiWindow=0.4         );
-  declareProperty( "DeltaR"         , m_dR=0.15               );            
-  declareProperty( "ForceTruthMatch", m_forceTruthMatch=false  );
-  declareProperty( "OutputLevel"    , m_outputLevel=MSG::INFO );
-  declareProperty( "HistogramPath"  , m_histPath="Clusters"   );
+  // Key inputs
+  declareProperty( "TruthCellsKey"  , m_truthCellsKey="TruthCells"      );
+  declareProperty( "CellsKey"       , m_cellsKey="Cells"                );
+  declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
+  // Key outputs
+  declareProperty( "ClusterKey"     , m_clusterKey="Clusters"           );
+  declareProperty( "TruthClusterKey", m_truthClusterKey="TruthClusters" );
+  declareProperty( "TruthKey"       , m_truthKey="Particles"            );
+  // Algorithm configuration
+  declareProperty( "EnergyThreshold", m_energyThreshold=3*GeV           );
+  declareProperty( "EtaWindow"      , m_etaWindow=0.4                   );
+  declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
+  declareProperty( "DeltaR"         , m_dR=0.15                         );            
+  declareProperty( "ForceTruthMatch", m_forceTruthMatch=false           );
+  declareProperty( "OutputLevel"    , m_outputLevel=1                   );
+  declareProperty( "HistogramPath"  , m_histPath="Clusters"             );
 }
 
 
@@ -97,13 +102,18 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   bool forceTruthMatch = m_forceTruthMatch;
 
 
-  SG::WriteHandle<xAOD::CaloClusterContainer> clusters(m_clusterKey, ctx);
   SG::WriteHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  
+  SG::WriteHandle<xAOD::CaloClusterContainer> clusters(m_clusterKey, ctx);
+  SG::WriteHandle<xAOD::CaloClusterContainer> truth_clusters(m_truthClusterKey, ctx);
 
+  // Reco clusters
   clusters.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()) );
+  // Truth clusters
+  truth_clusters.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()) );
+  // Truth particles
   particles.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()) );
-
+  
+  // Event info
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
 
   if( !event.isValid() ){
@@ -111,10 +121,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     forceTruthMatch = false;
   }
 
-
   auto particles_vec = getAllParticles(ctx);
   forceTruthMatch = particles->size()>0 ? m_forceTruthMatch : false;
-
   auto clusters_vec = getAllClusters(ctx);
 
   if ( forceTruthMatch ){
@@ -123,46 +131,41 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     {
       for( auto& particle : particles_vec )
       {
-        fillCluster<xAOD::TruthParticle>( ctx, particle );
-        m_showerShapes->executeTool( particle );
+        if( particle->caloCluster() ){
+          fillCluster( ctx, particle->caloCluster() );
+          m_showerShapes->executeTool( particle->caloCluster() );
     
-        MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
-        if( !particle->caloCluster() && dR( caloCluster, particle ) < m_dR ){
-          fillCluster<xAOD::CaloCluster>( ctx, caloCluster );
-          // Calculate all shower shapes
-          m_showerShapes->executeTool( caloCluster );
-          particle->setCaloCluster( caloCluster );
-          clusters->push_back( caloCluster );
+          MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
+          if( dR( particle->caloCluster()->eta(), caloCluster->eta(),
+                  particle->caloCluster()->phi(), caloCluster->phi()) < m_dR )
+          {
+            fillCluster( ctx, caloCluster );
+            // Calculate all shower shapes
+            m_showerShapes->executeTool( caloCluster );
+            clusters->push_back( caloCluster );
+          }
+          particles->push_back( particle );
+          truth_clusters->push_back( particle->caloCluster() );
         }
-        particles->push_back( particle );
       }
     }
-
   }else{
     for( auto& caloCluster : clusters_vec ){
-      fillCluster<xAOD::CaloCluster>( ctx, caloCluster );
+      fillCluster( ctx, caloCluster );
       m_showerShapes->executeTool( caloCluster );
       clusters->push_back( caloCluster );
     }
-
     for( auto& particle : particles_vec ){
-      fillCluster<xAOD::TruthParticle>( ctx, particle );
+      fillCluster( ctx, particle->caloCluster() );
       m_showerShapes->executeTool( particle );
       particles->push_back( particle );
+      truth_clusters->push_back( particle->caloCluster() );
     }
   }
 
-
-
   MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
   MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
-
-  
-  for (auto& particle : **particles)
-  {
-    bool matched = particle->caloCluster()?true:false;
-    MSG_INFO( "Particle in (eta="<<particle->eta() << ",phi="<< particle->phi()<< ") with " << particle->et()<< ". With cluster? " << (matched?"Yes":"No") );
-  }
+  MSG_INFO( "We found " << truth_clusters->size() << " clusters (truth) associated to the particles inside of this event." );
 
   return StatusCode::SUCCESS;
 }
@@ -170,24 +173,46 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
 
 
-std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventContext &ctx) const
+std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventContext &ctx ) const
 {
   std::vector< xAOD::TruthParticle* > particles;
   
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
+  SG::ReadHandle<xAOD::CaloCellContainer> container( m_truthCellsKey, ctx );
 
   if( !event.isValid() ){
     MSG_WARNING( "It's not possible to read the xAOD::EventInfoContainer from this Context using this key: " << m_eventKey );
     return particles;
   }
+  
+  if( !container.isValid() )
+  {
+    MSG_WARNING("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+    return particles;
+  }
 
   for ( auto& seed : (**event.ptr()).front()->allSeeds() )
   {
-    xAOD::TruthParticle *particle = new xAOD::TruthParticle();
-    particle->setEta( seed.eta );
-    particle->setPhi( seed.phi );
-    particle->setPdgid( seed.pdgid );
-    particles.push_back( particle );
+    xAOD::TruthParticle *p = new xAOD::TruthParticle();
+    p->setEt( seed.et );
+    p->setEta( seed.eta );
+    p->setPhi( seed.phi );
+    p->setPdgid( seed.pdgid );
+
+    float maxDeltaR = 999;
+    const xAOD::CaloCell *closest_cell=nullptr;
+    // Searching for the closest cell to the event origin in EM2
+    for (const auto cell : **container.ptr() ){
+      // Get only cells collection from EM2 layer
+      if( cell->sampling() != CaloSample::EM2 ) continue;
+      float deltaR = dR( p->eta(), cell->eta(), p->phi(), cell->phi() ) ;
+      if( deltaR < maxDeltaR ){
+        closest_cell=cell;
+        maxDeltaR=deltaR;
+      }
+    }
+    p->setCaloCluster( new xAOD::CaloCluster( closest_cell->energy(), closest_cell->eta(), closest_cell->phi(), m_etaWindow/2., m_phiWindow/2. ) );
+    particles.push_back( p );
   }
 
   return particles;
@@ -195,90 +220,76 @@ std::vector< xAOD::TruthParticle* > CaloClusterMaker::getAllParticles( EventCont
 
 
 
-std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( EventContext &ctx) const
+std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( EventContext &ctx ) const
 {
   std::vector<xAOD::CaloCluster*> vec_cluster;
 
-  for ( auto key : m_collectionKeys )
+  SG::ReadHandle<xAOD::CaloCellContainer> container( m_cellsKey, ctx );
+
+  if( !container.isValid() )
   {
+    MSG_WARNING("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+    return vec_clusters;
+  }
 
-    SG::ReadHandle<xAOD::CaloCellCollection> collection(key, ctx);
 
-    if( !collection.isValid() ){
-      MSG_WARNING( "It's not possible to read the xAOD::CaloCellCollection from this Context using this key: " << key );
-      continue;
-    }
+  // Get all cells from the second calorimeter layer
+  for (const auto cell : **container.ptr() ){
 
     // Get only cells collection from EM2 layer
-    if( collection->sampling() != CaloSample::EM2 ) continue;
-
-
-    // Get all cells from the second calorimeter layer
-    for (const auto &pair : **collection.ptr() )
-    {
-      const auto* cell=pair.second;
-
-      // Must be higher than energy cut to be considere an roi
-      if (cell->energy() < m_energyThreshold ) continue;
+    if( cell->sampling() != CaloSample::EM2 ) continue;
+    // Must be higher than energy cut to be considere an roi
+    if (cell->energy() < m_energyThreshold ) continue;
  
-      float eta = cell->eta(); 
-      float phi = cell->phi(); 
-      float emaxs2 =  cell->energy();
-      
-      bool newCluster = true;
-      // Check cluster overlap. Get the higher energy cluster energy in case of overlap
-      for( unsigned int i=0; i < vec_cluster.size(); ++i ){
-        if ( abs(eta - vec_cluster[i]->eta()) < m_etaWindow/2. 
-            && abs( phi - vec_cluster[i]->phi()) < m_phiWindow/2. )
-        { 
-          newCluster=false;
-          if (emaxs2 > vec_cluster[i]->emaxs2())
-          { // Overwrite the cluster position and energy
-            vec_cluster[i]->setEmaxs2(emaxs2); vec_cluster[i]->setEta(eta); vec_cluster[i]->setPhi(phi);
-            break;
-          }
-
+    float eta = cell->eta(); 
+    float phi = cell->phi(); 
+    float emaxs2 =  cell->energy();
+    
+    bool newCluster = true;
+    // Check cluster overlap. Get the higher energy cluster energy in case of overlap
+    for( unsigned int i=0; i < vec_cluster.size(); ++i ){
+      if ( abs(eta - vec_cluster[i]->eta()) < m_etaWindow/2. 
+          && abs( phi - vec_cluster[i]->phi()) < m_phiWindow/2. )
+      { 
+        newCluster=false;
+        if (emaxs2 > vec_cluster[i]->emaxs2())
+        { // Overwrite the cluster position and energy
+          vec_cluster[i]->setEmaxs2(emaxs2); vec_cluster[i]->setEta(eta); vec_cluster[i]->setPhi(phi);
+          break;
         }
       }
-
-      if(newCluster){
-        vec_cluster.push_back( new xAOD::CaloCluster( emaxs2, eta, phi, m_etaWindow/2., m_phiWindow/2. ) );
-      }
     }
-
-  }// Loop over all collections stored into the Context
+    if(newCluster){
+      vec_cluster.push_back( new xAOD::CaloCluster( emaxs2, eta, phi, m_etaWindow/2., m_phiWindow/2. ) );
+    }
+  }
 
   return vec_cluster;
 }
 
 
 
-template<class T>
-void CaloClusterMaker::fillCluster( EventContext &ctx, T* clus) const
+
+void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, std::string &key) const
 {
-  for ( auto key : m_collectionKeys )
-  {
-    SG::ReadHandle<xAOD::CaloCellCollection> collection(key, ctx);
-    if( !collection.isValid() ){
-      MSG_WARNING( "It's not possible to read the xAOD::CaloCellCollection from this Context using this key: " << key );
-      continue;
-    }
-    // Attach all cells into your cluster
-    for ( auto& pair : **collection.ptr() )
-    {
-      const auto *cell = pair.second;
-      // Check if the current cell is in the eta window
-      if( (cell->eta() < clus->eta()+m_etaWindow/2.) && (cell->eta() > clus->eta()-m_etaWindow/2.) )
-      {
-        // Check if the current cell is in the phi window
-        if( (cell->phi() < clus->phi()+m_phiWindow/2.) && (cell->phi() > clus->phi()-m_phiWindow/2.) )
-        {
-          // Add the cell to the cluster
-          clus->push_back(cell);
-        }
-      }
-    }// Loop over all cells
+  SG::ReadHandle<xAOD::CaloCellContainer> container(key, ctx);
+  if( !container.isValid() ){
+    MSG_WARNING( "It's not possible to read the xAOD::CaloCellContainer from this Context using this key: " << key );
+    return;
   }
+
+  for ( const auto cell : **container.ptr() ){
+    // Check if the current cell is in the eta window
+    if( (cell->eta() < clus->eta()+m_etaWindow/2.) && (cell->eta() > clus->eta()-m_etaWindow/2.) )
+    {
+      // Check if the current cell is in the phi window
+      if( (cell->phi() < clus->phi()+m_phiWindow/2.) && (cell->phi() > clus->phi()-m_phiWindow/2.) )
+      {
+        // Add the cell to the cluster
+        clus->push_back(cell);
+      }
+    }
+  }// Loop over all cells
 }
 
 
@@ -301,9 +312,15 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
     return StatusCode::FAILURE;
   }
 
+
+  if( !particles.isValid() ){
+    MSG_ERROR("It's not possible to get the TruthParticleContainer inside of this Context using this key: " << m_truthKey);
+    return StatusCode::FAILURE;
+  }
+
+
   for( const auto& clus : **clusters.ptr() ){
-    MSG_INFO( "Cluster with Et = " << clus->et()/1.e3 );
-    MSG_INFO( "Cluster with ERatio = " << clus->eratio() );
+    
     store->hist1(m_histPath+"/cl_et")->Fill( clus->et() / 1.e3);
     store->hist1(m_histPath+"/cl_eta")->Fill( clus->eta() );
     store->hist1(m_histPath+"/cl_phi")->Fill( clus->phi() );
@@ -314,16 +331,30 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
   }
 
 
-  MSG_INFO( "AKI = " << store->hist1(m_histPath+"/cl_et")->GetEntries() );
+  for( const auto& particle : **particles.ptr() ){
+    
+    if ( !particle->caloCluster() ) continue;
+
+    const auto* clus = particle->caloCluster() ;
+    store->hist1(m_histPath+"/mc_et")->Fill( clus->et() / 1.e3);
+    store->hist1(m_histPath+"/mc_eta")->Fill( clus->eta() );
+    store->hist1(m_histPath+"/mc_phi")->Fill( clus->phi() );
+    store->hist1(m_histPath+"/mc_reta")->Fill( clus->reta() );
+    store->hist1(m_histPath+"/mc_rphi")->Fill( clus->rphi() );
+    store->hist1(m_histPath+"/mc_rhad")->Fill( clus->rhad() );
+    store->hist1(m_histPath+"/mc_eratio")->Fill( clus->eratio() );
+  }
+
+
   return StatusCode::SUCCESS;
 }
 
 
 
-float CaloClusterMaker::dR( const xAOD::CaloCluster *clus, const xAOD::TruthParticle *p ) const
+float CaloClusterMaker::dR( float eta1, float phi1, float eta2, float phi2 ) const
 {
-  float deta = fabs(clus->eta() - p->eta());
-  float dphi = fabs(clus->phi()-p->phi())  < TMath::Pi() ? fabs(clus->phi()-p->phi()) : 2*TMath::Pi() - fabs(clus->phi()-p->phi()) ;
+  float deta = fabs(eta1-eta2);
+  float dphi = fabs(phi1-phi2)  < TMath::Pi() ? fabs(phi1-phi2) : 2*TMath::Pi() - fabs(phi1-phi2) ;
   return sqrt( deta*deta + dphi*dphi);
 }
 
