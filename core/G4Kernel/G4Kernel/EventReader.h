@@ -25,15 +25,17 @@ class EventReader : public G4VPrimaryGenerator,
   public:
 
     /*! Constructor */
-    EventReader();
+    EventReader(std::string name);
     /*! Destructor */
     virtual ~EventReader();
     
-    void Initialize();
+
     
-    virtual void GeneratePrimaryVertex(G4Event* anEvent);
+    virtual void GeneratePrimaryVertex(G4Event* anEvent) override;
     
   private:
+    
+    void initialize();
     
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param, bool message=true);
     

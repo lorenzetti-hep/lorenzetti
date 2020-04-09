@@ -43,14 +43,14 @@ class ComponentAccumulator( Logger ):
 
 
   def __add__( self, algs ):
-    print(type(algs))
     if type(algs) is not list:
       algs =[algs]
-    print (algs )
     for alg in algs:
       self.__core.push_back( alg.core() )
     return self
 
   
+  def core(self):
+    return self.__core
 
 

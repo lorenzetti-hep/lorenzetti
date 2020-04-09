@@ -18,8 +18,8 @@
 using namespace Gaugi;
 
 
-EventReader::EventReader():
-    IMsgService("EventReader"),
+EventReader::EventReader(std::string name):
+    IMsgService(name),
     PropertyService(),
     m_evt(0)
 {
@@ -37,7 +37,7 @@ EventReader::~EventReader()
 }
 
 
-void EventReader::Initialize()
+void EventReader::initialize()
 {
   MSG_INFO( "Open the root file: " << m_filename );
   m_f = new TFile( m_filename.c_str() , "read" );
@@ -153,6 +153,10 @@ void EventReader::release()
 // Call by geant
 void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
 {
+  if(!m_f)
+    initialize();
+
+
   clear();
   m_evt = anEvent->GetEventID();
   
