@@ -8,11 +8,13 @@
 #include "G4MTRunManager.hh"
 #include <iostream>
 
-ActionInitialization::ActionInitialization(std::vector<Gaugi::Algorithm*> acc , 
-                                           std::string output)
+ActionInitialization::ActionInitialization( G4VPrimaryGenerator *gen,
+                                            std::vector<Gaugi::Algorithm*> acc , 
+                                            std::string output)
  : G4VUserActionInitialization(),
   m_acc(acc),
-  m_output(output)
+  m_output(output),
+  m_generator(gen)
 {
   m_store = new SG::StoreGate(output);  
 
@@ -49,7 +51,7 @@ void ActionInitialization::BuildForMaster() const
 
 void ActionInitialization::Build() const
 {
-  SetUserAction(new PrimaryGeneratorAction());
+  SetUserAction(new PrimaryGeneratorAction(m_generator));
   SetUserAction(new RunAction(m_acc));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());

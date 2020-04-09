@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "GaugiKernel/MsgStream.h"
+#include "GaugiKernel/Property.h"
 #include "GaugiKernel/macros.h"
 #include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
@@ -21,9 +22,8 @@
 const int special_bcid_for_truth_reconstruction = -999;
 
 
-class EventReaderMessenger;
 
-class EventReader : public G4VPrimaryGenerator, public MsgService 
+class EventReader : public G4VPrimaryGenerator, public MsgService, public PropertyService 
 {
    
   public:
@@ -37,10 +37,6 @@ class EventReader : public G4VPrimaryGenerator, public MsgService
     // GenerateHepMCEvent() will be converted to G4Event through HepMC2G4().
     virtual void GeneratePrimaryVertex(G4Event* anEvent);
 
-    /** File name to read all pythia events **/
-    PRIMITIVE_SETTER_AND_GETTER( std::string , m_filename, SetFileName, GetFileName );
-    /** verbosete level **/
-    PRIMITIVE_SETTER_AND_GETTER( int , m_verbose, SetVerboseLevel, GetVerboseLevel );
 
     
   private:
@@ -65,8 +61,6 @@ class EventReader : public G4VPrimaryGenerator, public MsgService
     unsigned int           m_evt;
     std::string            m_filename;
     std::string            m_eventKey;
-    int                    m_verbose;
-    EventReaderMessenger  *m_messenger;
 
     TFile *m_f;
     TTree *m_ttree;
@@ -90,10 +84,6 @@ class EventReader : public G4VPrimaryGenerator, public MsgService
     std::vector<float>  *m_p_e		      ;
     std::vector<float>  *m_p_et		      ;
 
-
-
 };
-
-
 
 #endif

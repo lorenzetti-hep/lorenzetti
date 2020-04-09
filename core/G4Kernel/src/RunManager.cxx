@@ -40,13 +40,16 @@ RunManager::~RunManager()
 {;}
 
 
-
-
 void RunManager::push_back( Gaugi::Algorithm *alg )
 {
   m_acc.push_back( alg );
 }
 
+
+void RunManager::setGenerator( G4VPrimaryGenerator *gen )
+{
+  m_generator = gen;
+}
 
 
 void RunManager::run( std::string macro )
@@ -83,7 +86,7 @@ void RunManager::run( std::string macro )
   runManager->SetUserInitialization(physicsList);
 
   MSG_INFO( "Creating the action initalizer..." );
-  ActionInitialization* actionInitialization = new ActionInitialization(m_acc, m_output);
+  ActionInitialization* actionInitialization = new ActionInitialization(m_generator, m_acc, m_output);
   runManager->SetUserInitialization(actionInitialization);
 
   MSG_INFO( "Creating the vis executive...");
@@ -107,9 +110,6 @@ void RunManager::run( std::string macro )
   delete runManager;
   delete visManager;
 }
-
-
-
 
 
 

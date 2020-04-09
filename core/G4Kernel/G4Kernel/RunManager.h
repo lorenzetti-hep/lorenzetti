@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-
+class G4VPrimaryGenerator;
 
 class RunManager: public MsgService, 
                   public Gaugi::PropertyService
@@ -23,6 +23,8 @@ class RunManager: public MsgService,
 
     void push_back( Gaugi::Algorithm* );
 
+    void setGenerator( G4VPrimaryGenerator * );
+
   private:
 
     int m_nThreads;
@@ -32,5 +34,7 @@ class RunManager: public MsgService,
     std::string m_output;
 
     std::vector< Gaugi::Algorithm* > m_acc;
+
+    G4VPrimaryGenerator       *m_generator;
 };
 #endif

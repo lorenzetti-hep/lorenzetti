@@ -24,12 +24,12 @@
 
 EventReader::EventReader():
     IMsgService("EventReader"),
+    PropertyService(),
     m_evt(0),
-    m_filename("hepmc_input.root"), 
-    m_verbose(0),
-    m_eventKey("EventInfo")
 {
-  m_messenger= new EventReaderMessenger(this);
+  declareProperty( "FileName", m_filename=""          );
+  declareProperty( "EventKey", m_eventKey="EventInfo" );
+
 }
 
 
@@ -38,7 +38,6 @@ EventReader::~EventReader()
   release();
   m_f->Close();
   delete m_f;
-  delete m_messenger;
 }
 
 
