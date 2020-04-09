@@ -2,6 +2,8 @@ __all__ = ["CaloCellMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
+from RecCommon import treatPropertyValue
+
 
 class CaloCellMaker( Logger ):
 
@@ -15,15 +17,10 @@ class CaloCellMaker( Logger ):
     from ROOT import CaloCellMaker
     # Create the algorithm
     self.__core = CaloCellMaker(name)
-
     self.Tools = []
 
     for key, value in kw.items():
-      if key in self.__allow_keys:
-        setattr( self, '__' + key , value )
-        self.__core.setProperty( key, value )
-      else:
-        MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
+      self.setProperty( key, value )
 
 
   def core(self):
@@ -35,7 +32,8 @@ class CaloCellMaker( Logger ):
 
   def setProperty( self, key, value ):
     if key in self.__allow_keys:
-      self.core().setProperty( key, value )
+      setattr( self, '__' + key , value )
+      self.core().setProperty( key, treatPropertyValue(value) )
     else:
       MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
@@ -47,6 +45,10 @@ class CaloCellMaker( Logger ):
       MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
 
+
+  def __add__( self, tool ):
+    self.Tools += tool
+    return self
   
 
 

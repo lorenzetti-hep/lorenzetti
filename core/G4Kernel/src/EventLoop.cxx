@@ -1,6 +1,6 @@
 
 #include "G4Kernel/EventLoop.h"
-
+#include <iostream>
 
 
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc ): 
@@ -12,7 +12,7 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc ):
 
 
 EventLoop::~EventLoop()
-{}
+{;}
 
 
 
@@ -21,9 +21,9 @@ void EventLoop::BeginOfEvent()
 {
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Execute pre-execute for " << toolHandle->name() );
+    MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
     if (toolHandle->pre_execute( m_ctx ).isFailure() ){
-      MSG_FATAL("It's not possible to pre-execute " << toolHandle->name());
+      MSG_FATAL("It's not possible to pre execute " << toolHandle->name());
     }
 
   }
@@ -44,10 +44,10 @@ void EventLoop::EndOfEvent()
 {
   for( auto &toolHandle : m_toolHandles){
 
-    MSG_INFO( "Execute post-execute for " << toolHandle->name() );
+    MSG_INFO( "Launching post execute step for " << toolHandle->name() );
     
     if (toolHandle->post_execute( m_ctx ).isFailure() ){
-      MSG_FATAL("It's not possible to post-execute " << toolHandle->name());
+      MSG_FATAL("It's not possible to post execute " << toolHandle->name());
     }
 
     toolHandle->fillHistograms( m_ctx );

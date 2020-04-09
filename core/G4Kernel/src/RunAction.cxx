@@ -8,39 +8,16 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
+#include <iostream>
 
-
-RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc, std::string output )
+RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc )
  : G4UserRunAction(),
    m_acc(acc)
-{
-
-  m_store = new SG::StoreGate( output );
-
-  for ( auto toolHandle : m_acc )
-  { 
-    toolHandle->setStoreGateSvc( m_store );
-    if ( toolHandle->initialize().isFailure() )
-    {
-      // raise exception here
-    }
-  } 
-
-}
+{;}
 
 
 RunAction::~RunAction()
-{
-
-  for ( auto toolHandle : m_acc )
-  { 
-    if ( toolHandle->finalize().isFailure() )
-    {
-      // raise exception here
-    }
-  } 
-
-  delete m_store;
+{ 
   delete G4AnalysisManager::Instance();  
 }
 

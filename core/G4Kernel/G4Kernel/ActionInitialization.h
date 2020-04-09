@@ -21,8 +21,9 @@ class ActionInitialization : public G4VUserActionInitialization
 
   private:
 
+    std::string m_output;
     std::vector<Gaugi::Algorithm*> m_acc;
-    std::string   m_output;
+    SG::StoreGate *m_store;
 };
 
 #endif

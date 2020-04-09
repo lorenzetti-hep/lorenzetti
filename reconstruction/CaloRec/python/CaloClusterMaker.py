@@ -1,21 +1,27 @@
 __all__ = ["CaloClusterMaker"]
 
-from Gaugi import Logger, list_to_stdvector
+from Gaugi import Logger
 from Gaugi.messenger.macros import *
+from RecCommon import treatPropertyValue
+
 
 class CaloClusterMaker( Logger ):
 
-  __allow_keys = ["EnergyThreshold", 
-                  "CollectionKeys", 
+  __allow_keys = [
+                  "CellsKey", 
+                  "TruthCellsKey",
                   "ClusterKey", 
                   "EventKey", 
                   "TruthKey", 
+                  "TruthClusterKey",
+                  "EnergyThreshold", 
                   "EtaWindow" , 
                   "PhiWindow", 
                   "DeltaR", 
                   "ForceTruthMatch" , 
                   "OutputLevel", 
                   "HistogramPath"]
+
 
   def __init__( self, name, **kw ): 
     
@@ -26,14 +32,8 @@ class CaloClusterMaker( Logger ):
     # Create the algorithm
     self.__core = CaloClusterMaker(name)
 
-    self.Tools = []
-
     for key, value in kw.items():
-      if key in self.__allow_keys:
-        setattr( self, '__' + key , value )
-        self.__core.setProperty( key,self.__treatValue( value ) )
-      else:
-        MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      self.setProperty( key,value )
 
 
   def core(self):
@@ -42,40 +42,17 @@ class CaloClusterMaker( Logger ):
 
   def setProperty( self, key, value ):
     if key in self.__allow_keys:
-      self.core().setProperty( key, self.__treatValue(value) )
+      setattr( self, '__' + key , value )
+      self.core().setProperty( key, treatPropertyValue(value) )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
-
-
-
-  def __treatValue( self, value ):
-
-    if (type(value) is list) and (type(value[0]) is str):
-      return list_to_stdvector('string', value)
-    elif (type(value) is list) and (type(value[0]) is int):
-      return list_to_stdvector('int', value)
-    elif (type(value) is list) and (type(value[0]) is float):
-      return list_to_stdvector('float', value)
-    elif (type(value) is list) and (type(value[0]) is bool):
-      return list_to_stdvector('bool', value)
-    else:
-      return value
-
-
-
-
-
-
-
-
-
+      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
 
 
 

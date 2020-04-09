@@ -9,7 +9,7 @@ RingSet::RingSet( CaloSampling::CaloSample sampling, unsigned nrings, float deta
 {;}
 
 
-void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_center, bool truth)
+void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_center )
 {
   // This cell does not allow to this RingSet
   if( cell->sampling() != m_sampling )  return;

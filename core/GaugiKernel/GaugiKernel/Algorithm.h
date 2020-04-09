@@ -58,12 +58,19 @@ namespace Gaugi{
       /*! Level message */
       int m_outputLevel;
 
+      void initLock();
+      void finaLock();
+
+      bool isInitialized() const;
+      bool isFinalized() const;
+
     private:
      
       /*! monitoring tool */
       SG::StoreGate *m_store;  
 
-      
+      bool m_isInitialized;
+      bool m_isFinalized;
   };
 
 }/// namespace

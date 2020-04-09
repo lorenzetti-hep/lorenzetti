@@ -31,6 +31,7 @@ StoreGate::~StoreGate()
 
 
 void StoreGate::mkdir( std::string path ){
+  MSG_INFO( "Creating a directory with name " << path );
   m_file->mkdir(path.c_str());
   m_file->cd(path.c_str());
   m_currentPath = path;
@@ -39,6 +40,7 @@ void StoreGate::mkdir( std::string path ){
 
 void StoreGate::cd( std::string path ){
   m_currentPath = path;
+  m_file->cd(path.c_str());
 }
 
 
@@ -57,21 +59,24 @@ bool StoreGate::add( TObject* obj){
 }
 
 
-TH1F* StoreGate::hist1( std::string path )
+TH1F* StoreGate::hist1( std::string name )
 {
+  std::string path = m_currentPath+"/"+name;
 	//if( m_objs.find( path ) == m_objs.end() )  
   //  MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
   return ((TH1F*)m_objs[path]);
 }
 
 
-TH2F* StoreGate::hist2( std::string path )
+TH2F* StoreGate::hist2( std::string name )
 {
 	//if( m_objs.find( path ) == m_objs.end() )  
   //  MSG_FATAL("It's not possible to retrieve the 2D histogram with abspath " << path << " from the StoreGate");
   //MSG_INFO( "Getting path " << path );
 
   //MSG_INFO( m_objs[path] );
+  std::string path = m_currentPath+"/"+name;
+	//if( m_objs.find( path ) == m_objs.end() )  
   return ((TH2F*)m_objs[path]);
 }
 

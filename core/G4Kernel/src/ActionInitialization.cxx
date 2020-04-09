@@ -6,30 +6,51 @@
 #include "G4Kernel/SteppingAction.h"
 #include "G4Kernel/DetectorConstruction.h"
 #include "G4MTRunManager.hh"
-
+#include <iostream>
 
 ActionInitialization::ActionInitialization(std::vector<Gaugi::Algorithm*> acc , 
                                            std::string output)
  : G4VUserActionInitialization(),
   m_acc(acc),
   m_output(output)
-{;}
+{
+  m_store = new SG::StoreGate(output);  
+
+  for ( auto toolHandle : m_acc )
+  { 
+    toolHandle->setStoreGateSvc( m_store );
+    if ( toolHandle->initialize().isFailure() )
+    {
+      // raise exception here
+    }
+  } 
+
+}
 
 
 ActionInitialization::~ActionInitialization()
-{;}
+{
+  for ( auto toolHandle : m_acc )
+  { 
+    if ( toolHandle->finalize().isFailure() )
+    {
+      // raise exception here
+    }
+  }
+  delete m_store;
+}
 
 
 void ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new RunAction(m_acc, m_output));
+  SetUserAction(new RunAction(m_acc));
 }
 
 
 void ActionInitialization::Build() const
 {
   SetUserAction(new PrimaryGeneratorAction());
-  SetUserAction(new RunAction(m_acc, m_output));
+  SetUserAction(new RunAction(m_acc));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());
 }  

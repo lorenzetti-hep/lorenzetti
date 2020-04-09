@@ -200,11 +200,12 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
   }
 
   auto store = getStoreGateSvc();
+  store->cd( m_histPath );
 
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
     // Skip cells with energy equal zero
-    std::stringstream ss; ss << m_histPath+"/cells_layer_" << (int)cell->sampling();
+    std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
     int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
     int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
     int bin = store->hist2(ss.str())->GetBin(x,y,0);

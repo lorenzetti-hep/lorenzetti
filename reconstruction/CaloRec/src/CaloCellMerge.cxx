@@ -55,11 +55,19 @@ StatusCode CaloCellMerge::execute( EventContext &ctx , const G4Step *step ) cons
 StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 {
 
+  MSG_INFO( "Starting collection merge algorithm..." );
+
+  MSG_INFO( "Creating reco cells containers with key " << m_cellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> recoContainer( m_cellsKey , ctx );
+  recoContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
+  
+  MSG_INFO( "Creating truth cells containers with key " << m_truthCellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> truthContainer( m_truthCellsKey , ctx );
+  truthContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
 
   for ( auto key : m_collectionKeys ){
 
+    MSG_INFO( "Reading all cells from collection with key " << key );
     SG::ReadHandle<xAOD::CaloCellCollection> collection( key, ctx );
     
     if( !collection.isValid() ){
@@ -67,6 +75,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       continue;
     }
 
+    MSG_INFO( "Creating new cells and attach the object into the container" );
     for (const auto &pair : **collection.ptr() )
     {
       // Raw Cell with all geant/bunch/pulse information
@@ -100,6 +109,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
     }// Loop over all RawCells
   }// Loop over all collections
 
+  MSG_INFO( "All collections were merged into two CaloCellContainer" );
   return StatusCode::SUCCESS;
 }
 

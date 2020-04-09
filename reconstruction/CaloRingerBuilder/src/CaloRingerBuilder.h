@@ -38,7 +38,9 @@ class CaloRingerBuilder : public Gaugi::Algorithm
     int m_maxRingsAccumulated;
 
     const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , CaloSampling::CaloSample ) const;
-    
+   
+    std::string m_histPath;
+
     std::string m_clusterKey;
     std::string m_ringerKey;
 

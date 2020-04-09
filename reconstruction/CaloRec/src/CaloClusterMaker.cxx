@@ -320,16 +320,17 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
     return StatusCode::FAILURE;
   }
 
+  store->cd(m_histPath);
 
   for( const auto& clus : **clusters.ptr() ){
     
-    store->hist1(m_histPath+"/cl_et")->Fill( clus->et() / 1.e3);
-    store->hist1(m_histPath+"/cl_eta")->Fill( clus->eta() );
-    store->hist1(m_histPath+"/cl_phi")->Fill( clus->phi() );
-    store->hist1(m_histPath+"/cl_reta")->Fill( clus->reta() );
-    store->hist1(m_histPath+"/cl_rphi")->Fill( clus->rphi() );
-    store->hist1(m_histPath+"/cl_rhad")->Fill( clus->rhad() );
-    store->hist1(m_histPath+"/cl_eratio")->Fill( clus->eratio() );
+    store->hist1("cl_et")->Fill( clus->et() / 1.e3);
+    store->hist1("cl_eta")->Fill( clus->eta() );
+    store->hist1("cl_phi")->Fill( clus->phi() );
+    store->hist1("cl_reta")->Fill( clus->reta() );
+    store->hist1("cl_rphi")->Fill( clus->rphi() );
+    store->hist1("cl_rhad")->Fill( clus->rhad() );
+    store->hist1("cl_eratio")->Fill( clus->eratio() );
   }
 
 
@@ -338,13 +339,13 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
     if ( !particle->caloCluster() ) continue;
 
     const auto* clus = particle->caloCluster() ;
-    store->hist1(m_histPath+"/mc_et")->Fill( clus->et() / 1.e3);
-    store->hist1(m_histPath+"/mc_eta")->Fill( clus->eta() );
-    store->hist1(m_histPath+"/mc_phi")->Fill( clus->phi() );
-    store->hist1(m_histPath+"/mc_reta")->Fill( clus->reta() );
-    store->hist1(m_histPath+"/mc_rphi")->Fill( clus->rphi() );
-    store->hist1(m_histPath+"/mc_rhad")->Fill( clus->rhad() );
-    store->hist1(m_histPath+"/mc_eratio")->Fill( clus->eratio() );
+    store->hist1("mc_et")->Fill( clus->et() / 1.e3);
+    store->hist1("mc_eta")->Fill( clus->eta() );
+    store->hist1("mc_phi")->Fill( clus->phi() );
+    store->hist1("mc_reta")->Fill( clus->reta() );
+    store->hist1("mc_rphi")->Fill( clus->rphi() );
+    store->hist1("mc_rhad")->Fill( clus->rhad() );
+    store->hist1("mc_eratio")->Fill( clus->eratio() );
   }
 
 

@@ -13,6 +13,10 @@ from . import CaloCellMaker
 __all__.extend(CaloCellMaker.__all__)
 from .CaloCellMaker import *
 
+from . import CaloCellMerge
+__all__.extend(CaloCellMerge.__all__)
+from .CaloCellMerge import *
+
 from . import CaloClusterMaker
 __all__.extend(CaloClusterMaker.__all__)
 from .CaloClusterMaker import *
@@ -20,6 +24,10 @@ from .CaloClusterMaker import *
 from . import CaloCellBuilder
 __all__.extend(CaloCellBuilder.__all__)
 from .CaloCellBuilder import *
+
+from . import CaloDefs
+__all__.extend(CaloDefs.__all__)
+from .CaloDefs import *
 
 
 

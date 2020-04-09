@@ -1,4 +1,6 @@
 
+__all__ = ["CaloSample"]
+
 from Gaugi import EnumStringification
 
 
@@ -10,27 +12,5 @@ class CaloSample(EnumStringification):
   HAD1  = 4
   HAD2  = 5
   HAD3  = 6
-
-
-collection_keys = {
-                    CaloSample.EM1  : "CaloCellCollection_EM1" , 
-                    CaloSample.EM2  : "CaloCellCollection_EM2" , 
-                    CaloSample.EM3  : "CaloCellCollection_EM3" , 
-                    CaloSample.HAD1 : "CaloCellCollection_HAD1", 
-                    CaloSample.HAD2 : "CaloCellCollection_HAD2", 
-                    CaloSample.HAD3 : "CaloCellCollection_HAD3", 
-                  }
-
-
-
-reco_keys = {
-              "CellsKey" , 
-            }
-
-
-def recordable( key ):
-
-
-
 
 

@@ -46,7 +46,7 @@ namespace xAOD{
       /*! Destructor */
       RingSet()=default;
       /*! Add the cell energy to the correct ring position in this RingSet */
-      void add( const xAOD::CaloCell *, float eta_center, float phi_center , bool truth=false);
+      void add( const xAOD::CaloCell *, float eta_center, float phi_center );
       /*! Get the ringer shaper pattern for this RingSet */
       const std::vector<float>& pattern() const;
       /*! The number of rings in this RingSet */

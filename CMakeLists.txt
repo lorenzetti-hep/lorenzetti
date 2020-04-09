@@ -60,6 +60,7 @@ add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
 add_subdirectory( reconstruction/CaloRec )
 add_subdirectory( reconstruction/CaloRingerBuilder )
+add_subdirectory( reconstruction/RecCommon )
 
 
 add_library(lorenzetti SHARED
