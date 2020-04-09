@@ -1,31 +1,23 @@
 
-//#include "EventInfo/EventInfo.h"
-#include "G4Kernel/EventReader.h"
-#include "G4Kernel/EventReaderMessenger.h"
+#include "EventInfo/EventInfo.h"
+#include "G4Kernel/ParticleGun.h"
 #include "G4Kernel/EventLoop.h"
-//#include "G4Kernel/EventContext.h"
-
-
 #include "G4RunManager.hh"
 #include "G4LorentzVector.hh"
 #include "G4Event.hh"
-#include "G4PrimaryParticle.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4TransportationManager.hh"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-#include <math.h>
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4TransportationManager.hh"
+//#include "TVector3.h"
 
 
-#include "TFile.h"
-#include "TTree.h"
-
-
-
-EventReader::EventReader():
-    IMsgService("EventReader"),
+ParticleGun::ParticleGun():
+    IMsgService("ParticleGun"),
     PropertyService(),
-    m_evt(0),
+    m_evt(0)
 {
   declareProperty( "EventKey"           , m_eventKey="EventInfo"    );
   declareProperty( "NumberOfParticles"  , m_nofParticles=1          ); 
@@ -33,7 +25,8 @@ EventReader::EventReader():
   declareProperty( "ParticleEnergy"     , m_particleEnergy=50.*MeV  );
   declareProperty( "Direction"          , m_direction={0,1,0}       );
 
-  m_gun = new G4ParticleGun(nofParticles);
+
+  m_gun = new G4ParticleGun(m_nofParticles);
   G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_particle);
   m_gun->SetParticleDefinition(particleDefinition);
   
@@ -45,13 +38,13 @@ EventReader::EventReader():
 }
 
 
-EventReader::~EventReader()
+ParticleGun::~ParticleGun()
 {
   delete m_gun;
 }
 
 
-void EventReader::Initialize()
+void ParticleGun::Initialize()
 {
 
 }
@@ -59,12 +52,12 @@ void EventReader::Initialize()
 
 
 // Call by geant
-void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
+void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
 {
   m_evt++;
   EventLoop *loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  auto vec = G4ThreeVector(m_direction.at(0), m_direction.at(1), m_direction.at(2));
+
  
   
   SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, loop->getContext());
@@ -72,14 +65,19 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   xAOD::EventInfo *evt = new xAOD::EventInfo();
  
 
-  float eta = pos.PseudoRapidity();
-  float phi = pos.Phi();
+  //G4ThreeVector pos(m_direction.at(0)*mm, m_direction.at(1)*mm, m_direction.at(2)*mm);
+  //TVector3 vpos( pos.x(), pos.y(), pos.z());
+  //float eta = vpos.PseudoRapidity();
+  //float phi = vpos.Phi();
 
-  evt->setEta( eta );
-  evt->setPhi( phi );
+
+
+  xAOD::seed_t seed{m_particleEnergy, 0, 0, 0};
+
   evt->setEventNumber( m_evt );
   evt->setAvgmu( 0.0 );
-   
+  evt->push_back(seed);
+
   m_gun->GeneratePrimaryVertex(anEvent);
 
   MSG_INFO( "Event id         : " << evt->eventNumber() );
@@ -89,7 +87,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
 }
 
 
-bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
+bool ParticleGun::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 {
   G4Navigator* navigator= G4TransportationManager::GetTransportationManager()->GetNavigatorForTracking();
   G4VPhysicalVolume* world= navigator->GetWorldVolume();

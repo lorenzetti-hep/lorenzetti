@@ -5,7 +5,10 @@ using namespace CaloSampling;
 
 
 RingSet::RingSet( CaloSampling::CaloSample sampling, unsigned nrings, float deta, float dphi ):
-  m_sampling(sampling), m_pattern(nrings,0), m_deta(deta), m_dphi(dphi)
+  m_pattern(nrings,0), 
+  m_deta(deta), 
+  m_dphi(dphi),
+  m_sampling(sampling)
 {;}
 
 
@@ -18,7 +21,7 @@ void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_cent
   float deltaGreater = std::max(deta, dphi);
   int i = static_cast<unsigned int>( std::floor(deltaGreater) );
   
-  if( i < m_pattern.size() ){
+  if( i < (int)m_pattern.size() ){
     m_pattern[i] += cell->energy()/ std::cosh(std::abs(eta_center));
   }
 }

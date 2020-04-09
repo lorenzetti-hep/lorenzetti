@@ -13,8 +13,8 @@ using namespace CaloSampling;
 
 
 CaloCellMerge::CaloCellMerge( std::string name ) : 
-  Algorithm( name ),
-  IMsgService(name)
+  IMsgService(name),
+  Algorithm()
 {
   declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
   declareProperty( "CellsKey"         , m_cellsKey="Cells"            );
@@ -40,13 +40,13 @@ StatusCode CaloCellMerge::finalize()
 }
 
 
-StatusCode CaloCellMerge::pre_execute( EventContext &ctx ) const
+StatusCode CaloCellMerge::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
   
-StatusCode CaloCellMerge::execute( EventContext &ctx , const G4Step *step ) const
+StatusCode CaloCellMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
@@ -116,7 +116,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 
 
 
-StatusCode CaloCellMerge::fillHistograms( EventContext &ctx ) const
+StatusCode CaloCellMerge::fillHistograms( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }

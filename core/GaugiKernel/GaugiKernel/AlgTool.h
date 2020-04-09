@@ -21,7 +21,7 @@ namespace Gaugi{
     public:
 
       /*! Constructor */
-      AlgTool( std::string &name );
+      AlgTool();
 
 
       virtual ~AlgTool() {};

@@ -7,15 +7,14 @@
 #include "G4SystemOfUnits.hh"
 #include "TH1F.h"
 
-using namespace std;
 using namespace SG;
 using namespace CaloSampling;
-
+using namespace Gaugi;
 
 
 CaloClusterMaker::CaloClusterMaker( std::string name ) : 
-  Gaugi::Algorithm( name ),
-  IMsgService(name)
+  IMsgService(name),
+  Algorithm()
 {
   // Key inputs
   declareProperty( "TruthCellsKey"  , m_truthCellsKey="TruthCells"      );

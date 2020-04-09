@@ -4,8 +4,8 @@ using namespace Gaugi;
 
 
 OptimalFilter::OptimalFilter( std::string name ) : 
-  CaloRecTool( name ),
-  IMsgService(name)
+  IMsgService(name),
+  CaloRecTool()
 {
   declareProperty( "OutputLevel", m_outputLevel=MSG::INFO );
 }

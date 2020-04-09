@@ -12,11 +12,11 @@ CaloCell::CaloCell( float eta,
                     float deta, 
                     float dphi, 
                     CaloSample sampling ):
+  m_sampling(sampling),
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
-  m_dphi(dphi),
-  m_sampling(sampling)
+  m_dphi(dphi)
 {;}
 
 

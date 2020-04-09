@@ -4,10 +4,11 @@
 
 
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc ): 
-  G4Run(), 
   IMsgService("EventLoop"),
-  m_toolHandles(acc),
-  m_ctx( "EventContext" )
+  G4Run(), 
+  m_ctx( "EventContext" ),
+  m_toolHandles(acc)
+
 {}
 
 

@@ -21,24 +21,23 @@ RawCell::RawCell( float eta,
                   int bcid_start,
                   int bcid_end,
                   int bcid_truth ):
+  m_sampling(sampling),
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
   m_radius_min(radius_min),
   m_radius_max(radius_max),
-  m_sampling(sampling),
-  m_hash(hash),
-  /* Bunch crossing information */
-  m_bc_duration( bc_duration ),
-  m_bc_nsamples( bc_nsamples ),
-  m_bcid_start( bcid_start ),
-  m_bcid_end( bcid_end ),
-  m_bcid_truth( bcid_truth ),
-  // Cell's information
   m_rawEnergy(0),
   m_truthRawEnergy(0),
-  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 )
+  /* Bunch crossing information */
+  m_bcid_start( bcid_start ),
+  m_bcid_end( bcid_end ),
+  m_bc_nsamples( bc_nsamples ),
+  m_bcid_truth( bcid_truth ),
+  m_bc_duration( bc_duration ),
+  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 ),
+  m_hash(hash)
 {
   // Initalize the time vector using the bunch crossing informations
   float start = m_bcid_start * m_bc_duration;

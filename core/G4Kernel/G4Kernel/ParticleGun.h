@@ -1,28 +1,19 @@
 #ifndef EventReader_h
 #define EventReader_h
 
-/** geant 4 libs **/
 #include "G4VPrimaryGenerator.hh"
-
-/** ROOT libs **/
-#include "TFile.h"
-#include "TTree.h"
-
-/** standard libs **/
-#include <string>
-#include <vector>
-
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Property.h"
 #include "GaugiKernel/macros.h"
 #include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
+#include "G4ParticleGun.hh"
 
 
 
-
-
-class ParticleGun : public G4VPrimaryGenerator, public MsgService, public PropertyService 
+class ParticleGun : public G4VPrimaryGenerator, 
+                    public MsgService, 
+                    public Gaugi::PropertyService 
 {
    
   public:
@@ -44,7 +35,21 @@ class ParticleGun : public G4VPrimaryGenerator, public MsgService, public Proper
     // If the default implementation is not adequate, an alternative
     // can be implemented in your own class.
     bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
-    
-};
+  
+    G4ParticleGun *m_gun;
 
+    std::string m_particle;
+    std::string m_eventKey;
+    
+    int m_nofParticles;
+
+    float m_particleEnergy;
+    
+    std::vector<float >m_direction;
+
+
+    int m_evt;
+
+
+};
 #endif

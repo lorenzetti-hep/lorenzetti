@@ -7,8 +7,8 @@ using namespace Gaugi;
 
 
 
-AlgTool::AlgTool( std::string &name ): 
-  IMsgService(name)
+AlgTool::AlgTool(): 
+  IMsgService()
 {;}
 
 

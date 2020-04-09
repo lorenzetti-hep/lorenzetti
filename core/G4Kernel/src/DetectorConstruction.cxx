@@ -142,7 +142,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 G4ThreeVector(0,0,0),
                 deadMatBeforeCal );
 
-  G4Region* ps = new G4Region("PS");
+  G4Region* presample = new G4Region("PS");
 
   // Create Pre-sampler calorimeter
   CreateBarrel( worldLV,
@@ -156,7 +156,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 146.*cm, // start radio,
                 6.8*m ,// z
                 G4ThreeVector(0,0,0),
-                ps );
+                presample );
 
   G4Region* em1 = new G4Region("EM1");
   G4Region* em2 = new G4Region("EM2");
@@ -437,7 +437,7 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                           double calorRmin,
                                           double calorZ,
                                           G4ThreeVector center_pos,
-                                          G4Region *layer
+                                          G4Region *rlayer
                                           ) 
 
 {
@@ -473,7 +473,7 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                  false,             // no boolean operation
                  0,                 // copy number
                  m_checkOverlaps);  // checking overlaps
-  layer->AddRootLogicalVolume(calorLV);
+  rlayer->AddRootLogicalVolume(calorLV);
 
 
 

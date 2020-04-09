@@ -13,7 +13,7 @@ class CaloRecTool : public Gaugi::AlgTool
 
   public:
     /*! Constructor */
-    CaloRecTool( std::string name ) : Gaugi::AlgTool(name){};
+    CaloRecTool() : Gaugi::AlgTool(){};
     
     /*! execute call */
     virtual StatusCode executeTool( xAOD::RawCell * ) const = 0;

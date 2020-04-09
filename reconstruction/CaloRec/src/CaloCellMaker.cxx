@@ -14,8 +14,8 @@ using namespace CaloSampling;
 
 
 CaloCellMaker::CaloCellMaker( std::string name ) : 
-  Algorithm( name ),
   IMsgService(name),
+  Algorithm(),
   m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
 

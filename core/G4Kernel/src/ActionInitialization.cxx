@@ -12,8 +12,8 @@ ActionInitialization::ActionInitialization( G4VPrimaryGenerator *gen,
                                             std::vector<Gaugi::Algorithm*> acc , 
                                             std::string output)
  : G4VUserActionInitialization(),
-  m_acc(acc),
   m_output(output),
+  m_acc(acc),
   m_generator(gen)
 {
   m_store = new SG::StoreGate(output);  

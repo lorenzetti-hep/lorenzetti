@@ -1,11 +1,7 @@
 
-//#include "EventInfo/EventInfo.h"
+#include "EventInfo/EventInfo.h"
 #include "G4Kernel/EventReader.h"
-#include "G4Kernel/EventReaderMessenger.h"
 #include "G4Kernel/EventLoop.h"
-//#include "G4Kernel/EventContext.h"
-
-
 #include "G4RunManager.hh"
 #include "G4LorentzVector.hh"
 #include "G4Event.hh"
@@ -15,17 +11,17 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include <math.h>
-
-
 #include "TFile.h"
 #include "TTree.h"
 
+
+using namespace Gaugi;
 
 
 EventReader::EventReader():
     IMsgService("EventReader"),
     PropertyService(),
-    m_evt(0),
+    m_evt(0)
 {
   declareProperty( "FileName", m_filename=""          );
   declareProperty( "EventKey", m_eventKey="EventInfo" );

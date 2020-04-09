@@ -82,14 +82,10 @@ namespace xAOD{
       float m_radius_max;
       /* Energy */
       float m_energy;
-      /* Transverse energy*/
-      float m_et;
       /*! The total Energy deposit betweeen bcid_start and bcid_end */
       float m_rawEnergy;
       /*! The total energy deposit in bcid_truth */
       float m_truthRawEnergy;
-      /*! Tranverse energy (without energy estimation */
-      float m_rawEt;
       /*! bunch crossing start id */
       int m_bcid_start;
       /*! bunch crossing end id */

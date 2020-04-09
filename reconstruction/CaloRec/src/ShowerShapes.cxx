@@ -10,8 +10,8 @@ using namespace CaloSampling;
 
 
 ShowerShapes::ShowerShapes( std::string name ) : 
-  CaloRecTool( name ),
-  IMsgService(name)
+  IMsgService(name),
+  CaloRecTool()
 {;}
 
 

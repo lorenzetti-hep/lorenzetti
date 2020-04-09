@@ -7,15 +7,14 @@
 #include "TH2F.h"
 #include <numeric>
 
-using namespace std;
 using namespace SG;
 using namespace CaloSampling;
-
+using namespace Gaugi;
 
 
 CaloRingerBuilder::CaloRingerBuilder( std::string name ) : 
-  Gaugi::Algorithm( name ),
-  IMsgService(name)
+  IMsgService(name),
+  Algorithm()
 {
   declareProperty( "RingerKey"      , m_ringerKey="Rings"     );
   declareProperty( "ClusterKey"     , m_clusterKey="Clusters" );
@@ -41,7 +40,7 @@ StatusCode CaloRingerBuilder::initialize()
   m_maxRingSets = m_nRings.size(); 
 
 
-  for (unsigned r=0; r < m_maxRingsAccumulated; ++r){
+  for (int r=0; r < m_maxRingsAccumulated; ++r){
     std::stringstream ss; ss << "rings_" << r;
     store->add( new TH1F( ss.str().c_str(), "", 150, 0, 150 ));
   }  
@@ -58,7 +57,7 @@ StatusCode CaloRingerBuilder::finalize()
   auto store = getStoreGateSvc();
   store->cd(m_histPath);
 
-  for (unsigned r=0; r < m_maxRingsAccumulated; ++r){
+  for (int r=0; r < m_maxRingsAccumulated; ++r){
     std::stringstream ss; ss << "rings_" << r;
     float energy = store->hist1( ss.str() )->GetMean();
     store->hist2( "ring_profile" )->SetBinContent( r+1, energy );
@@ -90,7 +89,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
   
   std::vector< xAOD::RingSet > ringsets;
 
-  for ( unsigned rs=0 ; rs < m_maxRingSets; ++rs )
+  for ( int rs=0 ; rs < m_maxRingSets; ++rs )
   {  
     ringsets.push_back( xAOD::RingSet( (CaloSample)m_layerRings[rs], m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
 
@@ -163,7 +162,7 @@ StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx ) const
     
     auto ringerShape = rings->rings();
 
-    for (unsigned r=0; r < m_maxRingsAccumulated; ++r){
+    for (int r=0; r < m_maxRingsAccumulated; ++r){
       std::stringstream ss; ss << "rings_" << r;
       store->hist1(ss.str())->Fill( ringerShape.at(r) /1.e3);
       store->hist1("rings")->Fill( r, ringerShape.at(r)/1.e3 );
