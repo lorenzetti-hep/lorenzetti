@@ -46,13 +46,13 @@ StatusCode CaloClusterMaker::initialize()
   
   store->mkdir( m_histPath );  
   
-  store->add( new TH1F("mc_et", "Count;E_{T};", 100, 0, 100) );
-  store->add( new TH1F("mc_eta", "Count;#eta;", 100, -1.5, 1.5) );
-  store->add( new TH1F("mc_phi", "Count;#phi;", 100, -3.2, 3.2) );
-  store->add( new TH1F("mc_eratio", "Count;E_{ratio};", 100, 0.0, 1.05) );
-  store->add( new TH1F("mc_reta", "Count;R_{#eta};", 100, 0.5, 1.1) );
-  store->add( new TH1F("mc_rphi", "Count;R_{#phi};", 100, 0.5, 1.1) );
-  store->add( new TH1F("mc_rhad", "Count;R_{had};", 100, 0.1, 1.1) );
+  store->add( new TH1F("mc_cl_et", "Count;E_{T};", 100, 0, 100) );
+  store->add( new TH1F("mc_cl_eta", "Count;#eta;", 100, -1.5, 1.5) );
+  store->add( new TH1F("mc_cl_phi", "Count;#phi;", 100, -3.2, 3.2) );
+  store->add( new TH1F("mc_cl_eratio", "Count;E_{ratio};", 100, 0.0, 1.05) );
+  store->add( new TH1F("mc_cl_reta", "Count;R_{#eta};", 100, 0.5, 1.1) );
+  store->add( new TH1F("mc_cl_rphi", "Count;R_{#phi};", 100, 0.5, 1.1) );
+  store->add( new TH1F("mc_cl_rhad", "Count;R_{had};", 100, 0.1, 1.1) );
   store->add( new TH1F("cl_et", "Count;E_{T};", 100, 0, 100) );
   store->add( new TH1F("cl_eta", "Count;#eta;", 100, -1.5, 1.5) );
   store->add( new TH1F("cl_phi", "Count;#phi;", 100, -3.2, 3.2) );
@@ -120,49 +120,22 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     forceTruthMatch = false;
   }
 
-  auto particles_vec = getAllParticles(ctx);
-  forceTruthMatch = particles->size()>0 ? m_forceTruthMatch : false;
-  auto clusters_vec = getAllClusters(ctx);
+  
 
-  if ( forceTruthMatch ){
-
-    for( auto& caloCluster : clusters_vec )
-    {
-      for( auto& particlePair : particles_vec )
-      {
-        if( particlePair.second ){
-          fillCluster( ctx, particlePair.second , m_truthCellsKey );
-          m_showerShapes->executeTool( particlePair.second );
-    
-          //MSG_INFO( "DeltaR between particle and cluster is "<< dR(caloCluster, particle) );
-          if( dR( particlePair.second->eta(), caloCluster->eta(),
-                  particlePair.second->phi(), caloCluster->phi()) < m_dR )
-          {
-            fillCluster( ctx, caloCluster, m_cellsKey );
-            // Calculate all shower shapes
-            m_showerShapes->executeTool( caloCluster );
-            clusters->push_back( caloCluster );
-          }
-          particlePair.first->setCaloCluster( particlePair.second );
-          particles->push_back( particlePair.first );
-          truth_clusters->push_back( particlePair.second );
-        }
-      }
-    }
-  }else{
-    for( auto& caloCluster : clusters_vec ){
-      fillCluster( ctx, caloCluster, m_cellsKey );
-      m_showerShapes->executeTool( caloCluster );
-      clusters->push_back( caloCluster );
-    }
-    for( auto& particlePair : particles_vec ){
-      fillCluster( ctx, particlePair.second, m_truthCellsKey );
-      m_showerShapes->executeTool( particlePair.second  );
-      particlePair.first->setCaloCluster( particlePair.second );
-      particles->push_back( particlePair.first );
-      truth_clusters->push_back( particlePair.second );
-    }
+  // Truth and associated clusters using truth energy
+  for( auto& it : getAllClusters(ctx,m_truthCellsKey,true) )
+  {
+    particles->push_back( it.first );
+    truth_clusters->push_back( it.second );
   }
+
+  // Only clustes associated to the truth using the estimated energy
+  for( auto& it : getAllClusters(ctx,m_cellsKey,false) )
+  {
+    clusters->push_back( it.second );
+  }
+
+
 
   MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
   MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
@@ -174,12 +147,12 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
 
 
-std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > CaloClusterMaker::getAllParticles( EventContext &ctx ) const
+std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > CaloClusterMaker::getAllClusters( EventContext &ctx , std::string key, bool createTruth) const
 {
   std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > particles;
   
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-  SG::ReadHandle<xAOD::CaloCellContainer> container( m_truthCellsKey, ctx );
+  SG::ReadHandle<xAOD::CaloCellContainer> container( key, ctx );
 
   if( !event.isValid() ){
     MSG_WARNING( "It's not possible to read the xAOD::EventInfoContainer from this Context using this key: " << m_eventKey );
@@ -194,79 +167,45 @@ std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > CaloClusterMak
 
   for ( auto& seed : (**event.ptr()).front()->allSeeds() )
   {
-    xAOD::TruthParticle *p = new xAOD::TruthParticle();
-    p->setEt( seed.et );
-    p->setEta( seed.eta );
-    p->setPhi( seed.phi );
-    p->setPdgid( seed.pdgid );
-
-    float maxDeltaR = 999;
-    const xAOD::CaloCell *closest_cell=nullptr;
+    float emaxs2 = 0.0;
+    const xAOD::CaloCell *hotcell=nullptr;
     // Searching for the closest cell to the event origin in EM2
     for (const auto cell : **container.ptr() ){
-      // Get only cells collection from EM2 layer
+
       if( cell->sampling() != CaloSample::EM2 ) continue;
-      float deltaR = dR( p->eta(), cell->eta(), p->phi(), cell->phi() ) ;
-      if( deltaR < maxDeltaR ){
-        closest_cell=cell;
-        maxDeltaR=deltaR;
+
+      if( (cell->eta() <= seed.eta + m_etaWindow/2) && (cell->eta() > seed.eta - m_etaWindow/2) ){
+        if( (cell->phi() <= seed.phi + m_phiWindow/2) && (cell->phi() > seed.phi - m_phiWindow/2) ){
+
+          if( cell->energy() > emaxs2 ){
+            hotcell=cell; emaxs2=cell->energy();
+          }
+
+        }
       }
     }
-    auto *clus  = new xAOD::CaloCluster( closest_cell->energy(), closest_cell->eta(), closest_cell->phi(), m_etaWindow/2., m_phiWindow/2. ) ;
-    particles.push_back( std::make_pair(p,clus) );
+
+    // Create the cluster using the hotcell position
+    auto *clus  = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
+    fillCluster( ctx, clus, key );
+    m_showerShapes->executeTool( clus );
+
+    if ( createTruth ){
+      xAOD::TruthParticle *particle = new xAOD::TruthParticle();
+      particle->setEt( seed.et );
+      particle->setEta( seed.eta );
+      particle->setPhi( seed.phi );
+      particle->setPdgid( seed.pdgid );
+      particle->setCaloCluster(clus);
+      particles.push_back( std::make_pair(particle,clus) );
+    }else{
+      particles.push_back( std::make_pair(nullptr,clus) );
+    }
   }
 
   return particles;
 }
 
-
-
-std::vector< xAOD::CaloCluster* > CaloClusterMaker::getAllClusters( EventContext &ctx ) const
-{
-  std::vector<xAOD::CaloCluster*> vec_cluster;
-
-  SG::ReadHandle<xAOD::CaloCellContainer> container( m_cellsKey, ctx );
-
-  if( !container.isValid() )
-  {
-    MSG_WARNING("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
-    return vec_cluster;
-  }
-
-
-  // Get all cells from the second calorimeter layer
-  for (const auto cell : **container.ptr() ){
-
-    // Get only cells collection from EM2 layer
-    if( cell->sampling() != CaloSample::EM2 ) continue;
-    // Must be higher than energy cut to be considere an roi
-    if (cell->energy() < m_energyThreshold ) continue;
- 
-    float eta = cell->eta(); 
-    float phi = cell->phi(); 
-    float emaxs2 =  cell->energy();
-    
-    bool newCluster = true;
-    // Check cluster overlap. Get the higher energy cluster energy in case of overlap
-    for( unsigned int i=0; i < vec_cluster.size(); ++i ){
-      if ( abs(eta - vec_cluster[i]->eta()) < m_etaWindow/2. 
-          && abs( phi - vec_cluster[i]->phi()) < m_phiWindow/2. )
-      { 
-        newCluster=false;
-        if (emaxs2 > vec_cluster[i]->emaxs2())
-        { // Overwrite the cluster position and energy
-          vec_cluster[i]->setEmaxs2(emaxs2); vec_cluster[i]->setEta(eta); vec_cluster[i]->setPhi(phi);
-          break;
-        }
-      }
-    }
-    if(newCluster){
-      vec_cluster.push_back( new xAOD::CaloCluster( emaxs2, eta, phi, m_etaWindow/2., m_phiWindow/2. ) );
-    }
-  }
-
-  return vec_cluster;
-}
 
 
 
@@ -321,6 +260,36 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
 
   store->cd(m_histPath);
 
+  MSG_INFO("============== Cluster Information ==============");
+
+  for( const auto& particle : **particles.ptr() ){
+    
+    if ( !particle->caloCluster() ) continue;
+
+    const auto* clus = particle->caloCluster() ;
+    store->hist1("mc_cl_et")->Fill( clus->et() / 1.e3);
+    store->hist1("mc_cl_eta")->Fill( clus->eta() );
+    store->hist1("mc_cl_phi")->Fill( clus->phi() );
+    store->hist1("mc_cl_reta")->Fill( clus->reta() );
+    store->hist1("mc_cl_rphi")->Fill( clus->rphi() );
+    store->hist1("mc_cl_rhad")->Fill( clus->rhad() );
+    store->hist1("mc_cl_eratio")->Fill( clus->eratio() );
+  
+    MSG_INFO( "Truth particle:" );
+    MSG_INFO( "Et       : " << particle->et() );
+    MSG_INFO( "Eta      : " << particle->eta() );
+    MSG_INFO( "Phi      : " << particle->phi() );
+    MSG_INFO( "Cluster with truth energy:" );
+    MSG_INFO( "Et       :" << clus->et()    );
+    MSG_INFO( "Eta      :" << clus->eta()   );
+    MSG_INFO( "Phi      :" << clus->phi()   );
+    MSG_INFO( "Reta     :" << clus->reta()  );
+    MSG_INFO( "Rphi     :" << clus->rphi()  );
+    MSG_INFO( "Rhad     :" << clus->rhad()  );
+    MSG_INFO( "Eratio   :" << clus->eratio());
+ 
+  }
+
   for( const auto& clus : **clusters.ptr() ){
     
     store->hist1("cl_et")->Fill( clus->et() / 1.e3);
@@ -330,24 +299,19 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx) const
     store->hist1("cl_rphi")->Fill( clus->rphi() );
     store->hist1("cl_rhad")->Fill( clus->rhad() );
     store->hist1("cl_eratio")->Fill( clus->eratio() );
+  
+    MSG_INFO( "Cluster with estimated energy:" );
+    MSG_INFO( "Et       :" << clus->et()    );
+    MSG_INFO( "Eta      :" << clus->eta()   );
+    MSG_INFO( "Phi      :" << clus->phi()   );
+    MSG_INFO( "Reta     :" << clus->reta()  );
+    MSG_INFO( "Rphi     :" << clus->rphi()  );
+    MSG_INFO( "Rhad     :" << clus->rhad()  );
+    MSG_INFO( "Eratio   :" << clus->eratio());
+  
   }
 
-
-  for( const auto& particle : **particles.ptr() ){
-    
-    if ( !particle->caloCluster() ) continue;
-
-    const auto* clus = particle->caloCluster() ;
-    store->hist1("mc_et")->Fill( clus->et() / 1.e3);
-    store->hist1("mc_eta")->Fill( clus->eta() );
-    store->hist1("mc_phi")->Fill( clus->phi() );
-    store->hist1("mc_reta")->Fill( clus->reta() );
-    store->hist1("mc_rphi")->Fill( clus->rphi() );
-    store->hist1("mc_rhad")->Fill( clus->rhad() );
-    store->hist1("mc_eratio")->Fill( clus->eratio() );
-  }
-
-
+  MSG_INFO("=================================================");
   return StatusCode::SUCCESS;
 }
 

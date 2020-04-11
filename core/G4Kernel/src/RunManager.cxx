@@ -46,7 +46,7 @@ void RunManager::push_back( Gaugi::Algorithm *alg )
 }
 
 
-void RunManager::setGenerator( G4VPrimaryGenerator *gen )
+void RunManager::setGenerator( PrimaryGenerator *gen )
 {
   m_generator = gen;
 }

@@ -2,15 +2,14 @@
 #define ActionInitialization_h
 
 #include "GaugiKernel/Algorithm.h"
-#include "DetectorConstruction.h"
+#include "G4Kernel/PrimaryGenerator.h"
 #include "G4VUserActionInitialization.hh"
 
-class G4VPrimaryGenerator;
 
 class ActionInitialization : public G4VUserActionInitialization
 {
   public:
-    ActionInitialization( G4VPrimaryGenerator *gen, std::vector<Gaugi::Algorithm*> acc, std::string output );
+    ActionInitialization( PrimaryGenerator *gen, std::vector<Gaugi::Algorithm*> acc, std::string output );
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
@@ -21,8 +20,7 @@ class ActionInitialization : public G4VUserActionInitialization
     std::string m_output;
     std::vector<Gaugi::Algorithm*> m_acc;
     SG::StoreGate *m_store;
-
-    G4VPrimaryGenerator *m_generator;
+    PrimaryGenerator *m_generator;
 };
 
 #endif

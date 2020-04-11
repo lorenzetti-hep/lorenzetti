@@ -2,6 +2,7 @@
 #include "EventInfo/EventInfo.h"
 #include "G4Kernel/EventReader.h"
 #include "G4Kernel/EventLoop.h"
+#include "G4Kernel/constants.h"
 #include "G4RunManager.hh"
 #include "G4LorentzVector.hh"
 #include "G4Event.hh"
@@ -20,7 +21,7 @@ using namespace Gaugi;
 
 EventReader::EventReader(std::string name):
     IMsgService(name),
-    PropertyService(),
+    PrimaryGenerator(),
     m_evt(0)
 {
   declareProperty( "FileName", m_filename=""          );
@@ -28,16 +29,23 @@ EventReader::EventReader(std::string name):
 
 }
 
-
-EventReader::~EventReader()
+PrimaryGenerator* EventReader::copy()
 {
-  release();
-  m_f->Close();
-  delete m_f;
+  auto *gun = new EventReader(getLogName());
+  gun->setProperty( "FileName", m_filename );
+  gun->setProperty( "EventKey", m_eventKey );
+  return gun;
 }
 
 
-void EventReader::initialize()
+
+EventReader::~EventReader()
+{
+  if( m_f ) delete m_f;
+}
+
+
+StatusCode EventReader::initialize()
 {
   MSG_INFO( "Open the root file: " << m_filename );
   m_f = new TFile( m_filename.c_str() , "read" );
@@ -45,7 +53,17 @@ void EventReader::initialize()
   m_evt=0;
   link( m_ttree );
   allocate();
+  return StatusCode::SUCCESS;
 }
+
+
+StatusCode EventReader::finalize()
+{
+  release();
+  m_f->Close();
+  return StatusCode::SUCCESS;
+}
+
 
 
 template <class T> 

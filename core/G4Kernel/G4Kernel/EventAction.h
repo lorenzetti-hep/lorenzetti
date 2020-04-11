@@ -1,7 +1,6 @@
 #ifndef EventAction_h
 #define EventAction_h
 
-/** geant 4 includes **/
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 

@@ -6,35 +6,36 @@
 #include "G4LorentzVector.hh"
 #include "G4Event.hh"
 #include "G4PhysicalConstants.hh"
-//#include "G4SystemOfUnits.hh"
+#include "G4SystemOfUnits.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4TransportationManager.hh"
 #include "TVector3.h"
-
+#include "G4Kernel/constants.h"
 
 ParticleGun::ParticleGun( std::string name):
     IMsgService(name),
-    PropertyService(),
+    PrimaryGenerator(),
     m_gun(nullptr),
     m_evt(0)
 {
   declareProperty( "EventKey"           , m_eventKey="EventInfo"    );
   declareProperty( "NumberOfParticles"  , m_nofParticles=1          ); 
-  declareProperty( "Particle"           , m_particle="-e"           );
+  declareProperty( "Particle"           , m_particle="e-"           );
   declareProperty( "ParticleEnergy"     , m_particleEnergy=50       );
   declareProperty( "Direction"          , m_direction={0,1,0}       );
 }
 
 
+
 ParticleGun::~ParticleGun()
 {
-  delete m_gun;
+  if(m_gun) delete m_gun;
 }
 
 
-void ParticleGun::initialize()
+StatusCode ParticleGun::initialize()
 {
   MSG_INFO( "Initialize the particle gun" );
   m_gun = new G4ParticleGun(m_nofParticles);
@@ -45,8 +46,19 @@ void ParticleGun::initialize()
                                                     m_direction.at(1),
                                                     m_direction.at(2)));
   m_gun->SetParticleEnergy(m_particleEnergy);
+  
+  // Center of the detector
+  m_gun->SetParticlePosition( G4ThreeVector(0,0,0) );
 
+  return StatusCode::SUCCESS;
 }
+
+
+StatusCode ParticleGun::finalize()
+{
+  return StatusCode::SUCCESS;
+}
+
 
 
 
@@ -74,7 +86,11 @@ void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
   evt->setAvgmu( 0.0 );
   evt->push_back(seed);
 
-  MSG_INFO( m_gun);
+  m_gun->SetParticleTime( 0 );
+  m_gun->GeneratePrimaryVertex(anEvent);
+
+  // Generate the truth
+  m_gun->SetParticleTime( (special_bcid_for_truth_reconstruction * 25.) * c_light/mm );// in ns
   m_gun->GeneratePrimaryVertex(anEvent);
 
   MSG_INFO( "eta = " << eta << " phi = " << phi );
@@ -92,5 +108,19 @@ bool ParticleGun::CheckVertexInsideWorld(const G4ThreeVector& pos) const
   if( qinside != kInside) return false;
   else return true;
 }
+
+
+
+PrimaryGenerator* ParticleGun::copy()
+{
+  auto *gun = new ParticleGun( getLogName() );
+  gun->setProperty( "EventKey", m_eventKey );
+  gun->setProperty( "NumberOfParticles", m_nofParticles );
+  gun->setProperty( "Particle", m_particle );
+  gun->setProperty( "ParticleEnergy", m_particleEnergy );
+  gun->setProperty( "Direction", m_direction );
+  return gun;
+}
+
 
 

@@ -67,6 +67,7 @@ void RawCell::Fill( const G4Step* step )
   G4ThreeVector pos = point->GetPosition();
   // Get the particle time
   float t = (float)point->GetGlobalTime()*mm/c_light; // mm to ns
+  
   // Loop over all samples
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
     if( t >= m_time[sample] && t < m_time[sample+1]){

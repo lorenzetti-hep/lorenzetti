@@ -1,7 +1,6 @@
 #ifndef DetectorConstruction_h
 #define DetectorConstruction_h
 
-/** geant 4 libs **/
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"

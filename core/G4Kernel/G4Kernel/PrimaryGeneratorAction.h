@@ -7,7 +7,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGunMessenger.hh"
 #include "G4VPrimaryGenerator.hh"
-
+#include "G4Kernel/PrimaryGenerator.h"
 
 class G4Event;
 
@@ -16,7 +16,7 @@ class G4Event;
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   public:
 
-    PrimaryGeneratorAction( G4VPrimaryGenerator *);
+    PrimaryGeneratorAction( PrimaryGenerator *);
     ~PrimaryGeneratorAction();
   
     virtual void GeneratePrimaries(G4Event* anEvent);
@@ -25,7 +25,7 @@ class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
   
   private:
 
-    G4VPrimaryGenerator *m_generator;
+    PrimaryGenerator *m_generator;
 
 };
 

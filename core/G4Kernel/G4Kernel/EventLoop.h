@@ -2,7 +2,6 @@
 #define EventLoop_h
 
 /** simulator includes **/
-//#include "core/StoreGate.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Algorithm.h"

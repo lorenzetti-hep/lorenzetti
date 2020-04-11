@@ -16,7 +16,7 @@ gun = ParticleGun( "ParticleGun",
                    Particle           = 'e-',
                    ParticleEnergy     = 100*GeV,
                    NumberOfParticles  = 1,
-                   Direction          = [0.,1.,0.],
+                   Direction          = [0.,1.,0],
                    )
 
 

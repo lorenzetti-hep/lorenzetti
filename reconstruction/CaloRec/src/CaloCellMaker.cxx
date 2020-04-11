@@ -1,7 +1,7 @@
 #include "CaloCellCollection.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/RawCell.h"
-#include "G4Kernel/EventReader.h"
+#include "G4Kernel/constants.h"
 #include "CaloCellMaker.h"
 #include "TVector3.h"
 #include <cstdlib>
@@ -64,11 +64,21 @@ StatusCode CaloCellMaker::initialize()
 	}
   file.close();
 
-  std::stringstream ss; ss << "cells_layer_" << m_sampling;
-  // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  {
+    std::stringstream ss; ss << "cells_layer_" << m_sampling;
+    // Create the 2D histogram for monitoring purpose
+    store->add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
-  
+  }
+
+  {
+    std::stringstream ss; ss << "truth_cells_layer_" << m_sampling;
+    // Create the 2D histogram for monitoring purpose
+    store->add(new TH2F( ss.str().c_str(), "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+                         m_phi_bins, m_phi_min, m_phi_max) );
+  }
+
+
   for ( auto tool : m_toolHandles )
   {
     // StoreGate link
@@ -204,15 +214,25 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
-    // Skip cells with energy equal zero
-    std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
-    int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
-    int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
-    int bin = store->hist2(ss.str())->GetBin(x,y,0);
-    float energy = store->hist2(ss.str())->GetBinContent( bin );
-    store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
+    {// Fill estimated energy 2D histograms
+      std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
+      int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2(ss.str())->GetBin(x,y,0);
+      float energy = store->hist2(ss.str())->GetBinContent( bin );
+      store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
+    }
+    {// Fill truth energy 2D histograms
+      std::stringstream ss; ss << "truth_cells_layer_" << (int)cell->sampling();
+      int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2(ss.str())->GetBin(x,y,0);
+      float energy = store->hist2(ss.str())->GetBinContent( bin );
+      store->hist2(ss.str())->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
+    
+    
+    }
   }
-
   return StatusCode::SUCCESS;
 }
 

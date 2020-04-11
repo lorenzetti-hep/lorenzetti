@@ -2,6 +2,7 @@
 #ifndef RunManager_h
 #define RunManager_h
 
+#include "G4Kernel/PrimaryGenerator.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Property.h"
@@ -9,7 +10,6 @@
 #include <vector>
 #include <string>
 
-class G4VPrimaryGenerator;
 
 class RunManager: public MsgService, 
                   public Gaugi::PropertyService
@@ -23,7 +23,7 @@ class RunManager: public MsgService,
 
     void push_back( Gaugi::Algorithm* );
 
-    void setGenerator( G4VPrimaryGenerator * );
+    void setGenerator( PrimaryGenerator * );
 
   private:
 
@@ -35,6 +35,6 @@ class RunManager: public MsgService,
 
     std::vector< Gaugi::Algorithm* > m_acc;
 
-    G4VPrimaryGenerator       *m_generator;
+    PrimaryGenerator       *m_generator;
 };
 #endif

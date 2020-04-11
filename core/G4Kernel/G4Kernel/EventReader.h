@@ -4,23 +4,13 @@
 
 #include "TFile.h"
 #include "TTree.h"
-#include <string>
-#include <vector>
-#include "GaugiKernel/MsgStream.h"
-#include "GaugiKernel/Property.h"
-#include "GaugiKernel/macros.h"
 #include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
-#include "G4VPrimaryGenerator.hh"
+#include "G4Kernel/PrimaryGenerator.h"
 
 
-const int special_bcid_for_truth_reconstruction = -999;
 
-
-class EventReader : public G4VPrimaryGenerator,
-                    public MsgService,
-                    public Gaugi::PropertyService
-                    //public Gaugi::MsgService
+class EventReader : public PrimaryGenerator
 {
   public:
 
@@ -30,12 +20,17 @@ class EventReader : public G4VPrimaryGenerator,
     virtual ~EventReader();
     
 
-    
     virtual void GeneratePrimaryVertex(G4Event* anEvent) override;
-    
+
+
+    virtual StatusCode initialize() override;
+    virtual StatusCode finalize() override;
+
+    virtual PrimaryGenerator* copy() override;
+
   private:
     
-    void initialize();
+
     
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param, bool message=true);
     

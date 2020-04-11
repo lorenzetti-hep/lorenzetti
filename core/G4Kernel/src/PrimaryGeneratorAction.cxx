@@ -4,14 +4,20 @@
 #include "G4Event.hh"
 
 
-PrimaryGeneratorAction::PrimaryGeneratorAction( G4VPrimaryGenerator *gen): G4VUserPrimaryGeneratorAction()
+PrimaryGeneratorAction::PrimaryGeneratorAction( PrimaryGenerator *gen): 
+  G4VUserPrimaryGeneratorAction()
 {
-  m_generator = gen;
+  // Need to copy the generator to works on thread mode
+  m_generator = gen->copy();
+  m_generator->initialize();
 }
 
 
 PrimaryGeneratorAction::~PrimaryGeneratorAction()
-{;}
+{
+  m_generator->finalize();
+  delete m_generator;
+}
 
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)

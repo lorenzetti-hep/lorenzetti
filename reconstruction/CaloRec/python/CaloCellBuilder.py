@@ -3,7 +3,7 @@ __all__ = ["CaloCellBuilder"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
-from RecCommon import treatPropertyValue, recordable
+from G4Kernel import treatPropertyValue, recordable
 import os
 
 

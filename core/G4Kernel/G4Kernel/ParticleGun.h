@@ -1,19 +1,15 @@
 #ifndef ParticleGun_h
 #define ParticleGun_h
 
-#include "G4VPrimaryGenerator.hh"
-#include "GaugiKernel/MsgStream.h"
-#include "GaugiKernel/Property.h"
-#include "GaugiKernel/macros.h"
+
+#include "G4Kernel/PrimaryGenerator.h"
 #include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "G4ParticleGun.hh"
 
 
 
-class ParticleGun : public G4VPrimaryGenerator, 
-                    public MsgService, 
-                    public Gaugi::PropertyService 
+class ParticleGun : public PrimaryGenerator 
 {
    
   public:
@@ -26,10 +22,13 @@ class ParticleGun : public G4VPrimaryGenerator,
     // GenerateHepMCEvent() will be converted to G4Event through HepMC2G4().
     virtual void GeneratePrimaryVertex(G4Event* anEvent) override;
 
-    
+    virtual StatusCode initialize() override;
+    virtual StatusCode finalize() override;
+
+    virtual PrimaryGenerator* copy() override;
+
   private:
     
-    void initialize();
     
     // We  have to take care for the position of primaries because
     // primary vertices outside the world voulme give rise to G4Execption.

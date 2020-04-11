@@ -8,7 +8,7 @@
 #include "G4MTRunManager.hh"
 #include <iostream>
 
-ActionInitialization::ActionInitialization( G4VPrimaryGenerator *gen,
+ActionInitialization::ActionInitialization( PrimaryGenerator *gen,
                                             std::vector<Gaugi::Algorithm*> acc , 
                                             std::string output)
  : G4VUserActionInitialization(),
@@ -39,6 +39,7 @@ ActionInitialization::~ActionInitialization()
       // raise exception here
     }
   }
+
   delete m_store;
 }
 
