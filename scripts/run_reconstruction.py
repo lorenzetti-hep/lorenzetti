@@ -11,16 +11,24 @@ pi = np.pi
 acc = ComponentAccumulator("ComponentAccumulator", VisMacro = "init_vis.mac", NumberOfThreads = 4, OutputFile = 'test')
 
 
-gun = ParticleGun( "ParticleGun",
+#gun = ParticleGun( "ParticleGun",
+#                   EventKey   = recordable("EventInfo"),
+#                   Particle   = 'e+',
+#                   Energy     = 80*GeV,
+#                   Sigma      = 2*GeV,
+#                   EtaMax     = 0.6,
+#                   )
+#gun.merge(acc)
+
+
+gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
-                   Particle   = 'e+',
-                   Energy     = 50*GeV,
-                   Sigma      = 2*GeV,
-                   EtaMax     = 1.0,
+                   #FileName   = "pythia_zee.root",
+                   FileName   = "pythia_jf17.root",
                    )
-
-
 gun.merge(acc)
+
+
 
 
 

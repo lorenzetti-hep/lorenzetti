@@ -14,7 +14,7 @@
 #include <math.h>
 #include "TFile.h"
 #include "TTree.h"
-
+#include "TROOT.h"
 
 using namespace Gaugi;
 
@@ -24,6 +24,7 @@ EventReader::EventReader(std::string name):
     PrimaryGenerator(),
     m_evt(0)
 {
+  ROOT::EnableThreadSafety();
   declareProperty( "FileName", m_filename=""          );
   declareProperty( "EventKey", m_eventKey="EventInfo" );
 
@@ -49,6 +50,7 @@ StatusCode EventReader::initialize()
 {
   MSG_INFO( "Open the root file: " << m_filename );
   m_f = new TFile( m_filename.c_str() , "read" );
+
   m_ttree = (TTree*)m_f->Get("particles");
   m_evt=0;
   link( m_ttree );

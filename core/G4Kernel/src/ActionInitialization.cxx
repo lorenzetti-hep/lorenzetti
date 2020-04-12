@@ -45,7 +45,7 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new RunAction(m_acc, m_output));
+  //SetUserAction(new RunAction(m_acc, m_output));
 }
 
 
