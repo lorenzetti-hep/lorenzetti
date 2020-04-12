@@ -6,7 +6,9 @@
 #include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "G4ParticleGun.hh"
-
+#include "G4GeneralParticleSource.hh"
+#include "TRandom.h"
+#include "TVector3.h"
 
 
 class ParticleGun : public PrimaryGenerator 
@@ -35,21 +37,19 @@ class ParticleGun : public PrimaryGenerator
     // If the default implementation is not adequate, an alternative
     // can be implemented in your own class.
     bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
-  
+    TVector3 RandomPos( float etamax );
+
     G4ParticleGun *m_gun;
+    //G4GeneralParticleSource *m_gun;
 
     std::string m_particle;
     std::string m_eventKey;
-    
-    int m_nofParticles;
-
-    float m_particleEnergy;
-    
-    std::vector<float >m_direction;
-
-
+    float m_energy;
+    std::string m_energyDist;
+    float m_sigma;
+    float m_etamax;
     int m_evt;
-
+    TRandom m_generator;
 
 };
 #endif

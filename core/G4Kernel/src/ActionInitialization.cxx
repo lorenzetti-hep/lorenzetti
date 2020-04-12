@@ -11,19 +11,20 @@
 ActionInitialization::ActionInitialization( PrimaryGenerator *gen,
                                             std::vector<Gaugi::Algorithm*> acc , 
                                             std::string output)
- : G4VUserActionInitialization(),
-  m_output(output),
+ : 
+  IMsgService("ActionInitialization"), 
+  G4VUserActionInitialization(),
   m_acc(acc),
-  m_generator(gen)
+  m_generator(gen),
+  m_output(output)
 {
-  m_store = new SG::StoreGate(output);  
 
   for ( auto toolHandle : m_acc )
   { 
-    toolHandle->setStoreGateSvc( m_store );
+    MSG_INFO( "Initializing the tool with name " << toolHandle->name() );
     if ( toolHandle->initialize().isFailure() )
     {
-      // raise exception here
+      MSG_ERROR("It's not possible to initialize the tool with name: " << toolHandle->name() );
     }
   } 
 
@@ -36,24 +37,22 @@ ActionInitialization::~ActionInitialization()
   { 
     if ( toolHandle->finalize().isFailure() )
     {
-      // raise exception here
+      MSG_ERROR("It's not possible to finalize the tool with name: " << toolHandle->name() );
     }
   }
-
-  delete m_store;
 }
 
 
 void ActionInitialization::BuildForMaster() const
 {
-  SetUserAction(new RunAction(m_acc));
+  SetUserAction(new RunAction(m_acc, m_output));
 }
 
 
 void ActionInitialization::Build() const
 {
   SetUserAction(new PrimaryGeneratorAction(m_generator));
-  SetUserAction(new RunAction(m_acc));
+  SetUserAction(new RunAction(m_acc, m_output));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());
 }  

@@ -10,7 +10,8 @@
 
 
 EventAction::EventAction()
- : G4UserEventAction()
+ : IMsgService("EventAction"), 
+   G4UserEventAction()
 {;}
 
 
@@ -21,6 +22,7 @@ EventAction::~EventAction()
 void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 {  
   EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  MSG_INFO( "EventAction::BeginOfEvent()" );
   loop->BeginOfEvent();
 }
 
@@ -28,6 +30,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 void EventAction::EndOfEventAction(const G4Event* /*event*/)
 {
+  MSG_INFO( "EventAction::EndOfEvent()" );
   EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   loop->EndOfEvent();
 }

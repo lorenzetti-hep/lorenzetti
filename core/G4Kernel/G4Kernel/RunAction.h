@@ -1,6 +1,7 @@
 #ifndef RunAction_h
 #define RunAction_h
 
+#include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Algorithm.h"
 
 /** geant 4 includes **/
@@ -9,10 +10,10 @@
 
 class G4Run;
 
-class RunAction : public G4UserRunAction
+class RunAction : public G4UserRunAction, public MsgService
 {
   public:
-    RunAction( std::vector<Gaugi::Algorithm*>);
+    RunAction( std::vector<Gaugi::Algorithm*>, std::string output);
     virtual ~RunAction();
     virtual G4Run* GenerateRun();
     virtual void BeginOfRunAction(const G4Run*);
@@ -22,6 +23,7 @@ class RunAction : public G4UserRunAction
   private:
 
     std::vector<Gaugi::Algorithm*> m_acc;
+    std::string m_output;
 };
 #endif
 

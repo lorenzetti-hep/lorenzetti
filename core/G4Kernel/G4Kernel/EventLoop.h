@@ -1,17 +1,13 @@
 #ifndef EventLoop_h 
 #define EventLoop_h
 
-/** simulator includes **/
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Algorithm.h"
-
-/** geant 4 includes **/
+#include "GaugiKernel/StoreGate.h"
 #include "G4Run.hh"
 #include "globals.hh"
 #include "G4Step.hh"
-
-/** standard includes **/
 #include <string>
 #include <vector>
 
@@ -21,7 +17,7 @@ class EventLoop : public G4Run, public MsgService
   public:
 
     /** Constructor **/
-    EventLoop( std::vector<Gaugi::Algorithm*> );
+    EventLoop( std::vector<Gaugi::Algorithm*>, std::string output );
     
     /** Destructor **/
     virtual ~EventLoop();
@@ -41,12 +37,14 @@ class EventLoop : public G4Run, public MsgService
 
   private:
 
+    // Store gate
+    SG::StoreGate m_store;
+
     // the event context
     SG::EventContext m_ctx;
     
     // list of alg tools to be executed in loop
     std::vector < Gaugi::Algorithm* > m_toolHandles;
-
 };
 
   

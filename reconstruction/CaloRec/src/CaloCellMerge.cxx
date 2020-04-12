@@ -40,6 +40,12 @@ StatusCode CaloCellMerge::finalize()
 }
 
 
+StatusCode CaloCellMerge::bookHistograms( StoreGate &/*store*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+
 StatusCode CaloCellMerge::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
@@ -114,9 +120,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 }
 
 
-
-
-StatusCode CaloCellMerge::fillHistograms( EventContext &/*ctx*/ ) const
+StatusCode CaloCellMerge::fillHistograms( EventContext &/*ctx*/ , StoreGate &/*store*/ ) const
 {
   return StatusCode::SUCCESS;
 }

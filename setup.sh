@@ -5,7 +5,7 @@ export RCM_NO_COLOR=0
 export RCM_GRID_ENV=0
 export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
 
-export CASTOR=`pwd`
+export LZT_PATH=`pwd`
 
 
 cd build
@@ -40,4 +40,6 @@ export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
 
 cd ..
+
+
 

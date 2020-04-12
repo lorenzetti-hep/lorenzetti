@@ -10,9 +10,11 @@
 
 #include <iostream>
 
-RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc )
- : G4UserRunAction(),
-   m_acc(acc)
+RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc, std::string output )
+ : IMsgService("RunAction"),
+   G4UserRunAction(),
+   m_acc(acc),
+   m_output(output)
 {;}
 
 
@@ -24,7 +26,8 @@ RunAction::~RunAction()
 
 G4Run* RunAction::GenerateRun()
 {
-  return new EventLoop(m_acc);
+  MSG_INFO("Creating the EventLoop...");
+  return new EventLoop(m_acc, m_output);
 }
 
 

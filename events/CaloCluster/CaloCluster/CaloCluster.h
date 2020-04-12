@@ -67,6 +67,11 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_e277, setE277, e277 );
       /*! set/get eratio */
       PRIMITIVE_SETTER_AND_GETTER( float, m_eratio, setEratio, eratio );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio2, setEratio2, eratio2 );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio3, setEratio3, eratio3 );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio4, setEratio4, eratio4 );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio5, setEratio5, eratio5 );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio6, setEratio6, eratio6 );
       /*! set/get reta */
       PRIMITIVE_SETTER_AND_GETTER( float, m_reta, setReta, reta );
       /*! set/get rphi */
@@ -81,6 +86,8 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_f3, setF3, f3 );
       /*! set/get rhad */
       PRIMITIVE_SETTER_AND_GETTER( float, m_rhad, setRhad, rhad );
+      /*! Weta2 */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_weta2, setWeta2, weta2 );
 
 
       /*! Add the calorimeter cell into the RoI collection */
@@ -114,14 +121,21 @@ namespace xAOD{
       float m_rphi;
       float m_rhad;
       float m_eratio;
+      float m_eratio2;
+      float m_eratio3;
+      float m_eratio4;
+      float m_eratio5;
+      float m_eratio6;
       float m_f0;
       float m_f1;
       float m_f2;
       float m_f3;
+      float m_weta2;
       float m_eta;
       float m_phi;
       float m_deta;
       float m_dphi;
+
       
       /* All calo cells into the roi window */
       std::vector<const xAOD::CaloCell*> m_container;

@@ -8,12 +8,13 @@
 #include "G4ParticleGunMessenger.hh"
 #include "G4VPrimaryGenerator.hh"
 #include "G4Kernel/PrimaryGenerator.h"
+#include "GaugiKernel/MsgStream.h"
 
 class G4Event;
 
 
 
-class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction, public MsgService {
   public:
 
     PrimaryGeneratorAction( PrimaryGenerator *);

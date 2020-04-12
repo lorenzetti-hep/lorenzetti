@@ -1,13 +1,13 @@
 #ifndef SteppingAction_h
 #define SteppingAction_h
 
-/** geant 4 includes **/
+#include "GaugiKernel/MsgStream.h"
 #include "G4UserSteppingAction.hh"
 #include "g4root.hh"
 
 class DetectorConstruction;
 
-class SteppingAction : public G4UserSteppingAction
+class SteppingAction : public G4UserSteppingAction, public MsgService
 {
   public:
     SteppingAction();

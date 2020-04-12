@@ -1,6 +1,7 @@
 #ifndef DetectorConstruction_h
 #define DetectorConstruction_h
 
+#include "GaugiKernel/MsgStream.h"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"
@@ -12,7 +13,7 @@ class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
 
-class DetectorConstruction : public G4VUserDetectorConstruction
+class DetectorConstruction : public G4VUserDetectorConstruction, public MsgService
 {
   public:
     DetectorConstruction();

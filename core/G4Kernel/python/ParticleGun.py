@@ -9,10 +9,11 @@ class ParticleGun( Logger ):
 
   __allow_keys = [
                   "EventKey", 
-                  "NumberOfParticles",
+                  "EnergyDist",
+                  "Energy",
+                  "Sigma",
                   "Particle",
-                  "ParticleEnergy",
-                  "Direction",
+                  "EtaMax",
                   ]
 
 

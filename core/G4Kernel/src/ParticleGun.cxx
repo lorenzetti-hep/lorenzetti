@@ -11,20 +11,22 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4TransportationManager.hh"
-#include "TVector3.h"
+
 #include "G4Kernel/constants.h"
 
 ParticleGun::ParticleGun( std::string name):
     IMsgService(name),
     PrimaryGenerator(),
     m_gun(nullptr),
-    m_evt(0)
+    m_evt(0),
+    m_generator(0)
 {
   declareProperty( "EventKey"           , m_eventKey="EventInfo"    );
-  declareProperty( "NumberOfParticles"  , m_nofParticles=1          ); 
   declareProperty( "Particle"           , m_particle="e-"           );
-  declareProperty( "ParticleEnergy"     , m_particleEnergy=50       );
-  declareProperty( "Direction"          , m_direction={0,1,0}       );
+  declareProperty( "Energy"             , m_energy=100*1e3          );
+  declareProperty( "EnergyDist"         , m_energyDist="Gauss"      );
+  declareProperty( "Sigma"              , m_sigma=1.0               );
+  declareProperty( "EtaMax"             , m_etamax=1.0              );
 }
 
 
@@ -37,18 +39,11 @@ ParticleGun::~ParticleGun()
 
 StatusCode ParticleGun::initialize()
 {
+
   MSG_INFO( "Initialize the particle gun" );
-  m_gun = new G4ParticleGun(m_nofParticles);
-  G4ParticleDefinition* particleDefinition = G4ParticleTable::GetParticleTable()->FindParticle(m_particle);
-  m_gun->SetParticleDefinition(particleDefinition);
   
-  m_gun->SetParticleMomentumDirection(G4ThreeVector(m_direction.at(0),
-                                                    m_direction.at(1),
-                                                    m_direction.at(2)));
-  m_gun->SetParticleEnergy(m_particleEnergy);
-  
-  // Center of the detector
-  m_gun->SetParticlePosition( G4ThreeVector(0,0,0) );
+  //m_gun = new G4GeneralParticleSource();
+  m_gun = new G4ParticleGun();
 
   return StatusCode::SUCCESS;
 }
@@ -62,40 +57,47 @@ StatusCode ParticleGun::finalize()
 
 
 
+
 // Call by geant
 void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
 {
-  if(!m_gun)
-    initialize();
-
   m_evt++;
   EventLoop *loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-  
   SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, loop->getContext());
   event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
   xAOD::EventInfo *evt = new xAOD::EventInfo();
+ 
 
-  G4ThreeVector pos(m_direction.at(0), m_direction.at(1), m_direction.at(2));
-  TVector3 vpos( pos.x(), pos.y(), pos.z());
-  float eta = vpos.PseudoRapidity();
-  float phi = vpos.Phi();
 
-  xAOD::seed_t seed{m_particleEnergy, eta, phi, 0};
+  auto pos = RandomPos( m_etamax );
+  auto *particle = G4ParticleTable::GetParticleTable()->FindParticle(m_particle);
+  float pp = m_generator.Gaus( m_energy, m_sigma );
+  float mass = particle->GetPDGMass();
+  float ekin = std::sqrt(pp*pp+mass*mass) - mass;
+  int pdgid= particle->GetParticleDefinitionID();
+  float et = pos.PseudoRapidity() != 0.0 ? ekin / std::cosh(std::fabs(pos.PseudoRapidity())) : 0.0;
 
-  evt->setEventNumber( m_evt );
-  evt->setAvgmu( 0.0 );
-  evt->push_back(seed);
+  MSG_INFO( "Ekin = " << ekin << " Et = " << et);
 
+  m_gun->SetParticleDefinition(particle);
+  m_gun->SetParticleEnergy(ekin);
   m_gun->SetParticleTime( 0 );
+  m_gun->SetParticleMomentumDirection(G4ThreeVector(pos.x(),pos.y(),pos.y()));
   m_gun->GeneratePrimaryVertex(anEvent);
-
-  // Generate the truth
   m_gun->SetParticleTime( (special_bcid_for_truth_reconstruction * 25.) * c_light/mm );// in ns
   m_gun->GeneratePrimaryVertex(anEvent);
 
-  MSG_INFO( "eta = " << eta << " phi = " << phi );
-  MSG_INFO( "Event id         : " << evt->eventNumber() );
+  
+  xAOD::seed_t seed{et, (float)pos.PseudoRapidity(), (float)pos.Phi(), pdgid};
+  evt->setEventNumber( m_evt );
+  evt->setAvgmu( 0.0 );
+  evt->push_back(seed);
   event->push_back(evt);
+
+
+
+  MSG_INFO( "eta = " << pos.PseudoRapidity() << " phi = " << pos.Phi() << " pdgid = " << pdgid);
+  MSG_INFO( "Event id         : " << evt->eventNumber() );
 }
 
 
@@ -110,15 +112,27 @@ bool ParticleGun::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
+TVector3 ParticleGun::RandomPos( float etamax )
+{
+  float eta=5.0;
+  float x,y,z;
+  while( eta > etamax ){
+    x = m_generator.Gaus(0.0, 3.5); y = m_generator.Gaus(0.0, 3.5); z = m_generator.Gaus(0.0, 3.5);  
+    TVector3 pos(x, y, z);
+    eta = std::abs(pos.PseudoRapidity());
+    MSG_INFO( "-----------------___________> "<<eta);
+  }
+  return TVector3(x,y,z);
+}
 
 PrimaryGenerator* ParticleGun::copy()
 {
   auto *gun = new ParticleGun( getLogName() );
   gun->setProperty( "EventKey", m_eventKey );
-  gun->setProperty( "NumberOfParticles", m_nofParticles );
   gun->setProperty( "Particle", m_particle );
-  gun->setProperty( "ParticleEnergy", m_particleEnergy );
-  gun->setProperty( "Direction", m_direction );
+  gun->setProperty( "Energy", m_energy );
+  gun->setProperty( "EnergyDist", m_energyDist );
+  gun->setProperty( "Sigma", m_sigma );
   return gun;
 }
 

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <stdexcept>
 #include "GaugiKernel/defines.h"
+#include "G4Threading.hh"
 
 /**
  * Macro to be used within MsgService inherited classes.
@@ -19,7 +20,10 @@
  **/
 #define MSG_LVL_CHK(xmsg, lvl)  do { \
   if ( msgLevel( lvl ) ) { \
-    msg() << lvl << xmsg << endreq; \
+    if (G4Threading::G4GetThreadId() < 0 ) \
+      msg() << lvl << xmsg << endreq; \
+    else\
+      msg() << lvl <<  " (G4WT"<< G4Threading::G4GetThreadId() << ") "  <<xmsg << endreq; \
   } \
 } while (0);
 

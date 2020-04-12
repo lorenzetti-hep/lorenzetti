@@ -7,7 +7,8 @@
 
 
 SteppingAction::SteppingAction()
-  : G4UserSteppingAction()
+  : IMsgService("SteppingAction"),
+    G4UserSteppingAction()
 {;}
 
 

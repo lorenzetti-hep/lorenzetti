@@ -1,11 +1,12 @@
 #ifndef EventAction_h
 #define EventAction_h
 
+#include "GaugiKernel/MsgStream.h"
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 
 
-class EventAction : public G4UserEventAction
+class EventAction : public G4UserEventAction, public MsgService
 {
   public:
     EventAction();

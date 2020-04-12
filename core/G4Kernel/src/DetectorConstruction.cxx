@@ -29,9 +29,13 @@ G4GlobalMagFieldMessenger* DetectorConstruction::m_magFieldMessenger = 0;
 
 
 DetectorConstruction::DetectorConstruction()
- : G4VUserDetectorConstruction(),
+ : 
+  IMsgService("DetectorContruction"), 
+   G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
-{;}
+{
+  MSG_INFO( "DetectorContruction was created" );
+}
 
 
 DetectorConstruction::~DetectorConstruction()

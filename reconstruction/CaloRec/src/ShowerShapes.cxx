@@ -29,20 +29,21 @@ StatusCode ShowerShapes::finalize()
 StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
 {
   MSG_INFO("Calculate shower shapes for this cluster." );
-  auto em1Cells = clus->allCells();
-
-	em1Cells.erase(std::remove_if(em1Cells.begin(),
-                                em1Cells.end(),
-                              [](const xAOD::CaloCell* c){return c->sampling() != CaloSample::EM1;}),
-                 em1Cells.end());
-
-  std::sort(em1Cells.begin(), em1Cells.end(),
-                              [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->energy() > c2->energy();});
-
-
-  float emaxs1 = (em1Cells.size()>=4)?(em1Cells[0]->energy() + em1Cells[1]->energy()):0;
+  
+  // Eratio for strip em layer (EM1)
+  auto em1Cells = sortCells( clus , CaloSample::EM1 );
+  float emaxs1  = (em1Cells.size()>=4)?(em1Cells[0]->energy() + em1Cells[1]->energy()):0;
   float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->energy() + em1Cells[3]->energy()):0;
   float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
+
+  // Extra eratio information for each sampling layer
+  float eratio2 = calculateEratio( clus, CaloSample::EM2  );
+  float eratio3 = calculateEratio( clus, CaloSample::EM3  );
+  float eratio4 = calculateEratio( clus, CaloSample::HAD1 );
+  float eratio5 = calculateEratio( clus, CaloSample::HAD2 );
+  float eratio6 = calculateEratio( clus, CaloSample::HAD3 );
+  
+  
   float e277 = sumEnergy( clus, CaloSample::EM2, 7, 7 );
   float e233 = sumEnergy( clus, CaloSample::EM2, 3, 3 );
   float e237 = sumEnergy( clus, CaloSample::EM2, 3, 7 );
@@ -55,6 +56,9 @@ StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
   float ehad1 = sumEnergy( clus, CaloSample::HAD1 ) + sumEnergy( clus, CaloSample::HAD1_Extended );
   float ehad2 = sumEnergy( clus, CaloSample::HAD2 ) + sumEnergy( clus, CaloSample::HAD2_Extended );
   float ehad3 = sumEnergy( clus, CaloSample::HAD3 ) + sumEnergy( clus, CaloSample::HAD3_Extended );
+    
+  float weta2 = calculateWeta2(clus, CaloSample::EM2, 3, 5);
+  MSG_INFO("WETA2 = " << weta2 );
 
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
 
@@ -78,7 +82,15 @@ StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
   clus->setE233( e233 );
   clus->setReta( reta );
   clus->setRphi( rphi );
+  clus->setWeta2( weta2 );
+  // Eratio for strip em layer (EM1)
   clus->setEratio( eratio );
+  // Extra eratio information for each sampling layer
+  clus->setEratio2( eratio2 );
+  clus->setEratio3( eratio3 );
+  clus->setEratio4( eratio4 );
+  clus->setEratio5( eratio5 );
+  clus->setEratio6( eratio6 );
   clus->setEmaxs1( emaxs1 );
   clus->setE2tsts1( e2tsts1 );
   clus->setF0( f0 );
@@ -116,6 +128,67 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
 StatusCode ShowerShapes::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
 StatusCode ShowerShapes::executeTool( xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
 StatusCode ShowerShapes::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
+
+
+
+
+std::vector<const xAOD::CaloCell*> ShowerShapes::sortCells( xAOD::CaloCluster *clus , CaloSample sampling) const
+{
+  std::vector<const xAOD::CaloCell*> cells;
+  for ( auto& cell : clus->allCells() ){
+    if(cell->sampling() != sampling )  continue;
+    cells.push_back(cell);
+  }
+  std::sort(cells.begin(), cells.end(),[](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->energy() > c2->energy();});
+  return cells;
+}
+
+
+float ShowerShapes::calculateEratio( xAOD::CaloCluster *clus, CaloSample sampling) const 
+{
+  auto cells = sortCells( clus , sampling );
+  float emax  = (cells.size()>=4)?(cells[0]->energy() + cells[1]->energy()):0;
+  float e2tst = (cells.size()>=4)?(cells[2]->energy() + cells[3]->energy()):0;
+  return (emax + e2tst)?((emax - e2tst)/(emax + e2tst)):0.;
+}
+
+
+float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell) const
+{
+  MSG_INFO("Calculate Weta2");
+  //int eta_ncell = 3;
+  //int phi_ncell = 5;
+
+  float En2=0.0;
+  float En=0.0;
+  float E=0.0;
+
+  for ( auto& cell : clus->allCells() ){
+    if(cell->sampling() != sampling)  continue;
+    // deta/dphi is the half of the cell sizei
+    if( ( cell->eta() > ( clus->eta() - eta_ncell * cell->deltaEta() ) ) && 
+        ( cell->eta() < ( clus->eta() + eta_ncell * cell->deltaEta() ) ) )
+    {
+      if( ( cell->phi() > ( clus->phi() - phi_ncell * cell->deltaPhi() ) ) && 
+          ( cell->phi() < ( clus->phi() + phi_ncell * cell->deltaPhi() ) ) )
+      {  
+
+
+
+          En2 += cell->energy() * std::pow(cell->eta(),2);
+          En += cell->energy() * cell->eta();
+          E += cell->energy();
+      }
+    }
+  }// Loop over all cells inside of the cluster
+
+  return std::sqrt( (En2/E) - std::pow( (En/E),2 ) );
+}
+
+
+
+
+
 
 
 

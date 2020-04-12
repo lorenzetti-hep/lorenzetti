@@ -8,15 +8,15 @@ import os
 import numpy as np
 pi = np.pi
 
-acc = ComponentAccumulator("ComponentAccumulator", VisMacro = "init_vis.mac", NumberOfThreads = 2)
+acc = ComponentAccumulator("ComponentAccumulator", VisMacro = "init_vis.mac", NumberOfThreads = 4, OutputFile = 'test')
 
 
 gun = ParticleGun( "ParticleGun",
-                   EventKey           = recordable("EventInfo"),
-                   Particle           = 'e-',
-                   ParticleEnergy     = 100*GeV,
-                   NumberOfParticles  = 1,
-                   Direction          = [0.,1.,0],
+                   EventKey   = recordable("EventInfo"),
+                   Particle   = 'e+',
+                   Energy     = 50*GeV,
+                   Sigma      = 2*GeV,
+                   EtaMax     = 1.0,
                    )
 
 
@@ -25,23 +25,18 @@ gun.merge(acc)
 
 
 calorimeter = CaloCellBuilder("CaloCellBuilder", HistogramPath = "Expert/Cells")
-
 calorimeter.merge(acc)
 
 
+
 cluster = CaloClusterMaker( "CaloClusterMaker",
-                            TruthCellsKey   = recordable("TruthCells"),
-                            CellsKey        = recordable("Cells"),
+                            CellsKey        = recordable("TruthCells"),
                             EventKey        = recordable("EventInfo"),
-                            ClusterKey      = recordable("Clusters"),
-                            TruthClusterKey = recordable("TruthClusters"),
+                            ClusterKey      = recordable("TruthClusters"),
                             TruthKey        = recordable("Truth"),
-                            EnergyThreshold = 3*GeV, 
                             EtaWindow       = 0.4,
                             PhiWindow       = 0.4,
-                            DeltaR          = 0.15,
-                            ForceTruthMatch = True,
-                            HistogramPath   = "Expert/Clusters"
+                            HistogramPath   = "Expert/TruthClusters"
                             )
 acc+= cluster
 

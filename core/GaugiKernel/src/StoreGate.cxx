@@ -1,17 +1,19 @@
 
 #include "GaugiKernel/StoreGate.h"
 #include "TROOT.h"
+#include <sstream>
 
 using namespace SG;
 
 
-StoreGate::StoreGate( std::string &outputfile): 
+StoreGate::StoreGate( std::string &outputfile, unsigned index): 
   IMsgService("StoreGate"),
   m_currentPath("")
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  m_file = new TFile(outputfile.c_str(), "recreate");
+  std::stringstream ss; ss << outputfile << "_" << index << ".root";
+  m_file = new TFile(ss.str().c_str(), "recreate");
 }
 
 

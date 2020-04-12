@@ -5,6 +5,7 @@
 #include "GaugiKernel/DataHandle.h"
 #include <vector>
 #include <memory>
+#include <iostream>
 
 namespace SG
 {
@@ -39,8 +40,10 @@ namespace SG
   template<class T>
   inline DataVector<T>::~DataVector()
   {
+    std::cout << "DESTROINDO TUTO!" << std::endl;
     for(auto obj : m_data )
     {
+      std::cout << "AKI JOAO ========== > " << obj << std::endl;
       if(obj) delete obj;
     }
   }

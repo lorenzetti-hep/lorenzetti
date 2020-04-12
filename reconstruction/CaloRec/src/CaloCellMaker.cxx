@@ -43,10 +43,6 @@ StatusCode CaloCellMaker::initialize()
   bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
   bc_file.close();
   
-  // Get the store pointer
-  auto store = getStoreGateSvc();
-  store->mkdir( m_histPath );
-
   // Read the file
   std::ifstream file(m_caloCellFile);
 
@@ -64,25 +60,8 @@ StatusCode CaloCellMaker::initialize()
 	}
   file.close();
 
-  {
-    std::stringstream ss; ss << "cells_layer_" << m_sampling;
-    // Create the 2D histogram for monitoring purpose
-    store->add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
-                       m_phi_bins, m_phi_min, m_phi_max) );
-  }
-
-  {
-    std::stringstream ss; ss << "truth_cells_layer_" << m_sampling;
-    // Create the 2D histogram for monitoring purpose
-    store->add(new TH2F( ss.str().c_str(), "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
-                         m_phi_bins, m_phi_min, m_phi_max) );
-  }
-
-
   for ( auto tool : m_toolHandles )
   {
-    // StoreGate link
-    tool->setStoreGateSvc( store );
     if (tool->initialize().isFailure() )
     {
       MSG_FATAL( "It's not possible to iniatialize " << tool->name() << " tool." );
@@ -91,7 +70,6 @@ StatusCode CaloCellMaker::initialize()
 
   return StatusCode::SUCCESS;
 }
-
 
 
 StatusCode CaloCellMaker::finalize()
@@ -107,7 +85,26 @@ StatusCode CaloCellMaker::finalize()
 }
 
 
+StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
+{
 
+  store.mkdir(m_histPath);
+  {
+    std::stringstream ss; ss << "cells_layer_" << m_sampling;
+    // Create the 2D histogram for monitoring purpose
+    store.add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+                       m_phi_bins, m_phi_min, m_phi_max) );
+  }
+
+  {
+    std::stringstream ss; ss << "truth_cells_layer_" << m_sampling;
+    // Create the 2D histogram for monitoring purpose
+    store.add(new TH2F( ss.str().c_str(), "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+                         m_phi_bins, m_phi_min, m_phi_max) );
+  }
+
+  return StatusCode::SUCCESS;
+}
 
 
 StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
@@ -173,8 +170,6 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
 }
 
 
-
-
 StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 {
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
@@ -198,9 +193,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 }
 
 
-
-
-StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
+StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) const
 {
   
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
@@ -209,30 +202,31 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
-  auto store = getStoreGateSvc();
-  store->cd( m_histPath );
 
+  store.cd(m_histPath);
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
+   
     {// Fill estimated energy 2D histograms
       std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
-      int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
-      int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
-      int bin = store->hist2(ss.str())->GetBin(x,y,0);
-      float energy = store->hist2(ss.str())->GetBinContent( bin );
-      store->hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
+      int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
+      int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
+      int bin = store.hist2(ss.str())->GetBin(x,y,0);
+      float energy = store.hist2(ss.str())->GetBinContent( bin );
+      store.hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
     }
+    
     {// Fill truth energy 2D histograms
-      std::stringstream ss; ss << "truth_cells_layer_" << (int)cell->sampling();
-      int x = store->hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
-      int y = store->hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
-      int bin = store->hist2(ss.str())->GetBin(x,y,0);
-      float energy = store->hist2(ss.str())->GetBinContent( bin );
-      store->hist2(ss.str())->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
-    
-    
+      std::stringstream ss; ss <<"truth_cells_layer_" << (int)cell->sampling();
+      int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
+      int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
+      int bin = store.hist2(ss.str())->GetBin(x,y,0);
+      float energy = store.hist2(ss.str())->GetBinContent( bin );
+      store.hist2(ss.str())->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
     }
+  
   }
+
   return StatusCode::SUCCESS;
 }
 

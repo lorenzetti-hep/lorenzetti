@@ -31,7 +31,7 @@ RunManager::RunManager( std::string name ):
 #ifdef G4MULTITHREADED
   declareProperty( "NumberOfThreads", m_nThreads=1              );
 #endif
-  declareProperty( "Output"         , m_output="Example.root"   );
+  declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "VisMacro"       , m_visMacro="vis.mac"      );
 
 }
@@ -86,6 +86,7 @@ void RunManager::run( std::string macro )
   runManager->SetUserInitialization(physicsList);
 
   MSG_INFO( "Creating the action initalizer..." );
+  MSG_INFO( m_output );
   ActionInitialization* actionInitialization = new ActionInitialization(m_generator, m_acc, m_output);
   runManager->SetUserInitialization(actionInitialization);
 
