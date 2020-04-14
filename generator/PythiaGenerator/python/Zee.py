@@ -3,24 +3,11 @@ __all__ = ["Zee"]
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
-
+from PythonGenerator.utilities import default_allow_keys
 
 class Zee( Logger ):
 
-  __allow_keys = [
-                  "OutputFile"     , 
-                  "EtaMax"         , 
-                  "PileupAvg"      , 
-                  "BunchIdStart"   , 
-                  "BunchIdEnd"     , 
-                  "Select"         , 
-                  "MainFile"       , 
-                  "MinbiasFile"    , 
-                ]
-
-
-
-
+  __allow_keys = default_allow_keys
 
   def __init__( self, name, **kw ): 
     
@@ -50,14 +37,14 @@ class Zee( Logger ):
       setattr( self, '__' + key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
+      MSG_ERROR( self, "Property with name %s is not allow for Zee object", key)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
+      MSG_ERROR( self, "Property with name %s is not allow for Zee object", key)
 
 
 

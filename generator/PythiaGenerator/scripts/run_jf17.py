@@ -1,15 +1,15 @@
 
 
-from PythiaGenerator import Zee
+from PythiaGenerator import JF17
 from Gaugi import GeV
 
 
-generator = Zee( "Zee",
+generator =JF17( "JF17",
                  OutputFile   = 'output',
-                 MinbiasFile  = 'minbias_zee_config.cmnd',
-                 MainFile     = 'zee_config.cmnd',
+                 MinbiasFile  = 'minbias_jet_config.cmnd',
+                 MainFile     = 'jet_config.cmnd',
                  EtaMax       = 1.4,
-                 MinPt        = 15*GeV
+                 MinPt        = 17*GeV
                  PileupAvg    = 40,
                  Select       = 2,
                  BunchIdStart = -8,

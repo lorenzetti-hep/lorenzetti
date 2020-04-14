@@ -22,6 +22,7 @@ EventGenerator::EventGenerator():
   declareProperty( "MinbiasFile"    , m_minbiasFile=""          );
   declareProperty( "OutputFile"     , m_outputFile="particles"  );
   declareProperty( "EtaMax"         , m_etaMax=1.4              );
+  declareProperty( "MinPt"          , m_minPt=0.0               );
   declareProperty( "PileupAvg"      , m_nPileupAvg=0            );
   declareProperty( "BunchIdStart"   , m_bc_id_start=-8          );
   declareProperty( "BunchIdEnd"     , m_bc_id_end=7             );
@@ -41,7 +42,8 @@ StatusCode EventGenerator::initialize()
 {
   
   m_store = new SG::StoreGate( m_outputFile , 0 );
- 
+  
+  m_minPt = m_minPt/1.e3;
   
   // Read in commands from external file.
   m_pythia.readFile( m_mainFile );
