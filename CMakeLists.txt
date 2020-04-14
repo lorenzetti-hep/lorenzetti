@@ -39,6 +39,7 @@ gaugi_initialize()
 
 
 
+
 #set( Python_ADDITIONAL_VERSIONS 3.0)
 find_package( PythonInterp REQUIRED)
 find_package( PythonLibs REQUIRED)
@@ -60,6 +61,7 @@ add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
 add_subdirectory( reconstruction/CaloRec )
 add_subdirectory( reconstruction/CaloRingerBuilder )
+add_subdirectory( generator/PythiaGenerator )
 
 
 add_library(lorenzetti SHARED
@@ -74,11 +76,20 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloRings>
   $<TARGET_OBJECTS:CaloRec>
   $<TARGET_OBJECTS:CaloRingerBuilder>
+  $<TARGET_OBJECTS:PythiaGenerator>
 
 )
 
 
+file(GLOB FASTJET_LIBRARIES /Users/jodafons/.bin/fastjet-3.3.3/lib/*.dylib )
+file(GLOB PYTHIA8_LIBRARIES /Users/jodafons/.bin/pythia8244/lib/*.a )
+
+message( STATUS ${FASTJET_LIBRARIES} )
+message( STATUS ${PYTHIA8_LIBRARIES} )
+
 target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
-  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} ${ROOT_LIBRARIES} )
+  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} ${ROOT_LIBRARIES}
+  ${FASTJET_LIBRARIES} ${PYTHIA8_LIBRARIES} )
+
 
 

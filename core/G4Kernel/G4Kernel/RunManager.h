@@ -19,7 +19,7 @@ class RunManager: public MsgService,
     RunManager( std::string name);
     ~RunManager();
     
-    void run( std::string="");
+    void run( int evt=10000);
 
     void push_back( Gaugi::Algorithm* );
 
@@ -29,7 +29,7 @@ class RunManager: public MsgService,
 
     int m_nThreads;
 
-    std::string m_visMacro;
+    bool m_runVis;
     
     std::string m_output;
 

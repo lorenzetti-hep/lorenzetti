@@ -597,7 +597,7 @@ class IMsgService
      **/
     IMsgService( const std::string& defName, 
                  const MSG::Level defLevel = MSG::INFO ,
-                 const bool defUseColor = false )
+                 const bool defUseColor = true )
       : m_defName(defName),
         m_defLevel(defLevel),
         m_defUseColor( defUseColor ){;}

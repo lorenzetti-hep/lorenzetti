@@ -6,7 +6,7 @@ using namespace Gaugi;
 
 PulseGenerator::PulseGenerator( std::string name ) : 
   IMsgService(name),
-  CaloRecTool()
+  CaloTool()
 {
   declareProperty( "NSamples"     , m_nsamples=7              );
   declareProperty( "ShaperFile"   , m_shaperFile              );

@@ -1,7 +1,6 @@
 #ifndef CaloCellMerge_h
 #define CaloCellMerge_h
 
-#include "CaloRecTool.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 #include "CaloCell/CaloCell.h"

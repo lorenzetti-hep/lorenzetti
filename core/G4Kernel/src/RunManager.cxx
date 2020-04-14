@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include "time.h"
+#include <cstdlib>
 
 
 RunManager::RunManager( std::string name ): 
@@ -32,7 +33,7 @@ RunManager::RunManager( std::string name ):
   declareProperty( "NumberOfThreads", m_nThreads=1              );
 #endif
   declareProperty( "OutputFile"     , m_output="Example.root"   );
-  declareProperty( "VisMacro"       , m_visMacro="vis.mac"      );
+  declareProperty( "RunVis"         , m_runVis=false            );
 
 }
 
@@ -52,12 +53,13 @@ void RunManager::setGenerator( PrimaryGenerator *gen )
 }
 
 
-void RunManager::run( std::string macro )
+void RunManager::run( int evt )
 {
+  std::string basepath(std::getenv("LZT_PATH"));
   int argc=1;
   char* argv[1] = {"app"};
   G4UIExecutive* ui = 0;
-  if ( macro=="" ) {
+  if ( m_runVis ) {
     ui = new G4UIExecutive(argc,argv);
   }
 
@@ -95,14 +97,20 @@ void RunManager::run( std::string macro )
   visManager->Initialize();
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
 
+  std::stringstream runCommand; runCommand << "/run/beamOn " << evt ;
 
-  if ( macro != "" ) {
-    G4String command = "/control/execute ";
-    MSG_INFO("Apply my macro");
-    UImanager->ApplyCommand(command+macro);
+  if (!m_runVis ) {
+    UImanager->ApplyCommand("/run/initialize");
+    UImanager->ApplyCommand("/run/printProgress 1");
+    UImanager->ApplyCommand("/run/verbose 2");
+    UImanager->ApplyCommand(runCommand.str());
   } else  {
     MSG_INFO("Apply my vis macro");
-    UImanager->ApplyCommand("/control/execute "+m_visMacro);
+    UImanager->ApplyCommand("/run/initialize");
+    UImanager->ApplyCommand("/run/printProgress 1");
+    UImanager->ApplyCommand("/run/verbose 2");
+    UImanager->ApplyCommand("/control/execute "+ basepath+"/core/G4Kernel/data/vis.mac");
+    UImanager->ApplyCommand(runCommand.str());
     ui->SessionStart();
     delete ui;
   

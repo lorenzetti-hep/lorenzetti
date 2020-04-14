@@ -5,7 +5,7 @@ using namespace Gaugi;
 
 OptimalFilter::OptimalFilter( std::string name ) : 
   IMsgService(name),
-  CaloRecTool()
+  CaloTool()
 {
   declareProperty( "OutputLevel", m_outputLevel=MSG::INFO );
 }

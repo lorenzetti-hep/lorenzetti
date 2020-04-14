@@ -1,5 +1,5 @@
-#ifndef CaloRecTool_h
-#define CaloRecTool_h
+#ifndef CaloTool_h
+#define CaloTool_h
 
 #include "GaugiKernel/AlgTool.h"
 #include "CaloCell/RawCell.h"
@@ -8,12 +8,12 @@
 #include "TruthParticle/TruthParticle.h"
 
 
-class CaloRecTool : public Gaugi::AlgTool
+class CaloTool : public Gaugi::AlgTool
 {
 
   public:
     /*! Constructor */
-    CaloRecTool() : Gaugi::AlgTool(){};
+    CaloTool() : Gaugi::AlgTool(){};
     
     /*! execute call */
     virtual StatusCode executeTool( xAOD::RawCell * ) const = 0;

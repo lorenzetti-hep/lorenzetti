@@ -8,8 +8,8 @@
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output ): 
   IMsgService("EventLoop"),
   G4Run(), 
-  m_ctx( "EventContext" ),
   m_store( output , G4Threading::G4GetThreadId() ),
+  m_ctx( "EventContext" ),
   m_toolHandles(acc)
 
 {

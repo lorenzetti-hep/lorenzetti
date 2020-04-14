@@ -27,7 +27,7 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
 }
 
 
-void CaloCellMaker::push_back( CaloRecTool* tool )
+void CaloCellMaker::push_back( CaloTool* tool )
 {
   m_toolHandles.push_back(tool);
 }

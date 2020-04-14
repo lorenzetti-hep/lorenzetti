@@ -1,0 +1,51 @@
+
+/vis/open OGL 600x600-0+0
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+/vis/viewer/set/viewpointVector -1 0 0
+/vis/viewer/set/lightsVector -1 0 0
+/vis/viewer/set/style wireframe
+/vis/viewer/set/auxiliaryEdge true
+/vis/viewer/set/lineSegmentsPerCircle 100
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/endOfEventAction accumulate
+/vis/geometry/set/visibility World 0 false
+#/vis/geometry/set/colour ECal 0 green
+/vis/geometry/set/colour DeadMaterial_Abso 0 grey
+/vis/geometry/set/colour EM1_Abso 0 aquamarine
+/vis/geometry/set/colour EM2_Abso 0 cornflowerblue
+/vis/geometry/set/colour EM3_Abso 0 cyan
+/vis/geometry/set/colour ECal_Boundary_Abso 0 grey
+/vis/geometry/set/colour HCal_Boundary_Abso 0 grey
+/vis/geometry/set/colour HAD1_Abso 0 salmon
+/vis/geometry/set/colour HAD1_Gap 0 salmon
+/vis/geometry/set/colour HAD2_Abso 0 violetred
+/vis/geometry/set/colour HAD2_Gap 0 violetred
+/vis/geometry/set/colour HAD3_Abso 0 orangered
+/vis/geometry/set/colour HAD3_Gap 0 orangered
+/vis/geometry/set/colour HAD1_Extended_Abso 0 salmon
+/vis/geometry/set/colour HAD1_Extended_Gap 0 salmon
+/vis/geometry/set/colour HAD2_Extended_Abso 0 violetred
+/vis/geometry/set/colour HAD2_Extended_Gap 0 violetred
+/vis/geometry/set/colour HAD3_Extended_Abso 0 orangered
+/vis/geometry/set/colour HAD3_Extended_Gap 0 orangered
+#/vis/geometry/set/colour EM1_EndCap_B_Abso 0 blue
+#/vis/geometry/set/colour HCal 0 yellow
+#/vis/geometry/set/colour HCal_Layer 0 blue
+#/vis/geometry/set/colour HCal_Abso 0 green
+#/vis/geometry/set/colour HCal_EndCap_B_Abso 0 yellow
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+
+
+
+
+
+
+
+
+

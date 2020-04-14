@@ -1,11 +1,11 @@
 #ifndef ShowerShapes_h
 #define ShowerShapes_h
 
-#include "CaloRecTool.h"
+#include "CaloTool.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/CaloCell.h"
 
-class ShowerShapes : public CaloRecTool
+class ShowerShapes : public CaloTool
 {
 
   public:

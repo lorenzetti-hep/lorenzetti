@@ -11,7 +11,7 @@ using namespace CaloSampling;
 
 ShowerShapes::ShowerShapes( std::string name ) : 
   IMsgService(name),
-  CaloRecTool()
+  CaloTool()
 {;}
 
 

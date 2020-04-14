@@ -222,6 +222,7 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 
 void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 {
+  float totalEnergy = 0.0;
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
@@ -231,13 +232,18 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
       event->push_back( xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i), 0} );
    
     if( m_p_isMain->at(i) ){
+      
+      if(m_p_pdg_id->at(i)!=0)  totalEnergy+= m_p_et->at(i);
+      MSG_INFO( "Main Event: eta = " << m_p_eta->at(i) << " phi = " << m_p_phi->at(i) << " Et = " << m_p_et->at(i) << " PDGID = " << m_p_pdg_id->at(i));
       Add( g4event, i, bc_id );
       Add( g4event, i, special_bcid_for_truth_reconstruction );
     }else{
       Add( g4event, i, bc_id );
     }
 
+
   }
+  MSG_INFO( "Total Energy ========= " << totalEnergy );
 
 }
 

@@ -6,7 +6,7 @@ from Gaugi import Logger
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = ["NumberOfThreads", "OutputFile", "VisMacro"]
+  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis"]
 
   def __init__( self, name , **kw):
 
@@ -24,8 +24,8 @@ class ComponentAccumulator( Logger ):
         MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
 
 
-  def run( self, macro="" ):
-    self.__core.run(macro)
+  def run( self, evt=10000 ):
+    self.__core.run(evt)
 
 
   def setProperty( self, key, value ):

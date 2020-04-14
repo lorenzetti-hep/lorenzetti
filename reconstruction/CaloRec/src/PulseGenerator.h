@@ -2,12 +2,12 @@
 #define PulseGenerator_h
 
 #include "GaugiKernel/StatusCode.h"
-#include "CaloRecTool.h"
+#include "CaloTool.h"
 #include "TPulseGenerator.h"
 
 
 
-class PulseGenerator : public CaloRecTool
+class PulseGenerator : public CaloTool
 {
 
   public:

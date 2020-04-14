@@ -1,5 +1,5 @@
 
-#include "src/CaloRecTool.h"
+#include "src/CaloTool.h"
 #include "src/CaloCellMaker.h"
 #include "src/CaloCellMerge.h"
 #include "src/CaloClusterMaker.h"
@@ -15,7 +15,7 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class CaloRecTool+;
+#pragma link C++ class CaloTool+;
 #pragma link C++ class CaloCellMaker+;
 #pragma link C++ class CaloCellMerge+;
 #pragma link C++ class CaloClusterMaker+;

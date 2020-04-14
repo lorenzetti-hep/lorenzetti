@@ -31,7 +31,7 @@ namespace SG
       void mkdir(std::string );
       
       /** Move between directories **/
-      void cd(std::string );
+      void cd(std::string="" );
       
       /** Create 1D histogram **/
       bool add( TObject *);
