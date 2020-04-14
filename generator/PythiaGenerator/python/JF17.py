@@ -1,11 +1,11 @@
-__all__ = ["Zee"]
+__all__ = ["JF17"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class Zee( Logger ):
+class JF17( Logger ):
 
   __allow_keys = [
                   "OutputFile"     , 
@@ -15,7 +15,9 @@ class Zee( Logger ):
                   "BunchIdEnd"     , 
                   "Select"         , 
                   "MainFile"       , 
-                  "MinbiasFile"    , 
+                  "MinbiasFile"    ,
+                  "EtaWindow"      ,
+                  "PhiWindow"      ,
                 ]
 
 
@@ -32,17 +34,16 @@ class Zee( Logger ):
     self.__core = Zee()
     for key, value in kw.items():
       self.setProperty( key,value )
-
     self.core().initialize()
 
-
-  def core(self):
-    return self.__core
 
   def run(self):
     self.core().run()
     self.finalize()
 
+
+  def core(self):
+    return self.__core
 
 
   def setProperty( self, key, value ):
