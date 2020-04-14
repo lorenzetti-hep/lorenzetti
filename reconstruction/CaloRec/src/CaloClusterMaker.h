@@ -63,7 +63,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
     // Shower shaper calculator
     ShowerShapes *m_showerShapes;
 
-
+    float m_minCenterEnergy;
 
 
 };

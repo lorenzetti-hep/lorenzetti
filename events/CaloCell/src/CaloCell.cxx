@@ -32,3 +32,12 @@ void CaloCell::setParent( const xAOD::RawCell *parent )
 }
 
 
+CaloLayer CaloCell::detector() const
+{
+  if(sampling()==CaloSample::EM1 || sampling()==CaloSample::EM2 || sampling()==CaloSample::EM3)
+    return CaloLayer::ECal;
+  else // HAD1, HAD2 or HAD3
+    return CaloLayer::HCal;
+}
+
+

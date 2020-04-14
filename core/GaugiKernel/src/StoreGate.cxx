@@ -6,13 +6,17 @@
 using namespace SG;
 
 
-StoreGate::StoreGate( std::string &outputfile, unsigned index): 
+StoreGate::StoreGate( std::string &outputfile, int index): 
   IMsgService("StoreGate"),
   m_currentPath("")
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  std::stringstream ss; ss << outputfile << "_" << index << ".root";
+  std::stringstream ss; 
+  if (index<0)
+    ss << outputfile << ".root";
+  else
+    ss << outputfile << "_" << index << ".root";
   m_file = new TFile(ss.str().c_str(), "recreate");
 }
 

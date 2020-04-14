@@ -1,5 +1,4 @@
 
-#include "GaugiKernel/Test.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Property.h"
 #include "GaugiKernel/Algorithm.h"
@@ -14,7 +13,6 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class Test+;
 #pragma link C++ class MsgService+;
 #pragma link C++ class IMsgService+;
 #pragma link C++ class PropertyService+;

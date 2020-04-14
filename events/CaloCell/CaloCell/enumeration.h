@@ -16,6 +16,11 @@ namespace CaloSampling{
     HAD2_Extended=8,
     HAD3_Extended=9
   };
+
+  enum CaloLayer{
+    ECal = 0,
+    HCal = 1
+  };
 } 
 
 #endif

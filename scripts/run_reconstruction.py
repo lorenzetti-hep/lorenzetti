@@ -8,19 +8,11 @@ import os
 import numpy as np
 pi = np.pi
 
-acc = ComponentAccumulator("ComponentAccumulator", VisMacro = "init_vis.mac", NumberOfThreads = 4, OutputFile = 'test')
+acc = ComponentAccumulator("ComponentAccumulator", RunVis=False, NumberOfThreads = 1, OutputFile = 'test')
 
 
-#gun = ParticleGun( "ParticleGun",
-#                   EventKey   = recordable("EventInfo"),
-#                   Particle   = 'e+',
-#                   Energy     = 80*GeV,
-#                   Sigma      = 2*GeV,
-#                   EtaMax     = 0.6,
-#                   )
-#gun.merge(acc)
 
-
+from PythiaGenerator import EventReader
 gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
                    #FileName   = "pythia_zee.root",
@@ -50,17 +42,17 @@ acc+= cluster
 
 
 
-#ringer = CaloRingerBuilder( "CaloRingerBuilder",
-#                            RingerKey     = recordable("Rings"),
-#                            ClusterKey    = recordable("Clusters"),
-#                            DeltaEtaRings = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-#                            DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-#                            NRings        = [64, 8, 8, 4, 4, 4],
-#                            LayerRings    = [1,2,3,4,5,6],
-#                            HistogramPath   = "Expert/Ringer/reco"
-#                            )
-#
-#acc+=ringer
+ringer = CaloRingerBuilder( "CaloRingerBuilder",
+                            RingerKey     = recordable("Rings"),
+                            ClusterKey    = recordable("Clusters"),
+                            DeltaEtaRings = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                            DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                            NRings        = [64, 8, 8, 4, 4, 4],
+                            LayerRings    = [1,2,3,4,5,6],
+                            HistogramPath   = "Expert/Ringer/reco"
+                            )
+
+acc+=ringer
 #
 #
 #
@@ -80,10 +72,7 @@ acc+= cluster
 
 
 
-#acc.run('run_gun.mac')
-#acc.run('run_jets.mac')
-acc.run('run.mac')
-#acc.run()
+acc.run(2)
 
 
 

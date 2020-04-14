@@ -1,6 +1,5 @@
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/CaloCellContainer.h"
-#include "G4Kernel/EventReader.h"
 #include "CaloCellMerge.h"
 #include "TVector3.h"
 #include <cstdlib>

@@ -28,7 +28,7 @@ class JF17( Logger ):
 
   def run(self):
     self.core().run()
-    self.finalize()
+    self.core().finalize()
 
 
   def core(self):

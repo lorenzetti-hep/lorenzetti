@@ -67,11 +67,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_e277, setE277, e277 );
       /*! set/get eratio */
       PRIMITIVE_SETTER_AND_GETTER( float, m_eratio, setEratio, eratio );
-      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio2, setEratio2, eratio2 );
-      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio3, setEratio3, eratio3 );
-      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio4, setEratio4, eratio4 );
-      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio5, setEratio5, eratio5 );
-      PRIMITIVE_SETTER_AND_GETTER( float, m_eratio6, setEratio6, eratio6 );
       /*! set/get reta */
       PRIMITIVE_SETTER_AND_GETTER( float, m_reta, setReta, reta );
       /*! set/get rphi */
@@ -121,11 +116,6 @@ namespace xAOD{
       float m_rphi;
       float m_rhad;
       float m_eratio;
-      float m_eratio2;
-      float m_eratio3;
-      float m_eratio4;
-      float m_eratio5;
-      float m_eratio6;
       float m_f0;
       float m_f1;
       float m_f2;

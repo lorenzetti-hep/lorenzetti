@@ -41,7 +41,7 @@ EventGenerator::~EventGenerator()
 StatusCode EventGenerator::initialize()
 {
   
-  m_store = new SG::StoreGate( m_outputFile , 0 );
+  m_store = new SG::StoreGate( m_outputFile);
   
   m_minPt = m_minPt/1.e3;
   
@@ -139,10 +139,12 @@ StatusCode EventGenerator::run()
       const auto main_event_z = m_pythia.rndm.gauss() * m_sigma_z;
 
       std::vector<Vec4> roi_vec;
-      // Set the main event just for location in Geant reconstruction
-      for ( const auto p : main_particles_vec ) {
-        auto pj = Vec4(p->px(), p->py(), p->pz());
-        roi_vec.push_back( pj );
+
+      // Main event is always in BC 0; pdg is = 0 to sign that this is a RoI
+      for ( std::size_t main_idx = 0; main_idx < particles_vec.size(); ++ main_idx ) {
+        // Set the main event just for location in Geant reconstruction
+        const auto p = main_particles_vec[main_idx];
+        roi_vec.push_back( Vec4(p->px(), p->py(), p->pz() ));
         m_p_isMain->push_back( 1 );
         m_p_bc_id->push_back( 0 ); 
         m_p_pdg_id->push_back( 0 );
@@ -155,11 +157,19 @@ StatusCode EventGenerator::run()
         m_p_prod_y->push_back( 0 ); 
         m_p_prod_z->push_back( 0 + main_event_z  ); 
         m_p_prod_t->push_back( 0 + main_event_t );
-        m_p_e->push_back( p->e() ); 
-        m_p_et->push_back( p->eT() );
+       
+        // In case of cluster, sum the energy of all particles
+        const auto particles = particles_vec[main_idx];
+        float etot=0.0; float ettot=0.0;
+        for( const auto& pj : particles ){ 
+          etot+=pj->e(); ettot+=pj->eT();
+        }
+
+        m_p_e->push_back( etot ); 
+        m_p_et->push_back( ettot );
         m_store->hist1("eta")->Fill( p->eta() );
         m_store->hist1("phi")->Fill( p->phi() );
-        m_store->hist1("pt")->Fill( p->pT() );
+        m_store->hist1("pt")->Fill( ettot );
  
       }
 

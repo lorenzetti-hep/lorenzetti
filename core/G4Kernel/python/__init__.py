@@ -13,11 +13,6 @@ from . import ParticleGun
 __all__.extend(ParticleGun.__all__)
 from .ParticleGun import *
 
-from . import EventReader
-__all__.extend(EventReader.__all__)
-from .EventReader import *
-
-
 
 
 

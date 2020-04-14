@@ -29,6 +29,7 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
   declareProperty( "HistogramPath"  , m_histPath="Clusters"             );
+  declareProperty( "MinCenterEnergy", m_minCenterEnergy=15*GeV          );
 }
 
 
@@ -146,7 +147,10 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
   {
     const xAOD::CaloCell *hotcell=nullptr;
     float emaxs2 = 0.0;
-    // Searching for the closest cell to the event origin in EM2
+
+    
+
+    // Searching the hottest cell looking for EM2 layer
     for (const auto cell : **container.ptr() ){
       if( cell->sampling() != CaloSample::EM2 ) continue;
       if( (cell->eta() <= seed.eta + m_etaWindow/2) && (cell->eta() > seed.eta - m_etaWindow/2) ){
@@ -165,7 +169,25 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     particle->setPdgid( seed.pdgid );
     xAOD::CaloCluster *clus=nullptr;
 
-    if(hotcell){
+    if(!hotcell)
+      MSG_INFO( "There is not hottest cell for this particle.");
+
+
+    // Apply simple algorithm to check if most part of energy is not in the edges or not. Applying 0.1 X 0.1 window
+    float etot=0.0;
+    for (const auto cell : **container.ptr() ){
+      if( cell->detector()!=CaloLayer::ECal ) continue;
+      if( (cell->eta() <= hotcell->eta() + 0.05) && (cell->eta() > hotcell->eta() - 0.05) ){
+        if( (cell->phi() <= hotcell->phi() + 0.05) && (cell->phi() > hotcell->phi() - 0.05) ){
+          etot+=cell->energy();
+        }
+      }
+    }
+
+    MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
+   
+    if(hotcell && etot >= m_minCenterEnergy ){
+      MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
       clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
       fillCluster( ctx, clus, m_cellsKey );
       m_showerShapes->executeTool( clus );
@@ -253,21 +275,23 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     MSG_INFO( "Eta      : " << particle->eta() );
     MSG_INFO( "Phi      : " << particle->phi() );
     MSG_INFO( "Cluster information:" );
-    MSG_INFO( "Et       :" << clus->et()    );
-    MSG_INFO( "Eta      :" << clus->eta()   );
-    MSG_INFO( "Phi      :" << clus->phi()   );
-    MSG_INFO( "Reta     :" << clus->reta()  );
-    MSG_INFO( "Rphi     :" << clus->rphi()  );
-    MSG_INFO( "Rhad     :" << clus->rhad()  );
-    MSG_INFO( "Eratio   :" << clus->eratio());
-    MSG_INFO( "Eratio2  :" << clus->eratio2());
-    MSG_INFO( "Eratio3  :" << clus->eratio3());
-    MSG_INFO( "Eratio4  :" << clus->eratio4());
-    MSG_INFO( "Eratio5  :" << clus->eratio5());
-    MSG_INFO( "Eratio6  :" << clus->eratio6());
-    MSG_INFO( "f1       :" << clus->f1());
-    MSG_INFO( "f3       :" << clus->f3());
-    MSG_INFO( "Weta2    :" << clus->weta2());
+    MSG_INFO( "Eta      : " << clus->eta()    );
+    MSG_INFO( "Phi      : " << clus->phi()    );
+    MSG_INFO( "Et       : " << clus->et()/1.e3);
+    MSG_INFO( "e1       : " << clus->e1()     );
+    MSG_INFO( "e2       : " << clus->e2()     );
+    MSG_INFO( "e3       : " << clus->e3()     );
+    MSG_INFO( "ehad1    : " << clus->ehad1()  );
+    MSG_INFO( "ehad2    : " << clus->ehad2()  );
+    MSG_INFO( "ehad3    : " << clus->ehad3()  );
+    MSG_INFO( "etot     : " << clus->etot()   );
+    MSG_INFO( "Reta     : " << clus->reta()   );
+    MSG_INFO( "Rphi     : " << clus->rphi()   );
+    MSG_INFO( "Rhad     : " << clus->rhad()   );
+    MSG_INFO( "Eratio   : " << clus->eratio() );
+    MSG_INFO( "f1       : " << clus->f1()     );
+    MSG_INFO( "f3       : " << clus->f3()     );
+    MSG_INFO( "Weta2    : " << clus->weta2()  );
  
   }
   MSG_INFO("=================================================");

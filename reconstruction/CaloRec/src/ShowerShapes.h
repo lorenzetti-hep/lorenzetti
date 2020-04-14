@@ -25,11 +25,7 @@ class ShowerShapes : public CaloTool
   private:
  
 
-    float calculateEratio( xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling ) const; 
     float calculateWeta2( xAOD::CaloCluster *clus , CaloSampling::CaloSample sampling, unsigned eta_ncell=3, unsigned phi_ncell=5 ) const;
-    
-
-    std::vector<const xAOD::CaloCell*> sortCells( xAOD::CaloCluster *, CaloSampling::CaloSample ) const; 
     float sumEnergy( xAOD::CaloCluster *, CaloSampling::CaloSample, unsigned eta_ncell=1000, unsigned phi_ncell=1000 ) const;
 };
 

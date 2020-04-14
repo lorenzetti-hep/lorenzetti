@@ -37,6 +37,8 @@ namespace xAOD{
       const xAOD::RawCell* parent() const;
       /*! Set the associated Raw information */ 
       void setParent( const xAOD::RawCell* );
+      /*! Return the detector: ECal or HCal */
+      CaloSampling::CaloLayer detector() const;
 
     private:
  

@@ -1,12 +1,12 @@
 
+#include "EventReader.h"
 #include "EventInfo/EventInfo.h"
-#include "G4Kernel/EventReader.h"
 #include "G4Kernel/EventLoop.h"
 #include "G4Kernel/constants.h"
-#include "G4RunManager.hh"
+#include "GaugiKernel/PrettyTable.h"
 #include "G4LorentzVector.hh"
+#include "G4RunManager.hh"
 #include "G4Event.hh"
-#include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
 #include "G4TransportationManager.hh"
 #include "G4PhysicalConstants.hh"
@@ -86,23 +86,23 @@ void EventReader::InitBranch(TTree* fChain, std::string branch_name, T* param, b
 
 void EventReader::link(TTree *t)
 {  
-  InitBranch( t, "avg_mu"		    ,      &m_avgmu		    );
-  InitBranch( t, "p_isMain"	    ,      &m_p_isMain		);
-  InitBranch( t, "p_pdg_id"	    ,      &m_p_pdg_id	  );
-  InitBranch( t, "p_bc_id"	    ,      &m_p_bc_id	    );
-  InitBranch( t, "bc_mu"				,      &m_bc_mu				);
-  InitBranch( t, "bc_id_nhits"	,      &m_bc_id_nhits	);
-  InitBranch( t, "p_px"				  ,      &m_p_px				);
-  InitBranch( t, "p_py"         ,      &m_p_py        );
-  InitBranch( t, "p_pz"		      ,      &m_p_pz		    );
-  InitBranch( t, "p_prod_x"			,      &m_p_prod_x		);
-  InitBranch( t, "p_prod_y"			,      &m_p_prod_y		);
-  InitBranch( t, "p_prod_z"			,      &m_p_prod_z		);
-  InitBranch( t, "p_prod_t"			,      &m_p_prod_t		);
-  InitBranch( t, "p_eta"			  ,      &m_p_eta		    );
-  InitBranch( t, "p_phi"			  ,      &m_p_phi		    );
-  InitBranch( t, "p_e"			    ,      &m_p_e		      );
-  InitBranch( t, "p_et"			    ,      &m_p_et		    );
+  InitBranch( t, "avg_mu"		  ,&m_avgmu		    );
+  InitBranch( t, "p_isMain"	  ,&m_p_isMain		);
+  InitBranch( t, "p_pdg_id"	  ,&m_p_pdg_id	  );
+  InitBranch( t, "p_bc_id"	  ,&m_p_bc_id	    );
+  InitBranch( t, "bc_mu"			,&m_bc_mu				);
+  InitBranch( t, "bc_id_nhits",&m_bc_id_nhits	);
+  InitBranch( t, "p_px"				,&m_p_px				);
+  InitBranch( t, "p_py"       ,&m_p_py        );
+  InitBranch( t, "p_pz"		    ,&m_p_pz		    );
+  InitBranch( t, "p_prod_x"		,&m_p_prod_x		);
+  InitBranch( t, "p_prod_y"		,&m_p_prod_y		);
+  InitBranch( t, "p_prod_z"		,&m_p_prod_z		);
+  InitBranch( t, "p_prod_t"		,&m_p_prod_t		);
+  InitBranch( t, "p_eta"			,&m_p_eta		    );
+  InitBranch( t, "p_phi"			,&m_p_phi		    );
+  InitBranch( t, "p_e"			  ,&m_p_e		      );
+  InitBranch( t, "p_et"			  ,&m_p_et		    );
 }
 
 
@@ -173,10 +173,6 @@ void EventReader::release()
 // Call by geant
 void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
 {
-  if(!m_f)
-    initialize();
-
-
   clear();
   m_evt = anEvent->GetEventID();
   
@@ -186,21 +182,18 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
 
     MSG_INFO( "Get event (EventReader) with number " << m_evt )
     m_ttree->GetEntry(m_evt);
-    
     SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, loop->getContext());
     event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
 
     xAOD::EventInfo *evt = new xAOD::EventInfo();
     evt->setEventNumber( m_evt );
     evt->setAvgmu( m_avgmu );
-    
     Load( anEvent, evt );
 
     MSG_INFO( "Event id         : " << evt->eventNumber() );
     MSG_INFO( "Avgmu            : " << evt->avgmu() );
     MSG_INFO( "Number of seeds  : " << evt->size() );
     event->push_back(evt);
-
 
   }else{
     MSG_INFO( "EventReader: no generated particles. run terminated..." );
@@ -223,28 +216,24 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 {
   float totalEnergy = 0.0;
+  
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     int bc_id = m_p_bc_id->at(i);
-    
-    if(m_p_pdg_id->at(i)==0)  
+    if(m_p_pdg_id->at(i)==0){
       event->push_back( xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i), 0} );
-   
+    }
     if( m_p_isMain->at(i) ){
-      
-      if(m_p_pdg_id->at(i)!=0)  totalEnergy+= m_p_et->at(i);
-      MSG_INFO( "Main Event: eta = " << m_p_eta->at(i) << " phi = " << m_p_phi->at(i) << " Et = " << m_p_et->at(i) << " PDGID = " << m_p_pdg_id->at(i));
-      Add( g4event, i, bc_id );
-      Add( g4event, i, special_bcid_for_truth_reconstruction );
+      if(m_p_pdg_id->at(i)!=0){
+        totalEnergy+= m_p_et->at(i);
+        Add( g4event, i, bc_id );
+        Add( g4event, i, special_bcid_for_truth_reconstruction );
+      }
     }else{
       Add( g4event, i, bc_id );
     }
-
-
   }
-  MSG_INFO( "Total Energy ========= " << totalEnergy );
-
 }
 
 

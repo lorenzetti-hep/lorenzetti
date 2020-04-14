@@ -21,7 +21,7 @@ JF17::JF17():
 
 
 
-StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &interest_particles, std::vector<std::vector<Pythia8::Particle*>>& particles)
+StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_particles, std::vector<std::vector<Pythia8::Particle*>>& particles)
 {
 
   ParticleFilter filter( m_select, m_etaMax + .05, 0.7, 0.05 );
@@ -57,18 +57,17 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &intere
   // Map back from the PseudoJet to particles
   particles.clear();
 
-
   for ( const auto j : inclusive_jets ){
 
     const auto& substructs = j.constituents();
     // Find the hottest particle inside of the Jet Cluster
-    Particle* center_p=nullptr;
+    Particle* main_p=nullptr;
     {
       float pt=0.0;
       for ( auto& substruct : substructs )
       {
         auto p = local_barcode_map[ substruct.user_index() ];
-        if( p->pT() > pt ){ center_p=p; pt=p->pT(); };
+        if( p->pT() > pt ){ main_p=p; pt=p->pT(); };
       }
     }
 
@@ -78,21 +77,38 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &intere
     for ( auto& substruct : substructs )
     {
       auto p = local_barcode_map[ substruct.user_index() ];
-      if( p->eta() > center_p->eta()- m_etaWindow/2 && p->eta() <= center_p->eta()+m_etaWindow/2 ){
-        if( p->phi() > center_p->phi()-m_phiWindow/2 && p->phi() <= center_p->phi()+m_phiWindow/2 ){
+      if( p->eta() > main_p->eta()- m_etaWindow/2 && p->eta() <= main_p->eta()+m_etaWindow/2 ){
+        if( p->phi() > main_p->phi()-m_phiWindow/2 && p->phi() <= main_p->phi()+m_phiWindow/2 ){
           etot+=p->eT();  
           cluster.push_back( p );
         }
       }
     }
-    
     // If the total cluster energy is higher than the cut, than we 
     // can include these particles to the jet cluster vector
     if (etot > m_minPt){
-      interest_particles.push_back( center_p );
+      main_particles.push_back( main_p );
       particles.push_back( cluster );
     }
   }
+
+
+  // Print all particles and clusters
+  int cx=0;
+  for ( auto pi : main_particles ){
+    auto pj_vec = particles.at(cx);
+    MSG_INFO( "======== Cluster " << cx << " ==========" );
+
+    float etot=0.0;
+    for ( auto pj : pj_vec ){
+      etot+= pj->pT();
+      MSG_INFO( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
+    }
+    MSG_INFO( "Eta_center =" << pi->eta() << " Phi_center = " << pi->phi() << " Pt = " << etot );
+    MSG_INFO( "========================================" );
+    cx++;
+  }
+
 
   return StatusCode::SUCCESS;
 }

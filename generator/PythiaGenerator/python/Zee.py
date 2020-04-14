@@ -3,7 +3,7 @@ __all__ = ["Zee"]
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
-from PythonGenerator.utilities import default_allow_keys
+from PythiaGenerator.utilities import default_allow_keys
 
 class Zee( Logger ):
 
@@ -28,7 +28,7 @@ class Zee( Logger ):
 
   def run(self):
     self.core().run()
-    self.finalize()
+    self.core().finalize()
 
 
 
