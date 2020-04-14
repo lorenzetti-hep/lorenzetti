@@ -44,9 +44,10 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &intere
   fastjet::ClusterSequence clust_seq(input_particles,jet_def);
   // Apply filters
   auto inclusive_jets = sorted_by_pt( clust_seq.inclusive_jets() );
+  const float minPt=m_minPt; const float etaMax=m_etaMax;
   inclusive_jets.erase(std::remove_if(inclusive_jets.begin(),
                                       inclusive_jets.end(),
-                                      [m_minPt,m_etaMax](fastjet::PseudoJet& j){return (std::abs(j.eta()) > m_etaMax) || (j.pt() < m_minPt);}
+                                      [minPt,etaMax](fastjet::PseudoJet& j){return (std::abs(j.eta()) > etaMax) || (j.pt() < minPt);}
                                      ), inclusive_jets.end());
 
   if ( inclusive_jets.empty() ){

@@ -16,20 +16,20 @@ using namespace SG;
 EventGenerator::EventGenerator():
   IMsgService("EventGenerator"),
   PropertyService(),
-  m_mb_delta_eta(0.22),
-  m_mb_delta_phi(0.22),
-  m_sigma_t( 200 * 1e-12 /*pico seconds*/ * c_light /*m/s*/ * 1e+3 /*mm*/ ),
-  m_sigma_z( 56 /*miliseconds*/ ),
   m_store(nullptr)
 {
+  declareProperty( "MainFile"       , m_mainFile=""             );
+  declareProperty( "MinbiasFile"    , m_minbiasFile=""          );
   declareProperty( "OutputFile"     , m_outputFile="particles"  );
   declareProperty( "EtaMax"         , m_etaMax=1.4              );
   declareProperty( "PileupAvg"      , m_nPileupAvg=0            );
   declareProperty( "BunchIdStart"   , m_bc_id_start=-8          );
   declareProperty( "BunchIdEnd"     , m_bc_id_end=7             );
   declareProperty( "Select"         , m_select=2                );
-  declareProperty( "MainFile"       , m_mainFile=""             );
-  declareProperty( "MinbiasFile"    , m_minbiasFile=""          );
+  declareProperty( "Sigma_t"        , m_sigma_t= 200 * 1e-12 /*pico seconds*/ * c_light /*m/s*/ * 1e+3 /*mm*/ );
+  declareProperty( "Sigma_z"        , m_sigma_z=56 /*miliseconds*/                                            );
+  declareProperty( "MinbiasDeltaEta", m_mb_delta_eta=0.22                                                     );
+  declareProperty( "MinbiasDeltaPhi", m_mb_delta_phi=0.22                                                     );
 }
 
 
