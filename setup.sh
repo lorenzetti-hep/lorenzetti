@@ -11,7 +11,7 @@ export LZT_PATH=`pwd`
 cd build
 rm -rf lib
 mkdir lib
-for file in "`pwd`"/**/*.pcm
+for file in "`pwd`"/*/*/*.pcm
 do
   echo "ln -sf $file lib"
   ln -sf $file lib
