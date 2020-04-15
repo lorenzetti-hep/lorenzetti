@@ -7,6 +7,13 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
+# Set by hand pythia and fastjet
+set( FASTJET_INCLUDE_DIRS $ENV{FASTJET_INCLUDE})
+set( PYTHIA8_INCLUDE_DIRS $ENV{PYTHIA8_INCLUDE})
+file(GLOB FASTJET_LIBRARIES $ENV{FASTJET_LIBRARIES}/*.dylib $ENV{FASTJET_LIBRARIES}/*.so)
+file(GLOB PYTHIA8_LIBRARIES $ENV{PYTHIA8_LIBRARIES}/*.a $ENV{PYTHIA8_LIBRARIES}/*.so)
+
+
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -79,10 +86,6 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:PythiaGenerator>
 
 )
-
-
-file(GLOB FASTJET_LIBRARIES /Users/jodafons/.bin/fastjet-3.3.3/lib/*.dylib )
-file(GLOB PYTHIA8_LIBRARIES /Users/jodafons/.bin/pythia8244/lib/*.a )
 
 message( STATUS ${FASTJET_LIBRARIES} )
 message( STATUS ${PYTHIA8_LIBRARIES} )
