@@ -27,7 +27,7 @@ class ComponentAccumulator( Logger ):
   def run( self, evt=None ):
     if evt is None:
       evt = self.__numberOfEvents
-    elif evt > self.__nevents:
+    elif evt > self.__numberOfEvents:
       evt = self.__numberOfEvents
     self.__core.run(evt)
 

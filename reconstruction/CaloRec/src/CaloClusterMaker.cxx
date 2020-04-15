@@ -49,21 +49,19 @@ StatusCode CaloClusterMaker::bookHistograms( StoreGate &store ) const
 {
   store.mkdir( m_histPath );  
   
-  store.add( new TH1F("res_et" ,"#E_{TTruth}-#E_{T,Cluster};res_{E_{T}};Count",100,-2,2 ) );
+  store.add( new TH1F("res_et" ,"#E_{TTruth}-#E_{T,Cluster};res_{E_{T}};Count",100,-40,40) );
   store.add( new TH1F("res_eta", "#eta_{Truth}-#eta_{Cluster};res_{#eta};Count",100,-2,2 ) );
   store.add( new TH1F("res_phi", "#phi_{Truth}-#phi_{Cluster};res_{#phi};Count",100,-2,2 ) );
-
-  store.add( new TH1F("cl_et", ";Count;E_{T};", 100, 0, 100) );
-  store.add( new TH1F("cl_eta", ";Count;#eta;", 100, -1.5, 1.5) );
-  store.add( new TH1F("cl_phi", ";Count;#phi;", 100, -3.2, 3.2) );
-  store.add( new TH1F("cl_eratio", ";Count;E_{ratio};", 100, 0.0, 1.05) );
-  store.add( new TH1F("cl_reta", ";Count;R_{#eta};", 100, 0.5, 1.1) );
-  store.add( new TH1F("cl_rphi", ";Count;R_{#phi};", 100, 0.5, 1.1) );
-  store.add( new TH1F("cl_rhad", ";Count;R_{had};", 100, 0.1, 1.1) );
-  store.add( new TH1F("cl_f1", ";Count;f_{1};", 100, 0.0, 1.05) );
-  store.add( new TH1F("cl_f3", ";Count;f_{3};", 100, 0.0, 1.05) );
-  store.add( new TH1F("cl_weta2", ";Count;W_{#eta2};", 100, 0.0, 1.05) );
-  
+  store.add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 100 ) );
+  store.add( new TH1F("cl_eta"  , ";Count;#eta;"        , 100, -1.5 , 1.5 ) );
+  store.add( new TH1F("cl_phi"  , ";Count;#phi;"        , 100, -3.2 , 3.2 ) );
+  store.add( new TH1F("cl_f1"   , ";Count;f_{1};"       , 100, -0.02, 0.7 ) );
+  store.add( new TH1F("cl_f3"   , ";Count;f_{3};"       , 200, -0.05, 0.15) );
+  store.add( new TH1F("cl_weta2", ";Count;W_{#eta2};"   , 100, 0.005, 0.02) );
+  store.add( new TH1F("cl_reta" ,  ";Count;R_{#eta};"   , 200, 0.8  , 1.10) );
+  store.add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
+  store.add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
+  store.add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
   
   return StatusCode::SUCCESS;
 }
@@ -248,11 +246,13 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
 
   store.cd(m_histPath);
 
-  MSG_INFO("============== Cluster Information ==============");
+
 
   for( const auto& particle : **particles.ptr() ){
   
+
     if ( !particle->caloCluster() ) continue;
+    MSG_INFO("============== Cluster Information ==============");
 
     const auto* clus = particle->caloCluster() ;
 
@@ -266,9 +266,9 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     store.hist1("cl_f1")->Fill( clus->f1() );
     store.hist1("cl_f3")->Fill( clus->f3() );
     store.hist1("cl_weta2")->Fill( clus->weta2() );
-    store.hist1("res_et")->Fill( (particle->et()/1.e3 -clus->et()/1.e3) );
-    store.hist1("res_eta")->Fill( (particle->eta() -clus->eta()) );
-    store.hist1("res_phi")->Fill( (particle->phi() -clus->phi()) );
+    store.hist1("res_et")->Fill( (particle->et() - clus->et()/1.e3) );
+    store.hist1("res_eta")->Fill( (particle->eta() - clus->eta()) );
+    store.hist1("res_phi")->Fill( (particle->phi() - clus->phi()) );
     
     MSG_INFO( "Truth Particle information:" );
     MSG_INFO( "Et       : " << particle->et() );
@@ -293,8 +293,9 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     MSG_INFO( "f3       : " << clus->f3()     );
     MSG_INFO( "Weta2    : " << clus->weta2()  );
  
+    MSG_INFO("=================================================");
   }
-  MSG_INFO("=================================================");
+
   return StatusCode::SUCCESS;
 }
 

@@ -56,13 +56,7 @@ StatusCode CaloRingerBuilder::finalize()
 StatusCode CaloRingerBuilder::bookHistograms( StoreGate &store ) const
 {
   store.mkdir( m_histPath );
-  /*
-  for (int r=0; r < m_maxRingsAccumulated; ++r){
-    std::stringstream ss; ss << "rings_" << r;
-    store.add( new TH1F( ss.str().c_str(), "", 150, 0, 150 ));
-  }*/ 
   store.add( new TH2F( "rings", "Et Vs #ring; #ring; E_{T} [GeV]; Count", m_maxRingsAccumulated, 0, m_maxRingsAccumulated, 150, 0, 150 ));
-  store.add( new TH1F( "ring_profile", "Ring Profile; #ring; E[E_{T}] [GeV]", m_maxRingsAccumulated, 0, m_maxRingsAccumulated ));
   return StatusCode::SUCCESS;
 }
 
@@ -165,8 +159,6 @@ StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx , StoreGate &sto
     auto ringerShape = rings->rings();
 
     for (int r=0; r < m_maxRingsAccumulated; ++r){
-      //std::stringstream ss; ss << "rings_" << r;
-      //store.hist1(ss.str())->Fill( ringerShape.at(r) /1.e3);
       store.hist1("rings")->Fill( r, ringerShape.at(r)/1.e3 );
     }
   }
