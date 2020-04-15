@@ -56,10 +56,11 @@ StatusCode CaloRingerBuilder::finalize()
 StatusCode CaloRingerBuilder::bookHistograms( StoreGate &store ) const
 {
   store.mkdir( m_histPath );
+  /*
   for (int r=0; r < m_maxRingsAccumulated; ++r){
     std::stringstream ss; ss << "rings_" << r;
     store.add( new TH1F( ss.str().c_str(), "", 150, 0, 150 ));
-  }  
+  }*/ 
   store.add( new TH2F( "rings", "Et Vs #ring; #ring; E_{T} [GeV]; Count", m_maxRingsAccumulated, 0, m_maxRingsAccumulated, 150, 0, 150 ));
   store.add( new TH1F( "ring_profile", "Ring Profile; #ring; E[E_{T}] [GeV]", m_maxRingsAccumulated, 0, m_maxRingsAccumulated ));
   return StatusCode::SUCCESS;
@@ -88,6 +89,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
   
   std::vector< xAOD::RingSet > ringsets;
 
+  MSG_INFO( "Creating all RingSets...");
   for ( int rs=0 ; rs < m_maxRingSets; ++rs )
   {  
     ringsets.push_back( xAOD::RingSet( (CaloSample)m_layerRings[rs], m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
@@ -100,17 +102,19 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
     // Clear all RingSets
     for ( auto &rs : ringsets ) rs.clear();
 
+    MSG_INFO( "Creating the CaloRings for this cluster..." );
     // Create the CaloRings object
     auto rings = new xAOD::CaloRings();
-
     for ( auto& rs : ringsets ){
 
       auto *hotCell = maxCell( clus, rs.sampling() );
-
+     
       // Fill all rings using the hottest cell as center
-      for ( auto* cell : clus->allCells() )
-      {
-        rs.add( cell, hotCell->eta(), hotCell->phi() );
+      if( hotCell ){
+        for ( auto* cell : clus->allCells() )
+        {
+          rs.add( cell, hotCell->eta(), hotCell->phi() );
+        }
       }
     }
 
@@ -120,6 +124,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
     for ( auto& rs : ringsets )
       ref_rings.insert(ref_rings.end(), rs.pattern().begin(), rs.pattern().end());
 
+    MSG_INFO( "Setting all ring informations and attach into the EventContext." );
     rings->setRings( ref_rings );
     rings->setCaloCluster( clus );
     ringer->push_back( rings );
@@ -160,8 +165,8 @@ StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx , StoreGate &sto
     auto ringerShape = rings->rings();
 
     for (int r=0; r < m_maxRingsAccumulated; ++r){
-      std::stringstream ss; ss << "rings_" << r;
-      store.hist1(ss.str())->Fill( ringerShape.at(r) /1.e3);
+      //std::stringstream ss; ss << "rings_" << r;
+      //store.hist1(ss.str())->Fill( ringerShape.at(r) /1.e3);
       store.hist1("rings")->Fill( r, ringerShape.at(r)/1.e3 );
     }
   }

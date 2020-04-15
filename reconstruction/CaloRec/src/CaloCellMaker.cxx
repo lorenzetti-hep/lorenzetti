@@ -88,16 +88,17 @@ StatusCode CaloCellMaker::finalize()
 StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
 {
 
-  store.mkdir(m_histPath);
+  store.mkdir(m_histPath+"/reco");
   {
     std::stringstream ss; ss << "cells_layer_" << m_sampling;
     // Create the 2D histogram for monitoring purpose
-    store.add(new TH2F( ss.str().c_str(), "Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+    store.add(new TH2F( ss.str().c_str(), "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
   }
 
+  store.mkdir(m_histPath+"/truth");
   {
-    std::stringstream ss; ss << "truth_cells_layer_" << m_sampling;
+    std::stringstream ss; ss << "cells_layer_" << m_sampling;
     // Create the 2D histogram for monitoring purpose
     store.add(new TH2F( ss.str().c_str(), "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                          m_phi_bins, m_phi_min, m_phi_max) );
@@ -203,11 +204,12 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
   }
 
 
-  store.cd(m_histPath);
+
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
    
     {// Fill estimated energy 2D histograms
+      store.cd(m_histPath+"/reco");
       std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
       int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
       int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
@@ -217,7 +219,8 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
     }
     
     {// Fill truth energy 2D histograms
-      std::stringstream ss; ss <<"truth_cells_layer_" << (int)cell->sampling();
+      store.cd(m_histPath+"/truth");
+      std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
       int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
       int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
       int bin = store.hist2(ss.str())->GetBin(x,y,0);

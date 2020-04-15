@@ -25,6 +25,13 @@ class EventReader( Logger ):
     for key, value in kw.items():
       self.setProperty( key,value )
 
+    from ROOT import TFile, TTree
+    f = TFile( self.getProperty("FileName") )
+    t = f.Get("particles")
+    self.__nevents = t.GetEntries()
+    f.Close()
+
+
 
   def core(self):
     return self.__core
@@ -46,6 +53,7 @@ class EventReader( Logger ):
 
 
   def merge( self, acc ):
+    acc.setNumberOfEvents(self.__nevents )
     acc.core().setGenerator( self.core() )
 
 

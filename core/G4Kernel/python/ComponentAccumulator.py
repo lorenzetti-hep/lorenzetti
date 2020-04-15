@@ -15,7 +15,7 @@ class ComponentAccumulator( Logger ):
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager
     self.__core = RunManager(name)
-
+    self.__numberOfEvents = 10000
     for key, value in kw.items():
       if key in self.__allow_keys:
         setattr( self, '__' + key , value )
@@ -24,7 +24,11 @@ class ComponentAccumulator( Logger ):
         MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
 
 
-  def run( self, evt=10000 ):
+  def run( self, evt=None ):
+    if evt is None:
+      evt = self.__numberOfEvents
+    elif evt > self.__nevents:
+      evt = self.__numberOfEvents
     self.__core.run(evt)
 
 
@@ -53,4 +57,7 @@ class ComponentAccumulator( Logger ):
   def core(self):
     return self.__core
 
+
+  def setNumberOfEvents( self, evt ):
+    self.__numberOfEvents = evt
 

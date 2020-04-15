@@ -163,34 +163,34 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     }
 
     xAOD::TruthParticle *particle = new xAOD::TruthParticle();
+    xAOD::CaloCluster *clus=nullptr;
+    
     particle->setEt( seed.et );
     particle->setEta( seed.eta );
     particle->setPhi( seed.phi );
     particle->setPdgid( seed.pdgid );
-    xAOD::CaloCluster *clus=nullptr;
 
-    if(!hotcell)
-      MSG_INFO( "There is not hottest cell for this particle.");
-
-
-    // Apply simple algorithm to check if most part of energy is not in the edges or not. Applying 0.1 X 0.1 window
-    float etot=0.0;
-    for (const auto cell : **container.ptr() ){
-      if( cell->detector()!=CaloLayer::ECal ) continue;
-      if( (cell->eta() <= hotcell->eta() + 0.05) && (cell->eta() > hotcell->eta() - 0.05) ){
-        if( (cell->phi() <= hotcell->phi() + 0.05) && (cell->phi() > hotcell->phi() - 0.05) ){
-          etot+=cell->energy();
+    if(hotcell){
+      // Apply simple algorithm to check if most part of energy is not in the edges or not. Applying 0.1 X 0.1 window
+      float etot=0.0;
+      for (const auto cell : **container.ptr() ){
+        if( cell->detector()!=CaloLayer::ECal ) continue;
+        if( (cell->eta() <= hotcell->eta() + 0.05) && (cell->eta() > hotcell->eta() - 0.05) ){
+          if( (cell->phi() <= hotcell->phi() + 0.05) && (cell->phi() > hotcell->phi() - 0.05) ){
+            etot+=cell->energy();
+          }
         }
       }
-    }
-
-    MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
+      MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
    
-    if(hotcell && etot >= m_minCenterEnergy ){
-      MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
-      clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
-      fillCluster( ctx, clus, m_cellsKey );
-      m_showerShapes->executeTool( clus );
+      if(etot >= m_minCenterEnergy ){
+        MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
+        clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
+        fillCluster( ctx, clus, m_cellsKey );
+        m_showerShapes->executeTool( clus );
+      }
+    }else{
+      MSG_INFO( "There is not hottest cell for this particle.");
     }
 
     particles.push_back( std::make_pair( particle, clus ) );
