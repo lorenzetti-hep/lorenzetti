@@ -60,6 +60,7 @@ StatusCode PulseGenerator::executeTool( xAOD::RawCell *cell ) const
     // Accumulate into pulse sum (Sum all pulses)
     for ( int j=0; j < pulse_size; ++j )
       pulse_sum[j] += (float)pulse->operator[](j);
+    delete pulse; // This must be deleted to avoid memory leak since spk uses "new" internally
   }
 
   // Add the pulse centered in the bunch crossing zero
