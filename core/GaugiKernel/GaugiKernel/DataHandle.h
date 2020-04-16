@@ -13,8 +13,9 @@ namespace SG{
   // Base class for downcast 
   class DataHandle{
     public:
-      DataHandle(){};
-      ~DataHandle(){};
+      DataHandle()=default;
+      virtual ~DataHandle(){};
+
   };
 
 

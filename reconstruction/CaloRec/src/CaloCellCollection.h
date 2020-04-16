@@ -23,6 +23,7 @@ namespace xAOD{
  
       /*! Destructor */
       ~CaloCellCollection();
+      
       /*! Add a new calo cell into the collection */
       void push_back( xAOD::RawCell* );
       /*! Zeroize all calo cells */

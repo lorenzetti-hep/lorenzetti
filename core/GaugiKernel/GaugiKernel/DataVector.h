@@ -29,6 +29,7 @@ namespace SG
 
       const std::vector<const T*>& operator*() const;
 
+
     private:
 
       /*! Hold all object pointers */
@@ -36,19 +37,17 @@ namespace SG
       std::vector< const T* > m_data;
   };
 
-
+  
+  
   template<class T>
-  inline DataVector<T>::~DataVector()
+  DataVector<T>::~DataVector<T>()
   {
-    std::cout << "DESTROINDO TUTO!" << std::endl;
     for(auto obj : m_data )
     {
-      std::cout << "AKI JOAO ========== > " << obj << std::endl;
       if(obj) delete obj;
     }
   }
-  
-  
+
   
   template<class T>
   inline size_t DataVector<T>::size() const
