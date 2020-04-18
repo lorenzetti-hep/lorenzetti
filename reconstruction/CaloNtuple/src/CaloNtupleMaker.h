@@ -1,5 +1,5 @@
-#ifndef EventNtupleMaker_h
-#define EventNtupleMaker_h
+#ifndef CaloNtupleMaker_h
+#define CaloNtupleMaker_h
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
@@ -10,14 +10,14 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 
-class EventNtupleMaker : public Gaugi::Algorithm
+class CaloNtupleMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    EventNtupleMaker( std::string );
+    CaloNtupleMaker( std::string );
     
-    virtual ~EventNtupleMaker();
+    virtual ~CaloNtupleMaker();
     
     virtual StatusCode initialize() override;
 
@@ -41,6 +41,7 @@ class EventNtupleMaker : public Gaugi::Algorithm
     bool match( SG::EventContext &ctx , std::string key, const xAOD::CaloCluster *cluster, const xAOD::CaloRings *&ringer ) const;
     float dR( float eta1, float phi1, float eta2, float phi2 ) const;
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
+    void Fill( SG::EventContext &ctx , TTree *tree, xAOD::seed_t seed ) const;
       
     std::string m_eventKey;
     std::string m_clusterKey;

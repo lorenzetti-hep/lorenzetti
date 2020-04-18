@@ -1,4 +1,5 @@
 #include "CaloRings/CaloRings.h"
+#include "G4Kernel/CaloPhiRange.h"
 
 using namespace xAOD;
 using namespace CaloSampling;
@@ -17,7 +18,7 @@ void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_cent
   // This cell does not allow to this RingSet
   if( cell->sampling() != m_sampling )  return;
   float deta = std::abs( eta_center - cell->eta() ) / m_deta;
-  float dphi = std::abs( phi_center - cell->phi() ) / m_dphi;
+  float dphi = std::abs( CaloPhiRange::fix(phi_center - cell->phi()) ) / m_dphi;
   float deltaGreater = std::max(deta, dphi);
   int i = static_cast<unsigned int>( std::floor(deltaGreater) );
   

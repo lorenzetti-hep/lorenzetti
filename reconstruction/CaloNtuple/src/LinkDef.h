@@ -1,5 +1,5 @@
 
-#include "src/EventNtupleMaker.h"
+#include "src/CaloNtupleMaker.h"
 
 
 #ifdef __CINT__
@@ -10,7 +10,7 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class EventNtupleMaker+;
+#pragma link C++ class CaloNtupleMaker+;
 
 
 #endif

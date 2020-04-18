@@ -87,10 +87,9 @@ TH2F* StoreGate::hist2( std::string name )
 }
 
 
-TTree* StoreGate::tree( std::string path )
+TTree* StoreGate::tree( std::string name )
 {
-	if( m_objs.find( path ) == m_objs.end() )  
-    MSG_FATAL("It's not possible to retrieve the TTree with abspath " << path << " from the StoreGate");
+  std::string path = m_currentPath+"/"+name;
   return ((TTree*)m_objs[path]);
 }
 

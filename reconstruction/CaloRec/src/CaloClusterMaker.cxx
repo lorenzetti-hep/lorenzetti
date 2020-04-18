@@ -1,4 +1,5 @@
 
+#include "G4Kernel/CaloPhiRange.h"
 #include "CaloCellCollection.h"
 #include "CaloClusterMaker.h"
 #include "CaloCell/CaloCell.h"
@@ -11,7 +12,6 @@ using namespace SG;
 using namespace CaloSampling;
 using namespace Gaugi;
 
-G4Mutex mutex = G4MUTEX_INITIALIZER;
 
 
 CaloClusterMaker::CaloClusterMaker( std::string name ) : 
@@ -151,12 +151,10 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     // Searching the hottest cell looking for EM2 layer
     for (const auto cell : **container.ptr() ){
       if( cell->sampling() != CaloSample::EM2 ) continue;
-      if( (cell->eta() <= seed.eta + m_etaWindow/2) && (cell->eta() > seed.eta - m_etaWindow/2) ){
-        if( (cell->phi() <= seed.phi + m_phiWindow/2) && (cell->phi() > seed.phi - m_phiWindow/2) ){
-          if( cell->energy() > emaxs2 ){
-            hotcell=cell; emaxs2=cell->energy();
-          }
-        }
+      float deltaEta = std::abs( seed.eta - cell->eta() );
+      float deltaPhi = std::abs( CaloPhiRange::fix( seed.phi - cell->phi() ));
+      if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 && cell->energy() > emaxs2){
+        hotcell=cell; emaxs2=cell->energy();
       }
     }
 
@@ -173,10 +171,10 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
       float etot=0.0;
       for (const auto cell : **container.ptr() ){
         if( cell->detector()!=CaloLayer::ECal ) continue;
-        if( (cell->eta() <= hotcell->eta() + 0.05) && (cell->eta() > hotcell->eta() - 0.05) ){
-          if( (cell->phi() <= hotcell->phi() + 0.05) && (cell->phi() > hotcell->phi() - 0.05) ){
-            etot+=cell->energy();
-          }
+        float deltaEta = std::abs( hotcell->eta() - cell->eta() );
+        float deltaPhi = std::abs( CaloPhiRange::fix( hotcell->phi() - cell->phi() ));
+        if (deltaEta < 0.05 && deltaPhi < 0.05){
+          etot+=cell->energy();
         }
       }
       MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
@@ -207,15 +205,13 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, 
   }
 
   for ( const auto cell : **container.ptr() ){
-    // Check if the current cell is in the eta window
-    if( (cell->eta() < clus->eta()+m_etaWindow/2.) && (cell->eta() > clus->eta()-m_etaWindow/2.) )
-    {
-      // Check if the current cell is in the phi window
-      if( (cell->phi() < clus->phi()+m_phiWindow/2.) && (cell->phi() > clus->phi()-m_phiWindow/2.) )
-      {
+    
+    float deltaEta = std::abs( clus->eta() - cell->eta() );
+    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ));
+  
+    if( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 ){
         // Add the cell to the cluster
         clus->push_back(cell);
-      }
     }
   }// Loop over all cells
 }

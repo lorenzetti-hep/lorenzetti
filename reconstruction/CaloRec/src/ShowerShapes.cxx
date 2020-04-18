@@ -1,4 +1,5 @@
 
+#include "G4Kernel/CaloPhiRange.h"
 #include "ShowerShapes.h"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
@@ -107,15 +108,11 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
   for ( const auto& cell : clus->allCells() )
   {
     if(cell->sampling() != sampling)  continue;
-    // deta/dphi is the half of the cell sizei
-    if( ( cell->eta() > ( clus->eta() - eta_ncell * cell->deltaEta() ) ) && 
-        ( cell->eta() < ( clus->eta() + eta_ncell * cell->deltaEta() ) ) )
-    {
-      if( ( cell->phi() > ( clus->phi() - phi_ncell * cell->deltaPhi() ) ) && 
-          ( cell->phi() < ( clus->phi() + phi_ncell * cell->deltaPhi() ) ) )
-      {  
-          energy+=cell->energy();
-      }
+    float deltaEta = std::abs( clus->eta() - cell->eta() );
+    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
+    
+    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+      energy+=cell->energy();
     }
   }
   return energy;
@@ -139,17 +136,14 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample samplin
 
   for ( auto& cell : clus->allCells() ){
     if(cell->sampling() != sampling)  continue;
-    // deta/dphi is the half of the cell sizei
-    if( ( cell->eta() > ( clus->eta() - eta_ncell * cell->deltaEta() ) ) && 
-        ( cell->eta() < ( clus->eta() + eta_ncell * cell->deltaEta() ) ) )
-    {
-      if( ( cell->phi() > ( clus->phi() - phi_ncell * cell->deltaPhi() ) ) && 
-          ( cell->phi() < ( clus->phi() + phi_ncell * cell->deltaPhi() ) ) )
-      {  
-          En2 += cell->energy() * std::pow(cell->eta(),2);
-          En += cell->energy() * cell->eta();
-          E += cell->energy();
-      }
+    
+    float deltaEta = std::abs( clus->eta() - cell->eta() );
+    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
+ 
+    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+      En2 += cell->energy() * std::pow(cell->eta(),2);
+      En += cell->energy() * cell->eta();
+      E += cell->energy();
     }
   }// Loop over all cells inside of the cluster
 

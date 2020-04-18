@@ -68,7 +68,7 @@ add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
 add_subdirectory( reconstruction/CaloRec )
 add_subdirectory( reconstruction/CaloRingerBuilder )
-add_subdirectory( reconstruction/EventNtuple )
+add_subdirectory( reconstruction/CaloNtuple )
 add_subdirectory( generator/PythiaGenerator )
 
 
@@ -84,7 +84,7 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloRings>
   $<TARGET_OBJECTS:CaloRec>
   $<TARGET_OBJECTS:CaloRingerBuilder>
-  $<TARGET_OBJECTS:EventNtuple>
+  $<TARGET_OBJECTS:CaloNtuple>
   $<TARGET_OBJECTS:PythiaGenerator>
 
 )
