@@ -1,7 +1,7 @@
 
 __all__ = []
 
-from . import EventNtupleMaker
-__all__.extend(EventNtupleMaker.__all__)
-from .EventNtupleMaker import *
+from . import CaloNtupleMaker
+__all__.extend(CaloNtupleMaker.__all__)
+from .CaloNtupleMaker import *
 
