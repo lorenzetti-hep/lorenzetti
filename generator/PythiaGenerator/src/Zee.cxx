@@ -30,8 +30,8 @@ StatusCode Zee::generate( Event& event, std::vector<Particle*> &interest_particl
               interest_particles.push_back( pchild );
             }
           } else {
-            MSG_INFO("Event is not a Zee decay");
-            MSG_INFO(" === final Z decay === pdg_id:" << pchild->id() << "|eta:" << abs(pchild->eta()) << "|et:" << pchild->pT() );
+            MSG_DEBUG("Event is not a Zee decay");
+            MSG_DEBUG(" === final Z decay === pdg_id:" << pchild->id() << "|eta:" << abs(pchild->eta()) << "|et:" << pchild->pT() );
             throw NotInterestingEvent();
           }
         }
@@ -40,7 +40,7 @@ StatusCode Zee::generate( Event& event, std::vector<Particle*> &interest_particl
     }
   }
   if ( zee.empty() ){
-    MSG_INFO( "There is not Zee event inside of this event");
+    MSG_DEBUG( "There is not Zee event inside of this event");
     throw NotInterestingEvent();
   }
   particles.push_back( zee );

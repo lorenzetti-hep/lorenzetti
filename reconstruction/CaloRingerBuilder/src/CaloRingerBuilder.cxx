@@ -33,6 +33,7 @@ CaloRingerBuilder::~CaloRingerBuilder()
 
 StatusCode CaloRingerBuilder::initialize()
 {
+  setMsgLevel(m_outputLevel);
   m_maxRingsAccumulated = std::accumulate(m_nRings.begin(), m_nRings.end(), 0);
   m_maxRingSets = m_nRings.size(); 
 
@@ -83,7 +84,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
   
   std::vector< xAOD::RingSet > ringsets;
 
-  MSG_INFO( "Creating all RingSets...");
+  MSG_DEBUG( "Creating all RingSets...");
   for ( int rs=0 ; rs < m_maxRingSets; ++rs )
   {  
     ringsets.push_back( xAOD::RingSet( (CaloSample)m_layerRings[rs], m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
@@ -96,7 +97,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
     // Clear all RingSets
     for ( auto &rs : ringsets ) rs.clear();
 
-    MSG_INFO( "Creating the CaloRings for this cluster..." );
+    MSG_DEBUG( "Creating the CaloRings for this cluster..." );
     // Create the CaloRings object
     auto rings = new xAOD::CaloRings();
     for ( auto& rs : ringsets ){
@@ -118,7 +119,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
     for ( auto& rs : ringsets )
       ref_rings.insert(ref_rings.end(), rs.pattern().begin(), rs.pattern().end());
 
-    MSG_INFO( "Setting all ring informations and attach into the EventContext." );
+    MSG_DEBUG( "Setting all ring informations and attach into the EventContext." );
     rings->setRings( ref_rings );
     rings->setCaloCluster( clus );
     ringer->push_back( rings );

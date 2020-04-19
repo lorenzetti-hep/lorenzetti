@@ -15,6 +15,7 @@ class CaloNtupleMaker( Logger ):
                   "TruthRingerKey", 
                   "OutputLevel", 
                   "DeltaR", 
+                  "DumpCells",
                   ]
 
 
@@ -39,14 +40,14 @@ class CaloNtupleMaker( Logger ):
       setattr( self, '__' + key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for CaloNtupleMaker object", key)
+      MSG_ERROR( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for CaloNtupleMaker object", key)
+      MSG_ERROR( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
 

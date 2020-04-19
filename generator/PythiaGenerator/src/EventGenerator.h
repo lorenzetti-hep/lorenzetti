@@ -51,10 +51,11 @@ class EventGenerator: public MsgService,
     Pythia8::Pythia m_mb_pythia;
     SG::StoreGate *m_store;
 
-
+    int m_seed;
     int m_select;
     int m_bc_id_start;
     int m_bc_id_end;
+    int m_outputLevel;
     float m_minPt;
     float m_etaMax;
     float m_nPileupAvg;

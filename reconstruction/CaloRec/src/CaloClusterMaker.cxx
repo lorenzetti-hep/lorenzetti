@@ -30,6 +30,7 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
   declareProperty( "HistogramPath"  , m_histPath="Clusters"             );
   declareProperty( "MinCenterEnergy", m_minCenterEnergy=15*GeV          );
+  declareProperty( "OutputLevel"    , m_outputLevel=1                   );
 }
 
 
@@ -40,6 +41,7 @@ CaloClusterMaker::~CaloClusterMaker()
 
 StatusCode CaloClusterMaker::initialize()
 {
+  setMsgLevel(m_outputLevel);
   m_showerShapes = new ShowerShapes( "ShowerShapes" );
   return StatusCode::SUCCESS;
 }
@@ -102,7 +104,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   }
 
  
-  MSG_INFO( "Associate all truth particles and clusters");
+  MSG_DEBUG( "Associate all truth particles and clusters");
   // Truth and associated clusters using truth energy
   for( auto& it : getAllClusters(ctx, m_cellsKey) )
   {
@@ -115,8 +117,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
   }
 
-  MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
-  MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
+  MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
+  MSG_DEBUG( "We found " << particles->size() << " particles (seeds) inside of this event." );
 
   return StatusCode::SUCCESS;
 }
@@ -152,7 +154,7 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     for (const auto cell : **container.ptr() ){
       if( cell->sampling() != CaloSample::EM2 ) continue;
       float deltaEta = std::abs( seed.eta - cell->eta() );
-      float deltaPhi = std::abs( CaloPhiRange::fix( seed.phi - cell->phi() ));
+      float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , cell->phi() ));
       if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 && cell->energy() > emaxs2){
         hotcell=cell; emaxs2=cell->energy();
       }
@@ -172,21 +174,21 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
       for (const auto cell : **container.ptr() ){
         if( cell->detector()!=CaloLayer::ECal ) continue;
         float deltaEta = std::abs( hotcell->eta() - cell->eta() );
-        float deltaPhi = std::abs( CaloPhiRange::fix( hotcell->phi() - cell->phi() ));
+        float deltaPhi = std::abs( CaloPhiRange::diff( hotcell->phi() , cell->phi() ));
         if (deltaEta < 0.05 && deltaPhi < 0.05){
           etot+=cell->energy();
         }
       }
-      MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
+      MSG_DEBUG( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
    
       if(etot >= m_minCenterEnergy ){
-        MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
+        MSG_DEBUG( "Creating one cluster since the center energy is higher than the energy cut" );
         clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
         fillCluster( ctx, clus, m_cellsKey );
         m_showerShapes->executeTool( clus );
       }
     }else{
-      MSG_INFO( "There is not hottest cell for this particle.");
+      MSG_DEBUG( "There is not hottest cell for this particle.");
     }
 
     particles.push_back( std::make_pair( particle, clus ) );
@@ -205,10 +207,9 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, 
   }
 
   for ( const auto cell : **container.ptr() ){
-    
+
     float deltaEta = std::abs( clus->eta() - cell->eta() );
-    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ));
-  
+    float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ));
     if( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 ){
         // Add the cell to the cluster
         clus->push_back(cell);
@@ -220,7 +221,7 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, 
 StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store ) const
 {
 
-  MSG_INFO( "Fill all histograms" );
+  MSG_DEBUG( "Fill all histograms" );
   
   SG::ReadHandle<xAOD::CaloClusterContainer> clusters( m_clusterKey, ctx );
   SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_truthKey, ctx );
@@ -237,8 +238,8 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     return StatusCode::FAILURE;
   }
 
-  MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
-  MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
+  MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
+  MSG_DEBUG( "We found " << particles->size() << " particles (seeds) inside of this event." );
 
   store.cd(m_histPath);
 
@@ -248,7 +249,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
   
 
     if ( !particle->caloCluster() ) continue;
-    MSG_INFO("============== Cluster Information ==============");
+    MSG_DEBUG("============== Cluster Information ==============");
 
     const auto* clus = particle->caloCluster() ;
 
@@ -266,30 +267,29 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     store.hist1("res_eta")->Fill( (particle->eta() - clus->eta()) );
     store.hist1("res_phi")->Fill( (particle->phi() - clus->phi()) );
     
-    MSG_INFO( "Truth Particle information:" );
-    MSG_INFO( "Et       : " << particle->et() );
-    MSG_INFO( "Eta      : " << particle->eta() );
-    MSG_INFO( "Phi      : " << particle->phi() );
-    MSG_INFO( "Cluster information:" );
-    MSG_INFO( "Eta      : " << clus->eta()    );
-    MSG_INFO( "Phi      : " << clus->phi()    );
-    MSG_INFO( "Et       : " << clus->et()/1.e3);
-    MSG_INFO( "e1       : " << clus->e1()     );
-    MSG_INFO( "e2       : " << clus->e2()     );
-    MSG_INFO( "e3       : " << clus->e3()     );
-    MSG_INFO( "ehad1    : " << clus->ehad1()  );
-    MSG_INFO( "ehad2    : " << clus->ehad2()  );
-    MSG_INFO( "ehad3    : " << clus->ehad3()  );
-    MSG_INFO( "etot     : " << clus->etot()   );
-    MSG_INFO( "Reta     : " << clus->reta()   );
-    MSG_INFO( "Rphi     : " << clus->rphi()   );
-    MSG_INFO( "Rhad     : " << clus->rhad()   );
-    MSG_INFO( "Eratio   : " << clus->eratio() );
-    MSG_INFO( "f1       : " << clus->f1()     );
-    MSG_INFO( "f3       : " << clus->f3()     );
-    MSG_INFO( "Weta2    : " << clus->weta2()  );
- 
-    MSG_INFO("=================================================");
+    MSG_DEBUG( "Truth Particle information:" );
+    MSG_DEBUG( "Et       : " << particle->et() );
+    MSG_DEBUG( "Eta      : " << particle->eta() );
+    MSG_DEBUG( "Phi      : " << particle->phi() );
+    MSG_DEBUG( "Cluster information:" );
+    MSG_DEBUG( "Eta      : " << clus->eta()    );
+    MSG_DEBUG( "Phi      : " << clus->phi()    );
+    MSG_DEBUG( "Et       : " << clus->et()/1.e3);
+    MSG_DEBUG( "e1       : " << clus->e1()     );
+    MSG_DEBUG( "e2       : " << clus->e2()     );
+    MSG_DEBUG( "e3       : " << clus->e3()     );
+    MSG_DEBUG( "ehad1    : " << clus->ehad1()  );
+    MSG_DEBUG( "ehad2    : " << clus->ehad2()  );
+    MSG_DEBUG( "ehad3    : " << clus->ehad3()  );
+    MSG_DEBUG( "etot     : " << clus->etot()   );
+    MSG_DEBUG( "Reta     : " << clus->reta()   );
+    MSG_DEBUG( "Rphi     : " << clus->rphi()   );
+    MSG_DEBUG( "Rhad     : " << clus->rhad()   );
+    MSG_DEBUG( "Eratio   : " << clus->eratio() );
+    MSG_DEBUG( "f1       : " << clus->f1()     );
+    MSG_DEBUG( "f3       : " << clus->f3()     );
+    MSG_DEBUG( "Weta2    : " << clus->weta2()  );
+    MSG_DEBUG("=================================================");
   }
 
   return StatusCode::SUCCESS;

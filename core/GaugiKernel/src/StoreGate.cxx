@@ -1,23 +1,26 @@
-
+#include <boost/algorithm/string/replace.hpp>
 #include "GaugiKernel/StoreGate.h"
 #include "TROOT.h"
 #include <sstream>
+#include <algorithm>
 
 using namespace SG;
 
 
-StoreGate::StoreGate( std::string &outputfile, int index): 
+StoreGate::StoreGate( std::string outputfile, int index): 
   IMsgService("StoreGate"),
   m_currentPath("")
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  std::stringstream ss; 
-  if (index<0)
-    ss << outputfile << ".root";
-  else
-    ss << outputfile << "_" << index << ".root";
-  m_file = new TFile(ss.str().c_str(), "recreate");
+  // remove .root in case of the user include it
+  //std::replace( outputfile.begin(), outputfile.end(), ".root", "" );
+  boost::replace_all(outputfile, ".root", "");
+  if (index>=0){
+    std::stringstream ss; 
+    ss << outputfile << "_" << index; outputfile = ss.str();
+  }
+  m_file = new TFile( (outputfile+".root").c_str(), "recreate");
 }
 
 
@@ -54,7 +57,6 @@ void StoreGate::cd( std::string path ){
 bool StoreGate::add( TObject* obj){  
 	std::string feature(obj->GetName());
   std::string fullpath = m_currentPath + "/" + feature;
-	MSG_INFO( "Attaching into " << fullpath );
   if( m_objs.find( fullpath ) != m_objs.end() ) 
   {
     MSG_WARNING("It's not possible to attach the histogram with name " << feature << " into this path " << m_currentPath);

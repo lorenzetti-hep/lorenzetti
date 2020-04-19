@@ -8,7 +8,7 @@ import os
 import numpy as np
 pi = np.pi
 
-acc = ComponentAccumulator("ComponentAccumulator", RunVis=False, NumberOfThreads = 4, OutputFile = 'test')
+acc = ComponentAccumulator("ComponentAccumulator", RunVis=False, NumberOfThreads = 1, OutputFile = 'test')
 
 
 
@@ -17,6 +17,7 @@ gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
                    FileName   = "pythia_zee.root",
                    #FileName   = "pythia_jf17.root",
+                   OutputLevel = 6,
                    )
 gun.merge(acc)
 
@@ -24,7 +25,10 @@ gun.merge(acc)
 
 
 
-calorimeter = CaloCellBuilder("CaloCellBuilder", HistogramPath = "Expert/CaloCells")
+calorimeter = CaloCellBuilder("CaloCellBuilder", 
+                              HistogramPath = "Expert/CaloCells",
+                              OutputLevel   = 6)
+
 calorimeter.merge(acc)
 
 
@@ -36,7 +40,8 @@ cluster = CaloClusterMaker( "CaloClusterMaker",
                             TruthKey        = recordable("Truth"),
                             EtaWindow       = 0.4,
                             PhiWindow       = 0.4,
-                            HistogramPath   = "Expert/TruthClusters"
+                            HistogramPath   = "Expert/TruthClusters",
+                            OutputLevel     = 6,
                             )
 acc+= cluster
 
@@ -63,12 +68,29 @@ truth_ringer = CaloRingerBuilder( "CaloRingerBuilder",
                             DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
                             NRings        = [64, 8, 8, 4, 4, 4],
                             LayerRings    = [1,2,3,4,5,6],
-                            HistogramPath   = "Expert/TruthRinger"
+                            HistogramPath   = "Expert/TruthRinger",
+                            OutputLevel     = 6,
                             )
 acc+= truth_ringer
 
+from CaloNtuple import CaloNtupleMaker
 
-acc.run()
+ntuple = CaloNtupleMaker( "CaloNtupleMaker",
+                            EventKey        = recordable("EventInfo"),
+                            RingerKey       = recordable("Rings"),
+                            TruthRingerKey  = recordable("TruthRings"),
+                            ClusterKey      = recordable("Clusters"),
+                            TruthClusterKey = recordable("TruthClusters"),
+                            DeltaR          = 0.15,
+                            OutputLevel     = 6,
+                            )
+                          
+
+#acc += ntuple
+
+
+
+acc.run(3)
 
 
 

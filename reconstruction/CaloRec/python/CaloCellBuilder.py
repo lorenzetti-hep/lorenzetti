@@ -28,12 +28,13 @@ class CaloCellBuilder( Logger ):
             
 
 
-  def __init__( self, name, basepath=default_basepath , HistogramPath = "Expert"):
+  def __init__( self, name, basepath=default_basepath , HistogramPath = "Expert", OutputLevel=1):
 
     Logger.__init__(self)
     self.__recoAlgs = []
     self.__basepath = basepath
     self.__histpath = HistogramPath
+    self.__outputLevel = OutputLevel
     self.configure()
 
 
@@ -44,13 +45,22 @@ class CaloCellBuilder( Logger ):
 
     from CaloRec import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
     for idx, config in enumerate( self.__configs ):
-      pulse = PulseGenerator("PulseGenerator", NSamples = config[3], ShaperFile = self.__basepath+config[2])
-      of = OptimalFilter("OptimalFilter")
+      pulse = PulseGenerator( "PulseGenerator", 
+                              NSamples    = config[3], 
+                              ShaperFile  = self.__basepath+config[2],
+                              OutputLevel = self.__outputLevel)
+      of = OptimalFilter("OptimalFilter", 
+                          OutputLevel=self.__outputLevel)
 
       alg = CaloCellMaker("CaloCellMaker", 
-                          CollectionKey = recordable( config[0] ), 
-                          CaloCellFile = self.__basepath+config[1], 
-                          HistogramPath = self.__histpath)
+                          CollectionKey           = recordable( config[0] ), 
+                          CaloCellFile            = self.__basepath+config[1], 
+                          BunchIdStart            = -8,
+                          BunchIdEnd              = 7,
+                          BunchDuration           = 25,
+                          NumberOfSamplesPerBunch = 1,
+                          HistogramPath           = self.__histpath,
+                          OutputLevel             = self.__outputLevel)
       alg.Tools = [pulse, of]
       self.__recoAlgs.append( alg )
   
@@ -62,7 +72,7 @@ class CaloCellBuilder( Logger ):
                               CollectionKeys  = collectionKeys,
                               CellsKey        = recordable("Cells"),
                               TruthCellsKey   = recordable("TruthCells"),
-                              OutputLevel     = 1 )
+                              OutputLevel     = self.__outputLevel )
 
     self.__recoAlgs.append( mergeAlg )
 

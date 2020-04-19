@@ -29,7 +29,7 @@ StatusCode ShowerShapes::finalize()
 
 StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
 {
-  MSG_INFO("Calculate shower shapes for this cluster." );
+  MSG_DEBUG("Calculate shower shapes for this cluster." );
   
   // Eratio for strip em layer (EM1)
   auto em1Cells = clus->allCells();
@@ -61,7 +61,6 @@ StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
   float ehad3 = sumEnergy( clus, CaloSample::HAD3 ) + sumEnergy( clus, CaloSample::HAD3_Extended );
     
   float weta2 = calculateWeta2(clus, CaloSample::EM2, 3, 5);
-  MSG_INFO("WETA2 = " << weta2 );
 
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
 
@@ -138,7 +137,7 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample samplin
     if(cell->sampling() != sampling)  continue;
     
     float deltaEta = std::abs( clus->eta() - cell->eta() );
-    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
+    float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ) );
  
     if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
       En2 += cell->energy() * std::pow(cell->eta(),2);

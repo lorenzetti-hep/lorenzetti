@@ -97,15 +97,15 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_p
   int cx=0;
   for ( auto pi : main_particles ){
     auto pj_vec = particles.at(cx);
-    MSG_INFO( "======== Cluster " << cx << " ==========" );
+    MSG_DEBUG( "======== Cluster " << cx << " ==========" );
 
     float etot=0.0;
     for ( auto pj : pj_vec ){
       etot+= pj->pT();
-      MSG_INFO( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
+      MSG_DEBUG( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
     }
-    MSG_INFO( "Eta_center =" << pi->eta() << " Phi_center = " << pi->phi() << " Pt = " << etot );
-    MSG_INFO( "========================================" );
+    MSG_DEBUG( "Eta_center =" << pi->eta() << " Phi_center = " << pi->phi() << " Pt = " << etot );
+    MSG_DEBUG( "========================================" );
     cx++;
   }
 

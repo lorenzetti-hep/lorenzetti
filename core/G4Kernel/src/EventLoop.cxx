@@ -5,7 +5,7 @@
 
 
 
-EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output ): 
+EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output): 
   IMsgService("EventLoop"),
   G4Run(), 
   m_store( output , G4Threading::G4GetThreadId() ),

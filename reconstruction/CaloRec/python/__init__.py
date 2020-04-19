@@ -29,5 +29,9 @@ from . import CaloDefs
 __all__.extend(CaloDefs.__all__)
 from .CaloDefs import *
 
+from . import CaloNtupleMaker
+__all__.extend(CaloNtupleMaker.__all__)
+from .CaloNtupleMaker import *
+
 
 

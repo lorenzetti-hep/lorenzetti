@@ -48,7 +48,7 @@ class CaloNtupleMaker : public Gaugi::Algorithm
     std::string m_truthClusterKey;
     std::string m_ringerKey;
     std::string m_truthRingerKey;
-
+    bool m_dumpCells;
     int m_outputLevel;
     float m_deltaR;
 };

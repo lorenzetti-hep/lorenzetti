@@ -22,7 +22,7 @@ namespace SG
     public:
   
       /** Constructor **/
-      StoreGate( std::string &outputfile, int inded=-1);
+      StoreGate( std::string outputfile, int index=-1);
       
       /** Destructor **/
       ~StoreGate();     

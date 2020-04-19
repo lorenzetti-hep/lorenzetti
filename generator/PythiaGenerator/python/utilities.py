@@ -2,6 +2,7 @@
 __all__ = ["default_allow_keys"]
 
 default_allow_keys = [
+                        "NumberOfEvents" ,
                         "MainFile"       , 
                         "MinbiasFile"    , 
                         "OutputFile"     , 
@@ -14,7 +15,9 @@ default_allow_keys = [
                         "Sigma_t"        , 
                         "Sigma_z"        , 
                         "MinbiasDeltaEta", 
-                        "MinbiasDeltaPhi", 
+                        "MinbiasDeltaPhi",
+                        "Seed"           ,
+                        "OutputLevel"    ,
                       ]
 
 

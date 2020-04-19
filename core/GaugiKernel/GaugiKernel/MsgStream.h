@@ -616,6 +616,13 @@ class IMsgService
       msg().setLevel(lvl);
     }
 
+
+    void setMsgLevel( const int lvl )
+    {
+      setMsgLevel( (MSG::Level)lvl );
+    }
+
+
     /// Get Level of output from MsgStreamMirror Manager
     MSG::Level getMsgLevel() const 
     {

@@ -18,6 +18,7 @@ EventGenerator::EventGenerator():
   PropertyService(),
   m_store(nullptr)
 {
+  declareProperty( "NumberOfEvents" , m_nEvent=1                );
   declareProperty( "MainFile"       , m_mainFile=""             );
   declareProperty( "MinbiasFile"    , m_minbiasFile=""          );
   declareProperty( "OutputFile"     , m_outputFile="particles"  );
@@ -31,6 +32,8 @@ EventGenerator::EventGenerator():
   declareProperty( "Sigma_z"        , m_sigma_z=56 /*miliseconds*/                                            );
   declareProperty( "MinbiasDeltaEta", m_mb_delta_eta=0.22                                                     );
   declareProperty( "MinbiasDeltaPhi", m_mb_delta_phi=0.22                                                     );
+  declareProperty( "Seed"           , m_seed=0 /* clock system */                                             );
+  declareProperty( "OutputLevel"    , m_outputLevel=1                                                         );
 }
 
 
@@ -40,20 +43,33 @@ EventGenerator::~EventGenerator()
 
 StatusCode EventGenerator::initialize()
 {
-  
+  setMsgLevel( m_outputLevel );
+
+  MSG_INFO( "Initialize pythia..." );
+
   m_store = new SG::StoreGate( m_outputFile);
   
   m_minPt = m_minPt/1.e3;
   
+  std::stringstream cmdseed; cmdseed << "Random:seed = " << m_seed;
+
+  MSG_INFO( cmdseed.str() );
+
   // Read in commands from external file.
   m_pythia.readFile( m_mainFile );
+  m_pythia.readString("Random:setSeed = on");
+  m_pythia.readString(cmdseed.str());
+
+
   // Number of events to generate, to list, to allow aborts.
-  m_nEvent = m_pythia.mode("Main:numberOfEvents");
+  //m_nEvent = m_pythia.mode("Main:numberOfEvents");
   m_nAbort = m_pythia.mode("Main:timesAllowErrors");
   // Initialization for main (LHC) event
   m_pythia.init();
   // Minbias generator
   m_mb_pythia.readFile( m_minbiasFile );
+  m_mb_pythia.readString("Random:setSeed = on");
+  m_mb_pythia.readString(cmdseed.str());
   m_mb_pythia.init();
   
 

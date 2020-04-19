@@ -28,7 +28,7 @@ CaloCellMerge::~CaloCellMerge()
 
 StatusCode CaloCellMerge::initialize()
 {
-  setMsgLevel( (MSG::Level)m_outputLevel );
+  setMsgLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -60,19 +60,19 @@ StatusCode CaloCellMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step
 StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 {
 
-  MSG_INFO( "Starting collection merge algorithm..." );
+  MSG_DEBUG( "Starting collection merge algorithm..." );
 
-  MSG_INFO( "Creating reco cells containers with key " << m_cellsKey);
+  MSG_DEBUG( "Creating reco cells containers with key " << m_cellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> recoContainer( m_cellsKey , ctx );
   recoContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
   
-  MSG_INFO( "Creating truth cells containers with key " << m_truthCellsKey);
+  MSG_DEBUG( "Creating truth cells containers with key " << m_truthCellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> truthContainer( m_truthCellsKey , ctx );
   truthContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
 
   for ( auto key : m_collectionKeys ){
 
-    MSG_INFO( "Reading all cells from collection with key " << key );
+    MSG_DEBUG( "Reading all cells from collection with key " << key );
     SG::ReadHandle<xAOD::CaloCellCollection> collection( key, ctx );
     
     if( !collection.isValid() ){
@@ -80,7 +80,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       continue;
     }
 
-    MSG_INFO( "Creating new cells and attach the object into the container" );
+    MSG_DEBUG( "Creating new cells and attach the object into the container" );
     for (const auto &pair : **collection.ptr() )
     {
       // Raw Cell with all geant/bunch/pulse information
@@ -94,7 +94,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setDeltaPhi( raw->deltaPhi() );
       truth_cell->setSampling( raw->sampling() );
       truth_cell->setEnergy( raw->truthRawEnergy() );
-      //truth_cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
+      truth_cell->setEt( truth_cell->energy() / std::cosh( truth_cell->eta() ) );
       truth_cell->setParent( raw );
       truthContainer->push_back( truth_cell );
 
@@ -107,14 +107,14 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       cell->setDeltaPhi( raw->deltaPhi() );
       cell->setSampling( raw->sampling() );
       cell->setEnergy( raw->energy() );
-      //cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
+      cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
       cell->setParent( raw );
       recoContainer->push_back( cell );
 
     }// Loop over all RawCells
   }// Loop over all collections
 
-  MSG_INFO( "All collections were merged into two CaloCellContainer" );
+  MSG_DEBUG( "All collections were merged into two CaloCellContainer" );
   return StatusCode::SUCCESS;
 }
 

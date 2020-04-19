@@ -8,9 +8,9 @@ PulseGenerator::PulseGenerator( std::string name ) :
   IMsgService(name),
   CaloTool()
 {
-  declareProperty( "NSamples"     , m_nsamples=7              );
-  declareProperty( "ShaperFile"   , m_shaperFile              );
-  declareProperty( "OutputLevel"  , m_outputLevel = MSG::INFO );
+  declareProperty( "NSamples"     , m_nsamples=7            );
+  declareProperty( "ShaperFile"   , m_shaperFile            );
+  declareProperty( "OutputLevel"  , m_outputLevel=1         );
 }
 
 
@@ -23,8 +23,8 @@ PulseGenerator::~PulseGenerator()
 
 StatusCode PulseGenerator::initialize()
 {
-  MSG_INFO( "Reading shaper values from: " << m_shaperFile );
   setMsgLevel( (MSG::Level)m_outputLevel );
+  MSG_DEBUG( "Reading shaper values from: " << m_shaperFile );
   m_pulseGenerator = new CPK::TPulseGenerator( m_nsamples, m_shaperFile.c_str());
   return StatusCode::SUCCESS;
 }

@@ -22,8 +22,12 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "HistogramPath"    , m_histPath="/CaloCellMaker"           );
   declareProperty( "CaloCellFile"     , m_caloCellFile                        );
   declareProperty( "CollectionKey"    , m_collectionKey="CaloCellCollection"  );
+  declareProperty( "BunchIdStart"     , m_bcid_start=-7                       );
+  declareProperty( "BunchIdEnd"       , m_bcid_end=8                          );
+  declareProperty( "BunchDuration"    , m_bc_duration=25                      );
+  declareProperty( "NumberOfSamplesPerBunch" , m_bc_nsamples=1                );
   declareProperty( "OutputLevel"      , m_outputLevel=1                       );
-  
+
 }
 
 
@@ -37,11 +41,6 @@ StatusCode CaloCellMaker::initialize()
 {
   // Set message level
   setMsgLevel( (MSG::Level)m_outputLevel );
-  std::string basepath(std::getenv("LZT_PATH"));
-  // This is a default path
-  std::ifstream bc_file( basepath + "/reconstruction/CaloRec/data/bunch.dat" );
-  bc_file >> m_bcid_start >> m_bcid_end >> m_bc_duration >> m_bc_nsamples;
-  bc_file.close();
   
   // Read the file
   std::ifstream file(m_caloCellFile);
@@ -78,7 +77,7 @@ StatusCode CaloCellMaker::finalize()
   {
     if (tool->finalize().isFailure() )
     {
-      MSG_ERROR( "It's not possible to iniatialize " << tool->name() << " tool." );
+      MSG_ERROR( "It's not possible to finalize " << tool->name() << " tool." );
     }
   }
   return StatusCode::SUCCESS;
