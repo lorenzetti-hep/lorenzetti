@@ -3,8 +3,6 @@
 This is the first event generator for HEP using a generic calorimeter for machine learning 
 studies based on athena framework (ATLAS).
 
-
-
 ## Detector construction:
 
 It's a composite cilindric calorimeter with eletromagnetic and hadronic layers with 6.12m in z starting 90cm of disntance
@@ -19,14 +17,6 @@ Description:
 - Second HAD layer with 40 cm depth (xy) and 2 segments (layers) of Cesium iodide and iron (0.1 x 0.1); 
 - Third HAD layer with 20 cm depth (xy) and 1 segments (layers) of Cesium iodide and iron (0.2 x 0.1); 
 
-
-## Requirements For Local Installation:
-
-- Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
-- ROOT (https://github.com/root-project/root.git);
-- Pythia8 (https://github.com/jodafons/pythia.git);
-- HEPMC (https://github.com/jodafons/hepmc.git);
-- FastJet (https://github.com/jodafons/fastjet.git).
 
 
 ## Docker image:
@@ -64,6 +54,14 @@ After generate the events using the `generator.py` command you must pass the out
 ```bash
 reco_trf.py -i zee.root --outputLevel 6 -nt 4 -o reco_zee.root
 ```
+
+## Requirements For Local Installation:
+
+- Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
+- ROOT (https://github.com/root-project/root.git);
+- Pythia8 (https://github.com/jodafons/pythia.git);
+- HEPMC (https://github.com/jodafons/hepmc.git);
+- FastJet (https://github.com/jodafons/fastjet.git).
 
 
 ## References:
