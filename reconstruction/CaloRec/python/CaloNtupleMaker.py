@@ -8,6 +8,7 @@ from G4Kernel import treatPropertyValue
 class CaloNtupleMaker( Logger ):
 
   __allow_keys = [
+                  "EventKey",
                   "ClusterKey", 
                   "TruthClusterKey", 
                   "CaloKey", 
