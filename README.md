@@ -20,10 +20,7 @@ Description:
 - Third HAD layer with 20 cm depth (xy) and 1 segments (layers) of Cesium iodide and iron (0.2 x 0.1); 
 
 
-
-
-
-## Requirements:
+## Requirements For Local Installation:
 
 - Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
 - ROOT (https://github.com/root-project/root.git);
@@ -32,61 +29,45 @@ Description:
 - FastJet (https://github.com/jodafons/fastjet.git).
 
 
-## Installation:
+## Docker image:
 
-Use this example to build your hep installation in your local machine.
-The path for each HEP package depends of your local installation. Take 
-this as example to build your setup script.
-
-
+Docker image for cluster usage based on Ubuntu 18.
 ```bash
-# ROOT
-source ~/.bin/root/build_root/bin/thisroot.sh
-# geant4
-cd ~/.bin/geant4_10.5/build
-source geant4.sh
-cd ~
-# hepmc
-export HEPMC_INCLUDE=/Users/jodafons/.bin/HepMC/HepMC-2.06.09/HepMC
-export HEPMC_LIBRARY=/Users/jodafons/.bin/HepMC/build/lib
-export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$HEPMC_LIBRARY
-# pythia
-export PYTHIA8_INCLUDE=/Users/jodafons/.bin/pythia8244/include
-export PYTHIA8_LIBRARY=/Users/jodafons/.bin/pythia8244/lib
-#fastjet
-export FASTJET_INCLUDE=/Users/jodafons/.bin/fastjet-3.3.3/include
-export FASTJET_LIBRARY=/Users/jodafons/.bin/fastjet-3.3.3/lib
-# ROOT extra envs
-export ROOT_INCLUDE=/Users/jodafons/.bin/root/build_root/include
-export ROOT_LIBRARY=/Users/jodafons/.bin/root/build_root/lib
-```
-
-### Compile the simulator package:
-
-The simulator will use this envirements to locate all necessary infomation to build and
-link all dependencies. After you install all dependencies and set all necessary envirementes 
-just compile the simulator package using the follow commands.
-
-
-```bash
-mkdir build && cd build
-cmake ..
-make
-```
-
-### Compile the pythia event generator:
-
-This sub package is used to create jet patcicles using pythia and dump this information
-inside a ttree. This root file will be used by the gnerator to read all jets and propagate
-this particles throut out the calorimeter.
-
-```bash
-cd generator/
-make generator
+docker push jodafons/lorenzett
 ```
 
 
 ## Usage:
+
+### Event generation:
+
+Use this command to generate `Zee` events:
+```bash
+generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
+```
+**NOTE**: To get the time clock system as seed use the argument `--seed 0`.
+
+To run the generator in parallel you must use this with the `prun_job` command. To run the `Zee` generation in parallel use this command:
+
+```bash
+prun_job.py -c "generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o zee.root
+```
+**NOTE**: Use this command to run the event `Zee` generatio with 1K events, 4 threads (`-mt`) and 10 jobs (`-n`).
+
+To run the `JF17` events use this command:
+```bash
+prun_job.py -c "generator.py --filter JF17 -b $LZT_PATH/generator/PythiaGenerator/data/minbias_jets_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/jets_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o jf17.root
+```
+
+### Reconstruction:
+
+After generate the events using the `generator.py` command you must pass the output file as input to the reconstruction transformation. To run the reconstruction use this command:
+
+```bash
+reco_trf.py -i zee.root --outputLevel 6 -nt 4 -o reco_zee.root
+```
+**NOTE**: Run the reconstruction with 4 threads (`-nt`). You can pass the number of events to reconstruct with `--evt`.
+
 
 
 
