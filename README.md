@@ -45,14 +45,14 @@ Use this command to generate `Zee` events:
 ```bash
 generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
 ```
-**NOTE**: To get the time clock system as seed use the argument `--seed 0`.
+> **NOTE**: To get the time clock system as seed use the argument `--seed 0`.
 
 To run the generator in parallel you must use this with the `prun_job` command. To run the `Zee` generation in parallel use this command:
 
 ```bash
 prun_job.py -c "generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o zee.root
 ```
-**NOTE**: Use this command to run the event `Zee` generatio with 1K events, 4 threads (`-mt`) and 10 jobs (`-n`).
+> **NOTE**: Use this command to run the event `Zee` generatio with 1K events, 4 threads (`-mt`) and 10 jobs (`-n`).
 
 To run the `JF17` events use this command:
 ```bash
@@ -66,7 +66,7 @@ After generate the events using the `generator.py` command you must pass the out
 ```bash
 reco_trf.py -i zee.root --outputLevel 6 -nt 4 -o reco_zee.root
 ```
-**NOTE**: Run the reconstruction with 4 threads (`-nt`). You can pass the number of events to reconstruct with `--evt`.
+> **NOTE**: Run the reconstruction with 4 threads (`-nt`). You can pass the number of events to reconstruct with `--evt`.
 
 
 
