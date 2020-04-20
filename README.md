@@ -1,4 +1,4 @@
-# Lorenzetti Event Simulator
+# Lorenzett Event Simulator
 
 This is the first event generator for HEP using a generic calorimeter for machine learning 
 studies based on athena framework (ATLAS).
@@ -41,12 +41,10 @@ docker push jodafons/lorenzett
 
 ### Event generation:
 
-Use this command to generate `Zee` events:
+Use this command to generate `Zee` events. To get the time clock system as seed use the argument `--seed 0`.
 ```bash
 generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
 ```
-> **NOTE**: To get the time clock system as seed use the argument `--seed 0`.
-
 To run the generator in parallel you must use this with the `prun_job` command. To run the `Zee` generation in parallel use this command:
 
 ```bash
@@ -66,9 +64,6 @@ After generate the events using the `generator.py` command you must pass the out
 ```bash
 reco_trf.py -i zee.root --outputLevel 6 -nt 4 -o reco_zee.root
 ```
-> **NOTE**: Run the reconstruction with 4 threads (`-nt`). You can pass the number of events to reconstruct with `--evt`.
-
-
 
 
 ## References:
