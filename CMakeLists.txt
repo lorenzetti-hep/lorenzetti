@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(lorenzetti)
+project(lorenzett)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DDROP_CGAL")
@@ -71,8 +71,7 @@ add_subdirectory( reconstruction/CaloRingerBuilder )
 add_subdirectory( generator/PythiaGenerator )
 
 
-add_library(lorenzetti SHARED
-  
+add_library(lorenzett SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
   $<TARGET_OBJECTS:cpk>
@@ -84,13 +83,12 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloRec>
   $<TARGET_OBJECTS:CaloRingerBuilder>
   $<TARGET_OBJECTS:PythiaGenerator>
-
 )
 
 message( STATUS ${FASTJET_LIBRARIES} )
 message( STATUS ${PYTHIA8_LIBRARIES} )
 
-target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
+target_link_Libraries(lorenzett ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
   ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${ROOT_LIBRARIES}
   ${FASTJET_LIBRARIES} ${PYTHIA8_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} )
 

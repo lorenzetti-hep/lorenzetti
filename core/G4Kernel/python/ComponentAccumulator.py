@@ -12,7 +12,7 @@ class ComponentAccumulator( Logger ):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
+    ROOT.gSystem.Load('liblorenzett')
     from ROOT import RunManager
     self.__core = RunManager(name)
     self.__numberOfEvents = 10000
@@ -21,7 +21,7 @@ class ComponentAccumulator( Logger ):
         setattr( self, '__' + key , value )
         self.__core.setProperty( key, value )
       else:
-        MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key , self.__class__.__name__)
 
 
   def run( self, evt=None ):
@@ -36,14 +36,14 @@ class ComponentAccumulator( Logger ):
     if key in self.__allow_keys:
       self.core().setProperty( key, value )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object")
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   def __add__( self, algs ):

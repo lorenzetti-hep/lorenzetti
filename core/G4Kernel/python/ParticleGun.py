@@ -21,7 +21,7 @@ class ParticleGun( Logger ):
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
+    ROOT.gSystem.Load('liblorenzett')
     from ROOT import ParticleGun as G4Gun
     # Create the algorithm
     self.__core = G4Gun(name)
@@ -39,14 +39,14 @@ class ParticleGun( Logger ):
       setattr( self, '__' + key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
     if key in self.__allow_keys:
       return getattr( self, '__' + key )
     else:
-      MSG_ERROR( self, "Property with name %s is not allow for PulseGenerator object", key)
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   def merge( self, acc ):
