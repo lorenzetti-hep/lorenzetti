@@ -59,8 +59,7 @@ acc = ComponentAccumulator("ComponentAccumulator",
 
 gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
-                   FileName   = args.inputFile,
-                   OutputLevel = args.outputLevel)
+                   FileName   = args.inputFile)
 
 
 
