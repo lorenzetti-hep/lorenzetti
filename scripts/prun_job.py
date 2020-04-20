@@ -8,7 +8,7 @@ import argparse
 
 class Parallel( Logger ):
 
-  def __init__(self, command, njobs, maxJobs ):
+  def __init__(self, command, njobs, maxJobs, output ):
     Logger.__init__(self)
     self.process_pipe = []
     self.output_to_merge = []
@@ -19,6 +19,7 @@ class Parallel( Logger ):
     self._jobList = list(range(njobs))
     self._maxJobs = maxJobs
     self._command = command
+    self._output  = output
 
   def run( self ):
     import os, time
@@ -50,7 +51,13 @@ class Parallel( Logger ):
           MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]) )
           self.process_pipe.remove(proc)
 
-    print (self.output_to_merge)
+    # Merge
+    command = "hadd -f "+self._output
+    for fname in self.output_to_merge:
+      command += ' '+fname
+    os.system(command)
+    for fname in self.output_to_merge:
+      os.system( 'rm -rf '+fname)
 
 
 mainLogger = Logger.getModuleLogger("prun.job")
@@ -81,7 +88,7 @@ if len(sys.argv)==1:
   sys.exit(1)
 args = parser.parse_args()
 
-prun = Parallel( args.command, args.numberOfJobs, args.numberOfThreads )
+prun = Parallel( args.command, args.numberOfJobs, args.numberOfThreads, args.outputFile )
 prun.run()
 
 
