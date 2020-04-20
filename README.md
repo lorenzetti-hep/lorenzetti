@@ -43,18 +43,18 @@ docker push jodafons/lorenzett
 
 Use this command to generate `Zee` events. To get the time clock system as seed use the argument `--seed 0`.
 ```bash
-generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
+generator.py --filter Zee -b minbias_zee_config.cmnd -m zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
 ```
 To run the generator in parallel you must use this with the `prun_job` command. To run the `Zee` generation in parallel use this command:
 
 ```bash
-prun_job.py -c "generator.py --filter Zee -b $LZT_PATH/generator/PythiaGenerator/data/minbias_zee_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/zee_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o zee.root
+prun_job.py -c "generator.py --filter Zee -b minbias_zee_config.cmnd -m zee_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o zee.root
 ```
 > **NOTE**: Use this command to run the event `Zee` generatio with 1K events, 4 threads (`-mt`) and 10 jobs (`-n`).
 
 To run the `JF17` events use this command:
 ```bash
-prun_job.py -c "generator.py --filter JF17 -b $LZT_PATH/generator/PythiaGenerator/data/minbias_jets_config.cmnd -m $LZT_PATH/generator/PythiaGenerator/data/jets_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o jf17.root
+prun_job.py -c "generator.py --filter JF17 -b minbias_jets_config.cmnd -m jets_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o jf17.root
 ```
 
 ### Reconstruction:
