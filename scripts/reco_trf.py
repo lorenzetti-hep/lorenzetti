@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 from PythiaGenerator    import EventReader
@@ -38,6 +38,17 @@ if len(sys.argv)==1:
   sys.exit(1)
 
 args = parser.parse_args()
+
+
+# Get all output names
+if not '.root' in args.outputFile:
+  args.outputFile+='.root'
+
+# Add index for each thread
+outputFileList = []
+for thread in range( args.numberOfThreads ):
+  outputFileList.append( args.outputFile.replace( '.root', "_%d.root"%thread ) )
+
 
 
 acc = ComponentAccumulator("ComponentAccumulator", 
@@ -112,6 +123,22 @@ acc+= truth_ringer
 #acc+=ringer
 acc += ntuple
 acc.run(args.numberOfEvents)
+
+
+
+
+# Merge all files
+command = "hadd -f " + args.outputFile + ' '
+for fname in outputFileList:
+  command+=fname + ' '
+print( command )
+os.system(command)
+
+# remove thread files
+for fname in outputFileList:
+  os.system( 'rm '+ fname )
+
+
 
 
 

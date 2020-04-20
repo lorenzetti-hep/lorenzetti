@@ -16,6 +16,7 @@ class CaloNtupleMaker( Logger ):
                   "OutputLevel", 
                   "DeltaR", 
                   "DumpCells",
+                  "NtupleName",
                   ]
 
 

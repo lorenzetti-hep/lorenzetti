@@ -28,6 +28,7 @@ CaloNtupleMaker::CaloNtupleMaker( std::string name ) :
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
   declareProperty( "DeltaR"         , m_deltaR=0.15                     );
   declareProperty( "DumpCells"      , m_dumpCells=false                 );
+  declareProperty( "NtupleName"     , m_ntupleName="events"             );
 }
 
 
@@ -46,6 +47,8 @@ StatusCode CaloNtupleMaker::initialize()
 StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
 {
   // Create all local variables since this must be a const method
+  int eventNumber         = -1;
+  float avgmu             = -1;
   float seed_eta          = -1;
   float seed_phi          = -1;
   float seed_et           = -1;
@@ -120,8 +123,10 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   std::vector<int>   cell_sampling    ;
  
   store.cd();
-  TTree *tree = new TTree("collection", "");
+  TTree *tree = new TTree(m_ntupleName.c_str(), "");
   
+  tree->Branch(  "EventNumber"        , &eventNumber        );
+  tree->Branch(  "avgmu"              , &avgmu              );
   tree->Branch(  "seed_eta"           , &seed_eta           );
   tree->Branch(  "seed_phi"           , &seed_phi           );
   tree->Branch(  "seed_et"            , &seed_et            );
@@ -238,11 +243,13 @@ StatusCode CaloNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store
   }
 
   store.cd();
-  TTree *tree = store.tree("collection");
+  TTree *tree = store.tree(m_ntupleName);
  
   for ( auto& seed : (**event.ptr()).front()->allSeeds() ){
+    int eventNumber = (**event.ptr()).front()->eventNumber();
+    float avgmu = (**event.ptr()).front()->avgmu();
     MSG_DEBUG( "Fill this seed into the collection tree." );
-    Fill( ctx, tree, seed );
+    Fill( ctx, tree, seed, eventNumber, avgmu );
   }
   
   return StatusCode::SUCCESS;
@@ -265,9 +272,11 @@ void CaloNtupleMaker::InitBranch(TTree* fChain, std::string branch_name, T* para
 }
 
 
-void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed ) const
+void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, int evt, float mu ) const
 {
   // Create all local variables since this must be a const method
+  int   eventNumber    ;
+  float avgmu          ;
   float seed_eta       ;
   float seed_phi       ;
   float seed_et        ;
@@ -342,7 +351,8 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed )
   std::vector<int>   *cell_sampling    = nullptr;
   
 
-
+  InitBranch( tree,  "EventNumber"        , &eventNumber        );
+  InitBranch( tree,  "avgmu"              , &avgmu              );
   InitBranch( tree,  "seed_eta"           , &seed_eta           );
   InitBranch( tree,  "seed_phi"           , &seed_phi           );
   InitBranch( tree,  "seed_et"            , &seed_et            );
@@ -418,6 +428,8 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed )
   MSG_DEBUG( "Link all branches..." );
 
   // Create all local variables since this must be a const method
+  eventNumber         = -1;
+  avgmu               = 0;
   seed_eta            = 0;
   seed_phi            = 0;
   seed_et             = 0;
@@ -491,9 +503,11 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed )
   cell_energy->clear()     ;
   cell_sampling->clear()   ;
 
-  seed_eta = seed.eta;
-  seed_phi = seed.phi;
-  seed_et  = seed.et * 1.e3; // in MeV
+  eventNumber = evt;
+  avgmu       = mu;
+  seed_eta    = seed.eta;
+  seed_phi    = seed.phi;
+  seed_et     = seed.et * 1.e3; // in MeV
 
   { // Fill all truth values
     const xAOD::CaloCluster *clus=nullptr;

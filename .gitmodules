@@ -1,6 +1,3 @@
-[submodule "external/gaugi"]
-	path = external/gaugi
-	url = https://github.com/jodafons/Gaugi.git
 [submodule "external/cpk"]
 	path = external/cpk
 	url = https://github.com/jodafons/cpk.git

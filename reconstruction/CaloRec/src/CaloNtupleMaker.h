@@ -41,8 +41,9 @@ class CaloNtupleMaker : public Gaugi::Algorithm
     bool match( SG::EventContext &ctx , std::string key, const xAOD::CaloCluster *cluster, const xAOD::CaloRings *&ringer ) const;
     float dR( float eta1, float phi1, float eta2, float phi2 ) const;
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
-    void Fill( SG::EventContext &ctx , TTree *tree, xAOD::seed_t seed ) const;
-      
+    void Fill( SG::EventContext &ctx , TTree *tree, xAOD::seed_t seed, int evt, float mu ) const;
+    
+    std::string m_ntupleName;
     std::string m_eventKey;
     std::string m_clusterKey;
     std::string m_truthClusterKey;
