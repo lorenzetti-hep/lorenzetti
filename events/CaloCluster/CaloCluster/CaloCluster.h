@@ -81,6 +81,8 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_f3, setF3, f3 );
       /*! set/get rhad */
       PRIMITIVE_SETTER_AND_GETTER( float, m_rhad, setRhad, rhad );
+      /*! set/get rhad1 */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_rhad1, setRhad1, rhad1 );
       /*! Weta2 */
       PRIMITIVE_SETTER_AND_GETTER( float, m_weta2, setWeta2, weta2 );
 
@@ -115,6 +117,7 @@ namespace xAOD{
       float m_reta;
       float m_rphi;
       float m_rhad;
+      float m_rhad1;
       float m_eratio;
       float m_f0;
       float m_f1;

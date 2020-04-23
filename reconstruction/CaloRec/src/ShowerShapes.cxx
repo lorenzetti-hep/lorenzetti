@@ -63,13 +63,15 @@ StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
   float weta2 = calculateWeta2(clus, CaloSample::EM2, 3, 5);
 
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
-
+  float emtot = e0+e1+e2+e3;
   // fraction of energy deposited in 1st sampling
-  float f0 = e0 / etot;
-  float f1 = e1 / etot;
-  float f2 = e2 / etot;
-  float f3 = e3 / etot;
-  float rhad = (ehad1+ehad2+ehad3) / etot;
+  float f0 = e0 / emtot;
+  float f1 = e1 / emtot;
+  float f2 = e2 / emtot;
+  float f3 = e3 / emtot;
+
+  float rhad = (ehad1+ehad2+ehad3) / emtot;
+  float rhad1 = (ehad1) / emtot;
 
   clus->setE0( e0 );
   clus->setE1( e1 );
@@ -95,6 +97,7 @@ StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
   clus->setF2( f2 );
   clus->setF3( f3 );
   clus->setRhad( rhad );
+  clus->setRhad1( rhad1 );
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
   return StatusCode::SUCCESS;
