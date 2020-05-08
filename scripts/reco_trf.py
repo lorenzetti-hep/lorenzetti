@@ -4,7 +4,6 @@ from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 from PythiaGenerator    import EventReader
 from G4Kernel           import *
-from CaloRec.atlas.CaloCellBuilder      import CaloCellBuilder
 from CaloRec            import CaloNtupleMaker
 from CaloRec            import CaloClusterMaker
 from CaloRingerBuilder  import *
@@ -55,12 +54,13 @@ for thread in range( args.numberOfThreads ):
 
 
 
-from DetectorATLASModel import DetectorATLASConstruction
+from DetectorATLASModel import DetectorConstruction as ATLAS
+from DetectorATLASModel import CaloCellBuilder
 
 
 
 acc = ComponentAccumulator("ComponentAccumulator", 
-                            DetectorATLASConstruction("GenericATLASDetector"),
+                            ATLAS("GenericATLASDetector"),
                             RunVis=args.visualization, 
                             NumberOfThreads = args.numberOfThreads, 
                             OutputFile = args.outputFile)
@@ -72,7 +72,7 @@ gun = EventReader( "PythiaGenerator",
 
 
 
-calorimeter = CaloCellBuilder("CaloCellBuilder_ATLAS", 
+calorimeter = CaloCellBuilder("CaloCellATLASBuilder", 
                               HistogramPath = "Expert/CaloCells",
                               OutputLevel   = args.outputLevel)
 

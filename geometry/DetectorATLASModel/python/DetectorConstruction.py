@@ -1,4 +1,4 @@
-__all__ = ["DetectorATLASConstruction"]
+__all__ = ["DetectorConstruction"]
 
 
 from Gaugi import Logger
@@ -6,7 +6,7 @@ from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class DetectorATLASConstruction(Logger):
+class DetectorConstruction(Logger):
 
   __allow_keys = []
   
