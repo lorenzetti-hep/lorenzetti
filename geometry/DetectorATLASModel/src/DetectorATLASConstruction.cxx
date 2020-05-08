@@ -1,5 +1,5 @@
 
-#include "G4Kernel/DetectorConstruction.h"
+#include "DetectorATLASConstruction.h"
 #include "G4Material.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
@@ -25,12 +25,12 @@
 
 
 G4ThreadLocal
-G4GlobalMagFieldMessenger* DetectorConstruction::m_magFieldMessenger = 0;
+G4GlobalMagFieldMessenger* DetectorATLASConstruction::m_magFieldMessenger = 0;
 
 
-DetectorConstruction::DetectorConstruction()
+DetectorATLASConstruction::DetectorATLASConstruction()
  : 
-  IMsgService("DetectorContruction"), 
+  IMsgService("DetectorATLASContruction"), 
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
@@ -38,11 +38,11 @@ DetectorConstruction::DetectorConstruction()
 }
 
 
-DetectorConstruction::~DetectorConstruction()
+DetectorATLASConstruction::~DetectorATLASConstruction()
 {;}
 
 
-G4VPhysicalVolume* DetectorConstruction::Construct()
+G4VPhysicalVolume* DetectorATLASConstruction::Construct()
 {
   // Define materials
   DefineMaterials();
@@ -51,7 +51,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 }
 
 
-void DetectorConstruction::DefineMaterials()
+void DetectorATLASConstruction::DefineMaterials()
 {
   // Lead material defined using NIST Manager
   G4NistManager* nistManager = G4NistManager::Instance();
@@ -89,7 +89,7 @@ void DetectorConstruction::DefineMaterials()
 }
 
 
-G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
+G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
 {
 
 
@@ -165,6 +165,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
   G4Region* em1 = new G4Region("EM1");
   G4Region* em2 = new G4Region("EM2");
   G4Region* em3 = new G4Region("EM3");
+  //G4Region* ecal= new G4Region("ECal");
 
   // Create Eletromagnetic calorimeter
   CreateBarrel( worldLV,
@@ -178,7 +179,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 150.*cm, // start radio,
                 6.8*m ,// z
                 G4ThreeVector(0,0,0),
-                em1 );
+                em1);
 
   CreateBarrel( worldLV,
                 "EM2",
@@ -191,7 +192,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 150.*cm + 9.6*cm, // start radio,
                 6.8*m ,// z
                 G4ThreeVector(0,0,0),
-                em2  );
+                em2);
 
   CreateBarrel( worldLV,
                 "EM3",
@@ -204,7 +205,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 150.*cm + 9.6*cm + 33*cm, // start radio,
                 6.8*m ,// z
                 G4ThreeVector(0,0,0),
-                em3 );
+                em3);
 
   G4Region* deadMaterialBeforeHCal = new G4Region("DeadMaterialBeforeHCal");
   CreateBarrel( worldLV,
@@ -250,7 +251,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 228*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
-                had1 );
+                had1);
   CreateBarrel( worldLV,
                 "HAD2",
                 G4Material::GetMaterial("Galactic"), // default
@@ -262,7 +263,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 228*cm + 40*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
-                had2 );
+                had2);
   CreateBarrel( worldLV,
                 "HAD3",
                 G4Material::GetMaterial("Galactic"), // default
@@ -274,7 +275,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
                 228*cm + 40*cm + 110*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
-                had3 );
+                had3);
 
 	const auto extended_barrel_size = 2.83*m;
   const auto extended_barrel_pos = 5.495*m;
@@ -418,7 +419,7 @@ G4VPhysicalVolume* DetectorConstruction::DefineVolumes()
 }
 
 
-void DetectorConstruction::ConstructSDandField()
+void DetectorATLASConstruction::ConstructSDandField()
 {
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
@@ -430,7 +431,7 @@ void DetectorConstruction::ConstructSDandField()
   ////// Create magnetic field
 }
 
-void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
+void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
                                           std::string name,  
                                           G4Material *defaultMaterial,
                                           G4Material *absorberMaterial,
@@ -441,14 +442,14 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                           double calorRmin,
                                           double calorZ,
                                           G4ThreeVector center_pos,
-                                          G4Region *rlayer
+                                          G4Region *region
                                           ) 
 
 {
   if ( ! defaultMaterial || ! absorberMaterial || ! gapMaterial ) {
     G4ExceptionDescription msg;
     msg << "Cannot retrieve materials already defined.";
-    G4Exception("DetectorConstruction::DefineVolumes()", "MyCode0001", FatalException, msg);
+    G4Exception("DetectorATLASConstruction::DefineVolumes()", "MyCode0001", FatalException, msg);
   }
 
 
@@ -477,12 +478,10 @@ void DetectorConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                  false,             // no boolean operation
                  0,                 // copy number
                  m_checkOverlaps);  // checking overlaps
-  rlayer->AddRootLogicalVolume(calorLV);
-
-
-
-
   
+  region->AddRootLogicalVolume(calorLV);
+
+
 
   for (G4int layer=0; layer < nofLayers; ++layer){
 

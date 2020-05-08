@@ -1,5 +1,5 @@
-#ifndef DetectorConstruction_h
-#define DetectorConstruction_h
+#ifndef DetectorATLASConstruction_h
+#define DetectorATLASConstruction_h
 
 #include "GaugiKernel/MsgStream.h"
 #include "G4VUserDetectorConstruction.hh"
@@ -13,11 +13,11 @@ class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
 
-class DetectorConstruction : public G4VUserDetectorConstruction, public MsgService
+class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService
 {
   public:
-    DetectorConstruction();
-    virtual ~DetectorConstruction();
+    DetectorATLASConstruction();
+    virtual ~DetectorATLASConstruction();
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
 
@@ -44,8 +44,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction, public MsgServi
                         double calorRmin,
                         double calorZ,
                         G4ThreeVector center_pos,
-                        G4Region* layer
-                        ); 
+                        G4Region* region);
 
 
     static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger; // magnetic field messenger
