@@ -14,6 +14,7 @@ class ParticleGun( Logger ):
                   "Sigma",
                   "Particle",
                   "EtaMax",
+                  "Position"
                   ]
 
 

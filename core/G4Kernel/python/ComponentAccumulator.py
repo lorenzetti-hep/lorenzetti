@@ -8,13 +8,14 @@ class ComponentAccumulator( Logger ):
 
   __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis"]
 
-  def __init__( self, name , **kw):
+  def __init__( self, name , detector, **kw):
 
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
     from ROOT import RunManager
     self.__core = RunManager(name)
+    self.__core.setDetectorConstruction( detector.core() )
     self.__numberOfEvents = 10000
     for key, value in kw.items():
       if key in self.__allow_keys:

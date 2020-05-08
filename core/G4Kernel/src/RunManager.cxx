@@ -1,7 +1,6 @@
 
 
 #include "G4Kernel/RunManager.h"
-#include "G4Kernel/DetectorConstruction.h"
 #include "G4Kernel/ActionInitialization.h"
 #include "GaugiKernel/Algorithm.h"
 
@@ -19,6 +18,7 @@
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 
+
 #include <iostream>
 #include "time.h"
 #include <cstdlib>
@@ -26,7 +26,8 @@
 
 RunManager::RunManager( std::string name ): 
   IMsgService( name ),
-  PropertyService()
+  PropertyService(),
+  m_detector(nullptr)
 {
   
 #ifdef G4MULTITHREADED
@@ -50,6 +51,11 @@ void RunManager::push_back( Gaugi::Algorithm *alg )
 void RunManager::setGenerator( PrimaryGenerator *gen )
 {
   m_generator = gen;
+}
+
+void RunManager::setDetectorConstruction( G4VUserDetectorConstruction *det )
+{
+  m_detector = det;
 }
 
 
@@ -80,9 +86,14 @@ void RunManager::run( int evt )
   G4RunManager * runManager = new G4RunManager;
 #endif
 
+
   MSG_INFO( "Building the detector..." );
-  DetectorConstruction* detConstruction = new DetectorConstruction();
-  runManager->SetUserInitialization(detConstruction);
+  if( !m_detector ){
+    MSG_FATAL( "You must instantiate the detector contruction first. Abort!" );
+  }else{
+    runManager->SetUserInitialization(m_detector);
+  }
+
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);

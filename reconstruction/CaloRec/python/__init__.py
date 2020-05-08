@@ -21,17 +21,19 @@ from . import CaloClusterMaker
 __all__.extend(CaloClusterMaker.__all__)
 from .CaloClusterMaker import *
 
-from . import CaloCellBuilder
-__all__.extend(CaloCellBuilder.__all__)
-from .CaloCellBuilder import *
+#from . import CaloCellBuilder
+#__all__.extend(CaloCellBuilder.__all__)
+#from .CaloCellBuilder import *
 
-from . import CaloDefs
-__all__.extend(CaloDefs.__all__)
-from .CaloDefs import *
+#from . import CaloDefs
+#__all__.extend(CaloDefs.__all__)
+#from .CaloDefs import *
 
 from . import CaloNtupleMaker
 __all__.extend(CaloNtupleMaker.__all__)
 from .CaloNtupleMaker import *
 
-
+from . import atlas
+__all__.extend(atlas.__all__)
+from .atlas import *
 

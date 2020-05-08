@@ -1,35 +1,24 @@
-__all__ = ["CaloClusterMaker"]
+__all__ = ["DetectorATLASConstruction"]
+
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class CaloClusterMaker( Logger ):
+class DetectorATLASConstruction(Logger):
 
-  __allow_keys = [
-                  "CellsKey", 
-                  "ClusterKey", 
-                  "EventKey", 
-                  "TruthKey", 
-                  "EtaWindow" , 
-                  "PhiWindow",
-                  "MinCenterEnergy",
-                  "OutputLevel", 
-                  "HistogramPath"]
+  __allow_keys = []
+  
+  def __init__( self, name, **kw ):
 
-
-  def __init__( self, name, **kw ): 
-    
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import CaloClusterMaker
-    # Create the algorithm
-    self.__core = CaloClusterMaker(name)
-
+    from ROOT import RunManager, DetectorATLASConstruction
+    self.__core = DetectorATLASConstruction(name)
     for key, value in kw.items():
-      self.setProperty( key,value )
+      self.setProperty( key, value )
 
 
   def core(self):
@@ -49,6 +38,8 @@ class CaloClusterMaker( Logger ):
       return getattr( self, '__' + key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+ 
 
 
 

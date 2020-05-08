@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
+
 from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 from PythiaGenerator    import EventReader
-from CaloRingerBuilder  import CaloRingerBuilder
-from CaloRec            import *
 from G4Kernel           import *
+from CaloRec.atlas.CaloCellBuilder      import CaloCellBuilder
+from CaloRec            import CaloNtupleMaker
+from CaloRec            import CaloClusterMaker
+from CaloRingerBuilder  import *
+
 import numpy as np
 import argparse
 import sys,os
@@ -51,7 +55,12 @@ for thread in range( args.numberOfThreads ):
 
 
 
+from DetectorATLASModel import DetectorATLASConstruction
+
+
+
 acc = ComponentAccumulator("ComponentAccumulator", 
+                            DetectorATLASConstruction("GenericATLASDetector"),
                             RunVis=args.visualization, 
                             NumberOfThreads = args.numberOfThreads, 
                             OutputFile = args.outputFile)
@@ -63,7 +72,7 @@ gun = EventReader( "PythiaGenerator",
 
 
 
-calorimeter = CaloCellBuilder("CaloCellBuilder", 
+calorimeter = CaloCellBuilder("CaloCellBuilder_ATLAS", 
                               HistogramPath = "Expert/CaloCells",
                               OutputLevel   = args.outputLevel)
 
@@ -78,6 +87,7 @@ cluster = CaloClusterMaker( "TruthCaloClusterMaker",
                             PhiWindow       = 0.4,
                             HistogramPath   = "Expert/TruthClusters",
                             OutputLevel     = args.outputLevel)
+
 
 
 
@@ -102,6 +112,7 @@ truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
                                   LayerRings      = [1,2,3,4,5,6],
                                   HistogramPath   = "Expert/TruthRinger",
                                   OutputLevel     = args.outputLevel)
+
 
 
 ntuple = CaloNtupleMaker( "CaloNtupleMaker",

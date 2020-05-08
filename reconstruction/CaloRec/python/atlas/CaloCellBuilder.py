@@ -8,7 +8,7 @@ import os
 
 
 
-default_basepath = os.environ['LZT_PATH']+'/reconstruction/CaloRec/data/'
+
 
 
 class CaloCellBuilder( Logger ):
@@ -27,12 +27,13 @@ class CaloCellBuilder( Logger ):
 
             
 
+  __basepath = os.environ['LZT_PATH']+'/reconstruction/CaloRec/data/atlas/'
 
-  def __init__( self, name, basepath=default_basepath , HistogramPath = "Expert", OutputLevel=1):
+
+  def __init__( self, name, HistogramPath = "Expert", OutputLevel=1):
 
     Logger.__init__(self)
     self.__recoAlgs = []
-    self.__basepath = basepath
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
     self.configure()
@@ -55,8 +56,8 @@ class CaloCellBuilder( Logger ):
       alg = CaloCellMaker("CaloCellMaker", 
                           CollectionKey           = recordable( config[0] ), 
                           CaloCellFile            = self.__basepath+config[1], 
-                          BunchIdStart            = -8,
-                          BunchIdEnd              = 7,
+                          BunchIdStart            = -8, # This shold be configurable for EM/HAD
+                          BunchIdEnd              = 7, # This should be configurable for EM/HAD
                           BunchDuration           = 25,
                           NumberOfSamplesPerBunch = 1,
                           HistogramPath           = self.__histpath,

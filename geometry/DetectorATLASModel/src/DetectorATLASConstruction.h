@@ -16,7 +16,7 @@ class G4GlobalMagFieldMessenger;
 class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService
 {
   public:
-    DetectorATLASConstruction();
+    DetectorATLASConstruction(std::string);
     virtual ~DetectorATLASConstruction();
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();

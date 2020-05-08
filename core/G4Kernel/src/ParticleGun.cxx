@@ -27,6 +27,8 @@ ParticleGun::ParticleGun( std::string name):
   declareProperty( "EnergyDist"         , m_energyDist="Gauss"      );
   declareProperty( "Sigma"              , m_sigma=1.0               );
   declareProperty( "EtaMax"             , m_etamax=1.0              );
+  declareProperty( "Position"           , m_position={}             );
+  
 }
 
 
@@ -68,21 +70,24 @@ void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
   xAOD::EventInfo *evt = new xAOD::EventInfo();
  
 
+  MSG_INFO( "Position size is " << m_position.size() );
+  auto pos =  (m_position.size()==3) ? TVector3(m_position.at(0), m_position.at(1), m_position.at(2)) : RandomPos( m_etamax ) ;
 
-  auto pos = RandomPos( m_etamax );
+  
+  
   auto *particle = G4ParticleTable::GetParticleTable()->FindParticle(m_particle);
-  float pp = m_generator.Gaus( m_energy, m_sigma );
+  //float pp = m_generator.Gaus( m_energy, m_sigma );
+  float pp = m_energy;
   float mass = particle->GetPDGMass();
   float ekin = std::sqrt(pp*pp+mass*mass) - mass;
   int pdgid= particle->GetParticleDefinitionID();
-  float et = pos.PseudoRapidity() != 0.0 ? ekin / std::cosh(std::fabs(pos.PseudoRapidity())) : 0.0;
+  //float et = pos.PseudoRapidity() != 0.0 ? ekin / std::cosh(std::fabs(pos.PseudoRapidity())) : ekin;
 
-  MSG_INFO( "Ekin = " << ekin << " Et = " << et);
-
+  float et = m_energy;
   m_gun->SetParticleDefinition(particle);
-  m_gun->SetParticleEnergy(ekin);
+  m_gun->SetParticleEnergy(m_energy);
   m_gun->SetParticleTime( 0 );
-  m_gun->SetParticleMomentumDirection(G4ThreeVector(pos.x(),pos.y(),pos.y()));
+  m_gun->SetParticleMomentumDirection(G4ThreeVector(pos.x(),pos.y(),pos.z()));
   m_gun->GeneratePrimaryVertex(anEvent);
   m_gun->SetParticleTime( (special_bcid_for_truth_reconstruction * 25.) * c_light/mm );// in ns
   m_gun->GeneratePrimaryVertex(anEvent);
@@ -95,7 +100,7 @@ void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
   event->push_back(evt);
 
 
-
+  MSG_INFO( "Et = " << et );
   MSG_INFO( "eta = " << pos.PseudoRapidity() << " phi = " << pos.Phi() << " pdgid = " << pdgid);
   MSG_INFO( "Event id         : " << evt->eventNumber() );
 }
@@ -133,6 +138,7 @@ PrimaryGenerator* ParticleGun::copy()
   gun->setProperty( "Energy", m_energy );
   gun->setProperty( "EnergyDist", m_energyDist );
   gun->setProperty( "Sigma", m_sigma );
+  gun->setProperty( "Position", m_position );
   return gun;
 }
 

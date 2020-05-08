@@ -8,13 +8,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/G4Kernel)
 
 
 
-ROOT_GENERATE_DICTIONARY(CaloRecDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE CaloRec)
+ROOT_GENERATE_DICTIONARY(DetectorATLASModelDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE DetectorATLASModel)
                                       
-add_library(CaloRec  OBJECT ${SOURCES} CaloRecDict.cxx)
-install(FILES ${HEADERS}  DESTINATION CaloRec)
+add_library(DetectorATLASModel  OBJECT ${SOURCES} DetectorATLASModelDict.cxx)
+install(FILES ${HEADERS}  DESTINATION DetectorATLASModel)
 
 
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloRec)
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python DetectorATLASModel)
 
 
 

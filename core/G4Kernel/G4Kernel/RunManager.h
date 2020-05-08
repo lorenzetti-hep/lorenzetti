@@ -2,6 +2,7 @@
 #ifndef RunManager_h
 #define RunManager_h
 
+#include "G4VUserDetectorConstruction.hh"
 #include "G4Kernel/PrimaryGenerator.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/MsgStream.h"
@@ -25,6 +26,9 @@ class RunManager: public MsgService,
 
     void setGenerator( PrimaryGenerator * );
 
+    void setDetectorConstruction( G4VUserDetectorConstruction * );
+
+
   private:
 
     int m_nThreads;
@@ -36,5 +40,7 @@ class RunManager: public MsgService,
     std::vector< Gaugi::Algorithm* > m_acc;
 
     PrimaryGenerator       *m_generator;
+
+    G4VUserDetectorConstruction *m_detector;
 };
 #endif

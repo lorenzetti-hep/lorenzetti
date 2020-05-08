@@ -4,7 +4,6 @@
 #include "G4Kernel/RunAction.h"
 #include "G4Kernel/EventAction.h"
 #include "G4Kernel/SteppingAction.h"
-#include "G4Kernel/DetectorConstruction.h"
 #include "G4MTRunManager.hh"
 #include <iostream>
 

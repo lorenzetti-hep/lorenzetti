@@ -51,5 +51,7 @@ class ParticleGun : public PrimaryGenerator
     int m_evt;
     TRandom m_generator;
 
+    std::vector<float> m_position;
+
 };
 #endif

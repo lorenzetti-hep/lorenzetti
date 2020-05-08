@@ -28,9 +28,9 @@ G4ThreadLocal
 G4GlobalMagFieldMessenger* DetectorATLASConstruction::m_magFieldMessenger = 0;
 
 
-DetectorATLASConstruction::DetectorATLASConstruction()
+DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
-  IMsgService("DetectorATLASContruction"), 
+  IMsgService(name), 
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
