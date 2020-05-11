@@ -3,15 +3,20 @@ __all__ = ["JF17"]
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
-from PythiaGenerator.utilities import default_allow_keys
+
 
 class JF17( Logger ):
 
-  __allow_keys = default_allow_keys
-  __allow_keys.extend([
-                  "EtaWindow"      ,
-                  "PhiWindow"      ,
-                ])
+  __allow_keys = [
+                  "MainFile",
+                  "EtaMax",
+                  "MinPt",
+                  "Select",
+                  "Seed",
+                  "OutputLevel",
+                  "EtaWindow",
+                  "PhiWindow",
+                ]
 
   def __init__( self, name, **kw ): 
     
@@ -23,12 +28,6 @@ class JF17( Logger ):
     self.__core = JF17()
     for key, value in kw.items():
       self.setProperty( key,value )
-    self.core().initialize()
-
-
-  def run(self):
-    self.core().run()
-    self.core().finalize()
 
 
   def core(self):

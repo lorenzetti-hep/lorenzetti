@@ -1,15 +1,15 @@
-#ifndef Zee_h
-#define Zee_h
+#ifndef Cell_h
+#define Cell_h
 
 #include "Pythia8/Pythia.h"
 #include "EventGenerator.h"
 
 
-class Zee : public Physics
+class Cell : public Physics
 {
   public:
-    Zee();
-    ~Zee()=default;
+    Cell();
+    ~Cell()=default;
 
     virtual StatusCode initialize() override;
     virtual StatusCode run( std::vector<xAOD::seed_t>&, std::vector<std::vector<Pythia8::Particle*>> &) override;
@@ -17,16 +17,8 @@ class Zee : public Physics
 
   private:
 
-
-    int m_abort;
-    int m_nAbort;
-    int m_seed;
     int m_outputLevel;
-    float m_minPt;
-    float m_etaMax;
- 
-    std::string m_mainFile;
-   
-    Pythia8::Pythia m_pythia;
+    float m_eta;
+    float m_phi;
 };
 #endif

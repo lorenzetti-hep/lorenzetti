@@ -8,24 +8,70 @@
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
 #include "ParticleFilter.h"
+#include "EventInfo/EventInfo.h"
+
 
 using namespace Pythia8;
 
 JF17::JF17(): 
   IMsgService("JF17"), 
-  EventGenerator()
+  Physics(),
+  m_abort(0)
 {
-  declareProperty( "EtaWindow", m_etaWindow=0.4 );
-  declareProperty( "PhiWindow", m_phiWindow=0.4 );
+  declareProperty( "MainFile"       , m_mainFile=""               );
+  declareProperty( "EtaMax"         , m_etaMax=1.4                );
+  declareProperty( "MinPt"          , m_minPt=0.0                 );
+  declareProperty( "Select"         , m_select=2                  );
+  declareProperty( "Seed"           , m_seed=0 /* clock system */ );
+  declareProperty( "OutputLevel"    , m_outputLevel=1             );
+  declareProperty( "EtaWindow"      , m_etaWindow=0.4             );
+  declareProperty( "PhiWindow"      , m_phiWindow=0.4             );
 }
 
 
 
-StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_particles, std::vector<std::vector<Pythia8::Particle*>>& particles)
+StatusCode JF17::initialize()
+{
+  MSG_INFO( "Initializing the JF17..." );
+  std::stringstream cmdseed; cmdseed << "Random:seed = " << m_seed;
+  // Read in commands from external file.
+  m_pythia.readFile( m_mainFile );
+  m_pythia.readString("Random:setSeed = on");
+  m_pythia.readString(cmdseed.str());
+  m_nAbort = m_pythia.mode("Main:timesAllowErrors");
+  // Initialization for main (LHC) event
+  m_pythia.init();
+
+  return StatusCode::SUCCESS;
+}
+
+
+
+StatusCode JF17::run( std::vector<xAOD::seed_t> &seed_vec, std::vector<std::vector<Particle*>>& particles )
 {
 
+  // Generate main event. Quit if too many failures.
+  if (!m_pythia.next()) {
+    if (m_abort++>m_nAbort){
+      MSG_ERROR("Event generation aborted prematurely, owing to error in main event!" );
+      throw AbortPrematurely();
+    }
+  }
+
+  double weight = m_pythia.info.mergingWeight();
+  double evtweight = m_pythia.info.weight();
+  weight *= evtweight;
+
+  // Do not print zero-weight events.
+  if ( weight == 0. ) {
+    MSG_WARNING("Pythia generation return weight zero.");
+    return StatusCode::FAILURE;
+  }
+
+
+
   ParticleFilter filter( m_select, m_etaMax + .05, 0.7, 0.05 );
-  filter.filter(event);
+  filter.filter(m_pythia.event);
   
   // Make one-to-one correspondence between fastjet PseudoJet and Particle
   std::vector<fastjet::PseudoJet> input_particles;
@@ -44,18 +90,17 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_p
   fastjet::ClusterSequence clust_seq(input_particles,jet_def);
   // Apply filters
   auto inclusive_jets = sorted_by_pt( clust_seq.inclusive_jets() );
-  const float minPt=m_minPt; const float etaMax=m_etaMax;
+  
+  const float minPt=m_minPt/1.e3; const float etaMax=m_etaMax;
   inclusive_jets.erase(std::remove_if(inclusive_jets.begin(),
                                       inclusive_jets.end(),
                                       [minPt,etaMax](fastjet::PseudoJet& j){return (std::abs(j.eta()) > etaMax) || (j.pt() < minPt);}
                                      ), inclusive_jets.end());
 
   if ( inclusive_jets.empty() ){
+    MSG_WARNING("inclusive_jets.empty()");
     throw NotInterestingEvent();
   }
-
-  // Map back from the PseudoJet to particles
-  particles.clear();
 
   for ( const auto j : inclusive_jets ){
 
@@ -87,7 +132,13 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_p
     // If the total cluster energy is higher than the cut, than we 
     // can include these particles to the jet cluster vector
     if (etot > m_minPt){
-      main_particles.push_back( main_p );
+      seed_vec.push_back( xAOD::seed_t{ (float)main_p->eT(), 
+                                        (float)main_p->eta(), 
+                                        (float)main_p->phi(), 
+                                        (float)main_p->px(), 
+                                        (float)main_p->py(), 
+                                        (float)main_p->pz(),
+                                        main_p->id() } );
       particles.push_back( cluster );
     }
   }
@@ -95,16 +146,15 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_p
 
   // Print all particles and clusters
   int cx=0;
-  for ( auto pi : main_particles ){
+  for ( auto seed : seed_vec ){
     auto pj_vec = particles.at(cx);
     MSG_DEBUG( "======== Cluster " << cx << " ==========" );
-
     float etot=0.0;
     for ( auto pj : pj_vec ){
       etot+= pj->pT();
       MSG_DEBUG( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
     }
-    MSG_DEBUG( "Eta_center =" << pi->eta() << " Phi_center = " << pi->phi() << " Pt = " << etot );
+    MSG_DEBUG( "Eta_center =" << seed.eta << " Phi_center = " << seed.phi << " Pt = " << etot );
     MSG_DEBUG( "========================================" );
     cx++;
   }
@@ -112,6 +162,16 @@ StatusCode JF17::generate( Event &event, std::vector<Pythia8::Particle*> &main_p
 
   return StatusCode::SUCCESS;
 }
+
+
+
+StatusCode JF17::finalize()
+{
+  MSG_INFO( "Finalize the JF17 Event." );
+  m_pythia.stat();
+  return StatusCode::SUCCESS;
+}
+
 
 
 

@@ -1,6 +1,7 @@
 #include "CaloCellCollection.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/RawCell.h"
+#include "EventInfo/EventInfoContainer.h"
 #include "G4Kernel/constants.h"
 #include "CaloCellMaker.h"
 #include "TVector3.h"
@@ -19,6 +20,7 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
 
+  declareProperty( "EventKey"         , m_eventKey="EventInfo"                );
   declareProperty( "HistogramPath"    , m_histPath="/CaloCellMaker"           );
   declareProperty( "CaloCellFile"     , m_caloCellFile                        );
   declareProperty( "CollectionKey"    , m_collectionKey="CaloCellCollection"  );
@@ -178,11 +180,22 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
+  
+  // Event info
+  SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
+  
+  if( !event.isValid() ){
+    MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
+  }
+
+
+  auto evt = (**event.ptr()).front();
+
   for ( const auto& p : **collection.ptr() )
   {
     for ( auto tool : m_toolHandles )
     {
-      if( tool->executeTool( p.second ).isFailure() ){
+      if( tool->executeTool( evt, p.second ).isFailure() ){
         MSG_ERROR( "It's not possible to execute the tool with name " << tool->name() );
         return StatusCode::FAILURE;
       }

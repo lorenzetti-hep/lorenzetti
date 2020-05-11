@@ -4,6 +4,7 @@
 #include "src/ParticleFilter.h"
 #include "src/Zee.h"
 #include "src/JF17.h"
+#include "src/Cell.h"
 
 
 #ifdef __CINT__
@@ -19,6 +20,8 @@
 #pragma link C++ class EventReader+;
 #pragma link C++ class Zee+;
 #pragma link C++ class JF17+;
+#pragma link C++ class Cell+;
+#pragma link C++ class Physics+;
 
 
 #endif

@@ -14,8 +14,9 @@
 namespace xAOD{
 
 
-  struct seed_t{ float et; float eta; float phi; int pdgid; };
-  
+  struct seed_t{ float et; float eta; float phi; float px; float py; float pz; int pdgid; };
+ 
+
   class EventInfo
   {  
     public:

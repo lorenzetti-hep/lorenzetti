@@ -27,7 +27,7 @@ StatusCode ShowerShapes::finalize()
 }
 
 
-StatusCode ShowerShapes::executeTool( xAOD::CaloCluster* clus ) const
+StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::CaloCluster* clus ) const
 {
   MSG_DEBUG("Calculate shower shapes for this cluster." );
   
@@ -121,12 +121,6 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
 }
 
 
-// Just for python import in ROOT
-StatusCode ShowerShapes::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode ShowerShapes::executeTool( xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
-StatusCode ShowerShapes::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
-
-
 
 
 
@@ -155,6 +149,12 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample samplin
 
 
 
+
+
+// Just for python import in ROOT
+StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
+StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
+StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 
 
 

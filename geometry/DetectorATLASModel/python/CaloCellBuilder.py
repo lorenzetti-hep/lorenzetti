@@ -55,6 +55,7 @@ class CaloCellBuilder( Logger ):
 
       alg = CaloCellMaker("CaloCellMaker", 
                           CollectionKey           = recordable( config[0] ), 
+                          EventKey                = recordable( "EventInfo" ), 
                           CaloCellFile            = self.__basepath+config[1], 
                           BunchIdStart            = -8, # This shold be configurable for EM/HAD
                           BunchIdEnd              = 7, # This should be configurable for EM/HAD

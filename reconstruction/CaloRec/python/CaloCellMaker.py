@@ -10,6 +10,7 @@ from G4Kernel import treatPropertyValue
 class CaloCellMaker( Logger ):
 
   __allow_keys = ["CollectionKey", 
+                  "EventKey",
                   "OutputLevel", 
                   "CaloCellFile", 
                   "BunchIdStart",

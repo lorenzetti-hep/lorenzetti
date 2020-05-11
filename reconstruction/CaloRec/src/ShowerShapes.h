@@ -16,10 +16,10 @@ class ShowerShapes : public CaloTool
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
 
-    virtual StatusCode executeTool( xAOD::RawCell * ) const override;
-    virtual StatusCode executeTool( xAOD::CaloCell * ) const override;
-    virtual StatusCode executeTool( xAOD::CaloCluster * ) const override;
-    virtual StatusCode executeTool( xAOD::TruthParticle * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::RawCell * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const override;
 
 
   private:

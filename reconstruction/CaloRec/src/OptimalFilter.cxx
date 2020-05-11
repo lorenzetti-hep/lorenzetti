@@ -31,10 +31,12 @@ StatusCode OptimalFilter::finalize()
 
 
 
-StatusCode OptimalFilter::executeTool( xAOD::RawCell *cell ) const
+StatusCode OptimalFilter::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::RawCell *cell ) const
 {
 	auto pulse = cell->pulse();
 	float energy=0.0;
+
+  //float avgmu = evt->avgmu();
 
 	if( m_ofweights.size() != pulse.size() ){
 		MSG_ERROR( "The ofweights size its different than the pulse size." );
@@ -50,8 +52,8 @@ StatusCode OptimalFilter::executeTool( xAOD::RawCell *cell ) const
 
 
 // Just for python import in ROOT
-StatusCode OptimalFilter::executeTool( xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode OptimalFilter::executeTool( xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
-StatusCode OptimalFilter::executeTool( xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
+StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
+StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
+StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 
 

@@ -93,7 +93,7 @@ void ParticleGun::GeneratePrimaryVertex( G4Event* anEvent )
   m_gun->GeneratePrimaryVertex(anEvent);
 
   
-  xAOD::seed_t seed{et, (float)pos.PseudoRapidity(), (float)pos.Phi(), pdgid};
+  xAOD::seed_t seed{et, (float)pos.PseudoRapidity(), (float)pos.Phi(), (float)pos.x(), (float)pos.y(), (float)pos.z(), pdgid};
   evt->setEventNumber( m_evt );
   evt->setAvgmu( 0.0 );
   evt->push_back(seed);

@@ -222,7 +222,8 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
   {
     int bc_id = m_p_bc_id->at(i);
     if(m_p_pdg_id->at(i)==0){
-      event->push_back( xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i), 0} );
+      
+      event->push_back( xAOD::seed_t{m_p_et->at(i), m_p_eta->at(i), m_p_phi->at(i), m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i), 0} );
     }
     if( m_p_isMain->at(i) ){
       if(m_p_pdg_id->at(i)!=0){

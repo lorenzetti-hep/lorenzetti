@@ -1,17 +1,15 @@
-__all__ = ["Zee"]
+__all__ = ["Cell"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class Zee( Logger ):
+class Cell( Logger ):
 
   __allow_keys = [
-                "MainFile",
-                "EtaMax",
-                "MinPt",
-                "Seed",
+                "Eta",
+                "Phi",
                 "OutputLevel",
                 ]
 
@@ -20,9 +18,9 @@ class Zee( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import Zee
+    from ROOT import Cell
     # Create the algorithm
-    self.__core = Zee()
+    self.__core = Cell()
     for key, value in kw.items():
       self.setProperty( key,value )
 

@@ -1,28 +1,28 @@
-__all__ = ["Zee"]
+__all__ = ["RawNtupleMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class Zee( Logger ):
+class RawNtupleMaker( Logger ):
 
   __allow_keys = [
-                "MainFile",
-                "EtaMax",
-                "MinPt",
-                "Seed",
-                "OutputLevel",
-                ]
+                  "EventKey",
+                  "CellsKey", 
+                  "OutputLevel", 
+                  "NtupleName",
+                  ]
+
 
   def __init__( self, name, **kw ): 
     
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import Zee
-    # Create the algorithm
-    self.__core = Zee()
+    from ROOT import RawNtupleMaker
+    self.__core = RawNtupleMaker(name)
+
     for key, value in kw.items():
       self.setProperty( key,value )
 

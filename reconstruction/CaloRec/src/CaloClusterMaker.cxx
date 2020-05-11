@@ -143,7 +143,9 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     return particles;
   }
 
-  for ( auto& seed : (**event.ptr()).front()->allSeeds() )
+  auto *evt = (**event.ptr()).front();
+
+  for ( auto& seed : evt->allSeeds() )
   {
     const xAOD::CaloCell *hotcell=nullptr;
     float emaxs2 = 0.0;
@@ -185,7 +187,7 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
         MSG_DEBUG( "Creating one cluster since the center energy is higher than the energy cut" );
         clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
         fillCluster( ctx, clus, m_cellsKey );
-        m_showerShapes->executeTool( clus );
+        m_showerShapes->executeTool( evt, clus );
       }
     }else{
       MSG_DEBUG( "There is not hottest cell for this particle.");
