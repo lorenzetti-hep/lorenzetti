@@ -23,7 +23,7 @@ Description:
 
 Docker image for cluster usage based on Ubuntu 18.
 ```bash
-docker push jodafons/lorenzett
+docker pull jodafons/lorenzett
 ```
 
 
@@ -33,19 +33,27 @@ docker push jodafons/lorenzett
 
 Use this command to generate `Zee` events. To get the time clock system as seed use the argument `--seed 0`.
 ```bash
-generator.py --filter Zee -b minbias_zee_config.cmnd -m zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root
+generator.py --filter Zee -i zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root --pileupAvg 40 --bc_id_start -8 --bc_id_end 7
 ```
 To run the generator in parallel you must use this with the `prun_job` command. To run the `Zee` generation in parallel use this command:
 
 ```bash
-prun_job.py -c "generator.py --filter Zee -b minbias_zee_config.cmnd -m zee_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o zee.root
+prun_job.py -c "generator.py --filter Zee -i zee_config.cmnd --outputLevel 6 --seed 0 -evt 1000 -o zee.root --pileupAvg 40 --bc_id_start -8 --bc_id_end 7"
 ```
 > **NOTE**: Use this command to run the event `Zee` generatio with 1K events, 4 threads (`-mt`) and 10 jobs (`-n`).
 
 To run the `JF17` events use this command:
 ```bash
-prun_job.py -c "generator.py --filter JF17 -b minbias_jets_config.cmnd -m jets_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o jf17.root
+prun_job.py -c "generator.py --filter JF17 -i jets_config.cmnd --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o jf17.root --pileupAvg 40 --bc_id_start -8 --bc_id_end 7"
 ```
+
+To generate and collect minimum bias for the entiry calorimeter only just use:
+```bash
+prun_job.py -c "generator.py --filter MinimumBiasAll  --outputLevel 6 --seed 0 --evt 1000" -mt 4 -n 10 -o mb.root --pileupAvg 40 --bc_id_start -8 --bc_id_end 7"
+```
+
+> **Note**: If you would like to collect minimum bias for an especific calorimete region you just include the eta/phi region [here](https://github.com/jodafons/lorenzett/blob/master/scripts/generator.py#L112) and use the `--filter` with name `MinimumBias`.
+
 
 ### Reconstruction:
 
