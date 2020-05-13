@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Envs
+CPU_N=$(grep -c ^processor /proc/cpuinfo)
+
 # HEP local packages
 
 # ROOT
@@ -32,7 +35,7 @@ done
 
 cd /code/lorenzett 
 git pull
-mkdir build && cd build && cmake .. && make -j10 && cd .. && source setup.sh
+mkdir build && cd build && cmake .. && make -j$CPU_N && cd .. && source setup.sh
 
 
 
