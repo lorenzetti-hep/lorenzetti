@@ -125,11 +125,11 @@ ntuple = CaloNtupleMaker( "CaloNtupleMaker",
                           DumpCells       = True,
                           OutputLevel     = args.outputLevel)
 
-raw = RawNtupleMaker (  "RawNtuple Maker",
+raw = RawNtupleMaker (  "RawNtupleMaker",
                         EventKey        = recordable("EventInfo"),
-                        NtupleName      = recordable("raw.root"),
+                        NtupleName      = recordable("raw"),
                         CellsKey        = recordable("Cells"),
-                        OutputLevel     = args.outputLevel,
+                        OutputLevel     = args.outputLevel)
 
 gun.merge(acc)
 calorimeter.merge(acc)

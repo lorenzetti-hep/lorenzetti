@@ -229,6 +229,7 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
 
 
   }// Loop over all cells
+  std::cout << "Filling Raw..."<< std::endl;
 
   tree->Fill();
 }
