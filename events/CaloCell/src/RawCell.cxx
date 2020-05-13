@@ -44,7 +44,6 @@ RawCell::RawCell( float eta,
   float step  = m_bc_duration / m_bc_nsamples;
   int total   = ((m_bcid_end - m_bcid_start) + 1) * m_bc_nsamples;
   for (int t = 0; t < total; ++t) m_time.push_back( (start + step*t) );
-  std::cout << m_hash << std::endl;
 }
 
 
