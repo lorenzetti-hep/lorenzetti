@@ -7,7 +7,7 @@ from G4Kernel           import *
 from CaloRec            import CaloNtupleMaker
 from CaloRec            import CaloClusterMaker
 from CaloRingerBuilder  import *
-
+from CaloRec            import RawNtupleMaker
 import numpy as np
 import argparse
 import sys,os
@@ -59,10 +59,10 @@ from DetectorATLASModel import CaloCellBuilder
 
 
 
-acc = ComponentAccumulator("ComponentAccumulator", 
+acc = ComponentAccumulator("ComponentAccumulator",
                             ATLAS("GenericATLASDetector"),
-                            RunVis=args.visualization, 
-                            NumberOfThreads = args.numberOfThreads, 
+                            RunVis=args.visualization,
+                            NumberOfThreads = args.numberOfThreads,
                             OutputFile = args.outputFile)
 
 
@@ -72,7 +72,7 @@ gun = EventReader( "PythiaGenerator",
 
 
 
-calorimeter = CaloCellBuilder("CaloCellATLASBuilder", 
+calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
                               HistogramPath = "Expert/CaloCells",
                               OutputLevel   = args.outputLevel)
 
@@ -124,7 +124,12 @@ ntuple = CaloNtupleMaker( "CaloNtupleMaker",
                           DeltaR          = 0.15,
                           DumpCells       = True,
                           OutputLevel     = args.outputLevel)
-                          
+
+raw = RawNtupleMaker (  "RawNtuple Maker",
+                        EventKey        = recordable("EventInfo"),
+                        NtupleName      = recordable("raw.root"),
+                        CellsKey        = recordable("Cells"),
+                        OutputLevel     = args.outputLevel,
 
 gun.merge(acc)
 calorimeter.merge(acc)
@@ -132,6 +137,7 @@ acc+= cluster
 acc+= truth_ringer
 #acc+=ringer
 acc += ntuple
+acc += raw
 acc.run(args.numberOfEvents)
 
 
