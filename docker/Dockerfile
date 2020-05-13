@@ -50,7 +50,7 @@ RUN ln -sf /usr/bin/python3.6 /usr/bin/python
 
 # Install ROOT
 RUN cd /opt && git clone https://github.com/root-project/root.git && \
-cd root && git checkout v6-16-00 && mkdir buildthis && cd buildthis && cmake  --Dpython_version=3 .. && make -j16
+cd root && git checkout v6-16-00 && mkdir buildthis && cd buildthis && cmake  --Dpython_version=3 .. && make -j20
 ENV ROOTSYS "/opt/root/buildthis/"
 ENV PATH "$ROOTSYS/bin:$PATH"
 ENV LD_LIBRARY_PATH "$ROOTSYS/lib:$LD_LIBRARY_PATH"
@@ -60,7 +60,7 @@ ENV PYTHONPATH "/opt/root_cern/build/lib:$PYTHONPATH"
 # Install Geant4
 RUN apt-get install -y libxerces-c-dev
 RUN ls && cd /opt && git clone https://github.com/jodafons/geant4.git && cd geant4 && mkdir buildthis && cd buildthis && cmake -DGEANT4_INSTALL_DATA=ON \
- -DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON .. && make -j16 && \
+ -DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON .. && make -j20 && \
 cp ../scripts/geant4_10.5.1.sh geant4.sh && source geant4.sh
 
 
@@ -75,7 +75,9 @@ RUN cd /opt && git clone https://github.com/jodafons/pythia.git && cd pythia && 
 RUN apt install curl -y
 RUN cd /opt && curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.3.tar.gz && cd fastjet-3.3.3/ && ./configure && make -j10 && make install
 
-
+RUN pip3 install gaugi future
+RUN ls
+RUN mkdir /code && cd /code && git clone https://github.com/jodafons/lorenzett.git && cd lorenzett && source setup_module.sh && source setup_module.sh --head
 
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh

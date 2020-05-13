@@ -22,5 +22,17 @@ export FASTJET_LIBRARIES=/usr/local/lib
 export HEPMC_LIBRARIES=/usr/local/lib
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HEPMC_LIBRARIES
 
+export LD_PRELOAD=''
+for file in /opt/geant4/buildthis/BuildProducts/lib/*.so
+do
+  echo $file
+  export LD_PRELOAD=$file:$LD_PRELOAD
+done 
+
+
+cd /code/lorenzett 
+git pull
+mkdir build && cd build && cmake .. && make -j10 && cd .. && source setup.sh
+
 
 
