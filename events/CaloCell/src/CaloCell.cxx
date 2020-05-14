@@ -40,4 +40,3 @@ CaloLayer CaloCell::detector() const
     return CaloLayer::HCal;
 }
 
-
