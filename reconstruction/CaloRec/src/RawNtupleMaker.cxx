@@ -154,7 +154,7 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
   std::vector<float> *cell_energy      = nullptr;
   std::vector<int>   *cell_sampling    = nullptr;
   std::string        cell_hash                  ;
-  std::vector<float> *cell_samples     = nullptr;
+  std::vector<float> *cell_samples              ;
 
   InitBranch( tree,  "EventNumber"        , &eventNumber        );
   InitBranch( tree,  "avgmu"              , &avgmu              );
@@ -167,7 +167,7 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
   InitBranch( tree,  "cell_dphi"          , &cell_dphi          );
   InitBranch( tree,  "cell_energy"        , &cell_energy        );
   InitBranch( tree,  "cell_sampling"      , &cell_sampling      );
-  //  InitBranch( tree,  cell_hash.c_str()    , &cell_samples       );
+//  InitBranch( tree,  cell_hash.c_str()    , &cell_samples       );
   InitBranch( tree,  "cell_samples"       , &cell_samples       );
   
   MSG_DEBUG( "Link all branches..." );
@@ -225,13 +225,12 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
     cell_dphi->push_back( cell->deltaPhi() );
     cell_energy->push_back( cell->energy() );
     cell_sampling->push_back( (int)cell->sampling() );
-    for (auto it = raw->pulse().begin(); it!=raw->pulse().end(); it++) cell_samples->push_back(*it);
+    auto temp = raw->pulse();
+    cell_samples = & temp;
 
 
   }// Loop over all cells
-  std::cout << "Filling Raw..."<< std::endl;
 
   tree->Fill();
 }
-
 

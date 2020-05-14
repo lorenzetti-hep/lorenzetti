@@ -127,7 +127,6 @@ ntuple = CaloNtupleMaker( "CaloNtupleMaker",
 
 raw = RawNtupleMaker (  "RawNtupleMaker",
                         EventKey        = recordable("EventInfo"),
-                        NtupleName      = recordable("raw"),
                         CellsKey        = recordable("Cells"),
                         OutputLevel     = args.outputLevel)
 
@@ -136,8 +135,9 @@ calorimeter.merge(acc)
 acc+= cluster
 acc+= truth_ringer
 #acc+=ringer
-acc += ntuple
 acc += raw
+acc += ntuple
+
 acc.run(args.numberOfEvents)
 
 

@@ -15,7 +15,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../external/cpk/include)
 
 
 ROOT_GENERATE_DICTIONARY(CaloRecDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE CaloRec)
-                                      
+
 add_library(CaloRec  OBJECT ${SOURCES} CaloRecDict.cxx)
 install(FILES ${HEADERS}  DESTINATION CaloRec)
 
