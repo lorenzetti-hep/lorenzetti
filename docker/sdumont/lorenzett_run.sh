@@ -28,6 +28,11 @@ print_missing () {
     exit 0
 }
 
+if [ -z "$1" ]
+then
+print_usage
+fi
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -116,7 +121,11 @@ case ${FILTER} in
     ;;
     *)
     echo "Unknown option for --event, please choose one of the following: Zee, JF17"
+    exit 0
     ;;
+esac
 
 # Run commands
-prun_job.py -c "generator.py --filter $FILTER -i $CONFIG --outputLevel 6 --seed 0 --evt ${EVENT}"
+CPU_N=$(grep -c ^processor /proc/cpuinfo)
+prun_job.py -c "generator.py --filter $FILTER -i $CONFIG --outputLevel 6 --seed 0 --evt ${EVENT} --pileupAvg ${PILEUP} --bc_id_start ${BC_START} --bc_id_end ${BC_END}" -mt $CPU_N -n 10 -o generator_${OUTPUT}
+reco_trf.py -i generator_${OUTPUT} --outputLevel 6 -nt $CPU_N -o reco_${OUTPUT}
