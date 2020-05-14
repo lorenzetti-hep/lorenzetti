@@ -1,5 +1,7 @@
 # Lorenzett Event Simulator
 
+[![Build Status](https://travis-ci.org/jodafons/lorenzett.svg?branch=master)](https://travis-ci.org/jodafons/lorenzett)
+
 This is the first event generator for HEP using a generic calorimeter for machine learning 
 studies based on athena framework.
 
