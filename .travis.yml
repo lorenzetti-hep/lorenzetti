@@ -1,0 +1,12 @@
+language: python
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build --compress -t gabrielmilan/lorenzett:sdumont -f docker/sdumont/Dockerfile docker/sdumont/
+  - docker build --compress -t gabrielmilan/lorenzett:latest -f docker/base/Dockerfile docker/base/
+
+script:
+  - docker run -v $PWD:/output gabrielmilan/lorenzett:sdumont -f Zee -e 1 -p 0 -o first_test.root --bc_id_start -8 --bc_id_end 7
