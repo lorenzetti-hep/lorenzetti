@@ -42,33 +42,15 @@ StatusCode RawNtupleMaker::bookHistograms( StoreGate &store ) const
   // Create all local variables since this must be a const method
   int eventNumber         = -1;
   float avgmu             = -1;
-  float seed_eta          = -1;
-  float seed_phi          = -1;
-  
-  std::vector<float> cell_et          ;
-  std::vector<float> cell_eta         ;
-  std::vector<float> cell_phi         ;
-  std::vector<float> cell_deta        ;
-  std::vector<float> cell_dphi        ;
-  std::vector<float> cell_energy      ;
-  std::vector<int>   mc_cell_sampling ; 
-  std::vector<int>   cell_sampling    ;
+  std::vector<cell_t> cells;
  
   store.cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   
   tree->Branch(  "EventNumber"        , &eventNumber        );
   tree->Branch(  "avgmu"              , &avgmu              );
-  tree->Branch(  "seed_eta"           , &seed_eta           );
-  tree->Branch(  "seed_phi"           , &seed_phi           );
+  tree->Branch(  "cells",               &cells         );
   
-  tree->Branch(  "cell_et"            , &cell_et            );
-  tree->Branch(  "cell_eta"           , &cell_eta           );
-  tree->Branch(  "cell_phi"           , &cell_phi           );
-  tree->Branch(  "cell_deta"          , &cell_deta          );
-  tree->Branch(  "cell_dphi"          , &cell_dphi          );
-  tree->Branch(  "cell_energy"        , &cell_energy        );
-  tree->Branch(  "cell_sampling"      , &cell_sampling      );
  
 
   store.add( tree );
@@ -139,45 +121,13 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
   // Create all local variables since this must be a const method
   int   eventNumber    ;
   float avgmu          ;
-  float seed_eta       ;
-  float seed_phi       ;
-  
-  std::vector<float> *cell_et          = nullptr;
-  std::vector<float> *cell_eta         = nullptr;
-  std::vector<float> *cell_phi         = nullptr;
-  std::vector<float> *cell_deta        = nullptr;
-  std::vector<float> *cell_dphi        = nullptr;
-  std::vector<float> *cell_energy      = nullptr;
-  std::vector<int>   *cell_sampling    = nullptr;
-  
+  std::vector<cell_t> *cells        = nullptr;
 
   InitBranch( tree,  "EventNumber"        , &eventNumber        );
   InitBranch( tree,  "avgmu"              , &avgmu              );
-  InitBranch( tree,  "seed_eta"           , &seed_eta           );
-  InitBranch( tree,  "seed_phi"           , &seed_phi           );
-  InitBranch( tree,  "cell_et"            , &cell_et            );
-  InitBranch( tree,  "cell_eta"           , &cell_eta           );
-  InitBranch( tree,  "cell_phi"           , &cell_phi           );
-  InitBranch( tree,  "cell_deta"          , &cell_deta          );
-  InitBranch( tree,  "cell_dphi"          , &cell_dphi          );
-  InitBranch( tree,  "cell_energy"        , &cell_energy        );
-  InitBranch( tree,  "cell_sampling"      , &cell_sampling      );
+  InitBranch( tree,  "cells"              , &cells);
   
   MSG_DEBUG( "Link all branches..." );
-
-  seed_eta            = 0;
-  seed_phi            = 0;
-  
-  cell_et->clear()         ;
-  cell_eta->clear()        ;
-  cell_phi->clear()        ;
-  cell_deta->clear()       ;
-  cell_dphi->clear()       ;
-  cell_energy->clear()     ;
-  cell_sampling->clear()   ;
-
-
-
 
 
   // Event info
@@ -205,22 +155,14 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
   
   for ( const auto cell : **container.ptr() ){
 
-    //auto raw = cell->parent();
-
+    auto raw = cell->parent();
+    cell_t cellD{cell->eta(), cell->phi(), cell->deltaEta(), cell->deltaPhi(), raw->bcid_start(), raw->bcid_end(), raw->bc_nsamples(), raw->bc_duration(), raw->pulse(), raw->rawEnergySamples(), cell->sampling()};
     // Make something here...
-
-    cell_et->push_back( cell->et() );
-    cell_eta->push_back( cell->eta() );
-    cell_phi->push_back( cell->phi() );
-    cell_deta->push_back( cell->deltaEta() );
-    cell_dphi->push_back( cell->deltaPhi() );
-    cell_energy->push_back( cell->energy() );
-    cell_sampling->push_back( (int)cell->sampling() );
-
+    
+    cells->push_back(cellD); 
 
   }// Loop over all cells
 
   tree->Fill();
 }
-
 

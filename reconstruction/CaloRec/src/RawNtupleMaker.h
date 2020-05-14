@@ -10,6 +10,20 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 
+struct cell_t {
+           float eta;
+           float phi;
+           float deta;
+           float dphi;
+           int bcid_start;
+           int bcid_end;
+           int bc_nsamples;
+           float bc_duration;
+           std::vector<float> pulse;
+           std::vector<float> rawEnergySamples;
+           int sampling;
+   };
+
 class RawNtupleMaker : public Gaugi::Algorithm
 {
 
