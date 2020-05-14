@@ -25,6 +25,7 @@
 #pragma link C++ class CaloClusterMaker+;
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
-
+#pragma link C++ struct cell_t+;
+#pragma link C++ class std::vector< cell_t >+;
 
 #endif
