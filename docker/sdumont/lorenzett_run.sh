@@ -127,5 +127,6 @@ esac
 
 # Run commands
 CPU_N=$(grep -c ^processor /proc/cpuinfo)
-prun_job.py -c "generator.py --filter $FILTER -i $CONFIG --outputLevel 6 --seed 0 --evt ${EVENT} --pileupAvg ${PILEUP} --bc_id_start ${BC_START} --bc_id_end ${BC_END}" -mt $CPU_N -n 10 -o generator_${OUTPUT}
-reco_trf.py -i generator_${OUTPUT} --outputLevel 6 -nt $CPU_N -o reco_${OUTPUT}
+source setup_envs.sh
+prun_job.py -c "generator.py --filter $FILTER -i $CONFIG --outputLevel 6 --seed 0 --evt ${EVENT} --pileupAvg ${PILEUP} --bc_id_start ${BC_START} --bc_id_end ${BC_END}" -mt $CPU_N -n 10 -o /output/generator_${OUTPUT}
+reco_trf.py -i /output/generator_${OUTPUT} --outputLevel 6 -nt $CPU_N -o /output/reco_${OUTPUT}
