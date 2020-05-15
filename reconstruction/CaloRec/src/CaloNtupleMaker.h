@@ -10,6 +10,17 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 
+struct cell_t {
+  float et;
+  float energy;
+  float eta;
+  float phi;
+  float deta;
+  float dphi;
+  int sampling;
+};
+
+
 class CaloNtupleMaker : public Gaugi::Algorithm
 {
 

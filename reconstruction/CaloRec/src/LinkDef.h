@@ -26,6 +26,8 @@
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
 #pragma link C++ struct cell_t+;
+#pragma link C++ struct raw_cell_t+;
 #pragma link C++ class std::vector< cell_t >+;
+#pragma link C++ class std::vector< raw_cell_t >+;
 
 #endif

@@ -1,4 +1,4 @@
-
+#include "G4Kernel/CaloPhiRange.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloRings/CaloRingsContainer.h"
@@ -21,7 +21,9 @@ RawNtupleMaker::RawNtupleMaker( std::string name ) :
   declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
   declareProperty( "CellsKey"       , m_cellsKey="Cells"                );
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
-  declareProperty( "NtupleName"     , m_ntupleName="raw"                );
+  declareProperty( "NtupleName"     , m_ntupleName="raw_events"         );
+  declareProperty( "EtaWindow"      , m_etaWindow=0.4                   );
+  declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
 }
 
 
@@ -42,16 +44,18 @@ StatusCode RawNtupleMaker::bookHistograms( StoreGate &store ) const
   // Create all local variables since this must be a const method
   int eventNumber         = -1;
   float avgmu             = -1;
-  std::vector<cell_t> cells;
+  float seed_eta          = -1;
+  float seed_phi          = -1;
+  std::vector<raw_cell_t> cells;
  
   store.cd();
-  TTree *tree = new TTree(m_ntupleName.c_str(), "");
+  TTree *tree = new TTree( m_ntupleName.c_str(), "");
   
   tree->Branch(  "EventNumber"        , &eventNumber        );
   tree->Branch(  "avgmu"              , &avgmu              );
-  tree->Branch(  "cells",               &cells         );
-  
- 
+  tree->Branch(  "seed_eta"           , &seed_eta           );
+  tree->Branch(  "seed_phi"           , &seed_phi           );
+  tree->Branch(  "cells",               &cells              );
 
   store.add( tree );
   
@@ -83,9 +87,6 @@ StatusCode RawNtupleMaker::post_execute( EventContext &/*ctx*/ ) const
 }
 
 
-
-
-
 StatusCode RawNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store ) const
 {
   store.cd();
@@ -95,6 +96,7 @@ StatusCode RawNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store 
 
   return StatusCode::SUCCESS;
 }
+
 
 
 template <class T>
@@ -113,19 +115,21 @@ void RawNtupleMaker::InitBranch(TTree* fChain, std::string branch_name, T* param
 }
 
 
-
-
-
 void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
 {
   // Create all local variables since this must be a const method
   int   eventNumber    ;
   float avgmu          ;
-  std::vector<cell_t> *cells        = nullptr;
+  float seed_eta       ;
+  float seed_phi       ;
+
+  std::vector<raw_cell_t> *cells = nullptr;
 
   InitBranch( tree,  "EventNumber"        , &eventNumber        );
   InitBranch( tree,  "avgmu"              , &avgmu              );
-  InitBranch( tree,  "cells"              , &cells);
+  InitBranch( tree,  "seed_eta"           , &seed_eta           );
+  InitBranch( tree,  "seed_phi"           , &seed_phi           );
+  InitBranch( tree,  "cells"              , &cells              );
   
   MSG_DEBUG( "Link all branches..." );
 
@@ -145,24 +149,38 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
   }
 
 
+  auto seeds = (**event.ptr()).front()->allSeeds() ;
 
-  avgmu = (**event.ptr()).front()->avgmu();
-  eventNumber = (**event.ptr()).front()->eventNumber();
-
-
-  //auto seeds = (**event.ptr()).front()->allSeeds();
+  for ( auto& seed : seeds ){
   
-  
-  for ( const auto cell : **container.ptr() ){
+    cells->clear();
+    avgmu = (**event.ptr()).front()->avgmu();
+    eventNumber = (**event.ptr()).front()->eventNumber();
 
-    auto raw = cell->parent();
-    cell_t cellD{cell->eta(), cell->phi(), cell->deltaEta(), cell->deltaPhi(), raw->bcid_start(), raw->bcid_end(), raw->bc_nsamples(), raw->bc_duration(), raw->pulse(), raw->rawEnergySamples(), cell->sampling()};
-    // Make something here...
-    
-    cells->push_back(cellD); 
+    seed_eta = seed.eta;
+    seed_phi = seed.phi;
 
-  }// Loop over all cells
+    for ( const auto cell : **container.ptr() ){
 
-  tree->Fill();
+      float deltaEta = std::abs( seed.eta - cell->eta() );
+      float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , cell->phi() ));
+      
+      if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
+      {
+        auto raw = cell->parent();
+        raw_cell_t obj{ cell->eta(), cell->phi(), cell->deltaEta(), cell->deltaPhi(), 
+                        raw->bcid_start(), raw->bcid_end(), raw->bc_nsamples(), raw->bc_duration(), 
+                        raw->pulse(), raw->rawEnergySamples(), cell->sampling()};
+        // Make something here...
+        cells->push_back(obj); 
+      }
+
+    }// Loop over all cells
+
+    tree->Fill();
+
+  }// Loop over all seeds
+
+
 }
 

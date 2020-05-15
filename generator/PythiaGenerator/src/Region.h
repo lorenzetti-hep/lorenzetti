@@ -1,15 +1,15 @@
-#ifndef Cell_h
-#define Cell_h
+#ifndef Region_h
+#define Region_h
 
 #include "Pythia8/Pythia.h"
 #include "EventGenerator.h"
 
 
-class Cell : public Physics
+class Region : public Physics
 {
   public:
-    Cell();
-    ~Cell()=default;
+    Region();
+    ~Region()=default;
 
     virtual StatusCode initialize() override;
     virtual StatusCode run( std::vector<xAOD::seed_t>&, std::vector<std::vector<Pythia8::Particle*>> &) override;

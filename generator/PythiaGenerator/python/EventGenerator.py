@@ -32,7 +32,7 @@ class EventGenerator( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import EventGenerator
+    from ROOT import RunManager, EventGenerator
     # Create the algorithm
     self.__core = EventGenerator()
     for key, value in kw.items():

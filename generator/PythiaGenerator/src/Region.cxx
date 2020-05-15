@@ -1,11 +1,11 @@
-#include "Cell.h"
+#include "Region.h"
 #include "EventInfo/EventInfo.h"
 
 using namespace Pythia8;
 
 
-Cell::Cell():
-  IMsgService("Cell"),
+Region::Region():
+  IMsgService("Region"),
   Physics()
 {
   declareProperty( "Eta"            , m_eta                 );
@@ -16,14 +16,14 @@ Cell::Cell():
 
 
 
-StatusCode Cell::initialize()
+StatusCode Region::initialize()
 {
   return StatusCode::SUCCESS;
 }
 
 
 
-StatusCode Cell::run( std::vector<xAOD::seed_t> &seed_vec,  std::vector<std::vector<Particle*>> &particles )
+StatusCode Region::run( std::vector<xAOD::seed_t> &seed_vec,  std::vector<std::vector<Particle*>> &particles )
 {
   std::vector<Particle*> vec;
   // Add any particles
@@ -35,7 +35,7 @@ StatusCode Cell::run( std::vector<xAOD::seed_t> &seed_vec,  std::vector<std::vec
 
 
 
-StatusCode Cell::finalize()
+StatusCode Region::finalize()
 {
   return StatusCode::SUCCESS;
 }

@@ -106,17 +106,25 @@ elif args.filter == "JF17":
 
 elif args.filter == "MinimumBias":
 
+  generator.setProperty("MinbiasDeltaEta",  0.22 )
+  generator.setProperty("MinbiasDeltaPhi",  0.22 )
+
   # To collect using this cell position
-  from PythiaGenerator import Cell
-  cells = [ 
-            Cell("Cell", Eta=0.001625 , Phi=1.52170894 ), # (0,1,0)
+  from PythiaGenerator import Region
+  regions = [ 
+            # -0.22 to 0.22
+            Region("Region_1", Eta=0.0, Phi=1.52170894 ),
+            # 0.28 to 0.72
+            #Region("Region_2", Eta=0.5, Phi=1.52170894 ),
           ]
-  for cell in cells:
-    generator.push_back(cell)
+
+  for region in regions:
+    generator.push_back(region)
 
 
 
 elif args.filter == "MinimumBiasAll":
+  generator.setProperty("EtaMax", 0.8 )
   generator.setProperty("UseWindow", False)
 
 else:

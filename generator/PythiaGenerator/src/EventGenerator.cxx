@@ -251,8 +251,8 @@ StatusCode EventGenerator::addPileup( std::vector<xAOD::seed_t> seed_vec )
             }
           }
         }else{
-          minbias_vec.push_back( p );
-
+          if (abs(p->eta()) < m_etaMax )
+            minbias_vec.push_back( p );
         }
 
 

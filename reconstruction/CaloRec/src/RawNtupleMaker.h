@@ -10,19 +10,21 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 
-struct cell_t {
-           float eta;
-           float phi;
-           float deta;
-           float dphi;
-           int bcid_start;
-           int bcid_end;
-           int bc_nsamples;
-           float bc_duration;
-           std::vector<float> pulse;
-           std::vector<float> rawEnergySamples;
-           int sampling;
-   };
+struct raw_cell_t {
+  float eta;
+  float phi;
+  float deta;
+  float dphi;
+  int bcid_start;
+  int bcid_end;
+  int bc_nsamples;
+  float bc_duration;
+  std::vector<float> pulse;
+  std::vector<float> rawEnergySamples;
+  int sampling;
+};
+
+
 
 class RawNtupleMaker : public Gaugi::Algorithm
 {
@@ -51,9 +53,11 @@ class RawNtupleMaker : public Gaugi::Algorithm
 
   private:
  
+    void Fill( SG::EventContext &ctx , TTree *tree  ) const;
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
-    void Fill( SG::EventContext &ctx , TTree *tree ) const;
-    
+   
+    float m_etaWindow;
+    float m_phiWindow;
     std::string m_ntupleName;
     std::string m_eventKey;
     std::string m_cellsKey;

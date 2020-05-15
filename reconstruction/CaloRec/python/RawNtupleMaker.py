@@ -9,7 +9,9 @@ class RawNtupleMaker( Logger ):
 
   __allow_keys = [
                   "EventKey",
-                  "CellsKey", 
+                  "CellsKey",
+                  "EtaWindow",
+                  "PhiWindow",
                   "OutputLevel", 
                   "NtupleName",
                   ]
