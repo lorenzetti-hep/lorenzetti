@@ -4,9 +4,6 @@ from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 from PythiaGenerator    import EventReader
 from G4Kernel           import *
-from CaloRec            import CaloNtupleMaker
-from CaloRec            import CaloClusterMaker
-from CaloRingerBuilder  import *
 from CaloRec            import RawNtupleMaker
 import numpy as np
 import argparse
@@ -78,65 +75,17 @@ calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
 
 
 
-cluster = CaloClusterMaker( "TruthCaloClusterMaker",
-                            CellsKey        = recordable("TruthCells"),
-                            EventKey        = recordable("EventInfo"),
-                            ClusterKey      = recordable("TruthClusters"),
-                            TruthKey        = recordable("Truth"),
-                            EtaWindow       = 0.4,
-                            PhiWindow       = 0.4,
-                            HistogramPath   = "Expert/TruthClusters",
-                            OutputLevel     = args.outputLevel)
 
-
-
-
-pi = np.pi
-#ringer = CaloRingerBuilder( "CaloRingerBuilder",
-#                            RingerKey     = recordable("Rings"),
-#                            ClusterKey    = recordable("Clusters"),
-#                            DeltaEtaRings = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-#                            DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-#                            NRings        = [64, 8, 8, 4, 4, 4],
-#                            LayerRings    = [1,2,3,4,5,6],
-#                            HistogramPath = "Expert/Ringer",
-#                            OutputLevel   = args.outputLevel)
-
-
-truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
-                                  RingerKey       = recordable("TruthRings"),
-                                  ClusterKey      = recordable("TruthClusters"),
-                                  DeltaEtaRings   = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                                  DeltaPhiRings   = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                                  NRings          = [64, 8, 8, 4, 4, 4],
-                                  LayerRings      = [1,2,3,4,5,6],
-                                  HistogramPath   = "Expert/TruthRinger",
-                                  OutputLevel     = args.outputLevel)
-
-
-
-ntuple = CaloNtupleMaker( "CaloNtupleMaker",
-                          EventKey        = recordable("EventInfo"),
-                          RingerKey       = recordable("Rings"),
-                          TruthRingerKey  = recordable("TruthRings"),
-                          ClusterKey      = recordable("Clusters"),
-                          TruthClusterKey = recordable("TruthClusters"),
-                          DeltaR          = 0.15,
-                          DumpCells       = True,
-                          OutputLevel     = args.outputLevel)
-
-
-
-
-
+raw = RawNtupleMaker (  "RawNtupleMaker",
+                        EventKey        = recordable("EventInfo"),
+                        CellsKey        = recordable("Cells"),
+                        EtaWindow       = 0.4,
+                        PhiWindow       = 0.4,
+                        OutputLevel     = args.outputLevel)
 
 gun.merge(acc)
 calorimeter.merge(acc)
-acc+= cluster
-acc+= truth_ringer
-#acc+=ringer
-acc += ntuple
-
+acc += raw
 acc.run(args.numberOfEvents)
 
 
