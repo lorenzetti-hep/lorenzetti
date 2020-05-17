@@ -43,11 +43,6 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
   // Get all energies for each bunch crossing 
   auto rawEnergySamples = cell->rawEnergySamples();
 
-  //std::cout << "RawEnergySamples = ";
-  //for (auto v : rawEnergySamples )
-  //  std::cout << v << " ";
-  //std::cout << std::endl;
-
   // Create an pulse with zeros with n samples
   std::vector<float> pulse_sum(pulse_size, 0.0);
   // Loop over each bunch crossing
@@ -62,6 +57,7 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
       pulse_sum[j] += (float)pulse->operator[](j);
     delete pulse; // This must be deleted to avoid memory leak since spk uses "new" internally
   }
+
 
   // Add the pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );

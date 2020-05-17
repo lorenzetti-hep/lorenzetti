@@ -126,6 +126,13 @@ ntuple = CaloNtupleMaker( "CaloNtupleMaker",
                           OutputLevel     = args.outputLevel)
 
 
+#raw = RawNtupleMaker (  "RawNtupleMaker",
+#                        EventKey        = recordable("EventInfo"),
+#                        CellsKey        = recordable("Cells"),
+#                        EtaWindow       = 0.4,
+#                        PhiWindow       = 0.4,
+#                        OutputLevel     = args.outputLevel)
+
 
 
 
@@ -136,7 +143,7 @@ acc+= cluster
 acc+= truth_ringer
 #acc+=ringer
 acc += ntuple
-
+#acc += raw
 acc.run(args.numberOfEvents)
 
 

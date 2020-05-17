@@ -77,6 +77,16 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   float mc_cl_emaxs1      = -1;
   float mc_cl_e2tsts1     = -1;
   bool  mc_cl_ringer_match=false;
+  
+  std::vector<float> mc_cl_rings         ;
+  std::vector<float> mc_cl_cell_et       ;
+  std::vector<float> mc_cl_cell_eta      ;
+  std::vector<float> mc_cl_cell_phi      ;
+  std::vector<float> mc_cl_cell_deta     ;
+  std::vector<float> mc_cl_cell_dphi     ;
+  std::vector<float> mc_cl_cell_energy   ;
+  std::vector<int>   mc_cl_cell_sampling ; 
+  
   bool  cl_match          = false;
   float cl_eta            = -1;
   float cl_phi            = -1;
@@ -104,23 +114,16 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   float cl_e2tsts1        = -1;
   bool  cl_ringer_match   =false;
 
-  std::vector<float> mc_cl_rings      ;
-  std::vector<float> cl_rings         ;
-  std::vector<float> mc_cell_et       ;
-  std::vector<float> mc_cell_eta      ;
-  std::vector<float> mc_cell_phi      ;
-  std::vector<float> mc_cell_deta     ;
-  std::vector<float> mc_cell_dphi     ;
-  std::vector<float> mc_cell_energy   ;
-  std::vector<float> cell_et          ;
-  std::vector<float> cell_eta         ;
-  std::vector<float> cell_phi         ;
-  std::vector<float> cell_deta        ;
-  std::vector<float> cell_dphi        ;
-  std::vector<float> cell_energy      ;
-  std::vector<int>   mc_cell_sampling ; 
-  std::vector<int>   cell_sampling    ;
- 
+  std::vector<float> cl_rings            ;
+  std::vector<float> cl_cell_et          ;
+  std::vector<float> cl_cell_eta         ;
+  std::vector<float> cl_cell_phi         ;
+  std::vector<float> cl_cell_deta        ;
+  std::vector<float> cl_cell_dphi        ;
+  std::vector<float> cl_cell_energy      ;
+  std::vector<int>   cl_cell_sampling    ;
+
+
   store.cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   
@@ -156,13 +159,14 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "mc_cl_e2tsts1"      , &mc_cl_e2tsts1      );
   tree->Branch(  "mc_cl_ringer_match" , &mc_cl_ringer_match );
   tree->Branch(  "mc_cl_rings"        , &mc_cl_rings        );
-  tree->Branch(  "mc_cell_et"         , &mc_cell_et         );
-  tree->Branch(  "mc_cell_eta"        , &mc_cell_eta        );
-  tree->Branch(  "mc_cell_phi"        , &mc_cell_phi        );
-  tree->Branch(  "mc_cell_deta"       , &mc_cell_deta       );
-  tree->Branch(  "mc_cell_dphi"       , &mc_cell_dphi       );
-  tree->Branch(  "mc_cell_energy"     , &mc_cell_energy     );
-  tree->Branch(  "mc_cell_sampling"   , &mc_cell_sampling   );
+  tree->Branch(  "mc_cl_cell_et"      , &mc_cl_cell_et      );
+  tree->Branch(  "mc_cl_cell_eta"     , &mc_cl_cell_eta     );
+  tree->Branch(  "mc_cl_cell_phi"     , &mc_cl_cell_phi     );
+  tree->Branch(  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
+  tree->Branch(  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
+  tree->Branch(  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
+  tree->Branch(  "mc_cl_cell_sampling", &mc_cl_cell_sampling);
+
   tree->Branch(  "cl_match"           , &cl_match           );
   tree->Branch(  "cl_eta"             , &cl_eta             );
   tree->Branch(  "cl_phi"             , &cl_phi             );
@@ -190,13 +194,13 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "cl_e2tsts1"         , &cl_e2tsts1         );
   tree->Branch(  "cl_ringer_match"    , &cl_ringer_match    );
   tree->Branch(  "cl_rings"           , &cl_rings           );
-  tree->Branch(  "cell_et"            , &cell_et            );
-  tree->Branch(  "cell_eta"           , &cell_eta           );
-  tree->Branch(  "cell_phi"           , &cell_phi           );
-  tree->Branch(  "cell_deta"          , &cell_deta          );
-  tree->Branch(  "cell_dphi"          , &cell_dphi          );
-  tree->Branch(  "cell_energy"        , &cell_energy        );
-  tree->Branch(  "cell_sampling"      , &cell_sampling      );
+  tree->Branch(  "cl_cell_et"         , &cl_cell_et         );
+  tree->Branch(  "cl_cell_eta"        , &cl_cell_eta        );
+  tree->Branch(  "cl_cell_phi"        , &cl_cell_phi        );
+  tree->Branch(  "cl_cell_deta"       , &cl_cell_deta       );
+  tree->Branch(  "cl_cell_dphi"       , &cl_cell_dphi       );
+  tree->Branch(  "cl_cell_energy"     , &cl_cell_energy     );
+  tree->Branch(  "cl_cell_sampling"   , &cl_cell_sampling   );
  
 
   store.add( tree );
@@ -332,22 +336,22 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   float cl_e2tsts1     ;
   bool  cl_ringer_match;
 
-  std::vector<float> *mc_cl_rings      = nullptr;
-  std::vector<float> *cl_rings         = nullptr;
-  std::vector<float> *mc_cell_et       = nullptr;
-  std::vector<float> *mc_cell_eta      = nullptr;
-  std::vector<float> *mc_cell_phi      = nullptr;
-  std::vector<float> *mc_cell_deta     = nullptr;
-  std::vector<float> *mc_cell_dphi     = nullptr;
-  std::vector<float> *mc_cell_energy   = nullptr;
-  std::vector<int>   *mc_cell_sampling = nullptr;
-  std::vector<float> *cell_et          = nullptr;
-  std::vector<float> *cell_eta         = nullptr;
-  std::vector<float> *cell_phi         = nullptr;
-  std::vector<float> *cell_deta        = nullptr;
-  std::vector<float> *cell_dphi        = nullptr;
-  std::vector<float> *cell_energy      = nullptr;
-  std::vector<int>   *cell_sampling    = nullptr;
+  std::vector<float> *mc_cl_rings         = nullptr;
+  std::vector<float> *cl_rings            = nullptr;
+  std::vector<float> *mc_cl_cell_et       = nullptr;
+  std::vector<float> *mc_cl_cell_eta      = nullptr;
+  std::vector<float> *mc_cl_cell_phi      = nullptr;
+  std::vector<float> *mc_cl_cell_deta     = nullptr;
+  std::vector<float> *mc_cl_cell_dphi     = nullptr;
+  std::vector<float> *mc_cl_cell_energy   = nullptr;
+  std::vector<int>   *mc_cl_cell_sampling = nullptr;
+  std::vector<float> *cl_cell_et          = nullptr;
+  std::vector<float> *cl_cell_eta         = nullptr;
+  std::vector<float> *cl_cell_phi         = nullptr;
+  std::vector<float> *cl_cell_deta        = nullptr;
+  std::vector<float> *cl_cell_dphi        = nullptr;
+  std::vector<float> *cl_cell_energy      = nullptr;
+  std::vector<int>   *cl_cell_sampling    = nullptr;
   
 
   InitBranch( tree,  "EventNumber"        , &eventNumber        );
@@ -382,13 +386,13 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   InitBranch( tree,  "mc_cl_e2tsts1"      , &mc_cl_e2tsts1      );
   InitBranch( tree,  "mc_cl_ringer_match" , &mc_cl_ringer_match );
   InitBranch( tree,  "mc_cl_rings"        , &mc_cl_rings        );
-  InitBranch( tree,  "mc_cell_et"         , &mc_cell_et         );
-  InitBranch( tree,  "mc_cell_eta"        , &mc_cell_eta        );
-  InitBranch( tree,  "mc_cell_phi"        , &mc_cell_phi        );
-  InitBranch( tree,  "mc_cell_deta"       , &mc_cell_deta       );
-  InitBranch( tree,  "mc_cell_dphi"       , &mc_cell_dphi       );
-  InitBranch( tree,  "mc_cell_energy"     , &mc_cell_energy     );
-  InitBranch( tree,  "mc_cell_sampling"   , &mc_cell_sampling   );
+  InitBranch( tree,  "mc_cl_cell_et"      , &mc_cl_cell_et      );
+  InitBranch( tree,  "mc_cl_cell_eta"     , &mc_cl_cell_eta     );
+  InitBranch( tree,  "mc_cl_cell_phi"     , &mc_cl_cell_phi     );
+  InitBranch( tree,  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
+  InitBranch( tree,  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
+  InitBranch( tree,  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
+  InitBranch( tree,  "mc_cl_cell_sampling", &mc_cl_cell_sampling);
   InitBranch( tree,  "cl_match"           , &cl_match           );
   InitBranch( tree,  "cl_eta"             , &cl_eta             );
   InitBranch( tree,  "cl_phi"             , &cl_phi             );
@@ -416,13 +420,13 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   InitBranch( tree,  "cl_e2tsts1"         , &cl_e2tsts1         );
   InitBranch( tree,  "cl_ringer_match"    , &cl_ringer_match    );
   InitBranch( tree,  "cl_rings"           , &cl_rings           );
-  InitBranch( tree,  "cell_et"            , &cell_et            );
-  InitBranch( tree,  "cell_eta"           , &cell_eta           );
-  InitBranch( tree,  "cell_phi"           , &cell_phi           );
-  InitBranch( tree,  "cell_deta"          , &cell_deta          );
-  InitBranch( tree,  "cell_dphi"          , &cell_dphi          );
-  InitBranch( tree,  "cell_energy"        , &cell_energy        );
-  InitBranch( tree,  "cell_sampling"      , &cell_sampling      );
+  InitBranch( tree,  "cl_cell_et"         , &cl_cell_et         );
+  InitBranch( tree,  "cl_cell_eta"        , &cl_cell_eta        );
+  InitBranch( tree,  "cl_cell_phi"        , &cl_cell_phi        );
+  InitBranch( tree,  "cl_cell_deta"       , &cl_cell_deta       );
+  InitBranch( tree,  "cl_cell_dphi"       , &cl_cell_dphi       );
+  InitBranch( tree,  "cl_cell_energy"     , &cl_cell_energy     );
+  InitBranch( tree,  "cl_cell_sampling"   , &cl_cell_sampling   );
   
   MSG_DEBUG( "Link all branches..." );
 
@@ -487,20 +491,20 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
 
   mc_cl_rings->clear()     ;
   cl_rings->clear()        ;
-  mc_cell_et->clear()      ;
-  mc_cell_eta->clear()     ;
-  mc_cell_phi->clear()     ;
-  mc_cell_deta->clear()    ;
-  mc_cell_dphi->clear()    ;
-  mc_cell_energy->clear()  ;
-  mc_cell_sampling->clear();
-  cell_et->clear()         ;
-  cell_eta->clear()        ;
-  cell_phi->clear()        ;
-  cell_deta->clear()       ;
-  cell_dphi->clear()       ;
-  cell_energy->clear()     ;
-  cell_sampling->clear()   ;
+  mc_cl_cell_et->clear()      ;
+  mc_cl_cell_eta->clear()     ;
+  mc_cl_cell_phi->clear()     ;
+  mc_cl_cell_deta->clear()    ;
+  mc_cl_cell_dphi->clear()    ;
+  mc_cl_cell_energy->clear()  ;
+  mc_cl_cell_sampling->clear();
+  cl_cell_et->clear()         ;
+  cl_cell_eta->clear()        ;
+  cl_cell_phi->clear()        ;
+  cl_cell_deta->clear()       ;
+  cl_cell_dphi->clear()       ;
+  cl_cell_energy->clear()     ;
+  cl_cell_sampling->clear()   ;
 
   eventNumber = evt;
   avgmu       = mu;
@@ -552,13 +556,13 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
       if (m_dumpCells){
         MSG_INFO( "Dump cells.." );
         for (auto &cell : clus->allCells() ){
-          mc_cell_et->push_back( cell->et() );
-          mc_cell_eta->push_back( cell->eta() );
-          mc_cell_phi->push_back( cell->phi() );
-          mc_cell_deta->push_back( cell->deltaEta() );
-          mc_cell_dphi->push_back( cell->deltaPhi() );
-          mc_cell_energy->push_back( cell->energy() );
-          mc_cell_sampling->push_back( (int)cell->sampling() );
+          mc_cl_cell_et->push_back( cell->et() );
+          mc_cl_cell_eta->push_back( cell->eta() );
+          mc_cl_cell_phi->push_back( cell->phi() );
+          mc_cl_cell_deta->push_back( cell->deltaEta() );
+          mc_cl_cell_dphi->push_back( cell->deltaPhi() );
+          mc_cl_cell_energy->push_back( cell->energy() );
+          mc_cl_cell_sampling->push_back( (int)cell->sampling() );
         }
       }
 
@@ -608,13 +612,13 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
 
       if (m_dumpCells){
         for (auto &cell : clus->allCells() ){
-          cell_et->push_back( cell->et() );
-          cell_eta->push_back( cell->eta() );
-          cell_phi->push_back( cell->phi() );
-          cell_deta->push_back( cell->deltaEta() );
-          cell_dphi->push_back( cell->deltaPhi() );
-          cell_energy->push_back( cell->energy() );
-          cell_sampling->push_back( (int)cell->sampling() );
+          cl_cell_et->push_back( cell->et() );
+          cl_cell_eta->push_back( cell->eta() );
+          cl_cell_phi->push_back( cell->phi() );
+          cl_cell_deta->push_back( cell->deltaEta() );
+          cl_cell_dphi->push_back( cell->deltaPhi() );
+          cl_cell_energy->push_back( cell->energy() );
+          cl_cell_sampling->push_back( (int)cell->sampling() );
         }
       }
 

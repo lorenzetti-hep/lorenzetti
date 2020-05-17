@@ -8,7 +8,9 @@ from G4Kernel import treatPropertyValue
 
 class OptimalFilter(Logger):
 
-  __allow_keys = ["OutputLevel"]
+  __allow_keys = ["OutputLevel",
+                  "Weights",
+                  ]
   
   def __init__( self, name, **kw ):
 
@@ -28,7 +30,7 @@ class OptimalFilter(Logger):
   def setProperty( self, key, value ):
     if key in self.__allow_keys:
       setattr( self, '__' + key , value )
-      self.core().setProperty( key, value )
+      self.core().setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
