@@ -22,7 +22,8 @@ def recordable( key ):
             "EventInfo",
             "Clusters",
             "TruthClusters",
-            "Truth",
+            "Particles",
+            "TruthParticles",
             # CaloRingerBuilder
             "Rings",
             "TruthRings",
