@@ -63,8 +63,10 @@ if args.filter == 'Zee':
     configfile="/code/lorenzett/generator/PythiaGenerator/data/zee_config.cmnd"
 elif args.filter == 'JF17':
     configfile="/code/lorenzett/generator/PythiaGenerator/data/jet_config.cmnd"
+elif args.filter == 'MB':
+    configfile=''
 else:
-    mainLogger.fatal("Unknown option for --event, please choose one of the following: Zee, JF17")
+    mainLogger.fatal("Unknown option for --filter, please choose one of the following: Zee, JF17 or MB")
 
 
 
