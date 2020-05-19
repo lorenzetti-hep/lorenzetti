@@ -1,2 +1,2 @@
-docker build --compress --no-cache -t gabrielmilan/lorenzett:latest .
-docker build --compress  -t gabrielmilan/lorenzett:$1 .
+docker build --compress --no-cache -t jodafons/lorenzett:latest .
+docker build --compress  -t jodafons/lorenzett:$1 .

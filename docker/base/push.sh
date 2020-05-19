@@ -1,2 +1,2 @@
-docker push gabrielmilan/lorenzett:latest
-docker push gabrielmilan/lorenzett:$1
+docker push lorenzett/lorenzett:latest
+docker push lorenzett/lorenzett:$1
