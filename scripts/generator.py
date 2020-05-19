@@ -101,17 +101,17 @@ elif args.filter == "JF17":
                Select         = 2,
                OutputLevel    = args.outputLevel,
                Seed           = args.seed)
-  
+
   generator.push_back( tool )
 
-elif args.filter == "MinimumBias":
+elif args.filter == "MB":
 
   generator.setProperty("MinbiasDeltaEta",  0.22 )
   generator.setProperty("MinbiasDeltaPhi",  0.22 )
 
   # To collect using this cell position
   from PythiaGenerator import Region
-  regions = [ 
+  regions = [
             # -0.22 to 0.22
             Region("Region_1", Eta=0.0, Phi=1.52170894 ),
             # 0.28 to 0.72
@@ -121,11 +121,9 @@ elif args.filter == "MinimumBias":
   for region in regions:
     generator.push_back(region)
 
-
-
-elif args.filter == "MinimumBiasAll":
-  generator.setProperty("EtaMax", 0.8 )
-  generator.setProperty("UseWindow", False)
+  #elif args.filter == "MBFULL":
+  #  generator.setProperty("EtaMax", 0.8 )
+  #  generator.setProperty("UseWindow", False)
 
 else:
   mainlogger.fatal("The event filter is not defined.")

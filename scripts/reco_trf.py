@@ -78,7 +78,18 @@ calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
 
 
 
-cluster = CaloClusterMaker( "TruthCaloClusterMaker",
+cluster = CaloClusterMaker( "CaloClusterMaker",
+                            CellsKey        = recordable("Cells"),
+                            EventKey        = recordable("EventInfo"),
+                            ClusterKey      = recordable("Clusters"),
+                            TruthKey        = recordable("Truth"),
+                            EtaWindow       = 0.4,
+                            PhiWindow       = 0.4,
+                            HistogramPath   = "Expert/Clusters",
+                            OutputLevel     = args.outputLevel)
+
+
+truth_cluster = CaloClusterMaker( "TruthCaloClusterMaker",
                             CellsKey        = recordable("TruthCells"),
                             EventKey        = recordable("EventInfo"),
                             ClusterKey      = recordable("TruthClusters"),
@@ -92,15 +103,15 @@ cluster = CaloClusterMaker( "TruthCaloClusterMaker",
 
 
 pi = np.pi
-#ringer = CaloRingerBuilder( "CaloRingerBuilder",
-#                            RingerKey     = recordable("Rings"),
-#                            ClusterKey    = recordable("Clusters"),
-#                            DeltaEtaRings = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-#                            DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-#                            NRings        = [64, 8, 8, 4, 4, 4],
-#                            LayerRings    = [1,2,3,4,5,6],
-#                            HistogramPath = "Expert/Ringer",
-#                            OutputLevel   = args.outputLevel)
+ringer = CaloRingerBuilder( "CaloRingerBuilder",
+                            RingerKey     = recordable("Rings"),
+                            ClusterKey    = recordable("Clusters"),
+                            DeltaEtaRings = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                            DeltaPhiRings = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                            NRings        = [64, 8, 8, 4, 4, 4],
+                            LayerRings    = [1,2,3,4,5,6],
+                            HistogramPath = "Expert/Ringer",
+                            OutputLevel   = args.outputLevel)
 
 
 truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
@@ -140,14 +151,14 @@ ntuple = CaloNtupleMaker( "CaloNtupleMaker",
 gun.merge(acc)
 calorimeter.merge(acc)
 acc+= cluster
+acc+= truth_cluster
+
+acc+= ringer
 acc+= truth_ringer
-#acc+=ringer
 acc += ntuple
+
 #acc += raw
 acc.run(args.numberOfEvents)
-
-
-
 
 # Merge all files
 command = "hadd -f " + args.outputFile + ' '
