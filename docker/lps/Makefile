@@ -1,4 +1,4 @@
 build:
-	docker build --compress --no-cache -t gabrielmilan/lorenzett:sdumont .
+	docker build --compress --no-cache -t lorenzett/lorenzett:lps .
 push:
-	docker push gabrielmilan/lorenzett:sdumont
+	docker push lorenzett/lorenzett:lps

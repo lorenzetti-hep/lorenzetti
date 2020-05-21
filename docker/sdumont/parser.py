@@ -4,7 +4,6 @@
 from Gaugi.messenger    import LoggingLevel, Logger
 import argparse
 import sys,os
-os.system('source /setup_envs.sh')
 
 
 mainLogger = Logger.getModuleLogger("Parser")
