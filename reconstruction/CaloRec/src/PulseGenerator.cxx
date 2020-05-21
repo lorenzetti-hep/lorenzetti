@@ -24,7 +24,7 @@ PulseGenerator::~PulseGenerator()
 StatusCode PulseGenerator::initialize()
 {
   setMsgLevel( (MSG::Level)m_outputLevel );
-  MSG_DEBUG( "Reading shaper values from: " << m_shaperFile );
+  MSG_DEBUG( "Reading shaper values from: " << m_shaperFile << " and " << m_nsamples << " samples.");
   m_pulseGenerator = new CPK::TPulseGenerator( m_nsamples, m_shaperFile.c_str());
   return StatusCode::SUCCESS;
 }
