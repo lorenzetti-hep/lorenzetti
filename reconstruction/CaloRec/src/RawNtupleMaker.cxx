@@ -160,22 +160,52 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
     seed_eta = seed.eta;
     seed_phi = seed.phi;
 
-    for ( const auto cell : **container.ptr() ){
 
-      float deltaEta = std::abs( seed.eta - cell->eta() );
-      float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , cell->phi() ));
-      
-      if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
+    for ( int sampling=1; sampling<=6; ++sampling )
+    {
+      float min_deltaR=999;
+      const xAOD::CaloCell* closest_cell=nullptr;
+
+      for ( const auto cell : **container.ptr() )
       {
-        auto raw = cell->parent();
-        raw_cell_t obj{ cell->eta(), cell->phi(), cell->deltaEta(), cell->deltaPhi(), 
-                        raw->bcid_start(), raw->bcid_end(), raw->bc_nsamples(), raw->bc_duration(), 
-                        raw->pulse(), raw->rawEnergySamples(), cell->sampling()};
+        if ( (int)cell->sampling() ==  sampling )
+        { 
+          float deltaR = dR( cell->eta(), cell->phi(), seed.eta, seed.phi );
+          if ( deltaR < min_deltaR)
+          {
+            min_deltaR=deltaR;  
+            closest_cell = cell;
+          }
+        }          
+      }
+
+      if (closest_cell )
+      {
+        auto raw = closest_cell->parent();
+        
+        std::vector< std::vector<float> > pulsePerBunch;
+        for (int bc=raw->bcid_start() ; bc<=raw->bcid_end() ; ++bc)
+          pulsePerBunch.push_back(raw->pulse(bc));
+
+
+        raw_cell_t obj{ closest_cell->eta(), 
+                        closest_cell->phi(), 
+                        closest_cell->deltaEta(), 
+                        closest_cell->deltaPhi(), 
+                        raw->bcid_start(), 
+                        raw->bcid_end(), 
+                        raw->bc_nsamples(), 
+                        raw->bc_duration(), 
+                        raw->pulse(), 
+                        pulsePerBunch,
+                        raw->rawEnergySamples(), 
+                        closest_cell->sampling()};
+
         // Make something here...
         cells->push_back(obj); 
       }
 
-    }// Loop over all cells
+    }
 
     tree->Fill();
 
@@ -183,4 +213,14 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
 
 
 }
+
+
+float RawNtupleMaker::dR( float eta1, float phi1, float eta2, float phi2 ) const
+{
+  float deta = fabs(eta1-eta2);
+  float dphi = fabs(phi1-phi2)  < TMath::Pi() ? fabs(phi1-phi2) : 2*TMath::Pi() - fabs(phi1-phi2) ;
+  return sqrt( deta*deta + dphi*dphi);
+}
+
+
 

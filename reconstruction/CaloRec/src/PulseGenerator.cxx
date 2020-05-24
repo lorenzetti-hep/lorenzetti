@@ -53,14 +53,22 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
     // Add gaussian noise
     // m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
     // Accumulate into pulse sum (Sum all pulses)
-    for ( int j=0; j < pulse_size; ++j )
-      pulse_sum[j] += (float)pulse->operator[](j);
+    std::vector<float> bc_pulse;
+    for ( int j=0; j < pulse_size; ++j ){
+      float value= (float)pulse->operator[](j);
+      bc_pulse.push_back(value);
+      pulse_sum[j] += value;
+    }
+
     delete pulse; // This must be deleted to avoid memory leak since spk uses "new" internally
+    cell->setPulsePerBunch( bc, bc_pulse ); 
   }
 
 
   // Add the pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );
+
+
   return StatusCode::SUCCESS;
 }
 

@@ -61,9 +61,17 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_rawEnergySamples, setRawEnergySamples, rawEnergySamples );
       /*! Integrated pulse in bunch crossing zero */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_pulse, setPulse, pulse );
+
       /*! Time (in ns) for each bunch crossing */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_time , setTime , time   );
-    
+
+
+      /*! get pulse for each bunch crossing */
+      std::vector<float> pulse( int bc_id ) const {return m_pulsePerBunch.at(bc_id);};
+      /*! set pulse for each bunch crossing */
+      void setPulsePerBunch( int bc_id , std::vector<float> pulse ){ m_pulsePerBunch[bc_id] = pulse;};
+
+
     private:
  
       /*! id sampling */
@@ -100,8 +108,10 @@ namespace xAOD{
       std::vector<float> m_rawEnergySamples;
       /*! time (in ns) for each bunch between bcid_start and bcid_end */
       std::vector<float> m_time;
-      /*! Digitalized pulse for the main event (bcid zero) */
+      /*! Digitalized integrated pulse for the main event (bcid zero) */
       std::vector<float> m_pulse;
+      /*! Digitalized pulse per bunch */
+      std::map< int, std::vector<float> > m_pulsePerBunch;
       /*! Access information */
       std::string m_hash;
   };

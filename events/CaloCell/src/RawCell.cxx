@@ -84,6 +84,3 @@ void RawCell::Fill( const G4Step* step )
 
 
 
-
-
-

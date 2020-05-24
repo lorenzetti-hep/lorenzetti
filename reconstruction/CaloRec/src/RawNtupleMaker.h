@@ -20,6 +20,7 @@ struct raw_cell_t {
   int bc_nsamples;
   float bc_duration;
   std::vector<float> pulse;
+  std::vector<std::vector<float>> pulsePerBunch;
   std::vector<float> rawEnergySamples;
   int sampling;
 };
@@ -55,7 +56,8 @@ class RawNtupleMaker : public Gaugi::Algorithm
  
     void Fill( SG::EventContext &ctx , TTree *tree  ) const;
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
-   
+  
+    float dR( float eta1, float phi1, float eta2, float phi2 ) const;
     float m_etaWindow;
     float m_phiWindow;
     std::string m_ntupleName;
