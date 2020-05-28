@@ -93,7 +93,7 @@ command = "python3 /code/lorenzett/scripts/generator.py -i {CONFIG} \
 
 f = open('/command.sh', 'w')
 #f.write('echo "setup all envs..."\n')
-#f.write('. /setup_envs.sh\n')
+f.write('source /setup_envs.sh\n')
 
 f.write('echo "run pythia..."\n')
 command = "python3 /code/lorenzett/scripts/prun_job.py -o {OUTPUT} -c '{COMMAND}' -mt {NTHREADS} -n {NJOBS}".format(COMMAND=command,

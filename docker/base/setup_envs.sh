@@ -10,6 +10,7 @@ source /opt/root/buildthis/bin/thisroot.sh
 
 # geant4
 cd /opt/geant4/buildthis
+ls
 source geant4.sh
 cd /
 
@@ -30,10 +31,10 @@ for file in /opt/geant4/buildthis/BuildProducts/lib/*.so
 do
   echo $file
   export LD_PRELOAD=$file:$LD_PRELOAD
-done 
+done
 
 
-cd /code/lorenzett 
+cd /code/lorenzett
 git pull
 mkdir build && cd build && cmake .. && make -j$CPU_N && cd .. && source setup.sh
 
