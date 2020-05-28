@@ -14,6 +14,7 @@ doc/.ipynb_checkpoints/*
 *.pdf
 *.tex
 *.C
+*.bak
 cmt/boost_test.cxx.o
 MoreFilesForYou-*
 .asetup.save
