@@ -113,9 +113,9 @@ elif args.filter == "MB":
   from PythiaGenerator import Region
   regions = [
             # -0.22 to 0.22
-            Region("Region_1", Eta=0.0, Phi=1.52170894 ),
+            #Region("Region_1", Eta=0.0, Phi=1.52170894 ),
             # 0.28 to 0.72
-            #Region("Region_2", Eta=0.5, Phi=1.52170894 ),
+            Region("Region_2", Eta=0.3, Phi=1.52170894 ),
           ]
 
   for region in regions:

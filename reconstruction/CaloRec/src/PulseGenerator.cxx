@@ -51,6 +51,7 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
     // Generate the pulse
     auto pulse = m_pulseGenerator->GenerateDeterministicPulse( rawEnergySamples[i], 0, bc*cell->bc_duration() );
     // Add gaussian noise
+    m_pulseGenerator->AddGaussianNoise(pulse, 0.0, 1.5);
     // m_pulseGenerator[cell->layer()]->AddGaussianNoise(pulse);
     // Accumulate into pulse sum (Sum all pulses)
     std::vector<float> bc_pulse;
