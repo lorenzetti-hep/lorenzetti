@@ -44,8 +44,8 @@ parser.add_argument('-s','--seed', action='store', dest='seed', required = False
 parser.add_argument('-r','--reco_script', action='store', dest='reco_script', required = False , default='reco_trf.py',
                     help = "The reconstruction script used into the reco step. This script should be in lorenzett/scripts directory")
 
-parser.add_argument('--exec', action='store_true', dest='exec', required = False,
-                    help = "Execute the command")
+parser.add_argument('--dry_run', action='store_true', dest='dry_run', required = False,
+                    help = "dry_run")
 
 
 
@@ -73,7 +73,7 @@ else:
 
 
 
-output = '/output/generator_' + args.outputFile
+output = args.outputFile + '/generator_samples.root'
 
 
 command = "python3 /code/lorenzett/scripts/generator.py -i {CONFIG} \
@@ -92,7 +92,10 @@ command = "python3 /code/lorenzett/scripts/generator.py -i {CONFIG} \
                           )
 
 f = open('/command.sh', 'w')
+#f.write('echo "setup all envs..."\n')
+#f.write('. /setup_envs.sh\n')
 
+f.write('echo "run pythia..."\n')
 command = "python3 /code/lorenzett/scripts/prun_job.py -o {OUTPUT} -c '{COMMAND}' -mt {NTHREADS} -n {NJOBS}".format(COMMAND=command,
                                                                                                                     NTHREADS=ncpu,
                                                                                                                     NJOBS=args.njobs,
@@ -101,22 +104,20 @@ print(command)
 f.write(command)
 f.write('\n')
 
-if args.exec:
-  os.system(command)
-
 input  = output
-output = '/output/reco_'+args.outputFile
+output = args.outputFile + '/reco_samples.root'
 reco_script = args.reco_script
 command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS}'.format( INPUT     = input,
                                                                                                               OUTPUT    = output,
                                                                                                               NTHREADS  = ncpu)
 
+f.write('echo "run generator..."\n')
 print(command)
 f.write(command)
 f.close()
 
-if args.exec:
-  os.system(command)
+if not args.dry_run:
+  os.system('. /command.sh')
 
 
 

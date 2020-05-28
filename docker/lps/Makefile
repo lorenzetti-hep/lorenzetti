@@ -1,4 +1,4 @@
 build:
-	docker build --compress --no-cache -t lorenzett/lorenzett:lps .
+	docker build --compress -t lorenzett/lorenzett:lps .
 push:
 	docker push lorenzett/lorenzett:lps

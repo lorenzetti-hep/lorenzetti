@@ -1,5 +1,5 @@
 
-numberOfJobs = 1
+numberOfJobs = 10
 
 from Gaugi import save, mkdir_p
 
