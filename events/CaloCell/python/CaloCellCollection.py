@@ -4,7 +4,7 @@ __all__ = ["CaloCellCollection","CaloCell","CaloSample"]
 from Gaugi import EDM, EnumStringification
 from Gaugi import StatusCode
 from GaugiKernel import Dataframe as DataframeEnum
-
+import numpy as np
 
 
 class CaloSample(EnumStringification):
@@ -49,7 +49,11 @@ class CaloCell(EDM):
   def energy(self):
     return self._energy
 
+  def channelEta(self):
+    return self._channelEta
 
+  def channelPhi(self):
+    return self._channelPhi
 
 
 class CaloCellCollection(EDM):
@@ -115,34 +119,34 @@ class CaloCellCollection(EDM):
 
     if self._dataframe is DataframeEnum.Lorenzett_v1:
       if not self._is_hlt:				
-        size = self._event.mc_cell_energy.size()
+        size = self._event.mc_cl_cell_energy.size()
         for idx in range(size): # Loop over all cells
-          if sampling is self._event.mc_cell_sampling.at(idx):
-            cell = CaloCell( et 			  = self._event.mc_cell_et.at(idx),
-            								 eta			  = self._event.mc_cell_eta.at(idx),
-            								 phi			  = self._event.mc_cell_phi.at(idx),
-            								 deta			  = self._event.mc_cell_deta.at(idx),
-            								 dphi			  = self._event.mc_cell_dphi.at(idx),
-            								 energy		  = self._event.mc_cell_energy.at(idx),
-            								 channelEta	= self._event.mc_cell_channel_eta.at(idx),
-            								 channlePhi	= self._event.mc_cell_channel_phi.at(idx),
-            								 sampling	  = self._event.mc_cell_sampling.at(idx),
+          if sampling is self._event.mc_cl_cell_sampling.at(idx):
+            cell = CaloCell( et 			  = self._event.mc_cl_cell_et.at(idx),
+            								 eta			  = self._event.mc_cl_cell_eta.at(idx),
+            								 phi			  = self._event.mc_cl_cell_phi.at(idx),
+            								 deta			  = self._event.mc_cl_cell_deta.at(idx),
+            								 dphi			  = self._event.mc_cl_cell_dphi.at(idx),
+            								 energy		  = self._event.mc_cl_cell_energy.at(idx),
+            								 channelEta	= self._event.mc_cl_cell_channel_eta.at(idx),
+            								 channelPhi	= self._event.mc_cl_cell_channel_phi.at(idx),
+            								 sampling	  = self._event.mc_cl_cell_sampling.at(idx),
                              )
 
             collection.append(cell)
       else:
-        size = self._event.mc_cell_energy.size()
+        size = self._event.cl_cell_energy.size()
         for idx in range(size): # Loop over all cells
-          if sampling is self._event.cell_sampling.at(idx):
-            cell = CaloCell( et 			  = self._event.cell_et.at(idx),
-            								 eta			  = self._event.cell_eta.at(idx),
-            								 phi			  = self._event.cell_phi.at(idx),
-            								 deta			  = self._event.cell_deta.at(idx),
-            								 dphi			  = self._event.cell_dphi.at(idx),
-            								 energy		  = self._event.cell_energy.at(idx),
-            								 channelEta	= self._event.cell_channel_eta.at(idx),
-            								 channelPhi	= self._event.cell_channel_phi.at(idx),
-            								 sampling	  = self._event.cell_sampling.at(idx),
+          if sampling is self._event.cl_cell_sampling.at(idx):
+            cell = CaloCell( et 			  = self._event.cl_cell_et.at(idx),
+            								 eta			  = self._event.cl_cell_eta.at(idx),
+            								 phi			  = self._event.cl_cell_phi.at(idx),
+            								 deta			  = self._event.cl_cell_deta.at(idx),
+            								 dphi			  = self._event.cl_cell_dphi.at(idx),
+            								 energy		  = self._event.cl_cell_energy.at(idx),
+            								 channelEta	= self._event.cl_cell_channel_eta.at(idx),
+            								 channelPhi	= self._event.cl_cell_channel_phi.at(idx),
+            								 sampling	  = self._event.cl_cell_sampling.at(idx),
                              )
             collection.append(cell)
           

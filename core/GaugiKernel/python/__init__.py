@@ -1,8 +1,8 @@
 __all__ = []
 
-from . import EventSimulator
-__all__.extend(EventSimulator.__all__)
-from .EventSimulator import *
+from . import EventReader
+__all__.extend(EventReader.__all__)
+from .EventReader import *
 
 
 

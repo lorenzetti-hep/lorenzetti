@@ -5,7 +5,7 @@ __all__ = ["CaloCluster"]
 from Gaugi import EDM
 from Gaugi import StatusCode
 from GaugiKernel import Dataframe as DataframeEnum
-
+import numpy as np
 
 class CaloCluster(EDM):
 
@@ -461,6 +461,36 @@ class CaloCluster(EDM):
       self._logger.warning("Impossible to retrieve the value of Calo match flag.")
       return -999
 
+
+  def caloRings(self):
+    """
+      Get the ringer object
+    """
+    if not self._is_hlt:
+      return self.getContext().getHandler( "Truth__CaloRingsContainer" )
+    else:  
+      return self.getContext().getHandler( "CaloRingsContainer" )
+
+
+
+  def getCells(self, sampling):
+
+    if not self._is_hlt:
+      collection = self.getContext().getHandler( "Truth__CaloCellsContainer" )
+    else:  
+      collection = self.getContext().getHandler( "CaloCellsContainer" )
+    # get all cells for this specific layer
+    return collection.getCollection( sampling )
+  
+
+
+  def getCells(self, sampling):
+    if not self._is_hlt:
+      collection = self.getContext().getHandler( "Truth__CaloCellsContainer" )
+    else:  
+      collection = self.getContext().getHandler( "CaloCellsContainer" )
+    # get all cells for this specific layer
+    return collection.getCollection( sampling )
 
 
 

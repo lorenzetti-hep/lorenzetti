@@ -1,5 +1,5 @@
 
-__all__ = ['EventSimulator']
+__all__ = ['EventReader']
 
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
@@ -12,10 +12,7 @@ from GaugiKernel.enumerations import Dataframe as DataframeEnum
 import ROOT
 
 
-# The main framework base class for SIM analysis.
-# This class is responsible to build all containers object and
-# manager the storegate and histogram services for all classes.
-class EventSimulator( TEventLoop ):
+class EventReader( TEventLoop ):
     
   def __init__(self, name, **kw):
     # Retrieve all information needed
@@ -29,7 +26,7 @@ class EventSimulator( TEventLoop ):
 
     MSG_INFO( self, 'Initializing EventSimulator...')
     
-    if super(EventSimulator,self).initialize().isFailure():
+    if super(EventReader,self).initialize().isFailure():
       MSG_FATAL( self, "Impossible to initialize the TEventLoop services.")
 
    

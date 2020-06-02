@@ -13,6 +13,11 @@ from . import ParticleGun
 __all__.extend(ParticleGun.__all__)
 from .ParticleGun import *
 
+from . import CaloPhiRange
+__all__.extend(CaloPhiRange.__all__)
+from .CaloPhiRange import *
+
+
 
 
 
