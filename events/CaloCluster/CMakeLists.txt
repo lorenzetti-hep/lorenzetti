@@ -11,7 +11,7 @@ ROOT_GENERATE_DICTIONARY(CaloClusterDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOUR
                                       
 add_library(CaloCluster  OBJECT ${SOURCES} CaloClusterDict.cxx)
 install(FILES ${HEADERS}  DESTINATION CaloCluster)
-
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloCluster)
 
 
 

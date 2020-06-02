@@ -15,8 +15,8 @@ namespace xAOD{
 
       /** Contructor **/
       RawCell( float eta, float phi, float deta, float dphi, float radius_min, float radius_max,
-               std::string hash, CaloSampling::CaloSample sampling, float bc_duration, int bc_nsamples,
-               int bcid_start, int bcid_end, int bcid_truth );
+               std::string hash, int channel_eta, int channel_phi, CaloSampling::CaloSample sampling, 
+               float bc_duration, int bc_nsamples, int bcid_start, int bcid_end, int bcid_truth );
 
       /** Destructor **/
       ~RawCell()=default;
@@ -72,10 +72,20 @@ namespace xAOD{
       void setPulsePerBunch( int bc_id , std::vector<float> pulse ){ m_pulsePerBunch[bc_id] = pulse;};
 
 
+      PRIMITIVE_SETTER_AND_GETTER( int, m_channel_eta , setChannelEta , channelEta   );
+      PRIMITIVE_SETTER_AND_GETTER( int, m_channel_phi , setChannelPhi , channelPhi   );
+
+
     private:
  
       /*! id sampling */
       CaloSampling::CaloSample m_sampling;
+      /*! the eta id of this cell*/
+      int m_channel_eta;
+      /*! the phi id of this cell*/
+      int m_channel_phi;
+
+
       /*! eta center */
       float m_eta;
       /*! phi center */

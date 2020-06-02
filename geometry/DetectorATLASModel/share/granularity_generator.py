@@ -179,7 +179,7 @@ class CellGenerator(object):
 
 
                 cell_hash = 'layer%d_eta%d_phi%d' % (layer_id, eta_i, phi_i)
-                s = "C {LAYER_ID} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {CELL_HASH}\n".format( 
+                s = "C {LAYER_ID} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {CELL_HASH} {ETA_IDX} {PHI_IDX}\n".format( 
                                                                         LAYER_ID = layer_id,
                                                                         ETA=round(eta,8), 
                                                                         PHI=round(phi,8),
@@ -187,7 +187,9 @@ class CellGenerator(object):
                                                                         DPHI = round(self.layer_dict[layer]['delta_phi'],8),
                                                                         RMIN = round(self.layer_dict[layer]['min_dist_to_ip'],8),
                                                                         RMAX = round(self.layer_dict[layer]['max_dist_to_ip'],8),
-                                                                        CELL_HASH = cell_hash
+                                                                        CELL_HASH = cell_hash,
+                                                                        ETA_IDX=eta_i,
+                                                                        PHI_IDX=phi_i,
                                                                         )
                 file.write(s)
 

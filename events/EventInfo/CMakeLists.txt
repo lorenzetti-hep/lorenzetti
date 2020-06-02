@@ -14,6 +14,7 @@ add_library(EventInfo  OBJECT ${SOURCES} EventInfoDict.cxx)
 install(FILES ${HEADERS}  DESTINATION EventInfo)
 
 
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EventInfo)
 
 
 

@@ -85,6 +85,8 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   std::vector<float> mc_cl_cell_deta     ;
   std::vector<float> mc_cl_cell_dphi     ;
   std::vector<float> mc_cl_cell_energy   ;
+  std::vector<int>   mc_cl_cell_channel_eta; 
+  std::vector<int>   mc_cl_cell_channel_phi; 
   std::vector<int>   mc_cl_cell_sampling ; 
   
   bool  cl_match          = false;
@@ -121,6 +123,8 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   std::vector<float> cl_cell_deta        ;
   std::vector<float> cl_cell_dphi        ;
   std::vector<float> cl_cell_energy      ;
+  std::vector<int>   cl_cell_channel_eta ;
+  std::vector<int>   cl_cell_channel_phi ;
   std::vector<int>   cl_cell_sampling    ;
 
 
@@ -165,6 +169,8 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
   tree->Branch(  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
   tree->Branch(  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
+  tree->Branch(  "mc_cl_cell_channel_eta", &mc_cl_cell_channel_eta);
+  tree->Branch(  "mc_cl_cell_channel_phi", &mc_cl_cell_channel_phi);
   tree->Branch(  "mc_cl_cell_sampling", &mc_cl_cell_sampling);
 
   tree->Branch(  "cl_match"           , &cl_match           );
@@ -200,6 +206,8 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "cl_cell_deta"       , &cl_cell_deta       );
   tree->Branch(  "cl_cell_dphi"       , &cl_cell_dphi       );
   tree->Branch(  "cl_cell_energy"     , &cl_cell_energy     );
+  tree->Branch(  "cl_cell_channel_eta", &cl_cell_channel_eta);
+  tree->Branch(  "cl_cell_channel_phi", &cl_cell_channel_phi);
   tree->Branch(  "cl_cell_sampling"   , &cl_cell_sampling   );
  
 
@@ -344,6 +352,8 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   std::vector<float> *mc_cl_cell_deta     = nullptr;
   std::vector<float> *mc_cl_cell_dphi     = nullptr;
   std::vector<float> *mc_cl_cell_energy   = nullptr;
+  std::vector<int>   *mc_cl_cell_channel_eta = nullptr;
+  std::vector<int>   *mc_cl_cell_channel_phi = nullptr;
   std::vector<int>   *mc_cl_cell_sampling = nullptr;
   std::vector<float> *cl_cell_et          = nullptr;
   std::vector<float> *cl_cell_eta         = nullptr;
@@ -351,82 +361,91 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   std::vector<float> *cl_cell_deta        = nullptr;
   std::vector<float> *cl_cell_dphi        = nullptr;
   std::vector<float> *cl_cell_energy      = nullptr;
+  std::vector<int>   *cl_cell_channel_eta = nullptr;
+  std::vector<int>   *cl_cell_channel_phi = nullptr;
   std::vector<int>   *cl_cell_sampling    = nullptr;
   
 
-  InitBranch( tree,  "EventNumber"        , &eventNumber        );
-  InitBranch( tree,  "avgmu"              , &avgmu              );
-  InitBranch( tree,  "seed_eta"           , &seed_eta           );
-  InitBranch( tree,  "seed_phi"           , &seed_phi           );
-  InitBranch( tree,  "seed_et"            , &seed_et            );
-  InitBranch( tree,  "mc_cl_match"        , &mc_cl_match        );
-  InitBranch( tree,  "mc_cl_eta"          , &mc_cl_eta          );
-  InitBranch( tree,  "mc_cl_phi"          , &mc_cl_phi          );
-  InitBranch( tree,  "mc_cl_et"           , &mc_cl_et           );
-  InitBranch( tree,  "mc_cl_e1"           , &mc_cl_e1           );
-  InitBranch( tree,  "mc_cl_e2"           , &mc_cl_e2           );
-  InitBranch( tree,  "mc_cl_e3"           , &mc_cl_e3           );
-  InitBranch( tree,  "mc_cl_ehad1"        , &mc_cl_ehad1        );
-  InitBranch( tree,  "mc_cl_ehad2"        , &mc_cl_ehad2        );
-  InitBranch( tree,  "mc_cl_ehad3"        , &mc_cl_ehad3        );
-  InitBranch( tree,  "mc_cl_etot"         , &mc_cl_etot         );
-  InitBranch( tree,  "mc_cl_reta"         , &mc_cl_reta         );
-  InitBranch( tree,  "mc_cl_rphi"         , &mc_cl_rphi         );
-  InitBranch( tree,  "mc_cl_rhad"         , &mc_cl_rhad         );
-  InitBranch( tree,  "mc_cl_eratio"       , &mc_cl_eratio       );
-  InitBranch( tree,  "mc_cl_f0"           , &mc_cl_f0           );
-  InitBranch( tree,  "mc_cl_f1"           , &mc_cl_f1           );
-  InitBranch( tree,  "mc_cl_f2"           , &mc_cl_f2           );
-  InitBranch( tree,  "mc_cl_f3"           , &mc_cl_f3           );
-  InitBranch( tree,  "mc_cl_weta2"        , &mc_cl_weta2        );
-  InitBranch( tree,  "mc_cl_e233"         , &mc_cl_e233         );
-  InitBranch( tree,  "mc_cl_e237"         , &mc_cl_e237         );
-  InitBranch( tree,  "mc_cl_e277"         , &mc_cl_e277         );
-  InitBranch( tree,  "mc_cl_emaxs1"       , &mc_cl_emaxs1       );
-  InitBranch( tree,  "mc_cl_e2tsts1"      , &mc_cl_e2tsts1      );
-  InitBranch( tree,  "mc_cl_ringer_match" , &mc_cl_ringer_match );
-  InitBranch( tree,  "mc_cl_rings"        , &mc_cl_rings        );
-  InitBranch( tree,  "mc_cl_cell_et"      , &mc_cl_cell_et      );
-  InitBranch( tree,  "mc_cl_cell_eta"     , &mc_cl_cell_eta     );
-  InitBranch( tree,  "mc_cl_cell_phi"     , &mc_cl_cell_phi     );
-  InitBranch( tree,  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
-  InitBranch( tree,  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
-  InitBranch( tree,  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
-  InitBranch( tree,  "mc_cl_cell_sampling", &mc_cl_cell_sampling);
-  InitBranch( tree,  "cl_match"           , &cl_match           );
-  InitBranch( tree,  "cl_eta"             , &cl_eta             );
-  InitBranch( tree,  "cl_phi"             , &cl_phi             );
-  InitBranch( tree,  "cl_et"              , &cl_et              );
-  InitBranch( tree,  "cl_e1"              , &cl_e1              );
-  InitBranch( tree,  "cl_e2"              , &cl_e2              );
-  InitBranch( tree,  "cl_e3"              , &cl_e3              );
-  InitBranch( tree,  "cl_ehad1"           , &cl_ehad1           );
-  InitBranch( tree,  "cl_ehad2"           , &cl_ehad2           );
-  InitBranch( tree,  "cl_ehad3"           , &cl_ehad3           );
-  InitBranch( tree,  "cl_etot"            , &cl_etot            );
-  InitBranch( tree,  "cl_reta"            , &cl_reta            );
-  InitBranch( tree,  "cl_rphi"            , &cl_rphi            );
-  InitBranch( tree,  "cl_rhad"            , &cl_rhad            );
-  InitBranch( tree,  "cl_eratio"          , &cl_eratio          );
-  InitBranch( tree,  "cl_f0"              , &cl_f0              );
-  InitBranch( tree,  "cl_f1"              , &cl_f1              );
-  InitBranch( tree,  "cl_f2"              , &cl_f2              );
-  InitBranch( tree,  "cl_f3"              , &cl_f3              );
-  InitBranch( tree,  "cl_weta2"           , &cl_weta2           );
-  InitBranch( tree,  "cl_e233"            , &cl_e233            );
-  InitBranch( tree,  "cl_e237"            , &cl_e237            );
-  InitBranch( tree,  "cl_e277"            , &cl_e277            );
-  InitBranch( tree,  "cl_emaxs1"          , &cl_emaxs1          );
-  InitBranch( tree,  "cl_e2tsts1"         , &cl_e2tsts1         );
-  InitBranch( tree,  "cl_ringer_match"    , &cl_ringer_match    );
-  InitBranch( tree,  "cl_rings"           , &cl_rings           );
-  InitBranch( tree,  "cl_cell_et"         , &cl_cell_et         );
-  InitBranch( tree,  "cl_cell_eta"        , &cl_cell_eta        );
-  InitBranch( tree,  "cl_cell_phi"        , &cl_cell_phi        );
-  InitBranch( tree,  "cl_cell_deta"       , &cl_cell_deta       );
-  InitBranch( tree,  "cl_cell_dphi"       , &cl_cell_dphi       );
-  InitBranch( tree,  "cl_cell_energy"     , &cl_cell_energy     );
-  InitBranch( tree,  "cl_cell_sampling"   , &cl_cell_sampling   );
+  InitBranch( tree,  "EventNumber"            , &eventNumber            );
+  InitBranch( tree,  "avgmu"                  , &avgmu                  );
+  InitBranch( tree,  "seed_eta"               , &seed_eta               );
+  InitBranch( tree,  "seed_phi"               , &seed_phi               );
+  InitBranch( tree,  "seed_et"                , &seed_et                );
+  InitBranch( tree,  "mc_cl_match"            , &mc_cl_match            );
+  InitBranch( tree,  "mc_cl_eta"              , &mc_cl_eta              );
+  InitBranch( tree,  "mc_cl_phi"              , &mc_cl_phi              );
+  InitBranch( tree,  "mc_cl_et"               , &mc_cl_et               );
+  InitBranch( tree,  "mc_cl_e1"               , &mc_cl_e1               );
+  InitBranch( tree,  "mc_cl_e2"               , &mc_cl_e2               );
+  InitBranch( tree,  "mc_cl_e3"               , &mc_cl_e3               );
+  InitBranch( tree,  "mc_cl_ehad1"            , &mc_cl_ehad1            );
+  InitBranch( tree,  "mc_cl_ehad2"            , &mc_cl_ehad2            );
+  InitBranch( tree,  "mc_cl_ehad3"            , &mc_cl_ehad3            );
+  InitBranch( tree,  "mc_cl_etot"             , &mc_cl_etot             );
+  InitBranch( tree,  "mc_cl_reta"             , &mc_cl_reta             );
+  InitBranch( tree,  "mc_cl_rphi"             , &mc_cl_rphi             );
+  InitBranch( tree,  "mc_cl_rhad"             , &mc_cl_rhad             );
+  InitBranch( tree,  "mc_cl_eratio"           , &mc_cl_eratio           );
+  InitBranch( tree,  "mc_cl_f0"               , &mc_cl_f0               );
+  InitBranch( tree,  "mc_cl_f1"               , &mc_cl_f1               );
+  InitBranch( tree,  "mc_cl_f2"               , &mc_cl_f2               );
+  InitBranch( tree,  "mc_cl_f3"               , &mc_cl_f3               );
+  InitBranch( tree,  "mc_cl_weta2"            , &mc_cl_weta2            );
+  InitBranch( tree,  "mc_cl_e233"             , &mc_cl_e233             );
+  InitBranch( tree,  "mc_cl_e237"             , &mc_cl_e237             );
+  InitBranch( tree,  "mc_cl_e277"             , &mc_cl_e277             );
+  InitBranch( tree,  "mc_cl_emaxs1"           , &mc_cl_emaxs1           );
+  InitBranch( tree,  "mc_cl_e2tsts1"          , &mc_cl_e2tsts1          );
+  InitBranch( tree,  "mc_cl_ringer_match"     , &mc_cl_ringer_match     );
+  InitBranch( tree,  "mc_cl_rings"            , &mc_cl_rings            );
+  InitBranch( tree,  "mc_cl_cell_et"          , &mc_cl_cell_et          );
+  InitBranch( tree,  "mc_cl_cell_eta"         , &mc_cl_cell_eta         );
+  InitBranch( tree,  "mc_cl_cell_phi"         , &mc_cl_cell_phi         );
+  InitBranch( tree,  "mc_cl_cell_deta"        , &mc_cl_cell_deta        );
+  InitBranch( tree,  "mc_cl_cell_dphi"        , &mc_cl_cell_dphi        );
+  InitBranch( tree,  "mc_cl_cell_energy"      , &mc_cl_cell_energy      );
+  InitBranch( tree,  "mc_cl_cell_sampling"    , &mc_cl_cell_sampling    );
+  InitBranch( tree,  "mc_cl_cell_channel_eta" , &mc_cl_cell_channel_eta );
+  InitBranch( tree,  "mc_cl_cell_channel_phi" , &mc_cl_cell_channel_phi );
+
+  
+  InitBranch( tree,  "cl_match"               , &cl_match               );
+  InitBranch( tree,  "cl_eta"                 , &cl_eta                 );
+  InitBranch( tree,  "cl_phi"                 , &cl_phi                 );
+  InitBranch( tree,  "cl_et"                  , &cl_et                  );
+  InitBranch( tree,  "cl_e1"                  , &cl_e1                  );
+  InitBranch( tree,  "cl_e2"                  , &cl_e2                  );
+  InitBranch( tree,  "cl_e3"                  , &cl_e3                  );
+  InitBranch( tree,  "cl_ehad1"               , &cl_ehad1               );
+  InitBranch( tree,  "cl_ehad2"               , &cl_ehad2               );
+  InitBranch( tree,  "cl_ehad3"               , &cl_ehad3               );
+  InitBranch( tree,  "cl_etot"                , &cl_etot                );
+  InitBranch( tree,  "cl_reta"                , &cl_reta                );
+  InitBranch( tree,  "cl_rphi"                , &cl_rphi                );
+  InitBranch( tree,  "cl_rhad"                , &cl_rhad                );
+  InitBranch( tree,  "cl_eratio"              , &cl_eratio              );
+  InitBranch( tree,  "cl_f0"                  , &cl_f0                  );
+  InitBranch( tree,  "cl_f1"                  , &cl_f1                  );
+  InitBranch( tree,  "cl_f2"                  , &cl_f2                  );
+  InitBranch( tree,  "cl_f3"                  , &cl_f3                  );
+  InitBranch( tree,  "cl_weta2"               , &cl_weta2               );
+  InitBranch( tree,  "cl_e233"                , &cl_e233                );
+  InitBranch( tree,  "cl_e237"                , &cl_e237                );
+  InitBranch( tree,  "cl_e277"                , &cl_e277                );
+  InitBranch( tree,  "cl_emaxs1"              , &cl_emaxs1              );
+  InitBranch( tree,  "cl_e2tsts1"             , &cl_e2tsts1             );
+  InitBranch( tree,  "cl_ringer_match"        , &cl_ringer_match        );
+  InitBranch( tree,  "cl_rings"               , &cl_rings               );
+  InitBranch( tree,  "cl_cell_et"             , &cl_cell_et             );
+  InitBranch( tree,  "cl_cell_eta"            , &cl_cell_eta            );
+  InitBranch( tree,  "cl_cell_phi"            , &cl_cell_phi            );
+  InitBranch( tree,  "cl_cell_deta"           , &cl_cell_deta           );
+  InitBranch( tree,  "cl_cell_dphi"           , &cl_cell_dphi           );
+  InitBranch( tree,  "cl_cell_energy"         , &cl_cell_energy         );
+  InitBranch( tree,  "cl_cell_sampling"       , &cl_cell_sampling       );
+  InitBranch( tree,  "cl_cell_channel_eta"    , &cl_cell_channel_eta    );
+  InitBranch( tree,  "cl_cell_channel_phi"    , &cl_cell_channel_phi    );
+
   
   MSG_DEBUG( "Link all branches..." );
 
@@ -497,13 +516,20 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   mc_cl_cell_deta->clear()    ;
   mc_cl_cell_dphi->clear()    ;
   mc_cl_cell_energy->clear()  ;
+  mc_cl_cell_channel_eta->clear();
+  mc_cl_cell_channel_phi->clear();
   mc_cl_cell_sampling->clear();
+
+
+
   cl_cell_et->clear()         ;
   cl_cell_eta->clear()        ;
   cl_cell_phi->clear()        ;
   cl_cell_deta->clear()       ;
   cl_cell_dphi->clear()       ;
   cl_cell_energy->clear()     ;
+  cl_cell_channel_eta->clear()   ;
+  cl_cell_channel_phi->clear()   ;
   cl_cell_sampling->clear()   ;
 
   eventNumber = evt;
@@ -562,6 +588,9 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           mc_cl_cell_deta->push_back( cell->deltaEta() );
           mc_cl_cell_dphi->push_back( cell->deltaPhi() );
           mc_cl_cell_energy->push_back( cell->energy() );
+          // Get all necessary ids to locate the cell outside
+          mc_cl_cell_channel_eta->push_back( cell->parent()->channelEta() );
+          mc_cl_cell_channel_phi->push_back( (int)cell->parent()->channelPhi() );
           mc_cl_cell_sampling->push_back( (int)cell->sampling() );
         }
       }
@@ -618,7 +647,12 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           cl_cell_deta->push_back( cell->deltaEta() );
           cl_cell_dphi->push_back( cell->deltaPhi() );
           cl_cell_energy->push_back( cell->energy() );
+          // Get all necessary ids to locate the cell outside
+          cl_cell_channel_eta->push_back( cell->parent()->channelEta() );
+          cl_cell_channel_phi->push_back( (int)cell->parent()->channelPhi() );
           cl_cell_sampling->push_back( (int)cell->sampling() );
+ 
+        
         }
       }
 

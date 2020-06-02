@@ -14,6 +14,7 @@ add_library(CaloRings  OBJECT ${SOURCES} CaloRingsDict.cxx)
 install(FILES ${HEADERS}  DESTINATION CaloRings)
 
 
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloRings)
 
 
 

@@ -130,12 +130,12 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
     // Get only cell config 
     if (command=="C"){
       float  eta, phi, deta, dphi, rmin, rmax;
-      int sampling; // Calorimeter layer
+      int sampling, channel_eta, channel_phi; // Calorimeter layer and eta/phi ids
       std::string hash;
-      file >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> hash;
+      file >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> hash >> channel_eta >> channel_phi;
 
       // Create the calorimeter cell
-      auto *cell = new xAOD::RawCell( eta, phi, deta, dphi, rmin, rmax, hash, (CaloSample)sampling,
+      auto *cell = new xAOD::RawCell( eta, phi, deta, dphi, rmin, rmax, hash, channel_eta, channel_phi, (CaloSample)sampling,
                                       m_bc_duration, m_bc_nsamples, m_bcid_start, m_bcid_end, m_bcid_truth);
       
       // Add the CaloCell into the collection
