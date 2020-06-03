@@ -131,7 +131,7 @@ StatusCode JF17::run( std::vector<xAOD::seed_t> &seed_vec, std::vector<std::vect
     }
     // If the total cluster energy is higher than the cut, than we 
     // can include these particles to the jet cluster vector
-    if (etot > m_minPt){
+    if (etot > minPt){
       seed_vec.push_back( xAOD::seed_t{ (float)main_p->eT(), 
                                         (float)main_p->eta(), 
                                         (float)main_p->phi(), 
@@ -148,14 +148,14 @@ StatusCode JF17::run( std::vector<xAOD::seed_t> &seed_vec, std::vector<std::vect
   int cx=0;
   for ( auto seed : seed_vec ){
     auto pj_vec = particles.at(cx);
-    MSG_DEBUG( "======== Cluster " << cx << " ==========" );
+    MSG_INFO( "======== Cluster " << cx << " ==========" );
     float etot=0.0;
     for ( auto pj : pj_vec ){
       etot+= pj->pT();
-      MSG_DEBUG( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
+      MSG_INFO( "Eta =" << pj->eta() << " Phi = " << pj->phi() << " Pt = " << pj->pT() );
     }
-    MSG_DEBUG( "Eta_center =" << seed.eta << " Phi_center = " << seed.phi << " Pt = " << etot );
-    MSG_DEBUG( "========================================" );
+    MSG_INFO( "Eta_center =" << seed.eta << " Phi_center = " << seed.phi << " Pt = " << etot );
+    MSG_INFO( "========================================" );
     cx++;
   }
 

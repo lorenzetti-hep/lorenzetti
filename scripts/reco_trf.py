@@ -85,6 +85,7 @@ cluster = CaloClusterMaker( "CaloClusterMaker",
                             TruthKey        = recordable("Particles"),
                             EtaWindow       = 0.4,
                             PhiWindow       = 0.4,
+                            MinCenterEnergy = 15*GeV,
                             HistogramPath   = "Expert/Clusters",
                             OutputLevel     = args.outputLevel)
 
@@ -96,6 +97,7 @@ truth_cluster = CaloClusterMaker( "TruthCaloClusterMaker",
                             TruthKey        = recordable("TruthParticles"),
                             EtaWindow       = 0.4,
                             PhiWindow       = 0.4,
+                            MinCenterEnergy = 15*GeV,
                             HistogramPath   = "Expert/TruthClusters",
                             OutputLevel     = args.outputLevel)
 
