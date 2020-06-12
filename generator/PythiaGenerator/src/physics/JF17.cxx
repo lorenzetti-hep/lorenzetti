@@ -7,7 +7,7 @@
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
-#include "ParticleFilter.h"
+#include "../tools/ParticleFilter.h"
 #include "EventInfo/EventInfo.h"
 
 

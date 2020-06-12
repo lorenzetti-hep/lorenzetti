@@ -1,15 +1,15 @@
-#ifndef Region_h
-#define Region_h
+#ifndef Zee_h
+#define Zee_h
 
 #include "Pythia8/Pythia.h"
-#include "EventGenerator.h"
+#include "../EventGenerator.h"
 
 
-class Region : public Physics
+class Zee : public Physics
 {
   public:
-    Region();
-    ~Region()=default;
+    Zee();
+    ~Zee()=default;
 
     virtual StatusCode initialize() override;
     virtual StatusCode run( std::vector<xAOD::seed_t>&, std::vector<std::vector<Pythia8::Particle*>> &) override;
@@ -17,8 +17,16 @@ class Region : public Physics
 
   private:
 
+
+    int m_abort;
+    int m_nAbort;
+    int m_seed;
     int m_outputLevel;
-    float m_eta;
-    float m_phi;
+    float m_minPt;
+    float m_etaMax;
+ 
+    std::string m_mainFile;
+   
+    Pythia8::Pythia m_pythia;
 };
 #endif

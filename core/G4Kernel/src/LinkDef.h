@@ -1,6 +1,5 @@
 
 #include "G4Kernel/RunManager.h"
-#include "G4Kernel/ParticleGun.h"
 #include "G4Kernel/PrimaryGenerator.h"
 #include "G4Kernel/CaloPhiRange.h"
 
@@ -13,7 +12,6 @@
 
 
 #pragma link C++ class RunManager+;
-#pragma link C++ class ParticleGun+;
 #pragma link C++ class PrimaryGenerator+;
 #pragma link C++ class CaloPhiRange+;
 

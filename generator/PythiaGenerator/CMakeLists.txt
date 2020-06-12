@@ -1,6 +1,14 @@
 
-file(GLOB SOURCES src/*.cxx)
-file(GLOB_RECURSE HEADERS src/EventGenerator.h src/ParticleFilter.h src/Zee.h src/JF17.h src/EventReader.h)
+file(GLOB SOURCES src/*.cxx src/tools/*.cxx src/physics/*.cxx)
+file(GLOB_RECURSE HEADERS src/EventGenerator.h 
+                          src/EventReader.h 
+                          src/tools/ParticleFilter.h 
+                          src/physics/Zee.h 
+                          src/physics/JF17.h 
+                          src/physics/Seed.h 
+                          src/physics/ParticleGun.h 
+                          )
+
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/GaugiKernel)

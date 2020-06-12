@@ -2,7 +2,7 @@
 #define JF17_h
 
 #include "Pythia8/Pythia.h"
-#include "EventGenerator.h"
+#include "../EventGenerator.h"
 
 class JF17 : public Physics
 {

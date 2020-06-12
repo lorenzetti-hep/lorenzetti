@@ -9,7 +9,7 @@
 #include "GaugiKernel/StoreGate.h"
 #include "GaugiKernel/StatusCode.h"
 #include "EventInfo/EventInfo.h"
-#include "ParticleFilter.h"
+#include "tools/ParticleFilter.h"
 #include "TTree.h"
 #include <exception>
 

@@ -9,9 +9,13 @@ from . import JF17
 __all__.extend(JF17.__all__)
 from .JF17 import *
 
-from . import Region
-__all__.extend(Region.__all__)
-from .Region import *
+from . import Seed
+__all__.extend(Seed.__all__)
+from .Seed import *
+
+from . import ParticleGun
+__all__.extend(ParticleGun.__all__)
+from .ParticleGun import *
 
 from . import EventReader
 __all__.extend(EventReader.__all__)
