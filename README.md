@@ -12,19 +12,19 @@ There are two ways you can run Lorenzett: using a Docker container (recommended)
 
 ### Running with Docker
 
-If you take a look at the [Lorenzett's DockerHub](https://hub.docker.com/r/gabrielmilan/lorenzett) you'll find two main images:
+If you take a look at the [Lorenzett's DockerHub](https://hub.docker.com/r/lorenzett/lorenzett) you'll find two main images:
 
-* gabrielmilan/lorenzett:latest
-* gabrielmilan/lorenzett:sdumont
+* lorenzett/lorenzett:latest
+* lorenzett/lorenzett:sdumont
 
 We'll refer to the `latest` image as `base`, since `sdumont` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzett/tree/master/docker), on the `docker/` directory.
 
-Our base image is meant for users that want to do a custom run on Lorenzett. If you're a first-timer, you'll want the `gabrielmilan/lorenzett:sdumont` image.
+Our base image is meant for users that want to do a custom run on Lorenzett. If you're a first-timer, you'll want the `lorenzett/lorenzett:sdumont` image.
 
 #### Using the *sdumont* image
 
 ```
-docker run -v <output-path>:/output gabrielmilan/lorenzett:sdumont <args>
+docker run -v <output-path>:/output lorenzett/lorenzett:sdumont <args>
 ```
 
 For `<args>` information, see below:
@@ -49,7 +49,7 @@ All arguments are required
 #### Using the *latest* image
 
 ```
-docker run -it -v <your-mount>:/volume gabrielmilan/lorenzett /bin/bash
+docker run -it -v <your-mount>:/volume lorenzett/lorenzett /bin/bash
 ```
 
 > **Note**: You shall mount as many volumes as you wish.
