@@ -1,5 +1,5 @@
 
-#include "EventReader.h"
+#include "P8Kernel/EventReader.h"
 #include "EventInfo/EventInfo.h"
 #include "G4Kernel/EventLoop.h"
 #include "G4Kernel/constants.h"
@@ -17,7 +17,7 @@
 #include "TROOT.h"
 
 using namespace Gaugi;
-
+using namespace generator;
 
 EventReader::EventReader(std::string name):
     IMsgService(name),
