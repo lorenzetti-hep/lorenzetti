@@ -66,8 +66,9 @@ namespace generator{
       /* Particles inside of this seed*/
       std::vector<particle_t> m_particles;
   
-      float m_ettot;
       float m_etot;
+      float m_ettot;
+
   };
   
   

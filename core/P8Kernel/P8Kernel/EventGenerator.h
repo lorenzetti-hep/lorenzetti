@@ -37,7 +37,7 @@ namespace generator{
       void clear();
   
   
-      //std::vector<Algorithm*> m_algs;
+      std::vector<Algorithm*> m_algs;
   
       TTree *m_tree;
       SG::StoreGate *m_store;

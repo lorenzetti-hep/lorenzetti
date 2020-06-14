@@ -33,7 +33,6 @@ StatusCode EventGenerator::initialize()
 {
   MSG_INFO( "Initialize pythia..." );
  
-  /*
   setMsgLevel( m_outputLevel );
 
   m_store = new SG::StoreGate( m_outputFile);
@@ -67,14 +66,12 @@ StatusCode EventGenerator::initialize()
   m_store->add( new TH1F( "eta"  , "#eta Main particles; #eta; Count", 50, -2.5, 2.5 ) );
   m_store->add( new TH1F( "phi"  , "#phi Main particles; #phi; Count", 50, -3.2, 3.2 ) );
   m_store->add( new TH1F( "pt"  , "P_{T} Main particles; P_{T}[GeV]; Count", 100, 0, 100 ) );
-  */
 
-  /*
   for( auto &alg : m_algs ){
     if ( alg->initialize().isFailure() ){
       MSG_FATAL( "It's not possible to initialize the event algorithm with name " << alg->name() );
     }
-  }*/
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -92,7 +89,6 @@ StatusCode EventGenerator::execute()
     
     try {  
 
-      /*
       Event event;
 
       // Loop over all physcis tools
@@ -104,7 +100,6 @@ StatusCode EventGenerator::execute()
       }
 
       dump( event );      
-      */
     } catch ( NotInterestingEvent ){
       MSG_WARNING("Ignoring non interesting event, regenerating...");
       --iEvent;
@@ -123,12 +118,12 @@ StatusCode EventGenerator::execute()
 StatusCode EventGenerator::finalize()
 {
   MSG_INFO( "Finalize the Event generator." );
-  /*
+  
   for( auto &alg : m_algs ){
     if ( alg->finalize().isFailure() ){
       MSG_ERROR( "It's not possible to finalize the event algorithm with name " << alg->name() );
     }
-  }*/
+  }
   // Release the storegate
   delete m_store;
 
@@ -139,7 +134,6 @@ StatusCode EventGenerator::finalize()
 
 void EventGenerator::clear()
 {
-  /*
   // Clear the ntuple vectors
   m_p_isMain->clear();
   m_p_pdg_id->clear(); 
@@ -155,11 +149,9 @@ void EventGenerator::clear()
   m_p_prod_t->clear();
   m_p_e->clear(); 
   m_p_et->clear();
-  */
 }
 
 
-/*
 void EventGenerator::dump( Event &event )
 {
 
@@ -215,5 +207,4 @@ void EventGenerator::dump( Event &event )
 
   
 }
-*/
 
