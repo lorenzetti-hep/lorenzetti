@@ -19,6 +19,7 @@ class ParticleGun( Logger ):
                 "Eta",
                 "Phi",
                 "Particle",
+                "Energy",
                 "EnergyMin",
                 "EnergyMax",
                 "HasLifetime",

@@ -77,12 +77,11 @@ generator = EventGenerator( "EventGenerator",
 from PythiaGenerator import ParticleGun, Particle
 
 
-gun = ParticleGun( "ParticleGun",
+gun = ParticleGun( "Electron",
                   Particle    = Particle.Electron,
                   Eta         = 0.3, 
                   Phi         = 1.52170894,
-                  EnergyMin   = 15*GeV,
-                  EnergyMax   = 15*GeV,
+                  Energy      = 15*GeV,
                   Seed        = args.seed,
                   OutputLevel = args.outputLevel )
 

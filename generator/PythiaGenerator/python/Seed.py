@@ -1,11 +1,11 @@
-__all__ = ["Region"]
+__all__ = ["Seed"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class Region( Logger ):
+class Seed( Logger ):
 
   __allow_keys = [
                 "Eta",
@@ -18,9 +18,9 @@ class Region( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import Region
+    from ROOT import Seed
     # Create the algorithm
-    self.__core = Region()
+    self.__core = Seed()
     for key, value in kw.items():
       self.setProperty( key,value )
 

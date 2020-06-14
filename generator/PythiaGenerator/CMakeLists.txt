@@ -1,18 +1,17 @@
 
-file(GLOB SOURCES src/*.cxx src/tools/*.cxx src/physics/*.cxx)
-file(GLOB_RECURSE HEADERS src/EventGenerator.h 
-                          src/EventReader.h 
-                          src/tools/ParticleFilter.h 
-                          src/physics/Zee.h 
-                          src/physics/JF17.h 
-                          src/physics/Seed.h 
-                          src/physics/ParticleGun.h 
+file(GLOB SOURCES src/*.cxx )
+file(GLOB_RECURSE HEADERS src/Pileup.h 
+                          src/Zee.h
+                          src/JF17.h
+                          src/ParticleGun.h
+                          src/FixedRegion.h
                           )
 
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/GaugiKernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/G4Kernel)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/P8Kernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/EventInfo)
 
 # included by hand, should be fixed for future
