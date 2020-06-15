@@ -28,8 +28,6 @@ namespace generator{
       float m_nPileupAvg;
       float m_delta_eta;
       float m_delta_phi;
-      float m_sigma_t;
-      float m_sigma_z;
       std::string m_file;
     
   };

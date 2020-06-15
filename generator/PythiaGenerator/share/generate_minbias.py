@@ -56,44 +56,51 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-from PythiaGenerator import EventGenerator
-
-
 minbias = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
 
-generator = EventGenerator( "EventGenerator",
-                            OutputFile     = args.outputFile,
-                            MinbiasFile    = minbias,
-                            EtaMax         = 1.4,
-                            Select         = 2,
-                            PileupAvg      = args.pileupAvg,
-                            BunchIdStart   = args.bc_id_start,
-                            BunchIdEnd     = args.bc_id_end,
-                            OutputLevel    = args.outputLevel,
-                            Seed           = args.seed,
-                            )
+
+from P8Kernel import EventGenerator
+
+gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
 
 
-# Window definition
-generator.setProperty("MinbiasDeltaEta",  0.22 )
-generator.setProperty("MinbiasDeltaPhi",  0.22 )
+
+from PythiaGenerator import Pileup
+
+pileup = Pileup( "MinimumBias",
+                 File           = minbias,
+                 EtaMax         = 1.4,
+                 Select         = 2,
+                 PileupAvg      = args.pileupAvg,
+                 BunchIdStart   = args.bc_id_start,
+                 BunchIdEnd     = args.bc_id_end,
+                 OutputLevel    = args.outputLevel,
+                 Seed           = args.seed,
+                 DeltaEta       = 0.22,
+                 DeltaPhi       = 0.22,
+                 )
+
+
 
 # To collect using this cell position
-from PythiaGenerator import Seed
+from PythiaGenerator import FixedRegion
+
 seeds = [
           # -0.22 to 0.22
           #Region("Region_1", Eta=0.0, Phi=1.52170894 ),
           # 0.28 to 0.72
-          Seed("Seed_2", Eta=0.3, Phi=1.52170894 ),
+          FixedRegion("Seed_2", Eta=0.3, Phi=1.52170894 ),
         ]
 
-# Add seeds. This will be used to collect Minimum bias for this specific regions (seeds)
+
 for seed in seeds:
-  generator.push_back(seed)
+  gen+=seed
+
+gen+=pileup
 
 
-# Run
-generator.run(args.numberOfEvents)
+# Run!
+gen.run(args.numberOfEvents)
 
 
 

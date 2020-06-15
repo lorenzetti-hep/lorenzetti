@@ -1,23 +1,20 @@
 
 
-//#include <algorithm>
+#include <algorithm>
+#include "P8Kernel/EventGenerator.h"
 #include "TTree.h"
 #include "TH1F.h"
 #include "TH2F.h"
-//#include "G4Kernel/CaloPhiRange.h"
-#include "P8Kernel/EventGenerator.h"
 
 using namespace SG;
 using namespace Gaugi;
 using namespace generator;
 
 
-EventGenerator::EventGenerator():
-  IMsgService("EventGenerator"),
+EventGenerator::EventGenerator(): IMsgService("EventGenerator"),
   PropertyService(),
   m_store(nullptr)
 {
-
   declareProperty( "NumberOfEvents" , m_nEvent=1                );
   declareProperty( "OutputFile"     , m_outputFile="particles"  );
   declareProperty( "OutputLevel"    , m_outputLevel=1           );
@@ -25,9 +22,28 @@ EventGenerator::EventGenerator():
 
 
 EventGenerator::~EventGenerator()
-{}
+{
+  delete m_p_isMain     ; 
+  delete m_p_pdg_id     ;
+  delete m_p_bc_id      ;
+  delete m_p_e          ;  
+  delete m_p_et         ;
+  delete m_p_eta        ; 
+  delete m_p_phi        ;
+  delete m_p_px         ; 
+  delete m_p_py         ; 
+  delete m_p_pz         ;
+  delete m_p_prod_x     ; 
+  delete m_p_prod_y     ; 
+  delete m_p_prod_z     ;  
+  delete m_p_prod_t     ;
+}
 
 
+void EventGenerator::push_back( Algorithm *alg )
+{
+  m_algs.push_back(alg);
+}
 
 StatusCode EventGenerator::initialize()
 {
@@ -35,17 +51,37 @@ StatusCode EventGenerator::initialize()
  
   setMsgLevel( m_outputLevel );
 
-  m_store = new SG::StoreGate( m_outputFile);
+  m_store = new SG::StoreGate(m_outputFile);
  
+  m_p_isMain     = new std::vector<int>();
+  m_p_pdg_id     = new std::vector<int>(); 
+  m_p_bc_id      = new std::vector<int>(); 
 
+  m_p_e          = new std::vector<float>();  
+  m_p_et         = new std::vector<float>();
+  m_p_eta        = new std::vector<float>(); 
+  m_p_phi        = new std::vector<float>();
+  m_p_px         = new std::vector<float>(); 
+  m_p_py         = new std::vector<float>(); 
+  m_p_pz         = new std::vector<float>();
+  m_p_prod_x     = new std::vector<float>(); 
+  m_p_prod_y     = new std::vector<float>(); 
+  m_p_prod_z     = new std::vector<float>();  
+  m_p_prod_t     = new std::vector<float>();
+
+
+ 
   // Initialize output file
   m_tree = new TTree("particles","Pythia particles event tree");
   m_tree->Branch("avg_mu"      , &m_avg_mu, "avg_mu/F");
   m_tree->Branch("p_isMain"    , &m_p_isMain     );
   m_tree->Branch("p_pdg_id"    , &m_p_pdg_id     ); 
   m_tree->Branch("p_bc_id"     , &m_p_bc_id      ); 
-  m_tree->Branch("bc_mu"       , &m_bc_id_mu     ); 
-  m_tree->Branch("bc_id_nhits" , &m_bc_id_nhits  );
+  
+  m_tree->Branch("p_e"         , &m_p_e          );  
+  m_tree->Branch("p_et"        , &m_p_et         );
+  m_tree->Branch("p_eta"       , &m_p_eta        ); 
+  m_tree->Branch("p_phi"       , &m_p_phi        );
   m_tree->Branch("p_px"        , &m_p_px         ); 
   m_tree->Branch("p_py"        , &m_p_py         ); 
   m_tree->Branch("p_pz"        , &m_p_pz         );
@@ -53,10 +89,8 @@ StatusCode EventGenerator::initialize()
   m_tree->Branch("p_prod_y"    , &m_p_prod_y     ); 
   m_tree->Branch("p_prod_z"    , &m_p_prod_z     );  
   m_tree->Branch("p_prod_t"    , &m_p_prod_t     );
-  m_tree->Branch("p_eta"       , &m_p_eta        ); 
-  m_tree->Branch("p_phi"       , &m_p_phi        );
-  m_tree->Branch("p_e"         , &m_p_e          );  
-  m_tree->Branch("p_et"        , &m_p_et         );
+
+
   m_store->cd();
   m_store->add( m_tree );
 
@@ -85,13 +119,14 @@ StatusCode EventGenerator::execute()
   for (int iEvent = 0; iEvent < m_nEvent; ++iEvent) {
     
     MSG_INFO( "Running event " << iEvent );
+    
     clear();
     
     try {  
-
-      Event event;
+      generator::Event event;
 
       // Loop over all physcis tools
+
       for (auto& alg : m_algs ){
         if ( alg->execute(event).isFailure() )
         {
@@ -155,10 +190,8 @@ void EventGenerator::clear()
 void EventGenerator::dump( Event &event )
 {
 
-  // Just use the mb pythia to get random numbers
-  //const auto main_event_t = m_mb_pythia.rndm.gauss() * m_sigma_t;
-  //const auto main_event_z = m_mb_pythia.rndm.gauss() * m_sigma_z;
-
+  m_avg_mu = event.avgmu();
+  m_store->hist1("avgmu")->Fill( m_avg_mu  );
 
   // Fill the seed
   // Main event is always in BC 0; pdg is = 0 to sign that this is a RoI
@@ -198,13 +231,13 @@ void EventGenerator::dump( Event &event )
       m_p_phi->push_back( part.phi );
       m_p_prod_x->push_back( part.xProd ); 
       m_p_prod_y->push_back( part.yProd ); 
-      m_p_prod_z->push_back( part.zProd );//+ main_event_z  ); 
-      m_p_prod_t->push_back( part.tProd );//+ main_event_t );
+      m_p_prod_z->push_back( part.zProd ); 
+      m_p_prod_t->push_back( part.tProd );
       m_p_e->push_back( part.e ); 
       m_p_et->push_back( part.eT );
     }
   }
 
-  
+  m_tree->Fill(); 
 }
 

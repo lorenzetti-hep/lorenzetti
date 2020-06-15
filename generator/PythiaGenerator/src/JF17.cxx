@@ -61,6 +61,9 @@ StatusCode JF17::execute( generator::Event &event )
       throw AbortPrematurely();
     }
   }
+ 
+  const auto main_event_t = m_generator.rndm.gauss() * m_sigma_t;
+  const auto main_event_z = m_generator.rndm.gauss() * m_sigma_z;
 
   double weight = m_generator.info.mergingWeight();
   double evtweight = m_generator.info.weight();
@@ -143,8 +146,10 @@ StatusCode JF17::execute( generator::Event &event )
       for ( auto& p : cluster ){
         
         seed.emplace_back( 1, 0, p->id(), p->px(), p->py(), p->pz(), p->eta(), p->phi(), 
-                           p->xProd(), p->yProd(), p->zProd(), p->tProd(), 
+                           p->xProd(), p->yProd(), p->zProd()+main_event_z, p->tProd()+main_event_t, 
                            p->e(), p->eT() ); 
+
+
 
       }
 

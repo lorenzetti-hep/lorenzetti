@@ -4,7 +4,6 @@
 #include "P8Kernel/ParticleFilter.h"
 
 
-static const double c_light = 2.99792458e+8; // m/s
 using namespace Pythia8;
 using namespace SG;
 using namespace generator;
@@ -12,18 +11,14 @@ using namespace generator;
 
 Pileup::Pileup(): IMsgService("Pileup"), Algorithm()
 {
-
-  declareProperty( "File"           , m_file=""                                                               );
-  declareProperty( "PileupAvg"      , m_nPileupAvg=0                                                          );
-  declareProperty( "BunchIdStart"   , m_bc_id_start=-8                                                        );
-  declareProperty( "BunchIdEnd"     , m_bc_id_end=7                                                           );
-  declareProperty( "EtaMax"         , m_etaMax=1.4                                                            );
-  declareProperty( "Select"         , m_select=2                                                              );
-  declareProperty( "Sigma_t"        , m_sigma_t= 200 * 1e-12 /*pico seconds*/ * c_light /*m/s*/ * 1e+3 /*mm*/ );
-  declareProperty( "Sigma_z"        , m_sigma_z=56 /*miliseconds*/                                            );
-  declareProperty( "MinbiasDeltaEta", m_delta_eta=0.22                                                        );
-  declareProperty( "MinbiasDeltaPhi", m_delta_phi=0.22                                                        );
-  
+  declareProperty( "File"           , m_file=""          );
+  declareProperty( "PileupAvg"      , m_nPileupAvg=0     );
+  declareProperty( "BunchIdStart"   , m_bc_id_start=-8   );
+  declareProperty( "BunchIdEnd"     , m_bc_id_end=7      );
+  declareProperty( "EtaMax"         , m_etaMax=1.4       );
+  declareProperty( "Select"         , m_select=2         );
+  declareProperty( "DeltaEta"       , m_delta_eta=0.22   );
+  declareProperty( "DeltaPhi"       , m_delta_phi=0.22   );
 }
 
 
@@ -86,6 +81,9 @@ StatusCode Pileup::execute(  generator::Event &event )
         break;
       }
 
+      const auto mb_event_t = m_generator.rndm.gauss() * m_sigma_t;
+      const auto mb_event_z = m_generator.rndm.gauss() * m_sigma_z;
+
       double weight = m_generator.info.mergingWeight();
       double evtweight = m_generator.info.weight();
       weight *= evtweight;
@@ -98,9 +96,6 @@ StatusCode Pileup::execute(  generator::Event &event )
       // Find final charged particles with |eta| < etaMax
       det_acc_filter.filter( m_generator.event );
       
-      const auto mb_event_t = m_generator.rndm.gauss() * m_sigma_t;
-      const auto mb_event_z = m_generator.rndm.gauss() * m_sigma_z;
-
 
       for ( const auto p : det_acc_filter.getParticlesRef() ){
 

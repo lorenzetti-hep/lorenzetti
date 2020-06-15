@@ -8,7 +8,7 @@ from G4Kernel import treatPropertyValue
 class Zee( Logger ):
 
   __allow_keys = [
-                "MainFile",
+                "File",
                 "EtaMax",
                 "MinPt",
                 "Seed",
@@ -20,9 +20,9 @@ class Zee( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import Zee
+    from ROOT import generator
     # Create the algorithm
-    self.__core = Zee()
+    self.__core = generator.Zee()
     for key, value in kw.items():
       self.setProperty( key,value )
 

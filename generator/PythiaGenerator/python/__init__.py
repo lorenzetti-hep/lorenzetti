@@ -9,21 +9,18 @@ from . import JF17
 __all__.extend(JF17.__all__)
 from .JF17 import *
 
-from . import Seed
-__all__.extend(Seed.__all__)
-from .Seed import *
+from . import FixedRegion
+__all__.extend(FixedRegion.__all__)
+from .FixedRegion import *
 
 from . import ParticleGun
 __all__.extend(ParticleGun.__all__)
 from .ParticleGun import *
 
-from . import EventReader
-__all__.extend(EventReader.__all__)
-from .EventReader import *
+from . import Pileup
+__all__.extend(Pileup.__all__)
+from .Pileup import *
 
-from . import EventGenerator
-__all__.extend(EventGenerator.__all__)
-from .EventGenerator import *
 
 
 

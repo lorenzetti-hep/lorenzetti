@@ -8,7 +8,7 @@ from G4Kernel import treatPropertyValue
 class JF17( Logger ):
 
   __allow_keys = [
-                  "MainFile",
+                  "File",
                   "EtaMax",
                   "MinPt",
                   "Select",
@@ -23,9 +23,9 @@ class JF17( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import JF17
+    from ROOT import generator
     # Create the algorithm
-    self.__core = JF17()
+    self.__core = generator.JF17()
     for key, value in kw.items():
       self.setProperty( key,value )
 

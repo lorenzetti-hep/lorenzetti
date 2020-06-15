@@ -46,6 +46,10 @@ StatusCode Zee::execute( generator::Event &event )
       throw AbortPrematurely();
     }
   }
+  
+  const auto main_event_t = m_generator.rndm.gauss() * m_sigma_t;
+  const auto main_event_z = m_generator.rndm.gauss() * m_sigma_z;
+
 
   double weight = m_generator.info.mergingWeight();
   double evtweight = m_generator.info.weight();
@@ -96,7 +100,7 @@ StatusCode Zee::execute( generator::Event &event )
     auto seed = generator::Seed( e->eta(), e->phi() );
 
     seed.emplace_back( 1, 0, e->id(), e->px(), e->py(), e->pz(), e->eta(), e->phi(), 
-                       e->xProd(), e->yProd(), e->zProd(), e->tProd(), 
+                       e->xProd(), e->yProd(), e->zProd() + main_event_z, e->tProd() + main_event_t, 
                        e->e(), e->eT() ); 
 
     event.push_back( seed );

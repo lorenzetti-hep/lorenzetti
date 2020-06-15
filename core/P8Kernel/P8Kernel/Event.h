@@ -49,12 +49,32 @@ namespace generator{
       /*! Set phi seed position */
       void setPhi(float phi){ m_phi=phi; };
   
-      const std::vector<particle_t>& operator*() const { return m_particles;};
+      std::vector<particle_t>& operator*() { return m_particles;};
   
       float etot() const {return m_etot;};
   
       float ettot() const {return m_ettot;};
   
+ 
+      void emplace_back(int isMain,
+                        int bc_id,
+                        int pdg_id,
+                        float px,
+                        float py,
+                        float pz,
+                        float eta,
+                        float phi,
+                        float xProd,
+                        float yProd,
+                        float zProd,
+                        float tProd,
+                        float e,
+                        float eT)
+      { 
+        m_etot+=e;
+        m_ettot+=eT;
+        m_particles.push_back( particle_t{isMain,bc_id,pdg_id,px,py,pz,eta,phi,xProd,yProd,zProd,tProd,e,eT});
+      };
   
   
     private:
@@ -82,12 +102,13 @@ namespace generator{
       ~Event()=default;
       /*! Add seed into the current event*/
       void push_back( Seed seed ){ m_seeds.push_back( seed ); };
+
       /*! Set average mu */
       void setAvgmu( float avgmu ){ m_avgmu=avgmu; };
       /*! Get average mu */
       float avgmu() const { return m_avgmu; };
   
-      const std::vector<Seed>& operator*() const { return m_seeds;};
+      std::vector<Seed>& operator*() { return m_seeds;};
   
   
     protected:

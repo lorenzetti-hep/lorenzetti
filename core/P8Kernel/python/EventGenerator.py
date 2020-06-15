@@ -9,21 +9,8 @@ class EventGenerator( Logger ):
 
   __allow_keys = [
                         "NumberOfEvents" ,
-                        "MinbiasFile"    , 
                         "OutputFile"     , 
-                        "EtaMax"         , 
-                        "MinPt"          ,
-                        "PileupAvg"      , 
-                        "BunchIdStart"   , 
-                        "BunchIdEnd"     , 
-                        "Select"         , 
-                        "Sigma_t"        , 
-                        "Sigma_z"        , 
-                        "MinbiasDeltaEta", 
-                        "MinbiasDeltaPhi",
-                        "Seed"           ,
                         "OutputLevel"    ,
-                        "UseWindow"      ,
                       ]
 
 
@@ -42,12 +29,19 @@ class EventGenerator( Logger ):
   def core(self):
     return self.__core
 
+
   def run( self, evt ):
 
     self.core().setProperty( "NumberOfEvents",  evt )
     self.core().initialize()
-    self.core().run()
+    self.core().execute()
     self.core().finalize()
+
+
+  def __add__(self, tool):
+    self.push_back(tool)
+    return self
+
 
   def push_back( self, tool ):
     self.__core.push_back( tool.core() )

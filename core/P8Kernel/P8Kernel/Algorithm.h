@@ -38,6 +38,11 @@ namespace generator{
       int m_nAbort;
       /*! Number of errors */
       int m_iAbort;
+      /*! Used to random t for the current processs */
+      float m_sigma_t;
+      /*! Used to random z for the current processs */
+      float m_sigma_z;
+
       /*! The pythia event generator */
       Pythia8::Pythia m_generator;
   };

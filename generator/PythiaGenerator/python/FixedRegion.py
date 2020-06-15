@@ -1,11 +1,11 @@
-__all__ = ["Seed"]
+__all__ = ["FixedRegion"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class Seed( Logger ):
+class FixedRegion( Logger ):
 
   __allow_keys = [
                 "Eta",
@@ -18,9 +18,9 @@ class Seed( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzett')
-    from ROOT import Seed
+    from ROOT import generator
     # Create the algorithm
-    self.__core = Seed()
+    self.__core = generator.FixedRegion()
     for key, value in kw.items():
       self.setProperty( key,value )
 
