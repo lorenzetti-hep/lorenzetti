@@ -61,35 +61,37 @@ import multiprocessing
 ncpu = multiprocessing.cpu_count()
 
 
-if args.filter == 'Zee':
-    configfile="/code/lorenzett/generator/PythiaGenerator/data/zee_config.cmnd"
-elif args.filter == 'JF17':
-    configfile="/code/lorenzett/generator/PythiaGenerator/data/jet_config.cmnd"
-elif args.filter == 'MB':
-    configfile=''
-else:
-    mainLogger.fatal("Unknown option for --filter, please choose one of the following: Zee, JF17 or MB")
 
+output = '/output/generator_' + args.outputFile
+
+
+package = args.filter.split('/')[0]
+script = args.filter.split('/')[1]
+
+script = '/code/lorenzett/generator/' + package + '/share/' + script
 
 
 
 output = args.outputFile + '/generator_samples.root'
 
 
-command = "python3 /code/lorenzett/scripts/generator.py -i {CONFIG} \
+command = "python3 {SCRIPT} \
 -s {SEED} \
 --bc_id_start {BCID_START} \
 --bc_id_end {BCID_END} \
 --pileupAvg {AVGMU} \
---filter {FILTER} \
---evt {NEVENTS}".format(  CONFIG      = configfile,
+--evt {NEVENTS}".format(  SCRIPT      = script,
                           SEED        = args.seed,
-                          FILTER      = args.filter,
                           BCID_START  = args.bc_id_start,
                           BCID_END    = args.bc_id_end,
                           AVGMU       = args.pileupAvg,
                           NEVENTS     = args.numberOfEventsPerJob,
                           )
+print(command)
+
+
+
+
 
 f = open('/command.sh', 'w')
 #f.write('echo "setup all envs..."\n')
