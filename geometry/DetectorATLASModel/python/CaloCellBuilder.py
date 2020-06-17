@@ -23,7 +23,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 5,
         'BunchIdStart'    : -24, # -800ns
         'BunchIdEnd'      : 5, # +175ns
-        'OFWeights'       : [-0.0000853580,0.265132,0.594162,0.389505,0.124353],
+        'OFWeights'       : [-0.2068,    0.1816,    0.6840,    0.3569,   -0.0245],
       },
       # Lar Barrel Calorimter, EM2
       { 'CollectionKey'   : "Collection_EM2",
@@ -32,7 +32,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 5,
         'BunchIdStart'    : -24, # -800ns
         'BunchIdEnd'      : 5, # +175ns
-        'OFWeights'       : [-0.0000853580,0.265132,0.594162,0.389505,0.124353],
+        'OFWeights'       : [-0.3514,    0.1208,    0.7654,    0.3189,   -0.1652],
       },
       # Lar Barrel Calorimter, EM3
       { 'CollectionKey'   : "Collection_EM3",
@@ -41,7 +41,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 5,
         'BunchIdStart'    : -24, # -800ns
         'BunchIdEnd'      : 5, # +175ns
-        'OFWeights'       : [-0.0000853580,0.265132,0.594162,0.389505,0.124353],
+        'OFWeights'       : [-0.0619,    0.2341,    0.6148,    0.3847,    0.1071],
       },
       # Tile Barrel Calorimter, HAD1
       { 'CollectionKey'   : "Collection_HAD1",
@@ -50,7 +50,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 7,
         'BunchIdStart'    : -8, # -200ns
         'BunchIdEnd'      : 7, # +175ns
-        'OFWeights'       : [-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292],
+        'OFWeights'       : [-0.0828,   -0.3598,    0.0467,    0.9619,    0.1593,   -0.3346,   -0.3906],
       },
       # Tile Barrel Calorimter, HAD2
       { 'CollectionKey'   : "Collection_HAD2",
@@ -59,7 +59,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 7,
         'BunchIdStart'    : -8, # -200ns
         'BunchIdEnd'      : 7, # +175ns
-        'OFWeights'       : [-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292],
+        'OFWeights'       : [-0.3246,   -0.3411,    0.1496,    0.8439,    0.2554,   -0.2330,   -0.3502],
       },
       # Tile Barrel Calorimter, HAD1
       { 'CollectionKey'   : "Collection_HAD3",
@@ -68,7 +68,7 @@ class CaloCellBuilder( Logger ):
         'NSamples'        : 7,
         'BunchIdStart'    : -8, # -200ns
         'BunchIdEnd'      : 7, # +175ns
-        'OFWeights'       : [-0.3781, -0.3572, 0.1808, 0.8125, 0.2767, -0.2056, -0.3292],
+        'OFWeights'       : [-0.4099,   -0.3620,    0.1891,    0.8020,    0.2825,   -0.1801,   -0.3217],
       },
 
      ] 
