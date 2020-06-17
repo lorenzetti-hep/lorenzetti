@@ -56,19 +56,17 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-minbias = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-
+minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
 
 from P8Kernel import EventGenerator
 
 gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
 
 
-
 from PythiaGenerator import Pileup
-
+# Generate the pileup
 pileup = Pileup( "MinimumBias",
-                 File           = minbias,
+                 File           = minbias_file,
                  EtaMax         = 1.4,
                  Select         = 2,
                  PileupAvg      = args.pileupAvg,
@@ -81,24 +79,18 @@ pileup = Pileup( "MinimumBias",
                  )
 
 
+from PythiaGenerator import ParticleGun, Particle
+# Create the seed
+gun = ParticleGun( "ParticleGun",
+                   Eta          = 0.3,
+                   Phi          = 1.52170894,
+                   Energy       = 20*GeV,
+                   Particle     = Particle.Electron )
 
-# To collect using this cell position
-from PythiaGenerator import FixedRegion
-
-seeds = [
-          # -0.22 to 0.22
-          #Region("Region_1", Eta=0.0, Phi=1.52170894 ),
-          # 0.28 to 0.72
-          FixedRegion("Seed_2", Eta=0.3, Phi=1.52170894 ),
-        ]
-
-
-for seed in seeds:
-  gen+=seed
-
+# Shoot an electron in the fixed direction
+gen+=gun
+# Add pileup around this electron
 gen+=pileup
-
-
 # Run!
 gen.run(args.numberOfEvents)
 
