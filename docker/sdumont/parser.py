@@ -44,6 +44,12 @@ parser.add_argument('-s','--seed', action='store', dest='seed', required = False
 parser.add_argument('-r','--reco_script', action='store', dest='reco_script', required = False , default='reco_trf.py',
                     help = "The reconstruction script used into the reco step. This script should be in lorenzett/scripts directory")
 
+parser.add_argument('-n','--ntuple', action='store', dest='ntuple', required = False , default='physics',
+                    help = "The ntuple schemma. Choose between physics or raw (for energy reconstruction studies).")
+
+
+
+
 parser.add_argument('--exec', action='store_true', dest='exec', required = False,
                     help = "Execute the command")
 
@@ -100,9 +106,10 @@ if args.exec:
 input  = output
 output = '/output/reco_'+args.outputFile
 reco_script = args.reco_script
-command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS}'.format( INPUT     = input,
-                                                                                                              OUTPUT    = output,
-                                                                                                              NTHREADS  = ncpu)
+command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS} --ntuple {NTUPLE}'.format( INPUT     = input,
+                                                                                                                                OUTPUT    = output,
+                                                                                                                                NTHREADS  = ncpu,
+                                                                                                                                NTUPLE    = args.ntuple)
 
 print(command)
 f.write(command)

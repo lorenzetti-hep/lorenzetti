@@ -47,6 +47,9 @@ parser.add_argument('-r','--reco_script', action='store', dest='reco_script', re
 parser.add_argument('--dry_run', action='store_true', dest='dry_run', required = False,
                     help = "dry_run")
 
+parser.add_argument('-n','--ntuple', action='store', dest='ntuple', required = False , default='physics',
+                    help = "The ntuple schemma. Choose between physics or raw (for energy reconstruction studies).")
+
 
 
 
@@ -109,9 +112,10 @@ f.write('\n')
 input  = output
 output = args.outputFile + '/reco_samples.root'
 reco_script = args.reco_script
-command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS}'.format( INPUT     = input,
-                                                                                                              OUTPUT    = output,
-                                                                                                              NTHREADS  = ncpu)
+command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS} --ntuple {NTUPLE}'.format( INPUT     = input,
+                                                                                                                                OUTPUT    = output,
+                                                                                                                                NTHREADS  = ncpu,
+                                                                                                                                NTUPLE    = args.ntuple)
 
 f.write('echo "run generator..."\n')
 print(command)
