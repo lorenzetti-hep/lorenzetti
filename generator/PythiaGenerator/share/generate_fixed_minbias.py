@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#!/usr/bin/env python3
 from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 import argparse
@@ -56,8 +56,8 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/zee_config.cmnd'
+minbias = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
+
 
 from P8Kernel import EventGenerator
 
@@ -68,7 +68,7 @@ gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
 from PythiaGenerator import Pileup
 
 pileup = Pileup( "MinimumBias",
-                 File           = minbias_file,
+                 File           = minbias,
                  EtaMax         = 1.4,
                  Select         = 2,
                  PileupAvg      = args.pileupAvg,
@@ -83,15 +83,19 @@ pileup = Pileup( "MinimumBias",
 
 
 # To collect using this cell position
-from PythiaGenerator import Zee
+from PythiaGenerator import FixedRegion
 
-zee = Zee( "Zee",
-          File        = main_file,
-          EtaMax      = 1.4,
-          MinPt       = 15*GeV,
-         )
+seeds = [
+          # -0.22 to 0.22
+          #Region("Region_1", Eta=0.0, Phi=1.52170894 ),
+          # 0.28 to 0.72
+          FixedRegion("Seed_2", Eta=0.3, Phi=1.52170894 ),
+        ]
 
-gen+=zee
+
+for seed in seeds:
+  gen+=seed
+
 gen+=pileup
 
 

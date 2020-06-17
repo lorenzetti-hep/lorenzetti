@@ -57,7 +57,7 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/jet_config.cmnd'
+main_file    = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/jet_config.cmnd'
 
 from P8Kernel import EventGenerator
 
@@ -92,12 +92,14 @@ jets = JF17( "JF17",
              Select      = 2,
              EtaWindow   = 0.4,
              PhiWindow   = 0.4,
+             Seed        = args.seed,
+             OutputLevel = args.outputLevel,
             )
 
+# generate jets
 gen+=jets
+# Add pileup
 gen+=pileup
-
-
 # Run!
 gen.run(args.numberOfEvents)
 

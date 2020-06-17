@@ -4,6 +4,7 @@
 #include "src/JF17.h"
 #include "src/ParticleGun.h"
 #include "src/FixedRegion.h"
+#include "src/BoostedEvents.h"
 
 
 #ifdef __CINT__
@@ -19,6 +20,7 @@
 #pragma link C++ class generator::JF17+;
 #pragma link C++ class generator::ParticleGun+;
 #pragma link C++ class generator::FixedRegion+;
+#pragma link C++ class generator::BoostedEvents+;
 
 
 #endif

@@ -2,7 +2,7 @@
 
 from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
-from PythiaGenerator    import EventReader
+from P8Kernel           import EventReader
 from G4Kernel           import *
 from CaloRec            import CaloNtupleMaker
 from CaloRec            import CaloClusterMaker

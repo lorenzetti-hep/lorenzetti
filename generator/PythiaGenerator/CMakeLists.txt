@@ -5,6 +5,7 @@ file(GLOB_RECURSE HEADERS src/Pileup.h
                           src/JF17.h
                           src/ParticleGun.h
                           src/FixedRegion.h
+                          src/BoostedEvents.h
                           )
 
 

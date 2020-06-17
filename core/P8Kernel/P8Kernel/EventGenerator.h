@@ -45,7 +45,6 @@ namespace generator{
       std::string m_outputFile;
       int m_outputLevel;
       float m_nEvent;
-      float m_nAbort;
     
   
       /*! Ntuple output */

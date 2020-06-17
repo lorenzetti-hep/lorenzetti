@@ -1,4 +1,4 @@
-__all__ = ["ParticleGun", "Particle"]
+__all__ = ["BoostedEvents"]
 
 from Gaugi import Logger, EnumStringification
 from Gaugi.messenger.macros import *
@@ -6,20 +6,13 @@ from G4Kernel import treatPropertyValue
 
 
 
-class Particle(EnumStringification):
-  Electron = 11
-
-
-
-
-
-class ParticleGun( Logger ):
+class BoostedEvents( Logger ):
 
   __allow_keys = [
-                "Eta",
-                "Phi",
                 "Particle",
-                "Energy",
+                "EnergyFactor",
+                "DeltaR",
+                "Sigma",
                 "HasLifetime",
                 "AtRest",
                 "Seed",
@@ -33,7 +26,7 @@ class ParticleGun( Logger ):
     ROOT.gSystem.Load('liblorenzett')
     from ROOT import generator
     # Create the algorithm
-    self.__core = generator.ParticleGun()
+    self.__core = generator.BoostedEvents()
     for key, value in kw.items():
       self.setProperty( key,value )
 

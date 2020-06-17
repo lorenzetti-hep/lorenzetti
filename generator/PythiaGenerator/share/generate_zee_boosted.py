@@ -1,4 +1,4 @@
-#! /usr/local/bin/python
+#!/usr/bin/env python3
 from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 import argparse
@@ -61,12 +61,14 @@ main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/zee_config.c
 
 from P8Kernel import EventGenerator
 
+# The pythia generator!
 gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
 
 
 
 from PythiaGenerator import Pileup
 
+# Pileup generator
 pileup = Pileup( "MinimumBias",
                  File           = minbias_file,
                  EtaMax         = 1.4,
@@ -80,21 +82,33 @@ pileup = Pileup( "MinimumBias",
                  DeltaPhi       = 0.22,
                  )
 
-
-
 # To collect using this cell position
 from PythiaGenerator import Zee
 
+# Create the Zee events
 zee = Zee( "Zee",
           File        = main_file,
           EtaMax      = 1.4,
           MinPt       = 15*GeV,
+          Seed        = args.seed,
+          OutputLevel = args.outputLevel,
          )
 
+from PythiaGenerator import BoostedEvents, Particle
+# Add boosted events
+boostedElectron = BoostedEvents( "ElectronBoosted", 
+                                 Particle=Particle.Electron, 
+                                 DeltaR=0.5,
+                                 Seed = args.seed,
+                                 OutputLevel = args.outputLevel
+                                 )
+
+# Z->ee
 gen+=zee
+# Z->ee + e
+gen+=boostedElectron
+# Z->ee + e + minbias
 gen+=pileup
-
-
 # Run!
 gen.run(args.numberOfEvents)
 

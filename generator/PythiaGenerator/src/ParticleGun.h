@@ -17,23 +17,19 @@ namespace generator{
       virtual StatusCode execute( generator::Event &) override;
       virtual StatusCode finalize() override;
   
-    private:
+    protected:
   
-      void fillParticle( Pythia8::Event& event,int id, double emin, double emax, double thetaIn, double phiIn,
-                         Pythia8::ParticleData& pdt, bool atRest, bool hasLifetime); 
+      void fillParticle( int id, double energy, double etaIn, double phiIn, bool atRest, bool hasLifetime); 
   
+
+      void clearParticles();
   
-  
-      float m_theta;
       float m_eta;
       float m_phi;
       float m_energy;
-      float m_energyMin;
-      float m_energyMax;
       bool m_hasLifetime;
       bool m_atRest;
       int m_pdgid;
-      int m_numberOfParticles;
      
   };
 }

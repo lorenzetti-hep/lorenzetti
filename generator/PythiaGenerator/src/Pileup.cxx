@@ -61,7 +61,6 @@ StatusCode Pileup::execute(  generator::Event &event )
   int iAbort=0;
 
   double nPileUpMean(0);
-  int nhits_win(0);
   
   for ( int bc_id = m_bc_id_start; bc_id <= m_bc_id_end; ++bc_id ){
 
@@ -69,7 +68,6 @@ StatusCode Pileup::execute(  generator::Event &event )
     int nPileup = poisson(m_nPileupAvg);
     nPileUpMean += nPileup;
 
-    int nhits_bc(0);
 
     // Generate a number of pileup events.
     for (int iPileup = 0; iPileup < nPileup; ++iPileup) 

@@ -110,7 +110,9 @@ namespace generator{
   
       std::vector<Seed>& operator*() { return m_seeds;};
   
-  
+ 
+      Seed& operator[](unsigned idx){ return m_seeds[idx]; }
+
     protected:
   
       /* Average mu */

@@ -57,7 +57,6 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/zee_config.cmnd'
 
 from P8Kernel import EventGenerator
 
@@ -83,16 +82,17 @@ pileup = Pileup( "MinimumBias",
 
 
 # To collect using this cell position
-from PythiaGenerator import Zee
+from PythiaGenerator import ParticleGun
 
-zee = Zee( "Zee",
-          File        = main_file,
-          EtaMax      = 1.4,
-          MinPt       = 15*GeV,
-         )
+gun = ParticleGun( "ParticleGun",
+                   Eta          = 0.0,
+                   Phi          = 0.0,
+                   Energy       = 20*GeV,
+                   Particle     = 11,
+                  )
 
-gen+=zee
-gen+=pileup
+gen+=gun
+#gen+=pileup
 
 
 # Run!

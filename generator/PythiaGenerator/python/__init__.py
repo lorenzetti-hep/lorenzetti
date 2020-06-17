@@ -21,6 +21,10 @@ from . import Pileup
 __all__.extend(Pileup.__all__)
 from .Pileup import *
 
+from . import BoostedEvents
+__all__.extend(BoostedEvents.__all__)
+from .BoostedEvents import *
+
 
 
 
