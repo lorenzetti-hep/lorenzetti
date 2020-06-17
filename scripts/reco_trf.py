@@ -4,10 +4,10 @@ from Gaugi.messenger    import LoggingLevel, Logger
 from Gaugi              import GeV
 from P8Kernel           import EventReader
 from G4Kernel           import *
-from CaloRec            import CaloNtupleMaker
+
 from CaloRec            import CaloClusterMaker
 from CaloRingerBuilder  import *
-from CaloRec            import RawNtupleMaker
+
 import numpy as np
 import argparse
 import sys,os
@@ -35,6 +35,11 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 
 parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
                     help = "Run with Qt interface.")
+
+parser.add_argument('-n', '--ntuple', dest='ntuple',requered = False, default = 'calo',
+                    help = "Choose the ntuple schemma: raw (energy estimation studies) or calo (physics studies)")
+
+
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -128,39 +133,45 @@ truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
 
 
 
-ntuple = CaloNtupleMaker( "CaloNtupleMaker",
-                          EventKey        = recordable("EventInfo"),
-                          RingerKey       = recordable("Rings"),
-                          TruthRingerKey  = recordable("TruthRings"),
-                          ClusterKey      = recordable("Clusters"),
-                          TruthClusterKey = recordable("TruthClusters"),
-                          DeltaR          = 0.15,
-                          DumpCells       = True,
-                          OutputLevel     = args.outputLevel)
 
+if args.ntuple == 'calo':
 
-#raw = RawNtupleMaker (  "RawNtupleMaker",
-#                        EventKey        = recordable("EventInfo"),
-#                        CellsKey        = recordable("Cells"),
-#                        EtaWindow       = 0.4,
-#                        PhiWindow       = 0.4,
-#                        OutputLevel     = args.outputLevel)
+    from CaloRec import CaloNtupleMaker
+    ntuple = CaloNtupleMaker( "CaloNtupleMaker",
+                              EventKey        = recordable("EventInfo"),
+                              RingerKey       = recordable("Rings"),
+                              TruthRingerKey  = recordable("TruthRings"),
+                              ClusterKey      = recordable("Clusters"),
+                              TruthClusterKey = recordable("TruthClusters"),
+                              DeltaR          = 0.15,
+                              DumpCells       = True,
+                              OutputLevel     = args.outputLevel)
 
+elif args.ntuple == 'raw':
 
+    from CaloRec import RawNtupleMaker
+    ntuple = RawNtupleMaker (  "RawNtupleMaker",
+                               EventKey        = recordable("EventInfo"),
+                               CellsKey        = recordable("Cells"),
+                               EtaWindow       = 0.4,
+                               PhiWindow       = 0.4,
+                               OutputLevel     = args.outputLevel)
 
+else:
+    mainLogger.fatal('Invalid ntuple tuple. Choose between raw or calo.')
 
 
 gun.merge(acc)
 calorimeter.merge(acc)
 acc+= cluster
 acc+= truth_cluster
-
 acc+= ringer
 acc+= truth_ringer
 acc += ntuple
 
-#acc += raw
 acc.run(args.numberOfEvents)
+
+
 
 # Merge all files
 command = "hadd -f " + args.outputFile + ' '
