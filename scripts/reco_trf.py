@@ -36,7 +36,7 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
                     help = "Run with Qt interface.")
 
-parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',requered = False, default = 'physics',
+parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = False, default = 'physics',
                     help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
 
