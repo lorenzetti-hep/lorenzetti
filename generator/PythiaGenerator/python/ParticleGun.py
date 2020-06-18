@@ -20,6 +20,8 @@ class ParticleGun( Logger ):
                 "Phi",
                 "Particle",
                 "Energy",
+                "EnergyMin",
+                "EnergyMax",
                 "HasLifetime",
                 "AtRest",
                 "Seed",

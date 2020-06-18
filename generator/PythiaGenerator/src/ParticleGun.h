@@ -27,6 +27,8 @@ namespace generator{
       float m_eta;
       float m_phi;
       float m_energy;
+      float m_energyMin;
+      float m_energyMax;
       bool m_hasLifetime;
       bool m_atRest;
       int m_pdgid;

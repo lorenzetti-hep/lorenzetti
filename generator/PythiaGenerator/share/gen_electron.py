@@ -84,7 +84,8 @@ from PythiaGenerator import ParticleGun, Particle
 gun = ParticleGun( "ParticleGun",
                    Eta          = 0.3,
                    Phi          = 1.52170894,
-                   Energy       = 20*GeV,
+                   EnergyMin    = 15*GeV,
+                   EnergyMax    = 100*GeV,
                    Particle     = Particle.Electron )
 
 # Shoot an electron in the fixed direction
