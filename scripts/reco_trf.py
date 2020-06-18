@@ -36,8 +36,8 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
                     help = "Run with Qt interface.")
 
-parser.add_argument('-n', '--ntuple', dest='ntuple',requered = False, default = 'calo',
-                    help = "Choose the ntuple schemma: raw (energy estimation studies) or calo (physics studies)")
+parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',requered = False, default = 'physics',
+                    help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
 
 
@@ -134,7 +134,7 @@ truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
 
 
 
-if args.ntuple == 'calo':
+if args.ntuple == 'physics':
 
     from CaloRec import CaloNtupleMaker
     ntuple = CaloNtupleMaker( "CaloNtupleMaker",
@@ -158,7 +158,7 @@ elif args.ntuple == 'raw':
                                OutputLevel     = args.outputLevel)
 
 else:
-    mainLogger.fatal('Invalid ntuple tuple. Choose between raw or calo.')
+    mainLogger.fatal('Invalid ntuple tuple. Choose between raw or physics.')
 
 
 gun.merge(acc)
