@@ -1,4 +1,4 @@
-# Lorenzett Event Simulator
+# Lorenzetti Event Simulator
 
 [![Build Status](https://travis-ci.org/jodafons/lorenzett.svg?branch=master)](https://travis-ci.org/jodafons/lorenzett)
 [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
@@ -16,12 +16,12 @@ There are two ways you can run Lorenzetti: using a Docker container (recommended
 
 ### Running with Docker
 
-If you take a look at the [Lorenzett's DockerHub](https://hub.docker.com/r/lorenzett/lorenzett) you'll find two main images:
+If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzett/lorenzett) you'll find two main images:
 
 * lorenzett/lorenzett:latest
 * lorenzett/lorenzett:sdumont
 
-We'll refer to the `latest` image as `base`, since `sdumont` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzett/tree/master/docker), on the `docker/` directory.
+We'll refer to the `latest` image as `base`, since `sdumont` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory.
 
 Our base image is meant for users that want to do a custom run on Lorenzett. If you're a first-timer, you'll want the `lorenzett/lorenzett:sdumont` image.
 
@@ -72,9 +72,9 @@ prun_job.py -c "generator.py --filter PythiaGenerator/gen_zee.py -i zee_config.c
 ```
 
 > **Notes**
-> - Files like `zee_config.cmnd` are located at `/code/lorenzett/generator/PythiaGenerator/data/`
+> - Files like `zee_config.cmnd` are located at `/code/lorenzetti/generator/PythiaGenerator/data/`
 > - Using seed=0 means that you'll use your system clock as seed.
-> - All scripts for event generation can be found [here](https://github.com/jodafons/lorenzett/tree/master/generator/PythiaGenerator/share).
+> - All scripts for event generation can be found [here](https://github.com/jodafons/lorenzetti/tree/master/generator/PythiaGenerator/share).
 
 
 For **reconstruction**, after generate the events using the `gen_*.py` command, you must pass the output file as input to the reconstruction transformation. To run the reconstruction use this command:
