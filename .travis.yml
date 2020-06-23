@@ -5,4 +5,4 @@ services:
   - docker
 
 script:
-  - docker run -v $PWD:/output gabrielmilan/lorenzett:sdumont -f PythiaGenerator/gen_zee.py -e 1 -p 0 -o first_test.root --bc_id_start -8 --bc_id_end 7
+  - docker run -v $PWD:/output lorenzetti:sdumont -f PythiaGenerator/gen_zee.py -e 1 -p 0 -o first_test.root --bc_id_start -8 --bc_id_end 7
