@@ -1,6 +1,6 @@
 build:
-	docker build --compress -t lorenzett/lorenzett:latest .
-	docker build --compress -t lorenzett/lorenzett:base .
+	docker build --compress -t lorenzetti/lorenzetti:latest .
+	docker build --compress -t lorenzetti/lorenzetti:base .
 push:
-	docker push lorenzett/lorenzett:latest
-	docker push lorenzett/lorenzett:base
+	docker push lorenzetti/lorenzetti:latest
+	docker push lorenzetti/lorenzetti:base

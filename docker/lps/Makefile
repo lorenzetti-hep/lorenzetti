@@ -1,4 +1,4 @@
 build:
-	docker build --compress -t lorenzett/lorenzett:lps .
+	docker build --compress -t lorenzetti/lorenzetti:lps .
 push:
-	docker push lorenzett/lorenzett:lps
+	docker push lorenzetti/lorenzetti:lps

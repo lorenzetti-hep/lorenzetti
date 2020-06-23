@@ -1,4 +1,4 @@
 build:
-	docker build --compress -t lorenzett/lorenzett:sdumont .
+	docker build --compress -t lorenzetti/lorenzetti:sdumont .
 push:
-	docker push lorenzett/lorenzett:sdumont
+	docker push lorenzetti/lorenzetti:sdumont

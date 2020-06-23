@@ -1,10 +1,10 @@
-FROM lorenzett/lorenzett:latest
+FROM lorenzetti/lorenzetti:latest
 
 LABEL maintainer "Gabriel Gazola Milan <gabriel.gazola@poli.ufrj.br>"
 
 RUN mkdir -p /output
 
-COPY lorenzett_run.sh /lorenzett_run.sh
+COPY lorenzetti_run.sh /lorenzetti_run.sh
 COPY parser.py /parser.py
 
-ENTRYPOINT ["/lorenzett_run.sh"]
+ENTRYPOINT ["/lorenzetti_run.sh"]

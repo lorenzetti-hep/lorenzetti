@@ -5,9 +5,9 @@ It may work on another environment, but you're on your own.
 
 * Script usage:
 ```
-lorenzett_run.sh - Script for running Lorenzett through docker in an one-line script
+lorenzetti_run.sh - Script for running Lorenzett through docker in an one-line script
  
-./lorenzett_run.sh [arguments]
+./lorenzetti_run.sh [arguments]
  
 Arguments:
 -h, --help                show this message
@@ -24,7 +24,7 @@ All arguments are required
 * How to run:
 
 ```
-docker run -v <output-path>:/output gabrielmilan/lorenzett:sdumont <args>
+docker run -v <output-path>:/output lorenzetti/lorenzetti:sdumont <args>
 ```
 
 For `<args>` information, refer to the Script usage, above.

@@ -71,7 +71,7 @@ output = '/output/generator_' + args.outputFile
 package = args.filter.split('/')[0]
 script = args.filter.split('/')[1]
 
-script = '/code/lorenzett/generator/' + package + '/share/' + script
+script = '/code/lorenzetti/generator/' + package + '/share/' + script
 
 
 
@@ -101,7 +101,7 @@ f = open('/command.sh', 'w')
 f.write('source /setup_envs.sh\n')
 
 f.write('echo "run pythia..."\n')
-command = "python3 /code/lorenzett/scripts/prun_job.py -o {OUTPUT} -c '{COMMAND}' -mt {NTHREADS} -n {NJOBS}".format(COMMAND=command,
+command = "python3 /code/lorenzetti/scripts/prun_job.py -o {OUTPUT} -c '{COMMAND}' -mt {NTHREADS} -n {NJOBS}".format(COMMAND=command,
                                                                                                                     NTHREADS=ncpu,
                                                                                                                     NJOBS=args.njobs,
                                                                                                                     OUTPUT=output)
@@ -112,7 +112,7 @@ f.write('\n')
 input  = output
 output = args.outputFile + '/reco_samples.root'
 reco_script = args.reco_script
-command = 'python3 /code/lorenzett/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS} --ntuple {NTUPLE}'.format( INPUT     = input,
+command = 'python3 /code/lorenzetti/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS} --ntuple {NTUPLE}'.format( INPUT     = input,
                                                                                                                                 OUTPUT    = output,
                                                                                                                                 NTHREADS  = ncpu,
                                                                                                                                 NTUPLE    = args.ntuple)

@@ -3,8 +3,6 @@
 export LC_ALL=''
 export RCM_NO_COLOR=0
 export RCM_GRID_ENV=0
-export CALIBPATH=/cvmfs/atlas.cern.ch/repo/sw/database/GroupData
-
 export LZT_PATH=`pwd`
 
 
@@ -39,8 +37,6 @@ fi
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export PATH=`pwd`/lib:$PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
-
-
 cd ..
 export PATH=$PATH:$PWD/scripts
 

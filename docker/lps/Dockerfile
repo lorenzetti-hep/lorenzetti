@@ -1,7 +1,7 @@
-FROM lorenzett/lorenzett:base
+FROM lorenzetti/lorenzetti:base
 
 LABEL maintainer "Gabriel Gazola Milan <gabriel.gazola@poli.ufrj.br>"
 
 #COPY setup_envs.sh /setup_envs.sh
-COPY run_lorenzett.py /run_lorenzett.py
+COPY run_lorenzetti.py /run_lorenzetti.py
 
