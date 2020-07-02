@@ -82,9 +82,8 @@ RUN apt install curl -y
 RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.3.tar.gz && cd fastjet-3.3.3/ && ./configure && make -j$CPU_N && make install
 
 # Install Gaugi
-RUN pip3 install gaugi future
+RUN pip3 install --upgrade gaugi future
 
 # Install Lorenzetti!
-RUN mkdir /code && cd /code && git clone https://github.com/jodafons/lorenzetti.git && cd lorenzetti && source setup_module.sh && source setup_module.sh --head
 COPY setup_envs.sh /
 RUN chmod 777 /setup_envs.sh
