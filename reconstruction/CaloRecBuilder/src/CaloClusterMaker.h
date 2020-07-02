@@ -47,6 +47,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
  
     std::vector< std::pair<xAOD::TruthParticle*,xAOD::CaloCluster*> > getAllClusters( SG::EventContext &ctx , std::string key ) const;
     
+    float sumEnergy(const xAOD::CaloCluster *clus, CaloSampling::CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell, bool raw=false) const;
       
     // input keys
     std::string m_cellsKey;

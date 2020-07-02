@@ -5,7 +5,7 @@ from Gaugi              import GeV
 from P8Kernel           import EventReader
 from G4Kernel           import *
 
-from CaloRec            import CaloClusterMaker
+from CaloRecBuilder     import CaloClusterMaker
 from CaloRingerBuilder  import *
 
 import numpy as np
@@ -39,6 +39,9 @@ parser.add_argument('--visualization', action='store_true', dest='visualization'
 parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = False, default = 'physics',
                     help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
+parser.add_argument('--enableMagneticField', action='store_true', dest='magneticField',required = False,
+                    help = "Enable the magnetic fieled.")
+
 
 
 if len(sys.argv)==1:
@@ -65,7 +68,7 @@ from DetectorATLASModel import CaloCellBuilder
 
 
 acc = ComponentAccumulator("ComponentAccumulator",
-                            ATLAS("GenericATLASDetector"),
+                            ATLAS("GenericATLASDetector", MagneticField = args.magneticField),
                             RunVis=args.visualization,
                             NumberOfThreads = args.numberOfThreads,
                             OutputFile = args.outputFile)
@@ -95,16 +98,16 @@ cluster = CaloClusterMaker( "CaloClusterMaker",
                             OutputLevel     = args.outputLevel)
 
 
-truth_cluster = CaloClusterMaker( "TruthCaloClusterMaker",
-                            CellsKey        = recordable("TruthCells"),
-                            EventKey        = recordable("EventInfo"),
-                            ClusterKey      = recordable("TruthClusters"),
-                            TruthKey        = recordable("TruthParticles"),
-                            EtaWindow       = 0.4,
-                            PhiWindow       = 0.4,
-                            MinCenterEnergy = 15*GeV,
-                            HistogramPath   = "Expert/TruthClusters",
-                            OutputLevel     = args.outputLevel)
+#truth_cluster = CaloClusterMaker( "TruthCaloClusterMaker",
+#                            CellsKey        = recordable("TruthCells"),
+#                            EventKey        = recordable("EventInfo"),
+#                            ClusterKey      = recordable("TruthClusters"),
+#                            TruthKey        = recordable("TruthParticles"),
+#                            EtaWindow       = 0.4,
+#                            PhiWindow       = 0.4,
+#                            MinCenterEnergy = 15*GeV,
+#                            HistogramPath   = "Expert/TruthClusters",
+#                            OutputLevel     = args.outputLevel)
 
 
 
@@ -121,22 +124,22 @@ ringer = CaloRingerBuilder( "CaloRingerBuilder",
                             OutputLevel   = args.outputLevel)
 
 
-truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
-                                  RingerKey       = recordable("TruthRings"),
-                                  ClusterKey      = recordable("TruthClusters"),
-                                  DeltaEtaRings   = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                                  DeltaPhiRings   = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                                  NRings          = [64, 8, 8, 4, 4, 4],
-                                  LayerRings      = [1,2,3,4,5,6],
-                                  HistogramPath   = "Expert/TruthRinger",
-                                  OutputLevel     = args.outputLevel)
-
+#truth_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
+#                                  RingerKey       = recordable("TruthRings"),
+#                                  ClusterKey      = recordable("TruthClusters"),
+#                                  DeltaEtaRings   = [0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+#                                  DeltaPhiRings   = [pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+#                                  NRings          = [64, 8, 8, 4, 4, 4],
+#                                  LayerRings      = [1,2,3,4,5,6],
+#                                  HistogramPath   = "Expert/TruthRinger",
+#                                  OutputLevel     = args.outputLevel)
+#
 
 
 
 if args.ntuple == 'physics':
 
-    from CaloRec import CaloNtupleMaker
+    from CaloNtupleBuilder import CaloNtupleMaker
     ntuple = CaloNtupleMaker( "CaloNtupleMaker",
                               EventKey        = recordable("EventInfo"),
                               RingerKey       = recordable("Rings"),
@@ -149,7 +152,7 @@ if args.ntuple == 'physics':
 
 elif args.ntuple == 'raw':
 
-    from CaloRec import RawNtupleMaker
+    from CaloNtupleBuilder import RawNtupleMaker
     ntuple = RawNtupleMaker (  "RawNtupleMaker",
                                EventKey        = recordable("EventInfo"),
                                CellsKey        = recordable("Cells"),
@@ -164,9 +167,9 @@ else:
 gun.merge(acc)
 calorimeter.merge(acc)
 acc+= cluster
-acc+= truth_cluster
+#acc+= truth_cluster
 acc+= ringer
-acc+= truth_ringer
+#acc+= truth_ringer
 acc += ntuple
 
 acc.run(args.numberOfEvents)

@@ -16,7 +16,7 @@ class OptimalFilter(Logger):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, OptimalFilter
     self.__core = OptimalFilter(name)
     for key, value in kw.items():

@@ -1,6 +1,6 @@
 
 file(GLOB SOURCES src/*.cxx)
-file(GLOB_RECURSE HEADERS src/C*.h src/PulseGenerator.h src/OptimalFilter.h src/ICaloCellTool.h )
+file(GLOB_RECURSE HEADERS src/CaloNtupleMaker.h src/RawNtupleMaker.h)
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/CaloCluster)
@@ -14,13 +14,13 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../external/cpk/include)
 
 
 
-ROOT_GENERATE_DICTIONARY(CaloRecDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE CaloRec)
+ROOT_GENERATE_DICTIONARY(CaloNtupleBuilderDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE CaloNtupleBuilder)
 
-add_library(CaloRec  OBJECT ${SOURCES} CaloRecDict.cxx)
-install(FILES ${HEADERS}  DESTINATION CaloRec)
+add_library(CaloNtupleBuilder  OBJECT ${SOURCES} CaloNtupleBuilderDict.cxx)
+install(FILES ${HEADERS}  DESTINATION CaloNtupleBuilder)
 
 
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloRec)
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloNtupleBuilder)
 
 
 

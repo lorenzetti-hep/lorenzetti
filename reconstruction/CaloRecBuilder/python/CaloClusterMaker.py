@@ -1,33 +1,32 @@
-__all__ = ["CaloNtupleMaker"]
+__all__ = ["CaloClusterMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class CaloNtupleMaker( Logger ):
+class CaloClusterMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey",
+                  "CellsKey", 
                   "ClusterKey", 
-                  "TruthClusterKey", 
-                  "CaloKey", 
-                  "RingerKey", 
-                  "TruthRingerKey", 
+                  "EventKey", 
+                  "TruthKey", 
+                  "EtaWindow" , 
+                  "PhiWindow",
+                  "MinCenterEnergy",
                   "OutputLevel", 
-                  "DeltaR", 
-                  "DumpCells",
-                  "NtupleName",
-                  ]
+                  "HistogramPath"]
 
 
   def __init__( self, name, **kw ): 
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
-    from ROOT import CaloNtupleMaker
-    self.__core = CaloNtupleMaker(name)
+    ROOT.gSystem.Load('liblorenzetti')
+    from ROOT import CaloClusterMaker
+    # Create the algorithm
+    self.__core = CaloClusterMaker(name)
 
     for key, value in kw.items():
       self.setProperty( key,value )

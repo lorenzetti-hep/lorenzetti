@@ -21,12 +21,6 @@ from . import CaloClusterMaker
 __all__.extend(CaloClusterMaker.__all__)
 from .CaloClusterMaker import *
 
-from . import CaloNtupleMaker
-__all__.extend(CaloNtupleMaker.__all__)
-from .CaloNtupleMaker import *
 
-from . import RawNtupleMaker
-__all__.extend(RawNtupleMaker.__all__)
-from .RawNtupleMaker import *
 
 

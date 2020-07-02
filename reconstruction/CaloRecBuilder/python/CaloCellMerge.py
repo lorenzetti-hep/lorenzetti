@@ -1,35 +1,30 @@
-__all__ = ["CaloClusterMaker"]
+__all__ = ["CaloCellMerge"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class CaloClusterMaker( Logger ):
+class CaloCellMerge( Logger ):
 
   __allow_keys = [
+                  "CollectionKeys", 
                   "CellsKey", 
-                  "ClusterKey", 
-                  "EventKey", 
-                  "TruthKey", 
-                  "EtaWindow" , 
-                  "PhiWindow",
-                  "MinCenterEnergy",
+                  "TruthCellsKey", 
                   "OutputLevel", 
-                  "HistogramPath"]
-
+                  ]
 
   def __init__( self, name, **kw ): 
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
-    from ROOT import CaloClusterMaker
+    ROOT.gSystem.Load('liblorenzetti')
+    from ROOT import CaloCellMerge
     # Create the algorithm
-    self.__core = CaloClusterMaker(name)
+    self.__core = CaloCellMerge(name)
 
     for key, value in kw.items():
-      self.setProperty( key,value )
+      self.setProperty( key,value  )
 
 
   def core(self):
@@ -49,6 +44,15 @@ class CaloClusterMaker( Logger ):
       return getattr( self, '__' + key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+
+
+
+
+
+
+
+
 
 
 

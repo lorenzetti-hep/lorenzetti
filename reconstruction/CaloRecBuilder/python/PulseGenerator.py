@@ -14,7 +14,7 @@ class PulseGenerator( Logger ):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, PulseGenerator
     self.__core = PulseGenerator(name)
     for key, value in kw.items():

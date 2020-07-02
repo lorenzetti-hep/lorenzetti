@@ -57,6 +57,3 @@ class CaloNtupleMaker : public Gaugi::Algorithm
 
 #endif
 
-
-
-

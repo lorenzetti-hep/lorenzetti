@@ -21,7 +21,7 @@ class RawNtupleMaker( Logger ):
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RawNtupleMaker
     self.__core = RawNtupleMaker(name)
 

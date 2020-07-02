@@ -7,6 +7,7 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "TH1F.h"
+#include "TH2F.h"
 
 using namespace SG;
 using namespace CaloSampling;
@@ -51,9 +52,9 @@ StatusCode CaloClusterMaker::bookHistograms( StoreGate &store ) const
 {
   store.mkdir( m_histPath );  
   
-  store.add( new TH1F("res_et" ,"#E_{TTruth}-#E_{T,Cluster};res_{E_{T}};Count",100,-40,40) );
-  store.add( new TH1F("res_eta", "#eta_{Truth}-#eta_{Cluster};res_{#eta};Count",100,-2,2 ) );
-  store.add( new TH1F("res_phi", "#phi_{Truth}-#phi_{Cluster};res_{#phi};Count",100,-2,2 ) );
+
+
+
   store.add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 100 ) );
   store.add( new TH1F("cl_eta"  , ";Count;#eta;"        , 100, -1.5 , 1.5 ) );
   store.add( new TH1F("cl_phi"  , ";Count;#phi;"        , 100, -3.2 , 3.2 ) );
@@ -64,7 +65,17 @@ StatusCode CaloClusterMaker::bookHistograms( StoreGate &store ) const
   store.add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
   store.add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
   store.add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
+ 
+
+  store.add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth}/#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
+  store.add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth}/#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
+  store.add( new TH1F("res_e157"  ,"(E_{1}-E_{Truth})/E_{Truth};res_{E_{1}};Count",100,-1.5,1.5) );
+  store.add( new TH1F("res_e257"  ,"(E_{2}-E_{Truth})/E_{Truth};res_{E_{2}};Count",100,-1.5,1.5) );
+  store.add( new TH1F("res_e357"  ,"(E_{3}-E_{Truth})/E_{Truth};res_{E_{3}};Count",100,-1,1) );
+  store.add( new TH1F("res_etot57","(E_{tot}-E_{Truth})/E_{Truth};res_{E_{tot}};Count",100,-1,1) );
   
+  store.add( new TH2F("res_etot57vsEt","(E_{tot}-E_{Truth})/E_{Truth} Vs E_{T};res_{E_{tot}}; E_{T}; Count",100,-50,50, 100, 0 , 100) );
+
   return StatusCode::SUCCESS;
 }
 
@@ -254,6 +265,33 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     MSG_DEBUG("============== Cluster Information ==============");
 
     const auto* clus = particle->caloCluster() ;
+    
+    
+    store.hist1("res_eta")->Fill( (clus->eta() - particle->eta())/particle->eta() );
+    store.hist1("res_phi")->Fill( (clus->phi() - particle->phi())/particle->phi() );
+
+    {
+      // Calculate the energy resolution between the estimated energy by the OF and the truth
+      // energy calculated by the geant.
+      float raw_e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7, true);
+      float e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7);
+      store.hist1("res_e157")->Fill( (e157-raw_e157)/raw_e157 );
+      float raw_e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7, true);
+      float e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7);
+      store.hist1("res_e257")->Fill( (e257-raw_e257)/raw_e257 );
+      float raw_e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7, true);
+      float e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7);
+      store.hist1("res_e357")->Fill( (e357-raw_e357)/raw_e357 );
+      float etot57=e157+e257+e357;
+      float raw_etot57=raw_e157+raw_e257+raw_e357;
+      store.hist1("res_etot57")->Fill( (etot57-raw_etot57)/raw_etot57 );
+      
+      
+      store.hist2("res_etot57vsEt")->Fill( (etot57-raw_etot57)*1e-3, clus->et()*1e-3 );
+    
+    
+    }
+
 
     store.hist1("cl_et")->Fill( clus->et() / 1.e3);
     store.hist1("cl_eta")->Fill( clus->eta() );
@@ -265,9 +303,9 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     store.hist1("cl_f1")->Fill( clus->f1() );
     store.hist1("cl_f3")->Fill( clus->f3() );
     store.hist1("cl_weta2")->Fill( clus->weta2() );
-    store.hist1("res_et")->Fill( (particle->et() - clus->et()/1.e3) );
-    store.hist1("res_eta")->Fill( (particle->eta() - clus->eta()) );
-    store.hist1("res_phi")->Fill( (particle->phi() - clus->phi()) );
+
+
+    
     
     MSG_DEBUG( "Truth Particle information:" );
     MSG_DEBUG( "Et       : " << particle->et() );
@@ -307,6 +345,20 @@ float CaloClusterMaker::dR( float eta1, float phi1, float eta2, float phi2 ) con
 }
 
 
-
+float CaloClusterMaker::sumEnergy( const xAOD::CaloCluster *clus, CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell, bool raw ) const
+{
+  float energy = 0.0;
+  for ( const auto& cell : clus->allCells() )
+  {
+    if(cell->sampling() != sampling)  continue;
+    float deltaEta = std::abs( clus->eta() - cell->eta() );
+    float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
+    
+    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+      energy+= raw? cell->parent()->truthRawEnergy():cell->energy();
+    }
+  }
+  return energy;
+}
 
 

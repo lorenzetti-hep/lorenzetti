@@ -23,7 +23,7 @@ class CaloRingerBuilder(Logger):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, CaloRingerBuilder
     self.__core = CaloRingerBuilder(name)
     for key, value in kw.items():

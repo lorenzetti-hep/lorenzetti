@@ -24,7 +24,7 @@ class CaloCellMaker( Logger ):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import CaloCellMaker
     # Create the algorithm
     self.__core = CaloCellMaker(name)

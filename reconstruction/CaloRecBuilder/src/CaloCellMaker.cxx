@@ -89,6 +89,13 @@ StatusCode CaloCellMaker::finalize()
 StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
 {
 
+  store.mkdir(m_histPath);
+  {
+    std::stringstream ss; ss << "res_layer_" << m_sampling;
+    store.add( new TH1F(ss.str().c_str() ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
+  }
+
+
   store.mkdir(m_histPath+"/reco");
   {
     std::stringstream ss; ss << "cells_layer_" << m_sampling;
@@ -219,7 +226,14 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
 
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
-   
+
+    {
+      std::stringstream ss; ss << "res_layer_" << m_sampling;
+      store.cd(m_histPath);
+      store.hist1(ss.str())->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
+    }
+
+
     {// Fill estimated energy 2D histograms
       store.cd(m_histPath+"/reco");
       std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
@@ -239,7 +253,14 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
       float energy = store.hist2(ss.str())->GetBinContent( bin );
       store.hist2(ss.str())->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
     }
-  
+
+
+    {
+      store.cd(m_histPath+"/truth");
+       
+
+    } 
+
   }
 
   return StatusCode::SUCCESS;

@@ -18,7 +18,7 @@ class EventGenerator( Logger ):
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, generator
     # Create the algorithm
     self.__core = generator.EventGenerator()

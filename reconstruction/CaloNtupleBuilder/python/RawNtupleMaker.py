@@ -1,30 +1,32 @@
-__all__ = ["CaloCellMerge"]
+__all__ = ["RawNtupleMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class CaloCellMerge( Logger ):
+class RawNtupleMaker( Logger ):
 
   __allow_keys = [
-                  "CollectionKeys", 
-                  "CellsKey", 
-                  "TruthCellsKey", 
+                  "EventKey",
+                  "CellsKey",
+                  "EtaWindow",
+                  "PhiWindow",
                   "OutputLevel", 
+                  "NtupleName",
                   ]
+
 
   def __init__( self, name, **kw ): 
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
-    from ROOT import CaloCellMerge
-    # Create the algorithm
-    self.__core = CaloCellMerge(name)
+    ROOT.gSystem.Load('liblorenzetti')
+    from ROOT import RawNtupleMaker
+    self.__core = RawNtupleMaker(name)
 
     for key, value in kw.items():
-      self.setProperty( key,value  )
+      self.setProperty( key,value )
 
 
   def core(self):
@@ -44,15 +46,6 @@ class CaloCellMerge( Logger ):
       return getattr( self, '__' + key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
-
-
-
-
-
-
-
 
 
 

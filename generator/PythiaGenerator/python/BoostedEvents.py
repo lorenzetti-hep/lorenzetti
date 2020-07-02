@@ -23,7 +23,7 @@ class BoostedEvents( Logger ):
     
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import generator
     # Create the algorithm
     self.__core = generator.BoostedEvents()

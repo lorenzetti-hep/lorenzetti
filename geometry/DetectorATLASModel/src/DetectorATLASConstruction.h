@@ -2,6 +2,7 @@
 #define DetectorATLASConstruction_h
 
 #include "GaugiKernel/MsgStream.h"
+#include "GaugiKernel/Property.h"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4Material.hh"
 #include "G4ThreeVector.hh"
@@ -13,7 +14,7 @@ class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
 
-class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService
+class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService, public Gaugi::PropertyService
 {
   public:
     DetectorATLASConstruction(std::string);
@@ -49,6 +50,7 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
 
     static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger; // magnetic field messenger
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
+    bool m_doMagField;
 };
 
 

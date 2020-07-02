@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(lorenzett)
+project(lorenzetti)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DDROP_CGAL")
@@ -67,13 +67,14 @@ add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
-add_subdirectory( reconstruction/CaloRec )
+add_subdirectory( reconstruction/CaloRecBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
+add_subdirectory( reconstruction/CaloNtupleBuilder )
 add_subdirectory( generator/PythiaGenerator )
 add_subdirectory( geometry/DetectorATLASModel )
 
 
-add_library(lorenzett SHARED
+add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
   $<TARGET_OBJECTS:P8Kernel>
@@ -83,8 +84,9 @@ add_library(lorenzett SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:CaloRec>
+  $<TARGET_OBJECTS:CaloRecBuilder>
   $<TARGET_OBJECTS:CaloRingerBuilder>
+  $<TARGET_OBJECTS:CaloNtupleBuilder>
   $<TARGET_OBJECTS:PythiaGenerator>
   $<TARGET_OBJECTS:DetectorATLASModel>
 )
@@ -92,7 +94,7 @@ add_library(lorenzett SHARED
 message( STATUS ${FASTJET_LIBRARIES} )
 message( STATUS ${PYTHIA8_LIBRARIES} )
 
-target_link_Libraries(lorenzett ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
+target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
   ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${ROOT_LIBRARIES}
   ${FASTJET_LIBRARIES} ${PYTHIA8_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} )
 

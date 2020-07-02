@@ -12,7 +12,7 @@ class ComponentAccumulator( Logger ):
 
     Logger.__init__(self)
     import ROOT
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager
     self.__core = RunManager(name)
     self.__core.setDetectorConstruction( detector.core() )

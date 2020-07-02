@@ -92,7 +92,7 @@ class CaloCellBuilder( Logger ):
   def configure(self):
 
 
-    from CaloRec import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
     for idx, config in enumerate( self.__configs ):
       pulse = PulseGenerator( "PulseGenerator", 
                               NSamples    = config['NSamples'], 

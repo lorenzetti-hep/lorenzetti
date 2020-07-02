@@ -1,24 +1,36 @@
-__all__ = ["DetectorConstruction"]
-
+__all__ = ["CaloNtupleMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class DetectorConstruction(Logger):
+class CaloNtupleMaker( Logger ):
 
-  __allow_keys = ["MagneticField"]
-  
-  def __init__( self, name, **kw ):
+  __allow_keys = [
+                  "EventKey",
+                  "ClusterKey", 
+                  "TruthClusterKey", 
+                  "CaloKey", 
+                  "RingerKey", 
+                  "TruthRingerKey", 
+                  "OutputLevel", 
+                  "DeltaR", 
+                  "DumpCells",
+                  "NtupleName",
+                  ]
 
+
+  def __init__( self, name, **kw ): 
+    
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, DetectorATLASConstruction
-    self.__core = DetectorATLASConstruction(name)
+    from ROOT import CaloNtupleMaker
+    self.__core = CaloNtupleMaker(name)
+
     for key, value in kw.items():
-      self.setProperty( key, value )
+      self.setProperty( key,value )
 
 
   def core(self):
@@ -38,8 +50,6 @@ class DetectorConstruction(Logger):
       return getattr( self, '__' + key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
 
 
 
