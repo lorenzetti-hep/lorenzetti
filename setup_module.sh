@@ -1,5 +1,3 @@
-#!/bin/bash
-
 show_help() {
 cat << EOF
 Usage: ${0##*/} [--dev] [--head]
