@@ -104,7 +104,7 @@ scripts/reco_trf.py -i zee.root --outputLevel 6 -nt <n_jobs> -o reco_zee.root
 You can convert the ROOT ntuple information into a `numpy` array using the `convert.py` script and the reconstruction ntuple output.
 
 ```
-python3 convert.py -i reco_zee.root -o reco_zee.npz --nov -1
+python3 scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
 ```
 
 > *Notes:*
