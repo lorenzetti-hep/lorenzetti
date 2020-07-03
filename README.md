@@ -16,37 +16,40 @@ There are two ways you can run Lorenzetti: using a Docker container (recommended
 
 ### Running with Docker
 
-If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzett/lorenzett) you'll find two main images:
+If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzetti/lorenzetti) you'll find two main images:
 
 * lorenzett/lorenzett:latest
-* lorenzett/lorenzett:sdumont
+* lorenzett/lorenzett:cluster
 
-We'll refer to the `latest` image as `base`, since `sdumont` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory.
+We'll refer to the `latest` image as `base`, since `cluster` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory.
 
-Our base image is meant for users that want to do a custom run on Lorenzett. If you're a first-timer, you'll want the `lorenzett/lorenzett:sdumont` image.
+Our base image is meant for users that want to do a custom run on Lorenzett. If you're a first-timer, you'll want the `lorenzett/lorenzett:cluster` image.
 
-#### Using the *sdumont* image
+#### Using the *cluster* image
 
 ```
-docker run -v <output-path>:/output lorenzett/lorenzett:sdumont <args>
+docker run -v <output-path>:/output lorenzett/lorenzett:cluster -f PythiaGenerator/gen_zee.py -e 10 -j 10 -p 40 -o zee.reco.root -r reco_trf.py --bc_id_start -24 --bc_id_end 7 --ntuple physics --volume /output --seed 0
 ```
 
 For `<args>` information, see below:
 
 ```
-lorenzett_run.sh - Script for running Lorenzett through docker in an one-line script
- 
-./lorenzett_run.sh [arguments]
+parser.sh - Script for running Lorenzetti cluster through docker in an one-line script
  
 Arguments:
 -h, --help                show this message
--f, --filter              chooses which type of event you're interested
+-f, --filter              chooses which type of event you're interested (example: PythiaGenerator/gen_zee.py)
 -e, --event               sets the desired number of events
--p, --pileup              sets the pileup average
+-j, --numberOfJobs        sets the number of jobs to run in the pythia generation phase. Each job will be generate n events.
+-p, --pileupAvg           sets the pileup average
 -o, --output              sets the output filename
+-r, --reco_script         sets the reco script (example: reco_trf.py)
 --bc_id_start             sets bc_id_start
 --bc_id_end               sets bc_id_end
 --ntuple                  sets the ntuple schemma (raw or physics)
+--volume                  The path where everything will be mount
+--seed                    The seed (Uses zero as default clock system)
+--enableMagneticField     Enable the magnetic field
  
 All arguments are required
 ```
@@ -68,7 +71,7 @@ This will setup everything you need for Lorenzett.
 
 For **event generation**, this is the command you're looking for (example for Zee):
 ```bash
-prun_job.py -c "generator.py --filter PythiaGenerator/gen_zee.py -i zee_config.cmnd --outputLevel 6 --seed 0 -evt <n_events> --pileupAvg <average-pileup> --bc_id_start -8 --bc_id_end 7" -o zee.root -mt <n_threads> -n <n_jobs> --ntuple physics
+prun_job.py -c "generator/PythiaGenerator/share/gen_zee.py -i zee_config.cmnd --outputLevel 6 --seed 0 -evt <n_events> --pileupAvg <average-pileup> --bc_id_start -8 --bc_id_end 7" -o zee.root -mt <n_threads> -n <n_jobs>
 ```
 
 > **Notes**
@@ -80,7 +83,7 @@ prun_job.py -c "generator.py --filter PythiaGenerator/gen_zee.py -i zee_config.c
 For **reconstruction**, after generate the events using the `gen_*.py` command, you must pass the output file as input to the reconstruction transformation. To run the reconstruction use this command:
 
 ```bash
-reco_trf.py -i zee.root --outputLevel 6 -nt <n_jobs> -o reco_zee.root
+scripts/reco_trf.py -i zee.root --outputLevel 6 -nt <n_jobs> -o reco_zee.root
 ```
 
 ### Running locally
