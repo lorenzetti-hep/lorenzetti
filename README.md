@@ -1,6 +1,6 @@
 # Lorenzetti Event Simulator
 
-[![Build Status](https://travis-ci.org/jodafons/lorenzett.svg?branch=master)](https://travis-ci.org/jodafons/lorenzett)
+[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)
 [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
 
 The simple event generator for HEP using a generic calorimeter for machine learning 
