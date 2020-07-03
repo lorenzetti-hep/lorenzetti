@@ -70,11 +70,10 @@ StatusCode CaloClusterMaker::bookHistograms( StoreGate &store ) const
   store.add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth}/#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
   store.add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth}/#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
   store.add( new TH1F("res_e157"  ,"(E_{1}-E_{Truth})/E_{Truth};res_{E_{1}};Count",100,-1.5,1.5) );
-  store.add( new TH1F("res_e257"  ,"(E_{2}-E_{Truth})/E_{Truth};res_{E_{2}};Count",100,-1.5,1.5) );
-  store.add( new TH1F("res_e357"  ,"(E_{3}-E_{Truth})/E_{Truth};res_{E_{3}};Count",100,-1,1) );
-  store.add( new TH1F("res_etot57","(E_{tot}-E_{Truth})/E_{Truth};res_{E_{tot}};Count",100,-1,1) );
-  
-  store.add( new TH2F("res_etot57vsEt","(E_{tot}-E_{Truth})/E_{Truth} Vs E_{T};res_{E_{tot}}; E_{T}; Count",100,-50,50, 100, 0 , 100) );
+  store.add( new TH1F("res_e257"  ,"(E_{2}-E_{Truth})/E_{Truth};res_{E_{2}};Count",100,-1.0,1.0) );
+  store.add( new TH1F("res_e357"  ,"(E_{3}-E_{Truth})/E_{Truth};res_{E_{3}};Count",100,-1.5,1.5) );
+  store.add( new TH1F("res_etot57","(E_{tot}-E_{Truth})/E_{Truth};res_{E_{tot}};Count",100,-0.4,0.4) );
+  store.add( new TH2F("res_etot57vsEt","(E_{tot}-E_{Truth})/E_{Truth} Vs E_{T};res_{E_{tot}}; E_{T}; Count",100,-10,10, 100, 0 , 100) );
 
   return StatusCode::SUCCESS;
 }
