@@ -23,11 +23,6 @@
 #include <string>
 #include <sstream>
 
-
-G4ThreadLocal
-G4GlobalMagFieldMessenger* DetectorATLASConstruction::m_magFieldMessenger = 0;
-
-
 DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
   IMsgService(name), 
@@ -105,8 +100,8 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   //
   G4VSolid* worldS = new G4Tubs( "World",     // its name
                                  0,           // R min
-                                 5000*cm,     // R max
-                                 10000*cm,    // Z max
+                                 5*m,         // R max
+                                 10*m,        // Z max
                                  0*deg,       // phi_min
                                  360*deg      // phi_max
                                  );
@@ -419,22 +414,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   return worldPV;
 }
 
-
-void DetectorATLASConstruction::ConstructSDandField()
-{
-  // Create global magnetic field messenger.
-  // Uniform magnetic field is then created automatically if
-  // the field value is not zero.
-  if (m_doMagField){
-    G4ThreeVector fieldValue = G4ThreeVector(0.,0.,2.0*tesla);
-    m_magFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
-  }else{
-    G4ThreeVector fieldValue = G4ThreeVector(0.,0.,0.);
-    m_magFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
-  }
-  
-  m_magFieldMessenger->SetVerboseLevel(1);
-}
+void DetectorATLASConstruction::ConstructSDandField(){;}
 
 void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
                                           std::string name,  
@@ -565,7 +545,7 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                  //center_pos,        // at (0,0,0)
                  gapLV,             // its logical volume
                  name+"_Gap",       // its name
-                 calorLV,           // its mother  volume
+                 layerLV,           // its mother  volume
                  false,             // no boolean operation
                  0,                 // copy number
                  m_checkOverlaps);  // checking overlaps

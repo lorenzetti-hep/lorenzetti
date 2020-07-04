@@ -13,7 +13,6 @@
 class G4VPhysicalVolume;
 class G4GlobalMagFieldMessenger;
 
-
 class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService, public Gaugi::PropertyService
 {
   public:
@@ -47,8 +46,6 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
                         G4ThreeVector center_pos,
                         G4Region* region);
 
-
-    static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger; // magnetic field messenger
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_doMagField;
 };

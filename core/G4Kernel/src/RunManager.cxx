@@ -94,7 +94,6 @@ void RunManager::run( int evt )
     runManager->SetUserInitialization(m_detector);
   }
 
-
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
 
@@ -107,6 +106,7 @@ void RunManager::run( int evt )
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
+  UImanager->ApplyCommand("/globalField/setValue 0 0 2 tesla");
 
   std::stringstream runCommand; runCommand << "/run/beamOn " << evt ;
 
