@@ -17,7 +17,8 @@ class CaloCellBuilder( Logger ):
   __configs = [
 
       # Lar Barrel Calorimter, EM1
-      { 'CollectionKey'   : "Collection_EM1",
+      { 'name'            : 'barrel_em1',
+        'CollectionKey'   : "Collection_EM1",
         'CaloCellFile'    : "detector_sampling_1.dat",
         'ShaperFile'      : "pulseLar.dat",
         'NSamples'        : 5,
@@ -26,7 +27,8 @@ class CaloCellBuilder( Logger ):
         'OFWeights'       : [-0.2068,    0.1816,    0.6840,    0.3569,   -0.0245],
       },
       # Lar Barrel Calorimter, EM2
-      { 'CollectionKey'   : "Collection_EM2",
+      { 'name'            : 'barrel_em2',
+        'CollectionKey'   : "Collection_EM2",
         'CaloCellFile'    : "detector_sampling_2.dat",
         'ShaperFile'      : "pulseLar.dat",
         'NSamples'        : 5,
@@ -35,7 +37,8 @@ class CaloCellBuilder( Logger ):
         'OFWeights'       : [-0.3514,    0.1208,    0.7654,    0.3189,   -0.1652],
       },
       # Lar Barrel Calorimter, EM3
-      { 'CollectionKey'   : "Collection_EM3",
+      { 'name'            : 'barrel_em3',
+        'CollectionKey'   : "Collection_EM3",
         'CaloCellFile'    : "detector_sampling_3.dat",
         'ShaperFile'      : "pulseLar.dat",
         'NSamples'        : 5,
@@ -44,7 +47,8 @@ class CaloCellBuilder( Logger ):
         'OFWeights'       : [-0.0619,    0.2341,    0.6148,    0.3847,    0.1071],
       },
       # Tile Barrel Calorimter, HAD1
-      { 'CollectionKey'   : "Collection_HAD1",
+      { 'name'            : 'barrel_had1',
+        'CollectionKey'   : "Collection_HAD1",
         'CaloCellFile'    : "detector_sampling_4.dat",
         'ShaperFile'      : "pulseTile.dat",
         'NSamples'        : 7,
@@ -53,7 +57,8 @@ class CaloCellBuilder( Logger ):
         'OFWeights'       : [-0.0828,   -0.3598,    0.0467,    0.9619,    0.1593,   -0.3346,   -0.3906],
       },
       # Tile Barrel Calorimter, HAD2
-      { 'CollectionKey'   : "Collection_HAD2",
+      { 'name'            : 'barrel_had2',
+        'CollectionKey'   : "Collection_HAD2",
         'CaloCellFile'    : "detector_sampling_5.dat",
         'ShaperFile'      : "pulseTile.dat",
         'NSamples'        : 7,
@@ -62,7 +67,8 @@ class CaloCellBuilder( Logger ):
         'OFWeights'       : [-0.3246,   -0.3411,    0.1496,    0.8439,    0.2554,   -0.2330,   -0.3502],
       },
       # Tile Barrel Calorimter, HAD1
-      { 'CollectionKey'   : "Collection_HAD3",
+      { 'name'            : 'barrel_had3',
+        'CollectionKey'   : "Collection_HAD3",
         'CaloCellFile'    : "detector_sampling_6.dat",
         'ShaperFile'      : "pulseTile.dat",
         'NSamples'        : 7,
@@ -110,7 +116,7 @@ class CaloCellBuilder( Logger ):
                           BunchIdEnd              = config['BunchIdEnd'],
                           BunchDuration           = 25,
                           NumberOfSamplesPerBunch = 1,
-                          HistogramPath           = self.__histpath,
+                          HistogramPath           = self.__histpath + '/' + config['name'],
                           OutputLevel             = self.__outputLevel)
       alg.Tools = [pulse, of]
       self.__recoAlgs.append( alg )

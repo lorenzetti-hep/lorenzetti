@@ -90,27 +90,18 @@ StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
 {
 
   store.mkdir(m_histPath);
-  {
-    std::stringstream ss; ss << "res_layer_" << m_sampling;
-    store.add( new TH1F(ss.str().c_str() ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
-  }
+  store.add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
 
 
   store.mkdir(m_histPath+"/reco");
-  {
-    std::stringstream ss; ss << "cells_layer_" << m_sampling;
-    // Create the 2D histogram for monitoring purpose
-    store.add(new TH2F( ss.str().c_str(), "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  // Create the 2D histogram for monitoring purpose
+  store.add(new TH2F( "cells_layer", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
-  }
 
   store.mkdir(m_histPath+"/truth");
-  {
-    std::stringstream ss; ss << "cells_layer_" << m_sampling;
-    // Create the 2D histogram for monitoring purpose
-    store.add(new TH2F( ss.str().c_str(), "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  // Create the 2D histogram for monitoring purpose
+  store.add(new TH2F( "cells_layer", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                          m_phi_bins, m_phi_min, m_phi_max) );
-  }
 
   return StatusCode::SUCCESS;
 }
