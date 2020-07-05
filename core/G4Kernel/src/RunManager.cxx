@@ -106,7 +106,7 @@ void RunManager::run( int evt )
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-  UImanager->ApplyCommand("/globalField/setValue 0 0 2 tesla");
+  UImanager->ApplyCommand("/globalField/setValue 0 1000000 0 tesla");
 
   std::stringstream runCommand; runCommand << "/run/beamOn " << evt ;
 

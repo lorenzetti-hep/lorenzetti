@@ -23,6 +23,11 @@
 #include <string>
 #include <sstream>
 
+
+G4ThreadLocal
+G4GlobalMagFieldMessenger* DetectorATLASConstruction::fMagFieldMessenger = nullptr; 
+
+
 DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
   IMsgService(name), 
@@ -414,7 +419,26 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   return worldPV;
 }
 
-void DetectorATLASConstruction::ConstructSDandField(){;}
+void DetectorATLASConstruction::ConstructSDandField(){
+
+  //G4MagneticField* field = new G4UniformMagField(G4ThreeVector(1000.*tesla,0.,0.));
+  //G4FieldManager* globalFieldMgr = G4TransportationManager:: GetTransportationManager()-> GetFieldManager();
+  //MSG_INFO( "MagField Manager is " << globalFieldMgr);
+  //globalFieldMgr->SetDetectorField(field);
+
+
+  // Create global magnetic field messenger.
+  // Uniform magnetic field is then created automatically if
+  // the field value is not zero.
+  G4ThreeVector fieldValue(0,500*tesla,0);
+  fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
+  fMagFieldMessenger->SetVerboseLevel(1);
+  
+  // Register the field messenger for deleting
+  G4AutoDelete::Register(fMagFieldMessenger);
+
+
+}
 
 void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
                                           std::string name,  

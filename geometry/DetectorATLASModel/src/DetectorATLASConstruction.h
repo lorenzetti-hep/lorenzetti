@@ -48,6 +48,9 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_doMagField;
+
+
+    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
 };
 
 
