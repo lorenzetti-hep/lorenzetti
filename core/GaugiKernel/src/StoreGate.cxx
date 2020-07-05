@@ -41,9 +41,11 @@ StoreGate::~StoreGate()
 
 void StoreGate::mkdir( std::string path ){
   MSG_INFO( "Creating a directory with name " << path );
-  m_file->mkdir(path.c_str());
-  m_file->cd(path.c_str());
-  m_currentPath = path;
+  if (!m_file->GetDirectory(path)){
+    m_file->mkdir(path.c_str());
+    m_file->cd(path.c_str());
+    m_currentPath = path;
+  }
 }
 
 
