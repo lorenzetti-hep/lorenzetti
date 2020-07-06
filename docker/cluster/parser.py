@@ -51,9 +51,6 @@ parser.add_argument('-r','--reco_script', action='store', dest='reco_script', re
 parser.add_argument('-n','--ntuple', action='store', dest='ntuple', required = False , default='physics',
                     help = "The ntuple schemma. Choose between physics or raw (for energy reconstruction studies).")
 
-parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField', required = False ,
-                    help = "Turn-on the magnetic field.")
-
 
 
 
@@ -126,8 +123,7 @@ reco_script = args.reco_script
 command = 'python '+volume+'/lorenzetti/scripts/' + reco_script + ' -i {INPUT} -o {OUTPUT} -nt {NTHREADS} --ntuple {NTUPLE}'.format( INPUT     = input,
                                                                                                                                       OUTPUT    = output,
                                                                                                                                       NTHREADS  = ncpu,
-                                                                                                                                      NTUPLE    = args.ntuple,
-                                                                                                                                      MAGFIELD  = args.enableMagneticField)
+                                                                                                                                      NTUPLE    = args.ntuple)
 
 cmd( f, command )
 
