@@ -39,8 +39,6 @@ parser.add_argument('--visualization', action='store_true', dest='visualization'
 parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = False, default = 'physics',
                     help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
-parser.add_argument('--enableMagneticField', action='store_true', dest='magneticField',required = False,
-                    help = "Enable the magnetic fieled.")
 
 
 
@@ -68,7 +66,7 @@ from DetectorATLASModel import CaloCellBuilder
 
 
 acc = ComponentAccumulator("ComponentAccumulator",
-                            ATLAS("GenericATLASDetector", MagneticField = args.magneticField),
+                            ATLAS("GenericATLASDetector"),
                             RunVis=args.visualization,
                             NumberOfThreads = args.numberOfThreads,
                             OutputFile = args.outputFile)
@@ -166,11 +164,9 @@ else:
 
 gun.merge(acc)
 calorimeter.merge(acc)
-acc+= cluster
-#acc+= truth_cluster
-acc+= ringer
-#acc+= truth_ringer
-acc += ntuple
+#acc+= cluster
+#acc+= ringer
+#acc += ntuple
 
 acc.run(args.numberOfEvents)
 

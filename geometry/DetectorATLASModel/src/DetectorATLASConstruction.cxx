@@ -34,7 +34,6 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
-  declareProperty( "MagneticField", m_doMagField=false );
   MSG_INFO( "DetectorContruction was created" );
 }
 
@@ -421,16 +420,11 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
 
 void DetectorATLASConstruction::ConstructSDandField(){
 
-  //G4MagneticField* field = new G4UniformMagField(G4ThreeVector(1000.*tesla,0.,0.));
-  //G4FieldManager* globalFieldMgr = G4TransportationManager:: GetTransportationManager()-> GetFieldManager();
-  //MSG_INFO( "MagField Manager is " << globalFieldMgr);
-  //globalFieldMgr->SetDetectorField(field);
-
-
+  MSG_INFO("Set magnetic field")
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
-  G4ThreeVector fieldValue(0,500*tesla,0);
+  G4ThreeVector fieldValue(0,0,2*tesla);
   fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
   fMagFieldMessenger->SetVerboseLevel(1);
   

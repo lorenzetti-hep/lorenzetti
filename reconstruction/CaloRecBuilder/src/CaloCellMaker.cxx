@@ -92,15 +92,12 @@ StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
   store.mkdir(m_histPath);
   store.add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
 
-
-  store.mkdir(m_histPath+"/reco");
   // Create the 2D histogram for monitoring purpose
-  store.add(new TH2F( "cells_layer", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  store.add(new TH2F( "cells", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
 
-  store.mkdir(m_histPath+"/truth");
   // Create the 2D histogram for monitoring purpose
-  store.add(new TH2F( "cells_layer", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  store.add(new TH2F( "truth_cells", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                          m_phi_bins, m_phi_min, m_phi_max) );
 
   return StatusCode::SUCCESS;
