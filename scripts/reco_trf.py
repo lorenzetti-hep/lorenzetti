@@ -69,6 +69,7 @@ acc = ComponentAccumulator("ComponentAccumulator",
                             ATLAS("GenericATLASDetector"),
                             RunVis=args.visualization,
                             NumberOfThreads = args.numberOfThreads,
+                            Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
                             OutputFile = args.outputFile)
 
 

@@ -34,7 +34,9 @@ class RunManager: public MsgService,
     int m_nThreads;
 
     bool m_runVis;
-    
+
+    float m_seed;
+
     std::string m_output;
 
     std::vector< Gaugi::Algorithm* > m_acc;

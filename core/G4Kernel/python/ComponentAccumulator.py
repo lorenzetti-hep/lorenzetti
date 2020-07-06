@@ -6,7 +6,7 @@ from Gaugi import Logger
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis"]
+  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed"]
 
   def __init__( self, name , detector, **kw):
 

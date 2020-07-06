@@ -215,39 +215,26 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
 
-    {
-      std::stringstream ss; ss << "res_layer_" << m_sampling;
-      store.cd(m_histPath);
-      store.hist1(ss.str())->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
-    }
+    store.cd(m_histPath);
+    store.hist1("res_layer")->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
 
 
     {// Fill estimated energy 2D histograms
-      store.cd(m_histPath+"/reco");
-      std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
-      int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
-      int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
-      int bin = store.hist2(ss.str())->GetBin(x,y,0);
-      float energy = store.hist2(ss.str())->GetBinContent( bin );
-      store.hist2(ss.str())->SetBinContent( bin, (energy + cell->energy()) );
+      int x = store.hist2("cells")->GetXaxis()->FindBin(cell->eta());
+      int y = store.hist2("cells")->GetYaxis()->FindBin(cell->phi());
+      int bin = store.hist2("cells")->GetBin(x,y,0);
+      float energy = store.hist2("cells")->GetBinContent( bin );
+      store.hist2("cells")->SetBinContent( bin, (energy + cell->energy()) );
     }
     
     {// Fill truth energy 2D histograms
-      store.cd(m_histPath+"/truth");
-      std::stringstream ss; ss << "cells_layer_" << (int)cell->sampling();
-      int x = store.hist2(ss.str())->GetXaxis()->FindBin(cell->eta());
-      int y = store.hist2(ss.str())->GetYaxis()->FindBin(cell->phi());
-      int bin = store.hist2(ss.str())->GetBin(x,y,0);
-      float energy = store.hist2(ss.str())->GetBinContent( bin );
-      store.hist2(ss.str())->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
+      int x = store.hist2("truth_cells")->GetXaxis()->FindBin(cell->eta());
+      int y = store.hist2("truth_cells")->GetYaxis()->FindBin(cell->phi());
+      int bin = store.hist2("truth_cells")->GetBin(x,y,0);
+      float energy = store.hist2("truth_cells")->GetBinContent( bin );
+      store.hist2("truth_cells")->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
     }
 
-
-    {
-      store.cd(m_histPath+"/truth");
-       
-
-    } 
 
   }
 

@@ -35,7 +35,7 @@ RunManager::RunManager( std::string name ):
 #endif
   declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "RunVis"         , m_runVis=false            );
-
+  declareProperty( "Seed"           , m_seed=0                  );
 }
 
 RunManager::~RunManager()
@@ -73,8 +73,8 @@ void RunManager::run( int evt )
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
 
   //G4long seed = abs(((time(NULL) * 181) * ((getpid() - 83) * 359)) % 104729);
-  G4long seed = abs(((time(NULL) * 181) * ((83) * 359)) % 104729);
-  CLHEP::HepRandom::setTheSeed(seed);
+  //G4long seed = abs(((time(NULL) * 181) * ((83) * 359)) % 104729);
+  CLHEP::HepRandom::setTheSeed(m_seed);
 
   // Construct the default run manager
 #ifdef G4MULTITHREADED
