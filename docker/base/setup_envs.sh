@@ -38,6 +38,7 @@ do
 done
 
 
+cd $current_path
 echo "compile lorenzetti"
 git clone https://github.com/jodafons/lorenzetti.git
 cd lorenzetti
