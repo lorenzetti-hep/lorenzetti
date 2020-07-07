@@ -8,10 +8,11 @@
 #include "G4ThreeVector.hh"
 #include "G4Region.hh"
 #include "globals.hh"
+#include "FieldSetup.h"
+#include "G4Cache.hh"
 
 
 class G4VPhysicalVolume;
-class G4GlobalMagFieldMessenger;
 
 class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService, public Gaugi::PropertyService
 {
@@ -48,8 +49,7 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
 
-
-    static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
+    G4Cache<FieldSetup*>  m_fieldSetup;
 };
 
 
