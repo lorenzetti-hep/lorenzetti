@@ -52,6 +52,10 @@ parser.add_argument('-n','--ntuple', action='store', dest='ntuple', required = F
                     help = "The ntuple schemma. Choose between physics or raw (for energy reconstruction studies).")
 
 
+parser.add_argument('--disableMagneticField', action='store_true', dest='disableMagneticField', required = False ,
+                    help = "Disable the magnetic field")
+
+
 
 
 def cmd( f, command ):
@@ -124,6 +128,9 @@ command = 'python '+volume+'/lorenzetti/scripts/' + reco_script + ' -i {INPUT} -
                                                                                                                                       OUTPUT    = output,
                                                                                                                                       NTHREADS  = ncpu,
                                                                                                                                       NTUPLE    = args.ntuple)
+
+if args.disableMagneticField:
+  command += ' --disableMagneticField'
 
 cmd( f, command )
 
