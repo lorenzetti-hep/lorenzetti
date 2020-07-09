@@ -247,7 +247,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 4, // layers,
                 6.0*cm, // abso
                 4.0*cm, // gap
-                228*cm, // start radio,
+                228.3*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
                 had1);
@@ -259,7 +259,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 11, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm, // start radio,
+                228.3*cm + 40*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
                 had2);
@@ -271,7 +271,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 5, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm + 110*cm, // start radio,
+                228.3*cm + 40*cm + 110*cm, // start radio,
                 6.8*m, // z
                 G4ThreeVector(0,0,0),
                 had3);
@@ -288,7 +288,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 4, // layers,
                 6.0*cm, // abso
                 4.0*cm, // gap
-                228*cm, // start radio,
+                228.3*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,extended_barrel_pos),
                 had1 );
@@ -300,7 +300,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 11, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm, // start radio,
+                228.3*cm + 40*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,extended_barrel_pos),
                 had2 );
@@ -312,7 +312,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 5, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm + 110*cm, // start radio,
+                228.3*cm + 40*cm + 110*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,extended_barrel_pos),
                 had3 );
@@ -324,7 +324,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 4, // layers,
                 6.0*cm, // abso
                 4.0*cm, // gap
-                228*cm, // start radio,
+                228.3*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,-extended_barrel_pos),
                 had1 );
@@ -336,7 +336,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 11, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm, // start radio,
+                228.3*cm + 40*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,-extended_barrel_pos),
                 had2 );
@@ -348,7 +348,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 5, // layers,
                 6.2*cm, // abso
                 3.8*cm, // gap
-                228*cm + 40*cm + 110*cm, // start radio,
+                228.3*cm + 40*cm + 110*cm, // start radio,
                 extended_barrel_size, // z
                 G4ThreeVector(0,0,-extended_barrel_pos),
                 had3 );

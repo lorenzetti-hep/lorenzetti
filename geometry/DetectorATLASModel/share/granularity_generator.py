@@ -242,7 +242,7 @@ cm = 10
 
 ps_nominal_radius = 146*cm
 em_nominal_radius  = 150*cm
-had_nominal_radius  = 228*cm
+had_nominal_radius  = 228.3*cm
 
 # LAr 28.5 X0, 0.71X0 per cm
 #calo_radius = np.array( [10*cm, 33*cm, 5*cm, 40*cm, 40*cm, 20*cm] )
