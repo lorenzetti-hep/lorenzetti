@@ -39,6 +39,9 @@ parser.add_argument('--visualization', action='store_true', dest='visualization'
 parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = False, default = 'physics',
                     help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
+parser.add_argument('--disableMagneticField', action='store_true', dest='disableMagneticField',required = False, 
+                    help = "Disable the magnetic field.")
+
 
 
 
@@ -66,7 +69,7 @@ from DetectorATLASModel import CaloCellBuilder
 
 
 acc = ComponentAccumulator("ComponentAccumulator",
-                            ATLAS("GenericATLASDetector"),
+                            ATLAS("GenericATLASDetector", UseMagneticField = False if args.disableMagneticField else True),
                             RunVis=args.visualization,
                             NumberOfThreads = args.numberOfThreads,
                             Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation

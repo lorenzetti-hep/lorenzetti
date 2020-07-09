@@ -49,6 +49,7 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
                         G4Region* region);
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
+    bool m_useMagneticField;
 
     G4Cache<FieldSetup*>  m_fieldSetup;
 };

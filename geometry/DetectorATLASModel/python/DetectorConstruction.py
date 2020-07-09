@@ -8,7 +8,7 @@ from G4Kernel import treatPropertyValue
 
 class DetectorConstruction(Logger):
 
-  __allow_keys = []
+  __allow_keys = ["UseMagneticField"]
   
   def __init__( self, name, **kw ):
 

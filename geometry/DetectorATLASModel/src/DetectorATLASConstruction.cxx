@@ -32,6 +32,7 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
+  declareProperty( "UseMagneticField", m_useMagneticField=true );
   MSG_INFO( "DetectorContruction was created" );
 }
 
@@ -564,10 +565,12 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
 
 void DetectorATLASConstruction::ConstructSDandField(){
 
-  MSG_INFO("Set magnetic field")
-  FieldSetup* fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
-  G4AutoDelete::Register(fieldSetup);
-  m_fieldSetup.Put(fieldSetup);
+  if (m_useMagneticField){
+    MSG_INFO("Set magnetic field")
+    FieldSetup* fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
+    G4AutoDelete::Register(fieldSetup);
+    m_fieldSetup.Put(fieldSetup);
+  }
 
 }
 
