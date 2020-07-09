@@ -10,7 +10,7 @@
 #include "G4Step.hh"
 #include <string>
 #include <vector>
-
+#include <time.h>
 
 class EventLoop : public G4Run, public MsgService
 {
@@ -34,6 +34,12 @@ class EventLoop : public G4Run, public MsgService
 
     SG::EventContext& getContext();
 
+    /** Start the event counter **/
+    void start();
+    /** Update the event counter **/
+    void update();
+    /** Is timeout? **/
+    bool timeout();
 
   private:
 
@@ -45,6 +51,12 @@ class EventLoop : public G4Run, public MsgService
     
     // list of alg tools to be executed in loop
     std::vector < Gaugi::Algorithm* > m_toolHandles;
+
+    
+    time_t m_start, m_end;
+
+    unsigned m_nEvents, m_nGoodEvents;
+
 };
 
   

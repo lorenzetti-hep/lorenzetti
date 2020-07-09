@@ -1,8 +1,9 @@
 
+#include "G4Kernel/constants.h"
 #include "G4Kernel/EventLoop.h"
 #include "G4Threading.hh"
 #include <iostream>
-
+#include <time.h>
 
 
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output): 
@@ -10,8 +11,9 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
   G4Run(), 
   m_store( output , G4Threading::G4GetThreadId() ),
   m_ctx( "EventContext" ),
-  m_toolHandles(acc)
-
+  m_toolHandles(acc),
+  m_nEvents(0),
+  m_nGoodEvents(0)
 {
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
@@ -20,17 +22,31 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }
   }
+
+
 }
 
 
 EventLoop::~EventLoop()
-{;}
+{
+
+  unsigned badEvents = m_nEvents - m_nGoodEvents;
+  MSG_INFO( "Good events    : " << m_nGoodEvents );
+  MSG_INFO( "Aborted events : " << badEvents );
+}
 
 
 
 
 void EventLoop::BeginOfEvent()
 {
+  MSG_INFO("EventLoop::BeginOfEvent...");
+  
+  m_nEvents++;
+
+  // start the event counter
+  start();
+
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
@@ -43,6 +59,7 @@ void EventLoop::BeginOfEvent()
 
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
+  update();
   for( auto &toolHandle : m_toolHandles){
     if (toolHandle->execute( m_ctx, step ).isFailure() ){
       MSG_FATAL("Execution failure for  " << toolHandle->name());
@@ -53,6 +70,7 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 
 void EventLoop::EndOfEvent()
 {
+  MSG_INFO("EventLoop::EndOfEvent...");
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Launching post execute step for " << toolHandle->name() );
     if (toolHandle->post_execute( m_ctx ).isFailure() ){
@@ -63,8 +81,15 @@ void EventLoop::EndOfEvent()
     }
   }
 
+
+
+
   // Clear all storable pointers
   m_ctx.clear();
+  update();
+
+  m_nGoodEvents++;
+  MSG_INFO( "Event loop take " << (m_end-m_start) << " seconds to be processed." );
 }
 
 
@@ -75,10 +100,19 @@ SG::EventContext & EventLoop::getContext()
 
 
 
+bool EventLoop::timeout(){
+  return (m_end-m_start) > event_timeout ? true : false;
+}
 
 
 
+void EventLoop::start(){
+  m_start = m_end = time(nullptr);
+}
 
 
+void EventLoop::update(){
+  m_end = time(nullptr);
+}
 
 

@@ -3,7 +3,6 @@
 #include "EventInfo/EventInfo.h"
 #include "G4Kernel/EventLoop.h"
 #include "G4Kernel/constants.h"
-#include "GaugiKernel/PrettyTable.h"
 #include "G4LorentzVector.hh"
 #include "G4RunManager.hh"
 #include "G4Event.hh"

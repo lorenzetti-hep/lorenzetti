@@ -44,18 +44,6 @@ void RunAction::BeginOfRunAction(const G4Run* /*run*/)
 
 
 void RunAction::EndOfRunAction(const G4Run* /*run*/)
-{
-  /*
-  MSG_INFO( "RunAction::EndOfRunAction" );
-  auto mf = G4TransportationManager::GetTransportationManager()->GetFieldManager();
-  MSG_INFO( mf );
-  auto a = mf->GetChordFinder();
-  delete a;
-  auto b = mf->GetDetectorField();
-  delete b;
-  delete mf;
-  MSG_INFO("done!");
-  */
-}
+{;}
 
 

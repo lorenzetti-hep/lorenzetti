@@ -56,29 +56,6 @@ FieldSetup::FieldSetup(G4ThreeVector fieldVector, G4int stepperNum, G4bool useFS
 {
   MSG_INFO( " FieldSetup: magnetic field set to Uniform( " << fieldVector << " ) " );
 
-  /*
-  if( stepperNum == -1000 )
-  {
-     m_useFSALstepper = useFSALstepper;
-     if( !useFSALstepper )
-        m_stepperType = 17;   // Use Dormand Prince (7) 4/5 as default stepper
-     else
-        m_stepperType = 101;
-  }
-  else
-  {
-     m_useFSALstepper = ( stepperNum > 0 );
-     if( stepperNum > 0 )
-        m_stepperType = stepperNum;
-     else
-        m_stepperType = - stepperNum;        
-  }
-  */
-
-  m_stepperType = stepperNum;
-  m_useFSALstepper = useFSALstepper;
-  MSG_INFO( "Stepper type   : " << m_stepperType );
-  MSG_INFO( "UseFSALstepper : " << m_useFSALstepper );
   InitialiseAll();
 }
 
@@ -100,8 +77,7 @@ void FieldSetup::InitialiseAll()
  
   m_equation = new G4Mag_UsualEqRhs(m_magneticField);
  
-  //m_minStep     = 1.0*mm; // minimal step of 1 mm is default
-  m_minStep     = 2.0*mm; // minimal step of 1 mm is default
+  m_minStep     = 1.0*mm; // minimal step of 1 mm is default
 
   m_fieldManager = G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
@@ -111,7 +87,6 @@ void FieldSetup::InitialiseAll()
     CreateStepperAndChordFinder();
   }
 
-  MSG_INFO( "AKI JOAO = " << m_chordFinder->GetIntegrationDriver()->GetMaxNoSteop() );
   MSG_INFO( "Updating Field Manager..." );
   m_fieldManager->SetChordFinder( m_chordFinder );
   m_fieldManager->SetDetectorField(m_magneticField );
@@ -303,7 +278,6 @@ G4VIntegrationDriver* FieldSetup::CreateFSALStepperAndDriver()
        break;
   }
 
- C
   
   m_stepper = fsalDriver->GetStepper();
   return fsalDriver;
