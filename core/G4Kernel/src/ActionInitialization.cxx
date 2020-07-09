@@ -32,6 +32,7 @@ ActionInitialization::ActionInitialization( PrimaryGenerator *gen,
 
 ActionInitialization::~ActionInitialization()
 {
+  MSG_INFO( "~ActionInitialization()" );
   for ( auto toolHandle : m_acc )
   { 
     if ( toolHandle->finalize().isFailure() )
@@ -50,6 +51,7 @@ void ActionInitialization::BuildForMaster() const
 
 void ActionInitialization::Build() const
 {
+  MSG_INFO( "Build()" );
   SetUserAction(new PrimaryGeneratorAction(m_generator));
   SetUserAction(new RunAction(m_acc, m_output));
   SetUserAction(new EventAction());

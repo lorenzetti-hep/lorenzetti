@@ -56,6 +56,7 @@ FieldSetup::FieldSetup(G4ThreeVector fieldVector, G4int stepperNum, G4bool useFS
 {
   MSG_INFO( " FieldSetup: magnetic field set to Uniform( " << fieldVector << " ) " );
 
+  /*
   if( stepperNum == -1000 )
   {
      m_useFSALstepper = useFSALstepper;
@@ -72,7 +73,12 @@ FieldSetup::FieldSetup(G4ThreeVector fieldVector, G4int stepperNum, G4bool useFS
      else
         m_stepperType = - stepperNum;        
   }
-  
+  */
+
+  m_stepperType = stepperNum;
+  m_useFSALstepper = useFSALstepper;
+  MSG_INFO( "Stepper type   : " << m_stepperType );
+  MSG_INFO( "UseFSALstepper : " << m_useFSALstepper );
   InitialiseAll();
 }
 
@@ -94,7 +100,8 @@ void FieldSetup::InitialiseAll()
  
   m_equation = new G4Mag_UsualEqRhs(m_magneticField);
  
-  m_minStep     = 1.0*mm; // minimal step of 1 mm is default
+  //m_minStep     = 1.0*mm; // minimal step of 1 mm is default
+  m_minStep     = 2.0*mm; // minimal step of 1 mm is default
 
   m_fieldManager = G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
@@ -104,15 +111,22 @@ void FieldSetup::InitialiseAll()
     CreateStepperAndChordFinder();
   }
 
+  MSG_INFO( "AKI JOAO = " << m_chordFinder->GetIntegrationDriver()->GetMaxNoSteop() );
   MSG_INFO( "Updating Field Manager..." );
   m_fieldManager->SetChordFinder( m_chordFinder );
   m_fieldManager->SetDetectorField(m_magneticField );
+
+
+  MSG_INFO( "1 = " << m_fieldManager->GetMinimumEpsilonStep() );
+  MSG_INFO( "2 = " << m_fieldManager->GetMaximumEpsilonStep() );
+
 }
 
 
 
 FieldSetup::~FieldSetup()
 {
+  MSG_INFO( "Delete the magnetic field! ");
   delete m_magneticField;
   delete m_chordFinder;
   delete m_stepper;
@@ -122,30 +136,32 @@ FieldSetup::~FieldSetup()
 
 void FieldSetup::CreateStepperAndChordFinder()
 {
-  delete m_chordFinder;
-  m_chordFinder= nullptr;
-   
-  // Update field
-  MSG_INFO( "FieldSetup::CreateStepperAndChordFinder() called. ");
-  MSG_INFO("                 1. Creating Stepper.");
+  MSG_INFO( "CreateStepperAndChordFinder called... ");
 
   SetStepper();
 
-  MSG_INFO("The minimal step is equal to "<<m_minStep/mm<<" mm" );
-  MSG_INFO("                 2. Creating ChordFinder.");
   m_chordFinder = new G4ChordFinder( m_magneticField, m_minStep,m_stepper );
-
-  MSG_INFO("                 3. Updating Field Manager.");  
   m_fieldManager->SetChordFinder( m_chordFinder );
   m_fieldManager->SetDetectorField( m_magneticField );
 }
 
 
+
+void FieldSetup::CreateFSALStepperAndChordFinder()
+{
+  MSG_INFO( "CreateFSALStepperAndChordFinder called... " );
+  m_driver = CreateFSALStepperAndDriver();
+  m_chordFinder = new G4ChordFinder( m_driver );
+}
+
+
+
+
 void FieldSetup::SetStepper()
 {
 
-  if (m_stepper) delete m_stepper;
 
+  MSG_INFO( "Setting Stepper with type: " << m_stepperType );
   switch ( m_stepperType )
   {
      //  The new default in G4 and here ( since G4 10.4 Dec 2017 )
@@ -253,22 +269,10 @@ void FieldSetup::SetStepper()
 
 
 
-
-
 G4VIntegrationDriver* FieldSetup::CreateFSALStepperAndDriver()
 {
-  const char *methodName= "FieldSetup::CreateFSALStepperAndDriver()";
-  if (m_stepper) delete m_stepper;
-  m_stepper = nullptr;
   
-  MSG_INFO( " FieldSetup::CreateFSALStepperAndDriver() called. " );   
-  MSG_INFO( "                 1. Creating Stepper."  );
-  // auto fsalStepper = new FsalStepperType( m_equation );
-  G4RK547FEq1* stepper1 = nullptr;
-  G4RK547FEq2* stepper2 = nullptr;
-  G4RK547FEq3* stepper3 = nullptr;
-
-  MSG_INFO( "                2. Creating FSAL Driver."  );
+  MSG_INFO( "CreateFSALStepperAndDriver called...." );   
 
   G4VIntegrationDriver* fsalDriver = nullptr;
   
@@ -276,48 +280,32 @@ G4VIntegrationDriver* FieldSetup::CreateFSALStepperAndDriver()
   {
     case   1:
     case 101:
-       stepper1 = new G4RK547FEq1( m_equation );
-       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq1>( m_minStep, stepper1 );
        MSG_INFO( " Stepper type '1' is G4RK547FEq1 stepper (in FSAL mode) with FSAL driver. ");
-       m_stepper = stepper1;
-       stepper1 = nullptr;
+       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq1>( m_minStep, new G4RK547FEq1( m_equation ) );
        break;
      
     case   2:
     case 102:
-       stepper2= new G4RK547FEq2( m_equation );
-       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq2>( m_minStep, stepper2 );
        MSG_INFO( " Stepper type '2' is G4RK547FEq2 stepper (in FSAL mode) with FSAL driver. ");
-       m_stepper = stepper2;
-       stepper2 = nullptr;
+       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq2>( m_minStep, new G4RK547FEq2( m_equation ) );
        break;
        
     case   3:
     case 103:
-       stepper3 = new G4RK547FEq3( m_equation );       
-       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq3>( m_minStep, stepper3 );
        MSG_INFO( " Stepper type '3' is G4RK547FEq3 stepper (in FSAL mode) with FSAL driver. ");       
-       m_stepper = stepper3;
-       stepper3 = nullptr;
+       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq3>( m_minStep, new G4RK547FEq3( m_equation ) );
        break;
 
     default:
-       //MSG_INFO( " Warning from " << methodName << " :  stepperType (= "<< m_stepperType << " ) is unknown. " )
-       //       << " Using value '1' instead - i.e. G4RK547FEq1 stepper. ");
-       stepper1 = new G4RK547FEq1( m_equation );       
-       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq1>( m_minStep, stepper1 );
-       m_stepper = stepper1;
-       stepper1 = nullptr;
+
+       MSG_INFO( "Setting default..." );
+       fsalDriver = new G4FSALIntegrationDriver<G4RK547FEq1>( m_minStep, new G4RK547FEq1( m_equation ) );
        break;
   }
 
-  delete stepper1;    stepper1 = nullptr;
-  delete stepper2;    stepper2 = nullptr;              
-  delete stepper3;    stepper3 = nullptr;
+ C
   
-  if( fsalDriver )
-     m_stepper = fsalDriver->GetStepper();
-  
+  m_stepper = fsalDriver->GetStepper();
   return fsalDriver;
 }
 
@@ -327,15 +315,6 @@ G4VIntegrationDriver* FieldSetup::CreateFSALStepperAndDriver()
 
 
 
-
-void FieldSetup::CreateFSALStepperAndChordFinder()
-{
-  delete m_chordFinder;
-  m_chordFinder= nullptr;
-  MSG_INFO( " FieldSetup::CreateFSALStepperAndChordFinder() called. " );
-  m_driver = CreateFSALStepperAndDriver();
-  m_chordFinder = new G4ChordFinder( m_driver );
-}
 
 
 void FieldSetup::SetFieldZValue( G4double fieldStrength)

@@ -8,6 +8,11 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
+#include "G4TransportationManager.hh"
+#include "G4FieldManager.hh"
+#include "G4Field.hh"
+#include "G4ChordFinder.hh"
+
 #include <iostream>
 
 RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc, std::string output )
@@ -19,7 +24,8 @@ RunAction::RunAction( std::vector<Gaugi::Algorithm*> acc, std::string output )
 
 
 RunAction::~RunAction()
-{ 
+{
+  MSG_INFO( "~RunAction()" );	
   delete G4AnalysisManager::Instance();  
 }
 
@@ -32,10 +38,24 @@ G4Run* RunAction::GenerateRun()
 
 
 void RunAction::BeginOfRunAction(const G4Run* /*run*/)
-{;}
+{
+  MSG_INFO( "RunAction::BeginOfRunAction" );
+}
 
 
 void RunAction::EndOfRunAction(const G4Run* /*run*/)
-{;}
+{
+  /*
+  MSG_INFO( "RunAction::EndOfRunAction" );
+  auto mf = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+  MSG_INFO( mf );
+  auto a = mf->GetChordFinder();
+  delete a;
+  auto b = mf->GetDetectorField();
+  delete b;
+  delete mf;
+  MSG_INFO("done!");
+  */
+}
 
 

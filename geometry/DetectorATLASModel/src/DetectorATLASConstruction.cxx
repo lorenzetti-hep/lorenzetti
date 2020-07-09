@@ -24,8 +24,7 @@
 #include <sstream>
 
 
-//G4ThreadLocal
-//G4GlobalMagFieldMessenger* DetectorATLASConstruction::fMagFieldMessenger = nullptr; 
+G4ThreadLocal G4GlobalMagFieldMessenger* DetectorATLASConstruction::fMagFieldMessenger = nullptr; 
 
 
 DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
@@ -39,7 +38,9 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
 
 
 DetectorATLASConstruction::~DetectorATLASConstruction()
-{;}
+{
+  //delete m_fieldSetup;
+}
 
 
 G4VPhysicalVolume* DetectorATLASConstruction::Construct()
@@ -568,24 +569,25 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
   MSG_INFO("Set magnetic field")
   
-  /*  
+  
   // Create global magnetic field messenger.
   // Uniform magnetic field is then created automatically if
   // the field value is not zero.
-  G4ThreeVector fieldValue(0,0,2*tesla);
-  fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
-  fMagFieldMessenger->SetVerboseLevel(1);
-  // Register the field messenger for deleting
-  G4AutoDelete::Register(fMagFieldMessenger);
-  */
+  //G4ThreeVector fieldValue(0,0,2*tesla);
+  //fMagFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
+  //fMagFieldMessenger->SetVerboseLevel(1);
+  //G4AutoDelete::Register(fMagFieldMessenger);
+  
+
+  //m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), -1000, false );
 
 
   // Construct the field creator - this will register the field it creates
-  if (!m_fieldSetup.Get()) {
-    FieldSetup* fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), -1000, false );
+  //if (!m_fieldSetup.Get()) {
+    FieldSetup* fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 3, true );
     G4AutoDelete::Register(fieldSetup);
     m_fieldSetup.Put(fieldSetup);
-  }
+  //}
 
 }
 
