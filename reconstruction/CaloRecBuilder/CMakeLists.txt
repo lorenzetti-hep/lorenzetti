@@ -10,7 +10,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/TruthParticle)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/CaloRings)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/GaugiKernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/G4Kernel)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../external/cpk/include)
 
 
 

@@ -61,7 +61,6 @@ link_directories( ${Boost_LIBRARY_DIR} )
 add_subdirectory( core/GaugiKernel )
 add_subdirectory( core/G4Kernel )
 add_subdirectory( core/P8Kernel )
-add_subdirectory( external/cpk )
 add_subdirectory( events/CaloCell )
 add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
@@ -78,7 +77,6 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
   $<TARGET_OBJECTS:P8Kernel>
-  $<TARGET_OBJECTS:cpk>
   $<TARGET_OBJECTS:CaloCell>
   $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:EventInfo>

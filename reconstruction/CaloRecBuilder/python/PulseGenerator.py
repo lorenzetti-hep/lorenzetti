@@ -8,7 +8,16 @@ from G4Kernel import treatPropertyValue
 
 class PulseGenerator( Logger ):
 
-  __allow_keys = ["OutputLevel", "NSamples", "ShaperFile"]
+  __allow_keys = ["OutputLevel", 
+                  "NSamples", 
+                  "ShaperFile",
+                  "Pedestal",
+                  "DeformationMean",
+                  "DeformationStd",
+                  "NoiseMean",
+                  "NoiseStd",
+                  "SamplingRate",
+                  ]
 
   def __init__( self, name, **kw ):
 

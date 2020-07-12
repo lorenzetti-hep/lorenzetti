@@ -40,13 +40,13 @@ RawCell::RawCell( float eta,
   m_bc_nsamples( bc_nsamples ),
   m_bcid_truth( bcid_truth ),
   m_bc_duration( bc_duration ),
-  m_rawEnergySamples( (bcid_end-bcid_start)*bc_nsamples, 0 ),
+  m_rawEnergySamples( (bcid_end-bcid_start+1)*bc_nsamples, 0 ),
   m_hash(hash)
 {
   // Initalize the time vector using the bunch crossing informations
   float start = m_bcid_start * m_bc_duration;
   float step  = m_bc_duration / m_bc_nsamples;
-  int total   = ((m_bcid_end - m_bcid_start) + 1) * m_bc_nsamples;
+  int total   = (m_bcid_end - m_bcid_start+1) * m_bc_nsamples + 1;
   for (int t = 0; t < total; ++t) m_time.push_back( (start + step*t) );
 }
 

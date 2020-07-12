@@ -66,6 +66,8 @@ class CaloCellMaker : public Gaugi::Algorithm
     float m_phi_bins; 
     float m_rmin;
     float m_rmax;  
+
+    bool m_detailedHistograms;
 };
 
 

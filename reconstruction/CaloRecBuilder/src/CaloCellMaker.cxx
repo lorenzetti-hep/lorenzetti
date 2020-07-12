@@ -20,16 +20,18 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
 
-  declareProperty( "EventKey"         , m_eventKey="EventInfo"                );
-  declareProperty( "HistogramPath"    , m_histPath="/CaloCellMaker"           );
-  declareProperty( "CaloCellFile"     , m_caloCellFile                        );
-  declareProperty( "CollectionKey"    , m_collectionKey="CaloCellCollection"  );
-  declareProperty( "BunchIdStart"     , m_bcid_start=-7                       );
-  declareProperty( "BunchIdEnd"       , m_bcid_end=8                          );
-  declareProperty( "BunchDuration"    , m_bc_duration=25                      );
-  declareProperty( "NumberOfSamplesPerBunch" , m_bc_nsamples=1                );
-  declareProperty( "OutputLevel"      , m_outputLevel=1                       );
+  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
+  declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
+  declareProperty( "CaloCellFile"             , m_caloCellFile                        );
+  declareProperty( "CollectionKey"            , m_collectionKey="CaloCellCollection"  );
+  declareProperty( "BunchIdStart"             , m_bcid_start=-7                       );
+  declareProperty( "BunchIdEnd"               , m_bcid_end=8                          );
+  declareProperty( "BunchDuration"            , m_bc_duration=25                      );
+  declareProperty( "NumberOfSamplesPerBunch"  , m_bc_nsamples=1                       );
+  declareProperty( "OutputLevel"              , m_outputLevel=1                       );
 
+
+  declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
 }
 
 
@@ -99,6 +101,14 @@ StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
   // Create the 2D histogram for monitoring purpose
   store.add(new TH2F( "truth_cells", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                          m_phi_bins, m_phi_min, m_phi_max) );
+
+
+  if (m_detailedHistograms){
+    int nbunchs = m_bcid_end - m_bcid_start + 1;
+    store.add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 10) );
+  }
+
+
 
   return StatusCode::SUCCESS;
 }
@@ -196,7 +206,8 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
       }
     }
   }
-  
+ 
+
   return StatusCode::SUCCESS;
 }
 
@@ -225,6 +236,17 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
       int bin = store.hist2("cells")->GetBin(x,y,0);
       float energy = store.hist2("cells")->GetBinContent( bin );
       store.hist2("cells")->SetBinContent( bin, (energy + cell->energy()) );
+  
+      if(m_detailedHistograms){
+        int i=0;
+        auto samples = cell->rawEnergySamples();
+        for ( int bc=m_bcid_start; bc<m_bcid_end+1; ++bc)
+        {
+          store.hist2("energy_samples_per_bunch")->Fill(bc,samples[i]/1000.);
+          ++i;
+        }
+      }
+
     }
     
     {// Fill truth energy 2D histograms

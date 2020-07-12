@@ -101,9 +101,17 @@ class CaloCellBuilder( Logger ):
     from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
     for idx, config in enumerate( self.__configs ):
       pulse = PulseGenerator( "PulseGenerator", 
-                              NSamples    = config['NSamples'], 
-                              ShaperFile  = self.__basepath+config['ShaperFile'],
-                              OutputLevel = self.__outputLevel)
+                              NSamples        = config['NSamples'], 
+                              ShaperFile      = self.__basepath+config['ShaperFile'],
+                              OutputLevel     = self.__outputLevel,
+                              SamplingRate    = 25.0,
+                              Pedestal        = 0.0,
+                              DeformationMean = 0.0, 
+                              DeformationStd  = 0.0,
+                              NoiseMean       = 0.0,
+                              NoiseStd        = 1.5,
+                              #NoiseStd        = 0,
+                              )
       of = OptimalFilter("OptimalFilter",
                           Weights  = config['OFWeights'],
                           OutputLevel=self.__outputLevel)
@@ -117,7 +125,8 @@ class CaloCellBuilder( Logger ):
                           BunchDuration           = 25,
                           NumberOfSamplesPerBunch = 1,
                           HistogramPath           = self.__histpath + '/' + config['name'],
-                          OutputLevel             = self.__outputLevel)
+                          OutputLevel             = self.__outputLevel,
+                          DetailedHistograms      = True)
       alg.Tools = [pulse, of]
       self.__recoAlgs.append( alg )
   

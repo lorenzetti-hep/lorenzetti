@@ -240,6 +240,7 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 bool EventReader::Add( G4Event* g4event , int i, int bc_id )
 {
   G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
+  //G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), 0 );
   if (! CheckVertexInsideWorld(xvtx.vect()*mm)) return false;
   G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()  );
   G4int pdgcode= m_p_pdg_id->at(i);

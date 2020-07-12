@@ -3,8 +3,6 @@
 
 #include "GaugiKernel/StatusCode.h"
 #include "CaloTool.h"
-#include "TPulseGenerator.h"
-
 
 
 class PulseGenerator : public CaloTool
@@ -26,13 +24,28 @@ class PulseGenerator : public CaloTool
 
 
   private:
- 
+
+    void ReadShaper( std::string );
+    void GenerateDeterministicPulse(  std::vector<float> &pulse,  float amplitude, float phase, float lag) const;
+    void AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStddev) const;
+
+
     /*! Number of samples to be generated */
     int m_nsamples;
+    int m_shaperZeroIndex;
+    float m_pedestal;
+    float m_deformationMean;
+    float m_deformationStd;
+    float m_samplingRate;
+    float m_shaperResolution;
+    float m_noiseMean;    
+    float m_noiseStd;    
+
+    std::vector<float> m_shaper;
+    std::vector<float> m_timeSeries;
+    
     /*! The shaper configuration path */
     std::string m_shaperFile;
-    /*! Pulse generator */
-    CPK::TPulseGenerator  *m_pulseGenerator;
     /*! Output level message */
     int m_outputLevel;
 };

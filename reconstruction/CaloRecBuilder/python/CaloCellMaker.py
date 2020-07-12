@@ -18,6 +18,7 @@ class CaloCellMaker( Logger ):
                   "BunchDuration",
                   "NumberOfSamplesPerBunch",
                   "HistogramPath",
+                  "DetailedHistograms",
                   ]
 
   def __init__( self, name, **kw ): 
