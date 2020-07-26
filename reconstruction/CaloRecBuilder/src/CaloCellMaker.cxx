@@ -6,6 +6,8 @@
 #include "CaloCellMaker.h"
 #include "TVector3.h"
 #include <cstdlib>
+#include "G4SystemOfUnits.hh"
+
 
 using namespace Gaugi;
 using namespace SG;
@@ -105,7 +107,9 @@ StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
 
   if (m_detailedHistograms){
     int nbunchs = m_bcid_end - m_bcid_start + 1;
-    store.add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 10) );
+    store.add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
+    store.add(new TH2F( "timesteps", "Time steps; time [ns]; Energy [MeV];", nbunchs*100, m_bcid_start*(m_bc_duration-0.5), m_bcid_end*(m_bc_duration+0.5), 
+                         30, 0, 30) );
   }
 
 
@@ -170,9 +174,8 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   xAOD::RawCell *cell=nullptr;
   collection->retrieve( vpos, cell );
   
-  if(cell)  
-    cell->Fill( step );
-  
+  if(cell) cell->Fill( step );
+
   return StatusCode::SUCCESS;
 }
 
@@ -185,7 +188,6 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
-  
   // Event info
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
   
@@ -193,11 +195,31 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
   }
 
-
   auto evt = (**event.ptr()).front();
 
   for ( const auto& p : **collection.ptr() )
   {
+    //const auto *cell = p.second;
+    //switch (cell->sampling()){
+    //  case EM1:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3000,0,0,cell->rawEnergySamples()[21],0,0,1000});
+    //    break;
+    //  case EM2:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{-1000,0,1500,1500,0,0,0,0,0,0,0,1000,0,0,0,0,0,0,1000,0,1000,cell->rawEnergySamples()[21],0,1000,1000});
+    //    break;
+    //  case EM3:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,cell->rawEnergySamples()[21],100,100,100});
+    //    break;
+    //  case HAD1:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{0,0,0,3000,0,0,cell->rawEnergySamples()[6],0,0,1000,0});
+    //    break;
+    //  case HAD2:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{-1000,0,1000,3000,0,0,cell->rawEnergySamples()[6],0,0,1000,0});
+    //    break;
+    //  case HAD3:
+    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{100,100,100,100,100,100,cell->rawEnergySamples()[6],100,100,100,100});
+    //    break;
+    //}
     for ( auto tool : m_toolHandles )
     {
       if( tool->executeTool( evt, p.second ).isFailure() ){

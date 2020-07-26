@@ -24,13 +24,13 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 # Pileup simulation arguments
 #
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
+parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
                     help = "The pileup average (default is zero).")
 
-parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=0,
+parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=-21,
                     help = "The bunch crossing id start.")
 
-parser.add_argument('--bc_id_end', action='store', dest='bc_id_end', required = False, type=int, default=0,
+parser.add_argument('--bc_id_end', action='store', dest='bc_id_end', required = False, type=int, default=4,
                     help = "The bunch crossing id end.")
 
 parser.add_argument('--bc_duration', action='store', dest='bc_duration', required = False, type=int, default=25,
@@ -42,10 +42,12 @@ parser.add_argument('--bc_duration', action='store', dest='bc_duration', require
 #
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=0,
-                    help = "The output level messenger.")
+                    help = "Log output level.")
 
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
-                    help = "The pythia seed (zero is the clock system)")
+                    help = "Pythia seed (zero is the system clock)")
+parser.add_argument('--full-detector', action='store_true', required = False, default=False,
+                    help = "Generate pile-up for the full detector")
 
 
 
@@ -67,6 +69,10 @@ gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
 
 from PythiaGenerator import Pileup
 
+deltaEta = deltaPhi = 0.22
+if args.full_detector:
+  deltaEta = deltaPhi = 999999.
+
 pileup = Pileup( "MinimumBias",
                  File           = minbias,
                  EtaMax         = 1.4,
@@ -76,8 +82,8 @@ pileup = Pileup( "MinimumBias",
                  BunchIdEnd     = args.bc_id_end,
                  OutputLevel    = args.outputLevel,
                  Seed           = args.seed,
-                 DeltaEta       = 0.22,
-                 DeltaPhi       = 0.22,
+                 DeltaEta       = deltaEta,
+                 DeltaPhi       = deltaPhi, 
                  )
 
 

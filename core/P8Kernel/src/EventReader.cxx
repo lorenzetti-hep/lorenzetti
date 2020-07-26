@@ -24,8 +24,9 @@ EventReader::EventReader(std::string name):
     m_evt(0)
 {
   ROOT::EnableThreadSafety();
-  declareProperty( "FileName", m_filename=""          );
-  declareProperty( "EventKey", m_eventKey="EventInfo" );
+  declareProperty( "FileName",      m_filename=""          );
+  declareProperty( "EventKey",      m_eventKey="EventInfo" );
+  declareProperty( "BunchDuration", m_bc_duration=25*ns    );
 
 }
 
@@ -239,13 +240,12 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 
 bool EventReader::Add( G4Event* g4event , int i, int bc_id )
 {
-  G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), m_p_prod_t->at(i) + (bc_id*25*c_light)  );
-  //G4LorentzVector xvtx( m_p_prod_x->at(i), m_p_prod_y->at(i), m_p_prod_z->at(i), 0 );
-  if (! CheckVertexInsideWorld(xvtx.vect()*mm)) return false;
-  G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x()*mm, xvtx.y()*mm, xvtx.z()*mm, xvtx.t()  );
+  G4LorentzVector xvtx( m_p_prod_x->at(i)*mm, m_p_prod_y->at(i)*mm, m_p_prod_z->at(i)*mm, (m_p_prod_t->at(i) /*mm*/ * mm /*m*/ / (c_light*ns) /*ns*/) + (bc_id*m_bc_duration) /*ns*/  );
+  if (! CheckVertexInsideWorld(xvtx.vect())) return false;
+  G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x(), xvtx.y(), xvtx.z(), xvtx.t()  );
   G4int pdgcode= m_p_pdg_id->at(i);
-  G4LorentzVector p( m_p_px->at(i), m_p_py->at(i), m_p_pz->at(i),  m_p_e->at(i) );
-  G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x()*GeV, p.y()*GeV, p.z()*GeV);
+  G4LorentzVector p( m_p_px->at(i)*GeV, m_p_py->at(i)*GeV, m_p_pz->at(i)*GeV,  m_p_e->at(i)*GeV );
+  G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x(), p.y(), p.z());
   g4vtx->SetPrimary(g4prim);
   g4event->AddPrimaryVertex(g4vtx);
   return true;

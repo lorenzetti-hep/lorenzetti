@@ -44,10 +44,12 @@ RawCell::RawCell( float eta,
   m_hash(hash)
 {
   // Initalize the time vector using the bunch crossing informations
-  float start = m_bcid_start * m_bc_duration;
+  float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
   float step  = m_bc_duration / m_bc_nsamples;
   int total   = (m_bcid_end - m_bcid_start+1) * m_bc_nsamples + 1;
-  for (int t = 0; t < total; ++t) m_time.push_back( (start + step*t) );
+  for (int t = 0; t < total; ++t) {
+    m_time.push_back( (start + step*t) );
+  }
 }
 
 
@@ -70,21 +72,18 @@ void RawCell::Fill( const G4Step* step )
   // Get the position
   G4ThreeVector pos = point->GetPosition();
   // Get the particle time
-  float t = (float)point->GetGlobalTime()*mm/c_light; // mm to ns
+  float t = (float)point->GetGlobalTime() / ns;
   
   // Loop over all samples
   for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
     if( t >= m_time[sample] && t < m_time[sample+1]){
-      m_rawEnergySamples[sample]+=edep;
+      m_rawEnergySamples[sample]+=(edep/MeV);
       break;
     }
   }
-  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration))
-    m_truthRawEnergy+=edep;
-  else
-    m_rawEnergy+=edep;
+  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
+    m_truthRawEnergy+=(edep/MeV);
+  }
 }
-
-
 
 

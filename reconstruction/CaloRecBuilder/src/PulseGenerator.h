@@ -3,6 +3,7 @@
 
 #include "GaugiKernel/StatusCode.h"
 #include "CaloTool.h"
+#include "TRandom3.h"
 
 
 class PulseGenerator : public CaloTool
@@ -32,6 +33,7 @@ class PulseGenerator : public CaloTool
 
     /*! Number of samples to be generated */
     int m_nsamples;
+    int m_startSamplingBC;
     int m_shaperZeroIndex;
     float m_pedestal;
     float m_deformationMean;
@@ -48,6 +50,8 @@ class PulseGenerator : public CaloTool
     std::string m_shaperFile;
     /*! Output level message */
     int m_outputLevel;
+    /*! Random generator */
+    mutable TRandom3 m_rng;
 };
 
 #endif

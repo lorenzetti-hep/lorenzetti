@@ -9,9 +9,9 @@ PulseGenerator::PulseGenerator( std::string name ) :
   IMsgService(name),
   CaloTool(),
   m_shaperZeroIndex(0),
-  m_shaperResolution(0)
+  m_shaperResolution(0),
+  m_rng(0)
 {
-  declareProperty( "NSamples"         , m_nsamples=7            );
   declareProperty( "ShaperFile"       , m_shaperFile=""         );
   declareProperty( "Pedestal"         , m_pedestal = 0          );
   declareProperty( "DeformationMean"  , m_deformationMean=0     );
@@ -20,7 +20,8 @@ PulseGenerator::PulseGenerator( std::string name ) :
   declareProperty( "OutputLevel"      , m_outputLevel=1         );
   declareProperty( "NoiseMean"        , m_noiseMean=0           );
   declareProperty( "NoiseStd"         , m_noiseStd=0            );
-  
+  declareProperty( "NSamples"         , m_nsamples=7            );
+  declareProperty( "StartSamplingBC"  , m_startSamplingBC=0     );
 }
 
 
@@ -59,8 +60,6 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
     // Generate the pulse
     std::vector<float> pulse;
     GenerateDeterministicPulse( pulse, rawEnergySamples[i], 0, bc*cell->bc_duration() );
-    // Add gaussian noise
-    AddGaussianNoise(pulse, m_noiseMean, m_noiseStd);
     // Accumulate into pulse sum (Sum all pulses)
     for ( int j=0; j < pulse_size; ++j ){
       pulse_sum[j] += pulse[j];
@@ -68,6 +67,9 @@ StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::R
 
     cell->setPulsePerBunch( bc, pulse ); 
   }
+
+  // Add gaussian noise
+  AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
 
 
   // Add the pulse centered in the bunch crossing zero
@@ -106,25 +108,26 @@ void PulseGenerator::ReadShaper( std::string filepath )
 
 void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStd) const
 {
-  TRandom rng(0);
   for ( auto &value : pulse )
-    value+= m_pedestal + rng.Gaus( noiseMean, noiseStd );
+    value+= m_pedestal + m_rng.Gaus( noiseMean, noiseStd );
 }
 
 
 void PulseGenerator::GenerateDeterministicPulse(  std::vector<float> &pulse,  float amplitude, float phase, float lag) const
 {
-  TRandom rng(0);
   pulse.resize( m_nsamples );
   float shr    = m_shaperResolution;  
   float shzi   = m_shaperZeroIndex; 
 
   for (int i = 0; i < m_nsamples; i++) {
     // random deformation (normal from geant)
-    float deformation = rng.Gaus(m_deformationMean, m_deformationStd);
-    int shaperIndex = int(shzi) - int(lag / shr) + (i - int(m_nsamples) / 2) * (m_samplingRate / shr) + round(phase / shr);
-    if (shaperIndex < 0 || shaperIndex > (int)m_shaper.size() - 1) shaperIndex = 0;
-    pulse[i] = amplitude * m_shaper[shaperIndex] + m_pedestal + deformation;
+    float deformation = m_rng.Gaus(m_deformationMean, m_deformationStd);
+    int shaperIndex = int(shzi) - int(lag / shr) + (i + m_startSamplingBC) * (m_samplingRate / shr) + round(phase / shr);
+    if (shaperIndex < 0 || shaperIndex > (int)m_shaper.size() - 1){
+      pulse[i] = 0;
+      continue;
+    }
+    pulse[i] += amplitude * m_shaper[shaperIndex] + m_pedestal + deformation;
   }
 }
 

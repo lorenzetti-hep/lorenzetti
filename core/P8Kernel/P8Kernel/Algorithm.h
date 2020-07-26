@@ -25,11 +25,18 @@ namespace generator{
       virtual ~Algorithm() {};
   
       const std::string& name() const;
-  
+
     protected:
-      
+
+      /*! Sample pp z axis fluctuation */ 
+      float sample_z() const;
+      /*! Sample pp time fluctuation */ 
+      float sample_t() const;
       /*! Poisson random number generation*/ 
       int poisson(double nAvg);
+  
+      float trunc_centered_gauss(float sigma, float trunc) const;
+      
       /*! Level message */
       int m_outputLevel;
       /*! Pythia seed */
@@ -38,13 +45,19 @@ namespace generator{
       int m_nAbort;
       /*! Number of errors */
       int m_iAbort;
-      /*! Used to random t for the current processs */
+      /*! Time fluctuations in pp collisions */
       float m_sigma_t;
-      /*! Used to random z for the current processs */
+      /*! Z axis fluctuations in pp collisions */
       float m_sigma_z;
+      /*! Truncate large t fluctuations (mm) */
+      float m_trunc_t;
+      /*! Truncate large z fluctuations (mm) */
+      float m_trunc_z;
+      /*! Set maximum mu to avoid overflow. */
+      float m_trunc_mu = 300;
 
       /*! The pythia event generator */
-      Pythia8::Pythia m_generator;
+      mutable Pythia8::Pythia m_generator;
   };
 
 }

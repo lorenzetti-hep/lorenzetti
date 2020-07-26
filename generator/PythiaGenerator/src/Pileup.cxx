@@ -79,8 +79,8 @@ StatusCode Pileup::execute(  generator::Event &event )
         break;
       }
 
-      const auto mb_event_t = m_generator.rndm.gauss() * m_sigma_t;
-      const auto mb_event_z = m_generator.rndm.gauss() * m_sigma_z;
+      const auto mb_event_t = sample_t();
+      const auto mb_event_z = sample_z();
 
       double weight = m_generator.info.mergingWeight();
       double evtweight = m_generator.info.weight();
@@ -115,6 +115,11 @@ StatusCode Pileup::execute(  generator::Event &event )
       }// Loop over all generated minimum bias particles
 
     } // Created all pile_up events for this BC
+    //if (bc_id != 0){
+    //  event[0].emplace_back( 0, bc_id, 211, 10, 0, 0, 0, 0, 
+    //                     0, 0, 0, 0, 
+    //                     10, 10); 
+    //}
   } // Finished all BCs
 
   // Fill window specific information

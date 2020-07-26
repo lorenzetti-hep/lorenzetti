@@ -43,8 +43,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample, m_sampling, setSampling, sampling );
       /*! Estimated energy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
-      /*! Raw energy (without estimation) */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_rawEnergy, setRawEnergy, rawEnergy );
       /*! Truth raw energy calculated on top of the special bunch crossing */ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_truthRawEnergy, setTruthRawEnergy, truthRawEnergy );
       /*! Bunch crossing id start */

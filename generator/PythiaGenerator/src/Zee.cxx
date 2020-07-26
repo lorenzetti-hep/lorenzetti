@@ -47,8 +47,8 @@ StatusCode Zee::execute( generator::Event &event )
     }
   }
   
-  const auto main_event_t = m_generator.rndm.gauss() * m_sigma_t;
-  const auto main_event_z = m_generator.rndm.gauss() * m_sigma_z;
+  const auto main_event_t = sample_t();
+  const auto main_event_z = sample_z();
 
 
   double weight = m_generator.info.mergingWeight();

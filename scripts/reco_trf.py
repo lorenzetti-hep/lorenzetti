@@ -78,9 +78,9 @@ acc = ComponentAccumulator("ComponentAccumulator",
 
 gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
-                   FileName   = args.inputFile)
-
-
+                   FileName   = args.inputFile,
+                   BunchDuration = 25.0,
+                   )
 
 calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
                               HistogramPath = "Expert/CaloCells",

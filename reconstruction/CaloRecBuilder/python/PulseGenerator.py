@@ -17,6 +17,7 @@ class PulseGenerator( Logger ):
                   "NoiseMean",
                   "NoiseStd",
                   "SamplingRate",
+                  "StartSamplingBC",
                   ]
 
   def __init__( self, name, **kw ):

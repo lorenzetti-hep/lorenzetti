@@ -24,13 +24,13 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 # Pileup simulation arguments
 #
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
+parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
                     help = "The pileup average (default is zero).")
 
-parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=0,
+parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=-21,
                     help = "The bunch crossing id start.")
 
-parser.add_argument('--bc_id_end', action='store', dest='bc_id_end', required = False, type=int, default=0,
+parser.add_argument('--bc_id_end', action='store', dest='bc_id_end', required = False, type=int, default=4,
                     help = "The bunch crossing id end.")
 
 parser.add_argument('--bc_duration', action='store', dest='bc_duration', required = False, type=int, default=25,

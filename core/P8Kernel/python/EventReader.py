@@ -10,6 +10,7 @@ class EventReader( Logger ):
   __allow_keys = [
                   "EventKey", 
                   "FileName",
+                  "BunchDuration",
                   ]
 
 
