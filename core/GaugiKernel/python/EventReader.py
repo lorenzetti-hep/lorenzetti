@@ -3,7 +3,7 @@ __all__ = ['EventReader']
 
 from Gaugi.messenger import Logger, LoggingLevel
 from Gaugi.messenger.macros import *
-from Gaugi import StatusCode
+from Gaugi import StatusCode, StatusTool
 from Gaugi.gtypes import NotSet
 from Gaugi import TEventLoop
 from GaugiKernel.enumerations import Dataframe as DataframeEnum
@@ -83,6 +83,24 @@ class EventReader( TEventLoop ):
         MSG_WARNING( self, 'Impossible to create the EDM: %s',key)
 
     self.getContext().initialize()
+
+    MSG_INFO( self, 'Initializing all tools...')
+    from Gaugi import ToolSvc as toolSvc
+    self._alg_tools = toolSvc.getTools()
+    for alg in self._alg_tools:
+      if alg.status is StatusTool.DISABLE:
+        continue
+      # Retrieve all services
+      alg.level = self._level
+      alg.setContext( self.getContext() )
+      alg.setStoreGateSvc( self.getStoreGateSvc() )
+      alg.dataframe = self._dataframe
+      if alg.isInitialized():
+        continue
+      if alg.initialize().isFailure():
+        MSG_FATAL( self, "Impossible to initialize the tool name: %s",alg.name)
+
+
 
     return StatusCode.SUCCESS
 
