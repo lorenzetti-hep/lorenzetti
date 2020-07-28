@@ -41,6 +41,9 @@ class EventLoop : public G4Run, public MsgService
     /** Is timeout? **/
     bool timeout();
 
+    void lock();
+    void unlock();
+
   private:
 
     // Store gate
@@ -57,6 +60,8 @@ class EventLoop : public G4Run, public MsgService
 
     unsigned m_nEvents, m_nGoodEvents;
 
+    // lock all steps
+    bool m_lock;
 };
 
   

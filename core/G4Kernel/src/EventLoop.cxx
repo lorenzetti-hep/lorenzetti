@@ -13,7 +13,8 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
   m_nEvents(0),
-  m_nGoodEvents(0)
+  m_nGoodEvents(0),
+  m_lock(false)
 {
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
@@ -44,14 +45,20 @@ void EventLoop::BeginOfEvent()
   
   m_nEvents++;
 
+  // Unlock the execution
+  unlock();
+  
   // start the event counter
   start();
 
+
   // Pre execution of all tools in sequence
-  for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
-    if (toolHandle->pre_execute( m_ctx ).isFailure() ){
-      MSG_FATAL("It's not possible to pre execute " << toolHandle->name());
+  if(!m_lock){
+    for( auto &toolHandle : m_toolHandles){
+      MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
+      if (toolHandle->pre_execute( m_ctx ).isFailure() ){
+        MSG_FATAL("It's not possible to pre execute " << toolHandle->name());
+      }
     }
   }
 }
@@ -60,9 +67,11 @@ void EventLoop::BeginOfEvent()
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
   update();
-  for( auto &toolHandle : m_toolHandles){
-    if (toolHandle->execute( m_ctx, step ).isFailure() ){
-      MSG_FATAL("Execution failure for  " << toolHandle->name());
+  if(!m_lock){
+    for( auto &toolHandle : m_toolHandles){
+      if (toolHandle->execute( m_ctx, step ).isFailure() ){
+        MSG_FATAL("Execution failure for  " << toolHandle->name());
+      }
     }
   }
 }
@@ -70,18 +79,18 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 
 void EventLoop::EndOfEvent()
 {
-  MSG_INFO("EventLoop::EndOfEvent...");
-  for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Launching post execute step for " << toolHandle->name() );
-    if (toolHandle->post_execute( m_ctx ).isFailure() ){
-      MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
-    }
-    if (toolHandle->fillHistograms( m_ctx , m_store).isFailure() ){
-      MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
+  if (!m_lock){
+    MSG_INFO("EventLoop::EndOfEvent...");
+    for( auto &toolHandle : m_toolHandles){
+      MSG_INFO( "Launching post execute step for " << toolHandle->name() );
+      if (toolHandle->post_execute( m_ctx ).isFailure() ){
+        MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
+      }
+      if (toolHandle->fillHistograms( m_ctx , m_store).isFailure() ){
+        MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
+      }
     }
   }
-
-
 
 
   // Clear all storable pointers
@@ -114,5 +123,14 @@ void EventLoop::start(){
 void EventLoop::update(){
   m_end = time(nullptr);
 }
+
+void EventLoop::lock(){
+  m_lock=true;
+}
+
+void EventLoop::unlock(){
+  m_lock=false;
+}
+
 
 

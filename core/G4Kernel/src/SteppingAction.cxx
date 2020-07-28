@@ -24,6 +24,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   
   if (loop->timeout())
   {
+    loop->lock(); // Force skip the post execute step
     std::string msg = "Event timeout!";
     G4Exception("EventLoop::UserSteppingAction()", "WatchDog", EventMustBeAborted, msg.c_str());
   }  

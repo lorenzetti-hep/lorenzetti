@@ -65,7 +65,7 @@ class Convert( Algorithm ):
   def execute(self, context):
     
     event = self.getContext().getHandler( "EventInfoContainer" )
-    cluster = self.getContext().getHandler( "Truth__CaloClusterContainer" )
+    cluster = self.getContext().getHandler( "CaloClusterContainer" )
     ringer = cluster.caloRings()
     
     if cluster.isValid() and ringer.isValid():
