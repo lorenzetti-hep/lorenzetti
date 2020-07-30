@@ -20,10 +20,10 @@ the eletronic pulse for each cell and estimate the cell's energy using the optim
 - Master: 
 
 
-| First Header  | Second Header |
+|    Release    | Build Status  |
 | ------------- | ------------- |
-| Content Cell  | [![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)  |
-| Content Cell  | Content Cell  |
+|   Master      | [![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)     |
+|    Dev.       |               |
 
 ## Getting Started:
 
