@@ -17,9 +17,13 @@ the eletronic pulse for each cell and estimate the cell's energy using the optim
 
 ## Releases:
 
-- Master: [![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)
+- Master: 
 
 
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | [![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)  |
+| Content Cell  | Content Cell  |
 
 ## Getting Started:
 
