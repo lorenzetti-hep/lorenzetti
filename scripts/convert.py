@@ -128,9 +128,10 @@ class Convert( Algorithm ):
 
     # Build the frame 
     for cell in cells:
-      i = 250 + int((_caloPhiRange.diff(cell.phi(), cluster.phi())) / cell.deltaPhi())
-      j = 250 + int((cell.eta() - cluster.eta()) / cell.deltaEta())
+      i = 250 + round((_caloPhiRange.diff(cell.phi(), cluster.phi())) / cell.deltaPhi())
+      j = 250 + round((cell.eta() - cluster.eta()) / cell.deltaEta())
       frame[i][j] = cell.energy() 
+
 
     # Crop the frame for ATLAS detector definition only
     from CaloCell import CaloSample    
