@@ -1,6 +1,5 @@
 
 
-%[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)
 [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
 
 # Lorenzetti Event Simulator
@@ -17,6 +16,8 @@ the eletronic pulse for each cell and estimate the cell's energy using the optim
 - Two types of ntuple for machine learning studies.
 
 ## Releases:
+
+- Master: [![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travis-ci.org/jodafons/lorenzetti)
 
 
 
