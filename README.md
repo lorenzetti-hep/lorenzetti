@@ -109,13 +109,14 @@ python scripts/reco_trf.py -i zee.root -o zee.reco.root
 
 #### Numpy transformation
 
-If you would like to work with `numpy` array information you can used the `convert.py` script to transform the `ntuple` format into the numpy file.  
+To work with `numpy` array information use the `convert.py` transformation job:
 
 ```
 python scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
 ```
 
-The `convert.py` it's very useful 
+> **NOTE**: Not mandatory
+
 
 ## Requirements
 
