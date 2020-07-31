@@ -29,10 +29,10 @@ Table of Contents
 
 These are the commom features (until now) supported by the reconstruction framework: 
 
-- *Pileup Simulation*: The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse;
-- *Ringer reconstruction*: 
-- *Shower shapes*:
-- *Low-Level information*:
+- **Pileup Simulation**: The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse;
+- **Ringer reconstruction**: 
+- **Shower shapes**:
+- **Low-Level information**:
 
 
 
