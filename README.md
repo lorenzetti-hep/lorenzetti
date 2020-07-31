@@ -11,10 +11,10 @@ This framework was desing based on the athena reconstruction framework used by t
 Table of Contents
 =================
 
-*[Overview](#overview)
-  *[Provided Functionalities](#provided-functionalities)
-*[Releases](#releases)
-*[Getting Started](#getting-started)
+  *[Overview](#overview)
+    *[Provided Functionalities](#provided-functionalities)
+  *[Releases](#releases)
+  *[Getting Started](#getting-started)
 
 ## Overview:
 
