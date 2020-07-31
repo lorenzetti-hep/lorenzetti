@@ -4,9 +4,7 @@
 
 # Lorenzetti Simulator
 
-Lorenzetti is an initiative to create HEP events with low level calorimetry information for machine learning studies. Since most part of High Energy Physics Experiments (like ATLAS or CMS) only provide datasets with high level information to the physics community or this type of information is only available for experts people, we decide to create this framework to help the community to obtain this type of data.
-
-This framework was desing based on the athena reconstruction framework used by the ATLAS experiment. The Lorenzetti will allow you to generate events with the Pythia8 generator, propagate it throut of the generic calorimenter using the Geant4 simulator and recosntruct the eletromagnetic cluster information with low level information (like the eletronic pulse for each cell) using the Lorenzertti's reconstruction infrastruture. 
+Werner should provide an introduction here.
 
 Table of Contents
 =================
@@ -15,6 +13,8 @@ Table of Contents
     * [Provided Functionalities](#provided-functionalities)
   * [Releases](#releases)
   * [Getting Started](#getting-started)
+    * [Running with Singularity](#running-with-singularity)
+
 
 ## Overview:
 
@@ -24,15 +24,15 @@ Table of Contents
 
 These are the commom features (until now) supported by the reconstruction framework: 
 
-### Pileup Event Simulation:
+#### Pileup Event Simulation:
 
-The framework is able to simulate in-time and out-of-time pileup. 
+The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse.
 
-### Shower Shapes Feature Extraction:
+#### Shower Shapes Feature Extraction:
 
-### Low-Level Calorimetry Information:
+#### Low-Level Calorimetry Information:
 
-### Two types of Ntuple:
+#### Two types of Ntuple:
 
 
 
@@ -59,7 +59,7 @@ If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lore
 
 We'll refer to the `latest` image as `base`, since `cluster` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory. Our base image is meant for users that want to do a custom run on Lorenzett and make your developments. 
 
-#### Using the base image (For develpments):
+#### Using the base image (For developments):
 
 To setup the `lorenzett/lorenzett:base` image using singularity:
 
@@ -89,14 +89,7 @@ singularity run docker://lorenzetti/lorenzetti:cluster -o zee.root -f PythiaGene
 
 
 
-#### Requirements
 
-- Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
-- ROOT (https://github.com/root-project/root.git);
-- Pythia8 (https://github.com/jodafons/pythia.git);
-- HEPMC (https://github.com/jodafons/hepmc.git);
-- FastJet (https://github.com/jodafons/fastjet.git);
-- Gaugi (pip3 install gaugi).
 
 
 
@@ -111,6 +104,15 @@ python3 scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
 > *Notes:*
 > - Only supported by the `physics` ntuple schemma.
 > - All cells (in matrix format) will be available using this script.
+
+## Requirements
+
+- Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
+- ROOT (https://github.com/root-project/root.git);
+- Pythia8 (https://github.com/jodafons/pythia.git);
+- HEPMC (https://github.com/jodafons/hepmc.git);
+- FastJet (https://github.com/jodafons/fastjet.git);
+- Gaugi (pip3 install gaugi).
 
 ## References:
 
