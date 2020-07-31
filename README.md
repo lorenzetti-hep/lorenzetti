@@ -4,20 +4,22 @@
 
 # Lorenzetti Simulator
 
-Lorenzetti is an initiative to create HEP events with low level calorimtery information for machine learning studies. Since most part of High Energy Physics Experiments (like ATLAS or CMS) only provide datasets with high level information to the physics community or this type of inofrmation is only available for the experts people, we decide to create this framework to help the community to obtain this type of data.
+Lorenzetti is an initiative to create HEP events with low level calorimetry information for machine learning studies. Since most part of High Energy Physics Experiments (like ATLAS or CMS) only provide datasets with high level information to the physics community or this type of information is only available for experts people, we decide to create this framework to help the community to obtain this type of data.
 
-This framework was desing based on the athena reconstruction framework used by the ATLAS experiment. The Lorenzetti will allow you to generate events with the Pythia8 generator, propagate it throud of the generic calorimenter using the Geant4 simulator and recosntruct the eletromagnetic cluster information with low level information (like the eletronic pulse for each cell) using the Lorenzertti's reconstruction infrastruture. 
+This framework was desing based on the athena reconstruction framework used by the ATLAS experiment. The Lorenzetti will allow you to generate events with the Pythia8 generator, propagate it throut of the generic calorimenter using the Geant4 simulator and recosntruct the eletromagnetic cluster information with low level information (like the eletronic pulse for each cell) using the Lorenzertti's reconstruction infrastruture. 
 
 ## Table of Contents
 
-
-
+*[Overview](#overview)
+  *[Provided Functionalities](#provided-functionalities)
+*[Releases](#releases)
+*[Getting Started](#getting-started)
 
 ## Overview:
 
 
 
-## Framework Features:
+## Provided Functionalities:
 
 These are the commom features (until now) supported by the reconstruction framework: 
 
