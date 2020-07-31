@@ -8,7 +8,8 @@ Lorenzetti is an initiative to create HEP events with low level calorimetry info
 
 This framework was desing based on the athena reconstruction framework used by the ATLAS experiment. The Lorenzetti will allow you to generate events with the Pythia8 generator, propagate it throut of the generic calorimenter using the Geant4 simulator and recosntruct the eletromagnetic cluster information with low level information (like the eletronic pulse for each cell) using the Lorenzertti's reconstruction infrastruture. 
 
-## Table of Contents
+Table of Contents
+=================
 
 *[Overview](#overview)
   *[Provided Functionalities](#provided-functionalities)
