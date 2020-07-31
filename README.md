@@ -14,6 +14,11 @@ Table of Contents
   * [Releases](#releases)
   * [Getting Started](#getting-started)
     * [Running with Singularity](#running-with-singularity)
+      * [Using the base image](#using-the-base-image)
+      * [Using the cluster image](#using-the-cluster-image)
+    * [Useful scripts](#useful-scripts)
+  * [Requirements](#requirements)
+  * [References](#references)
 
 
 ## Overview:
@@ -59,7 +64,7 @@ If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lore
 
 We'll refer to the `latest` image as `base`, since `cluster` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory. Our base image is meant for users that want to do a custom run on Lorenzett and make your developments. 
 
-#### Using the base image (For developments):
+#### Using the *base* image
 
 To setup the `lorenzett/lorenzett:base` image using singularity:
 
@@ -85,15 +90,7 @@ singularity run docker://lorenzetti/lorenzetti:cluster -o zee.root -f PythiaGene
 
 
 
-
-
-
-
-
-
-
-
-### Useful scripts:
+### Useful scripts
 
 You can convert the ROOT ntuple information into a `numpy` array using the `convert.py` script and the reconstruction ntuple output.
 
@@ -101,9 +98,6 @@ You can convert the ROOT ntuple information into a `numpy` array using the `conv
 python3 scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
 ```
 
-> *Notes:*
-> - Only supported by the `physics` ntuple schemma.
-> - All cells (in matrix format) will be available using this script.
 
 ## Requirements
 
