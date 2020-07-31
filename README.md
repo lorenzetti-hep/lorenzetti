@@ -29,15 +29,11 @@ Table of Contents
 
 These are the commom features (until now) supported by the reconstruction framework: 
 
-#### Pileup Event Simulation:
+- *Pileup Simulation*: The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse;
+- *Ringer reconstruction*: 
+- *Shower shapes*:
+- *Low-Level information*:
 
-The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse.
-
-#### Shower Shapes Feature Extraction:
-
-#### Low-Level Calorimetry Information:
-
-#### Two types of Ntuple:
 
 
 
@@ -53,7 +49,6 @@ This is the build status of each branch:
 ## Getting Started:
 
 There are two ways you can run Lorenzetti. Using a `Docker container` (stronglly recommended) or `locally` on your machine.
-The locally installation usually can be used for geometry construction since allow the user to launch the `Qt`graphic inteface.
 
 ### Running with Singularity
 
