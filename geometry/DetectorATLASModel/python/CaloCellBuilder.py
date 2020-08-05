@@ -23,9 +23,9 @@ class CaloCellBuilder( Logger ):
         'ShaperFile'      : "pulseLar.dat",
         'BunchIdStart'    : -21, # -525ns
         'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -1,
-        'NSamples'        : 4,
-        'OFWeights'       : [0.1816,    0.6840,    0.3569,   -0.0245],
+        'StartSamplingBC' : -2,
+        'NSamples'        : 5,
+        'OFWeights'       : [0., 0.1816,    0.6840,    0.3569,   -0.0245],
       },
       # Lar Barrel Calorimter, EM2
       { 'name'            : 'barrel_em2',
@@ -34,9 +34,9 @@ class CaloCellBuilder( Logger ):
         'ShaperFile'      : "pulseLar.dat",
         'BunchIdStart'    : -21, # -525ns
         'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -1,
-        'NSamples'        : 4,
-        'OFWeights'       : [0.1208,    0.7654,    0.3189,   -0.1652],
+        'StartSamplingBC' : -2,
+        'NSamples'        : 5,
+        'OFWeights'       : [0., 0.1208,    0.7654,    0.3189,   -0.1652],
       },
       # Lar Barrel Calorimter, EM3
       { 'name'            : 'barrel_em3',
@@ -45,9 +45,9 @@ class CaloCellBuilder( Logger ):
         'ShaperFile'      : "pulseLar.dat",
         'BunchIdStart'    : -21, # -525ns
         'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -1,
-        'NSamples'        : 4,
-        'OFWeights'       : [0.2341,    0.6148,    0.3847,    0.1071],
+        'StartSamplingBC' : -2,
+        'NSamples'        : 5,
+        'OFWeights'       : [0., 0.2341,    0.6148,    0.3847,    0.1071],
       },
       # Tile Barrel Calorimter, HAD1
       { 'name'            : 'barrel_had1',
