@@ -115,7 +115,7 @@ class CaloCellBuilder( Logger ):
                               DeformationMean = 0.0, 
                               DeformationStd  = 0.0,
                               NoiseMean       = 0.0,
-                              NoiseStd        = 1.5,
+                              NoiseStd        = 20.0, # MeV
                               StartSamplingBC = config['StartSamplingBC'], 
                               #NoiseStd        = 0,
                               )
