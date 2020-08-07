@@ -1,6 +1,6 @@
 # Lorenzetti Simulator
 
-Lorenzetti is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology for parsing by providing:
+Lorenzetti is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology by providing:
 
  - Simulated low-level calorimetry information;
  - Free-to-use data. 
