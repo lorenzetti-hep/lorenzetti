@@ -1,7 +1,4 @@
 
-
-[![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
-
 Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)). It is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology for parsing by providing:
 
  - Simulated low-level calorimetry information;
@@ -10,6 +7,13 @@ Lorenzetti is built on top of standard simulation technology employed on HEP exp
 Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
 
 We welcome everyone to contribute!
+
+
+## Citations
+
+Please cite [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762) if you use the software.
+
+[//]: # (and/or the applicable papers.)
 
 ## Getting Started:
 
