@@ -2,136 +2,92 @@
 
 [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
 
-# Lorenzetti Simulator
+Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)) and is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry by providing:
 
-Werner should provide an introduction here.
+ - Simulated low-level calorimetry information;
+ - Free-to-use data. 
+ 
+Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitating integration with the broader scientific community.
 
-Table of Contents
-=================
+Eventually, we hope to integrate our effort with the [FCC software](https://github.com/HEP-FCC/FCCSW).
 
-  * [Overview](#overview)
-    * [Provided Functionalities](#provided-functionalities)
-  * [Releases](#releases)
-  * [Getting Started](#getting-started)
-    * [Running with Singularity](#running-with-singularity)
-      * [Using the base image](#using-the-base-image)
-      * [Using the cluster image](#using-the-cluster-image)
-    * [Simulation Steps](#simulation-steps)
-      * [Generation](#generation)
-      * [Reconstruction](#reconstruction)
-      * [Numpy Transformation](#numpy-transformation)
-  * [Requirements](#requirements)
-  * [References](#references)
-
-
-## Overview:
-
-
-
-## Provided Functionalities:
-
-These are the commom features (until now) supported by the reconstruction framework: 
-
-- **Pileup Simulation**: The framework is able to simulate `in-time` and `out-of-time` pileup using the [pulse generator]() to emulate the eletronic pulse of each cell and each bunch-crossing. The estimated cell's energy is calculated using the [optimal filter]() and the generated eletronic pulse;
-- **Ringer reconstruction**: 
-- **Shower shapes**:
-- **Low-Level information**:
-
-
-
-
-## Releases:
-
-This is the build status of each branch: 
-
-|  Branch    | Build Status |
-| ---------- | ------------ |
-|   Master   |[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
-
+We welcome everyone to contribute!
 
 ## Getting Started:
 
-There are two ways you can run Lorenzetti. Using a `Docker container` (stronglly recommended) or `locally` on your machine.
+The easiest way to use Lorenzetti is by employing either docker or singularity based on the images we provide at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzetti/lorenzetti). Technical details on how these images are generated are available [here](https://github.com/jodafons/lorenzetti/tree/master/docker).
 
-### Running with Singularity
+### Setting up for standalone usage
 
-If you take a look at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzetti/lorenzetti) you'll find two main images:
-
-* lorenzett/lorenzett:latest
-* lorenzett/lorenzett:cluster
-
-We'll refer to the `latest` image as `base`, since `cluster` inherits from it. More details on how these images are generated [here](https://github.com/jodafons/lorenzetti/tree/master/docker), on the `docker/` directory. Our base image is meant for users that want to do a custom run on Lorenzett and make your developments. 
-
-#### Using the *base* image
-
-To setup the `lorenzett/lorenzett:base` image using singularity:
+When using lorenzetti on the same host, use `lorenzett/lorenzett:base`:
 
 ```
 singularity run docker://lorenzetti/lorenzetti:base
 ```
 
-As soon as your bash opens, you need to run:
+After you get a prompt, do:
+
 ```
 source /setup_envs.sh
 ```
-This will setup everything you need for Lorenzetti.
 
+This will setup everything you need for running Lorenzetti.
 
-#### Using the *cluster* image
+### LNCC (cluster) usage
 
 More details [here](https://github.com/jodafons/lorenzetti/tree/master/docker/cluster):
 
-```
-singularity run docker://lorenzetti/lorenzetti:cluster -o zee.root -f PythiaGenerator/gen_zee.py -e 100 -j 10 -s 0 -r reco_trf.py -n physics -v $PWD --pileupAvg 10
-```
+## Running Lorenzetti
 
-### Simulation Steps
+The pipeline has two steps:
 
-The event simulation is divided in two main steps: Event generation with `pythia` and reconstruction with `Geant`.
+1. Event generation with `pythia` wrappers;
+1. Shower propagation with `geant` and reconstruction.
 
-#### Generation
+### Generation
 
-A set of event generations is provided [here](). As first examples let's generate some `Zee` events decay with 100 of pileup average.
+A set of pythia wrappers is available on provided `generator/PythiaGenerator/share/`. I.e.
 
 ```
 python generator/PythiaGenerator/share/gen_zee.py -o zee.root --nov 100 --seed 0 --pileupAvg 100
 ```
 
-This will produce the input file with all generated events needed by the reconstruction step.
+### Shower Propagation and Reconstruction
 
-#### Reconstruction
-
-The output file generated by the previusly command will be used as input in this `reco_trf` job option. 
+Use first step output to feed `reco_trf` script. For instance: 
 
 ```
 python scripts/reco_trf.py -i zee.root -o zee.reco.root
 ```
 
-#### Numpy Transformation
+### Export data to numpy array
 
-To work with `numpy` array information use the `convert.py` transformation job:
+If needed, we provide the `convert.py` transformation job:
 
 ```
 python scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
 ```
 
+## Local Installation
 
+Lorenzetti has the following dependencies:
 
-
-## Locally Installation
-
-
-## Requirements
-
-- Geant4 (opengl or qt4 is required for graphic interface, https://github.com/jodafons/geant4.git);
-- ROOT (https://github.com/root-project/root.git);
-- Pythia8 (https://github.com/jodafons/pythia.git);
-- HEPMC (https://github.com/jodafons/hepmc.git);
-- FastJet (https://github.com/jodafons/fastjet.git);
+- Geant4 (opengl or qt4 is required);
+- ROOT;
+- Pythia8;
+- HEPMC;
+- FastJet;
 - Gaugi (pip3 install gaugi).
 
 ## References:
 
 - Athena framework: https://gitlab.cern.ch/atlas/athena
+
+## Framework status:
+
+|  Branch    | Build Status |
+| ---------- | ------------ |
+|   Master   |[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
+
 
 
