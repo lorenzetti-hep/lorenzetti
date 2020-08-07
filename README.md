@@ -91,5 +91,5 @@ Lorenzetti has the following dependencies:
 
 Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)). Lorenzetti's concept design was greatly inspired in the [Athena framework](https://gitlab.cern.ch/atlas/athena). Other frameworks of potential interest:
 
-- [FCC software](https://github.com/HEP-FCC/FCCSW). Particularly, we hope to eventually integrate our framework on FCC software;
+- [FCC software](https://github.com/HEP-FCC/FCCSW). Particularly, we consider to eventually merge Lorenzetti inside the FCC software;
 - [Delphes](https://github.com/delphes/delphes).
