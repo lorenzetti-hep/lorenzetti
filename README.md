@@ -2,10 +2,10 @@
 
 Lorenzetti is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology by providing:
 
- - Simulated low-level calorimetry information;
+ - Full simulation (geant-based) low-level calorimetry information;
  - Free-to-use data. 
  
-Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using full simulation (geant-based) that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
+Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
 
 We welcome everyone to contribute!
 
