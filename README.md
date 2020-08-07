@@ -49,7 +49,7 @@ The pipeline has two steps:
 
 ### Generation
 
-A set of pythia wrappers is available on provided `generator/PythiaGenerator/share/`. I.e.
+A set of pythia wrappers is provided on `generator/PythiaGenerator/share/`. Usage example:
 
 ```
 python generator/PythiaGenerator/share/gen_zee.py -o zee.root --nov 100 --seed 0 --pileupAvg 100
