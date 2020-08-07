@@ -1,7 +1,6 @@
 # SDumont Docker image
 
-This docker image was built in order to run jobs on the LNCC SDumont computer.
-It may work on another environment, but you're on your own.
+This docker image is provided to run jobs on the LNCC SDumont computer.
 
 * Script usage:
 ```
@@ -27,4 +26,4 @@ All arguments are required
 docker run -v <output-path>:/output gabrielmilan/lorenzett:sdumont <args>
 ```
 
-For `<args>` information, refer to the Script usage, above.
+Refer to the script usage above for information on `<args>`.
