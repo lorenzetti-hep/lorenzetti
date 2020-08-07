@@ -8,9 +8,7 @@ It is provided as a tool for the HEP community to freely exploit the full potent
  - Simulated low-level calorimetry information;
  - Free-to-use data. 
  
-Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitating integration with the broader scientific community.
-
-Eventually, we hope to integrate our effort with the [FCC software](https://github.com/HEP-FCC/FCCSW).
+Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
 
 We welcome everyone to contribute!
 
@@ -86,5 +84,9 @@ Lorenzetti has the following dependencies:
 | ---------- | ------------ |
 |   Master   |[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
 
+## Similar software:
 
+Consider taking a look on
 
+- [FCC software](https://github.com/HEP-FCC/FCCSW). Particularly, we hope to eventually integrate our framework on FCC software;
+- [Delphes](https://github.com/delphes/delphes).
