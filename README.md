@@ -28,7 +28,7 @@ When using lorenzetti on the same host, use `lorenzett/lorenzett:base`:
 singularity run docker://lorenzetti/lorenzetti:base
 ```
 
-After you get a prompt, do:
+After singularity instance is created, do:
 
 ```
 source /setup_envs.sh
