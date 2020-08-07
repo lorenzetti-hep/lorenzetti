@@ -1,10 +1,9 @@
-
-Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)). It is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology for parsing by providing:
+Lorenzetti is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology for parsing by providing:
 
  - Simulated low-level calorimetry information;
  - Free-to-use data. 
  
-Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
+Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using full simulation (geant-based) that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
 
 We welcome everyone to contribute!
 
@@ -87,9 +86,10 @@ Lorenzetti has the following dependencies:
 | ---------- | ------------ |
 |   Master   |[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
 
-## Similar software:
+## Software considerations:
 
-Lorenzetti's concept design was greatly inspired in the [Athena framework](https://gitlab.cern.ch/atlas/athena). Other frameworks of potential interest:
+
+Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)). Lorenzetti's concept design was greatly inspired in the [Athena framework](https://gitlab.cern.ch/atlas/athena). Other frameworks of potential interest:
 
 - [FCC software](https://github.com/HEP-FCC/FCCSW). Particularly, we hope to eventually integrate our framework on FCC software;
 - [Delphes](https://github.com/delphes/delphes).
