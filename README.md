@@ -2,7 +2,8 @@
 
 [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
 
-Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)) and is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry by providing:
+Lorenzetti is built on top of standard simulation technology employed on HEP experiments ([Pythia](http://home.thep.lu.se/~torbjorn/Pythia.html) and [Geant](https://geant4.web.cern.ch)). Lorenzetti's concept design was greatly inspired in the [Athena framework](https://gitlab.cern.ch/atlas/athena).
+It is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry by providing:
 
  - Simulated low-level calorimetry information;
  - Free-to-use data. 
@@ -78,10 +79,6 @@ Lorenzetti has the following dependencies:
 - HEPMC;
 - FastJet;
 - Gaugi (pip3 install gaugi).
-
-## References:
-
-- Athena framework: https://gitlab.cern.ch/atlas/athena
 
 ## Framework status:
 
