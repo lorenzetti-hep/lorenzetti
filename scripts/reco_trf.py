@@ -79,7 +79,7 @@ acc = ComponentAccumulator("ComponentAccumulator",
 gun = EventReader( "PythiaGenerator",
                    EventKey   = recordable("EventInfo"),
                    FileName   = args.inputFile,
-                   BunchDuration = 25.0,
+                   BunchDuration = 25.0,#ns
                    )
 
 calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
@@ -95,7 +95,7 @@ cluster = CaloClusterMaker( "CaloClusterMaker",
                             TruthKey        = recordable("Particles"),
                             EtaWindow       = 0.4,
                             PhiWindow       = 0.4,
-                            MinCenterEnergy = 15*GeV,
+                            MinCenterEnergy = 15*GeV, # 15GeV in the EM core 
                             HistogramPath   = "Expert/Clusters",
                             OutputLevel     = args.outputLevel)
 

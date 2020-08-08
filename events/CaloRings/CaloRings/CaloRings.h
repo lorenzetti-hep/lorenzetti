@@ -3,6 +3,7 @@
 
 #include "CaloCluster/CaloCluster.h"
 #include "CaloCell/CaloCell.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 #include <cmath>
 
@@ -10,7 +11,7 @@
 // Event Object Data
 namespace xAOD{
   
-  class CaloRings
+  class CaloRings: public Gaugi::EDM
   {  
     public:
       

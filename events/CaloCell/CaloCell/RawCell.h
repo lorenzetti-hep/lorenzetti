@@ -2,6 +2,7 @@
 #define RawCell_h
 
 #include "CaloCell/enumeration.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 #include "G4Step.hh"
 #include "globals.hh"
@@ -9,7 +10,7 @@
 
 namespace xAOD{
 
-  class RawCell
+  class RawCell: public Gaugi::EDM
   {  
     public:
 

@@ -1,3 +1,5 @@
+
+#include "CaloCell/RawCell.h"
 #include "PulseGenerator.h"
 #include "Randomize.hh"
 #include "TRandom.h"
@@ -7,7 +9,7 @@ using namespace Gaugi;
 
 PulseGenerator::PulseGenerator( std::string name ) : 
   IMsgService(name),
-  CaloTool(),
+  AlgTool(),
   m_shaperZeroIndex(0),
   m_shaperResolution(0),
   m_rng(0)
@@ -45,8 +47,10 @@ StatusCode PulseGenerator::finalize()
 }
 
 
-StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::RawCell *cell ) const
+StatusCode PulseGenerator::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
+  auto *cell = static_cast<xAOD::RawCell*>(edm);
+
   auto pulse_size = m_nsamples;
   
   // Get all energies for each bunch crossing 
@@ -130,18 +134,6 @@ void PulseGenerator::GenerateDeterministicPulse(  std::vector<float> &pulse,  fl
     pulse[i] += amplitude * m_shaper[shaperIndex] + m_pedestal + deformation;
   }
 }
-
-
-
-
-// Just for python import in ROOT
-StatusCode PulseGenerator::executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode PulseGenerator::executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
-StatusCode PulseGenerator::executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
-
-
-
-
 
 
 

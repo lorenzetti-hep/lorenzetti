@@ -2,11 +2,12 @@
 #define PulseGenerator_h
 
 #include "GaugiKernel/StatusCode.h"
-#include "CaloTool.h"
+#include "GaugiKernel/AlgTool.h"
+#include "GaugiKernel/EDM.h"
 #include "TRandom3.h"
 
 
-class PulseGenerator : public CaloTool
+class PulseGenerator : public Gaugi::AlgTool
 {
 
   public:
@@ -17,10 +18,7 @@ class PulseGenerator : public CaloTool
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
 
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::RawCell * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, Gaugi::EDM * ) const override;
 
 
 

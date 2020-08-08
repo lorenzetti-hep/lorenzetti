@@ -18,7 +18,8 @@
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
 
-
+#include <stdlib.h>
+#include <unistd.h>
 #include <iostream>
 #include "time.h"
 #include <cstdlib>
@@ -36,6 +37,9 @@ RunManager::RunManager( std::string name ):
   declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "RunVis"         , m_runVis=false            );
   declareProperty( "Seed"           , m_seed=0                  );
+
+  MSG_INFO( "Run manager was created." );
+
 }
 
 RunManager::~RunManager()
@@ -61,6 +65,9 @@ void RunManager::setDetectorConstruction( G4VUserDetectorConstruction *det )
 
 void RunManager::run( int evt )
 {
+
+  header();
+  
   std::string basepath(std::getenv("LZT_PATH"));
   int argc=1;
   char* argv[1] = {"app"};
@@ -68,6 +75,9 @@ void RunManager::run( int evt )
   if ( m_runVis ) {
     ui = new G4UIExecutive(argc,argv);
   }
+
+
+
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
@@ -94,6 +104,7 @@ void RunManager::run( int evt )
     runManager->SetUserInitialization(m_detector);
   }
 
+
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
 
@@ -109,6 +120,8 @@ void RunManager::run( int evt )
   UImanager->ApplyCommand("/globalField/setValue 0 1000000 0 tesla");
 
   std::stringstream runCommand; runCommand << "/run/beamOn " << evt ;
+
+
 
   if (!m_runVis ) {
     UImanager->ApplyCommand("/run/initialize");
@@ -133,5 +146,30 @@ void RunManager::run( int evt )
 
 
 
+// Print this header before start
+void RunManager::header()
+{
+  std::cout <<"    __                              _   _   _  "       << std::endl;  
+	std::cout <<"   / /  ___  _ __ ___ _ __  _______| |_| |_(_) "       << std::endl;
+	std::cout <<"  / /  / _ \\| '__/ _ \\ '_ \\|_  / _ \\ __| __| | "   << std::endl;
+	std::cout <<" / /__| (_) | | |  __/ | | |/ /  __/ |_| |_| | "       << std::endl;
+	std::cout <<" \\____/\\___/|_|  \\___|_| |_/___\\___|\\__|\\__|_| " << std::endl;
+  
+  std::cout << std::endl;
+  std::cout << "Empowering Physics Performance and Analysis with Low-level Calorimetry Data." << std::endl;
+  std::cout << std::endl;
+  std::cout << "Federal University of Rio de Janeiro (UFRJ/COPPE), Brazil" << std::endl;
+  //std::cout << "Authors: Joao Victor da Fonseca Pinto (jodafons@cern.ch), Werner Freund (wsfreund@cern.ch), ..." << std::endl;
+  
+
+
+  std::vector<std::string> s{"Using Gaugi as core...", "Using Geant4 as simulator layer...", "Power up..."};
+
+  for( unsigned dot=0; dot<3; ++dot ){
+    sleep(1); // Wait 1 seconds
+    std::cout << s[dot] << std::endl;
+  }
+  sleep(2); // Wait 2 seconds
+}
 
 

@@ -37,7 +37,7 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
 }
 
 
-void CaloCellMaker::push_back( CaloTool* tool )
+void CaloCellMaker::push_back( Gaugi::AlgTool* tool )
 {
   m_toolHandles.push_back(tool);
 }

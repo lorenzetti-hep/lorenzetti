@@ -2,6 +2,7 @@
 #define EventInfo_h
 
 /** simulator libs **/
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
 /** geant 4 libs **/
@@ -17,7 +18,7 @@ namespace xAOD{
   struct seed_t{ float et; float eta; float phi; float px; float py; float pz; int pdgid; };
  
 
-  class EventInfo
+  class EventInfo: public Gaugi::EDM
   {  
     public:
 

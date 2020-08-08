@@ -1,11 +1,12 @@
 #ifndef ShowerShapes_h
 #define ShowerShapes_h
 
-#include "CaloTool.h"
+#include "GaugiKernel/AlgTool.h"
+#include "GaugiKernel/EDM.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloCell/CaloCell.h"
 
-class ShowerShapes : public CaloTool
+class ShowerShapes : public Gaugi::AlgTool
 {
 
   public:
@@ -16,10 +17,7 @@ class ShowerShapes : public CaloTool
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
 
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::RawCell * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const override;
-    virtual StatusCode executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const override;
+    virtual StatusCode executeTool( const xAOD::EventInfo *, Gaugi::EDM * ) const override;
 
 
   private:

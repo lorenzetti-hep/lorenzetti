@@ -1,4 +1,5 @@
 
+#include "CaloCluster/CaloCluster.h"
 #include "G4Kernel/CaloPhiRange.h"
 #include "ShowerShapes.h"
 #include "G4PhysicalConstants.hh"
@@ -12,7 +13,7 @@ using namespace CaloSampling;
 
 ShowerShapes::ShowerShapes( std::string name ) : 
   IMsgService(name),
-  CaloTool()
+  AlgTool()
 {;}
 
 
@@ -27,10 +28,12 @@ StatusCode ShowerShapes::finalize()
 }
 
 
-StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::CaloCluster* clus ) const
+StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
   MSG_DEBUG("Calculate shower shapes for this cluster." );
   
+  auto *clus = static_cast<xAOD::CaloCluster*>(edm);
+
   // Eratio for strip em layer (EM1)
   auto em1Cells = clus->allCells();
 	em1Cells.erase(std::remove_if(em1Cells.begin(),em1Cells.end(),
@@ -145,17 +148,5 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample samplin
 
   return std::sqrt( (En2/E) - std::pow( (En/E),2 ) );
 }
-
-
-
-
-
-
-// Just for python import in ROOT
-StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::RawCell * ) const {return StatusCode::SUCCESS;}
-StatusCode ShowerShapes::executeTool( const xAOD::EventInfo*, xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
-
-
 
 

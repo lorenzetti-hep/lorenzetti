@@ -2,11 +2,12 @@
 #define TruthParticle_h
 
 #include "CaloCluster/CaloCluster.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
 namespace xAOD{
   
-  class TruthParticle
+  class TruthParticle: public Gaugi::EDM
   {  
     public:
 

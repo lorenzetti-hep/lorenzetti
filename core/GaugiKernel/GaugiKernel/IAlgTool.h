@@ -6,8 +6,12 @@
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/Property.h"
 #include "GaugiKernel/MsgStream.h"
+#include "GaugiKernel/EDM.h"
 
-
+// Declare forward
+namespace xAOD{
+  class EventInfo;
+}
 
 
 namespace Gaugi{
@@ -23,7 +27,10 @@ namespace Gaugi{
 
 			/*! Create all resouces here */    
 	    virtual StatusCode initialize()=0;
-			
+
+
+      virtual StatusCode executeTool( const xAOD::EventInfo *, Gaugi::EDM * ) const=0;
+
 			/*! Destroy all allocated memory and close all services */
 			virtual StatusCode finalize()=0;
 
