@@ -31,8 +31,6 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "BunchDuration"            , m_bc_duration=25                      );
   declareProperty( "NumberOfSamplesPerBunch"  , m_bc_nsamples=1                       );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
-
-
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
 }
 
@@ -90,25 +88,26 @@ StatusCode CaloCellMaker::finalize()
 }
 
 
-StatusCode CaloCellMaker::bookHistograms( StoreGate &store ) const
+StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 {
+  auto store = ctx.getStoreGateSvc();
 
-  store.mkdir(m_histPath);
-  store.add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
+  store->mkdir(m_histPath);
+  store->add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
 
   // Create the 2D histogram for monitoring purpose
-  store.add(new TH2F( "cells", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  store->add(new TH2F( "cells", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                        m_phi_bins, m_phi_min, m_phi_max) );
 
   // Create the 2D histogram for monitoring purpose
-  store.add(new TH2F( "truth_cells", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
+  store->add(new TH2F( "truth_cells", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_eta_bins, m_eta_min, m_eta_max, 
                          m_phi_bins, m_phi_min, m_phi_max) );
 
 
   if (m_detailedHistograms){
     int nbunchs = m_bcid_end - m_bcid_start + 1;
-    store.add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
-    store.add(new TH2F( "timesteps", "Time steps; time [ns]; Energy [MeV];", nbunchs*100, m_bcid_start*(m_bc_duration-0.5), m_bcid_end*(m_bc_duration+0.5), 
+    store->add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
+    store->add(new TH2F( "timesteps", "Time steps; time [ns]; Energy [MeV];", nbunchs*100, m_bcid_start*(m_bc_duration-0.5), m_bcid_end*(m_bc_duration+0.5), 
                          30, 0, 30) );
   }
 
@@ -199,27 +198,6 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 
   for ( const auto& p : **collection.ptr() )
   {
-    //const auto *cell = p.second;
-    //switch (cell->sampling()){
-    //  case EM1:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3000,0,0,cell->rawEnergySamples()[21],0,0,1000});
-    //    break;
-    //  case EM2:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{-1000,0,1500,1500,0,0,0,0,0,0,0,1000,0,0,0,0,0,0,1000,0,1000,cell->rawEnergySamples()[21],0,1000,1000});
-    //    break;
-    //  case EM3:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,cell->rawEnergySamples()[21],100,100,100});
-    //    break;
-    //  case HAD1:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{0,0,0,3000,0,0,cell->rawEnergySamples()[6],0,0,1000,0});
-    //    break;
-    //  case HAD2:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{-1000,0,1000,3000,0,0,cell->rawEnergySamples()[6],0,0,1000,0});
-    //    break;
-    //  case HAD3:
-    //    const_cast<xAOD::RawCell*>(cell)->setRawEnergySamples(std::vector<float>{100,100,100,100,100,100,cell->rawEnergySamples()[6],100,100,100,100});
-    //    break;
-    //}
     for ( auto tool : m_toolHandles )
     {
       if( tool->executeTool( evt, p.second ).isFailure() ){
@@ -234,9 +212,10 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 }
 
 
-StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) const
+StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {
   
+  auto store = ctx.getStoreGateSvc();
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
@@ -248,23 +227,23 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
   for ( const auto& p : **collection.ptr() ){ 
     const auto *cell = p.second;
 
-    store.cd(m_histPath);
-    store.hist1("res_layer")->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
+    store->cd(m_histPath);
+    store->hist1("res_layer")->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
 
 
     {// Fill estimated energy 2D histograms
-      int x = store.hist2("cells")->GetXaxis()->FindBin(cell->eta());
-      int y = store.hist2("cells")->GetYaxis()->FindBin(cell->phi());
-      int bin = store.hist2("cells")->GetBin(x,y,0);
-      float energy = store.hist2("cells")->GetBinContent( bin );
-      store.hist2("cells")->SetBinContent( bin, (energy + cell->energy()) );
+      int x = store->hist2("cells")->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2("cells")->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2("cells")->GetBin(x,y,0);
+      float energy = store->hist2("cells")->GetBinContent( bin );
+      store->hist2("cells")->SetBinContent( bin, (energy + cell->energy()) );
   
       if(m_detailedHistograms){
         int i=0;
         auto samples = cell->rawEnergySamples();
         for ( int bc=m_bcid_start; bc<m_bcid_end+1; ++bc)
         {
-          store.hist2("energy_samples_per_bunch")->Fill(bc,samples[i]/1000.);
+          store->hist2("energy_samples_per_bunch")->Fill(bc,samples[i]/1000.);
           ++i;
         }
       }
@@ -272,11 +251,11 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx , StoreGate &store) 
     }
     
     {// Fill truth energy 2D histograms
-      int x = store.hist2("truth_cells")->GetXaxis()->FindBin(cell->eta());
-      int y = store.hist2("truth_cells")->GetYaxis()->FindBin(cell->phi());
-      int bin = store.hist2("truth_cells")->GetBin(x,y,0);
-      float energy = store.hist2("truth_cells")->GetBinContent( bin );
-      store.hist2("truth_cells")->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
+      int x = store->hist2("truth_cells")->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2("truth_cells")->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2("truth_cells")->GetBin(x,y,0);
+      float energy = store->hist2("truth_cells")->GetBinContent( bin );
+      store->hist2("truth_cells")->SetBinContent( bin, (energy + cell->truthRawEnergy()) );
     }
 
 

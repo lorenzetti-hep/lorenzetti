@@ -54,10 +54,11 @@ StatusCode CaloRingerBuilder::finalize()
 }
 
 
-StatusCode CaloRingerBuilder::bookHistograms( StoreGate &store ) const
+StatusCode CaloRingerBuilder::bookHistograms( EventContext &ctx ) const
 {
-  store.mkdir( m_histPath );
-  store.add( new TH2F( "rings", "Et Vs #ring; #ring; E_{T} [GeV]; Count", m_maxRingsAccumulated, 0, m_maxRingsAccumulated, 150, 0, 150 ));
+  auto store = ctx.getStoreGateSvc();
+  store->mkdir( m_histPath );
+  store->add( new TH2F( "rings", "Et Vs #ring; #ring; E_{T} [GeV]; Count", m_maxRingsAccumulated, 0, m_maxRingsAccumulated, 150, 0, 150 ));
   return StatusCode::SUCCESS;
 }
 
@@ -146,8 +147,9 @@ const xAOD::CaloCell * CaloRingerBuilder::maxCell( const xAOD::CaloCluster *clus
 }
 
 
-StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx , StoreGate &store ) const
+StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx ) const
 {
+  auto store = ctx.getStoreGateSvc();
   SG::ReadHandle<xAOD::CaloRingsContainer> ringer( m_ringerKey, ctx );
 
   if( !ringer.isValid() ){
@@ -155,12 +157,12 @@ StatusCode CaloRingerBuilder::fillHistograms( EventContext &ctx , StoreGate &sto
     return StatusCode::FAILURE;
   }
 
-  store.cd(m_histPath);
+  store->cd(m_histPath);
   for (auto rings : **ringer.ptr() ){
     auto ringerShape = rings->rings();
 
     for (int r=0; r < m_maxRingsAccumulated; ++r){
-      store.hist1("rings")->Fill( r, ringerShape.at(r)/1.e3 );
+      store->hist1("rings")->Fill( r, ringerShape.at(r)/1.e3 );
     }
   }
 

@@ -48,32 +48,28 @@ StatusCode CaloClusterMaker::initialize()
 }
 
 
-StatusCode CaloClusterMaker::bookHistograms( StoreGate &store ) const
+StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
 {
-  store.mkdir( m_histPath );  
-  
+  auto store = ctx.getStoreGateSvc();
 
-
-
-  store.add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 100 ) );
-  store.add( new TH1F("cl_eta"  , ";Count;#eta;"        , 100, -1.5 , 1.5 ) );
-  store.add( new TH1F("cl_phi"  , ";Count;#phi;"        , 100, -3.2 , 3.2 ) );
-  store.add( new TH1F("cl_f1"   , ";Count;f_{1};"       , 100, -0.02, 0.7 ) );
-  store.add( new TH1F("cl_f3"   , ";Count;f_{3};"       , 200, -0.05, 0.15) );
-  store.add( new TH1F("cl_weta2", ";Count;W_{#eta2};"   , 100, 0.005, 0.02) );
-  store.add( new TH1F("cl_reta" ,  ";Count;R_{#eta};"   , 200, 0.8  , 1.10) );
-  store.add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
-  store.add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
-  store.add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
- 
-
-  store.add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth}/#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
-  store.add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth}/#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
-  store.add( new TH1F("res_e157"  ,"(E_{1}-E_{Truth})/E_{Truth};res_{E_{1}};Count",100,-1.5,1.5) );
-  store.add( new TH1F("res_e257"  ,"(E_{2}-E_{Truth})/E_{Truth};res_{E_{2}};Count",100,-1.0,1.0) );
-  store.add( new TH1F("res_e357"  ,"(E_{3}-E_{Truth})/E_{Truth};res_{E_{3}};Count",100,-1.5,1.5) );
-  store.add( new TH1F("res_etot57","(E_{tot}-E_{Truth})/E_{Truth};res_{E_{tot}};Count",100,-0.4,0.4) );
-  store.add( new TH2F("res_etot57vsEt","(E_{tot}-E_{Truth})/E_{Truth} Vs E_{T};res_{E_{tot}}; E_{T}; Count",100,-10,10, 100, 0 , 100) );
+  store->mkdir( m_histPath );  
+  store->add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 100 ) );
+  store->add( new TH1F("cl_eta"  , ";Count;#eta;"        , 100, -1.5 , 1.5 ) );
+  store->add( new TH1F("cl_phi"  , ";Count;#phi;"        , 100, -3.2 , 3.2 ) );
+  store->add( new TH1F("cl_f1"   , ";Count;f_{1};"       , 100, -0.02, 0.7 ) );
+  store->add( new TH1F("cl_f3"   , ";Count;f_{3};"       , 200, -0.05, 0.15) );
+  store->add( new TH1F("cl_weta2", ";Count;W_{#eta2};"   , 100, 0.005, 0.02) );
+  store->add( new TH1F("cl_reta" ,  ";Count;R_{#eta};"   , 200, 0.8  , 1.10) );
+  store->add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
+  store->add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
+  store->add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
+  store->add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth}/#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
+  store->add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth}/#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
+  store->add( new TH1F("res_e157"  ,"(E_{1}-E_{Truth})/E_{Truth};res_{E_{1}};Count",100,-1.5,1.5) );
+  store->add( new TH1F("res_e257"  ,"(E_{2}-E_{Truth})/E_{Truth};res_{E_{2}};Count",100,-1.0,1.0) );
+  store->add( new TH1F("res_e357"  ,"(E_{3}-E_{Truth})/E_{Truth};res_{E_{3}};Count",100,-1.5,1.5) );
+  store->add( new TH1F("res_etot57","(E_{tot}-E_{Truth})/E_{Truth};res_{E_{tot}};Count",100,-0.4,0.4) );
+  store->add( new TH2F("res_etot57vsEt","(E_{tot}-E_{Truth})/E_{Truth} Vs E_{T};res_{E_{tot}}; E_{T}; Count",100,-10,10, 100, 0 , 100) );
 
   return StatusCode::SUCCESS;
 }
@@ -230,11 +226,13 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, 
 }
 
 
-StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store ) const
+StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
 {
 
   MSG_DEBUG( "Fill all histograms" );
   
+  auto store = ctx.getStoreGateSvc();
+
   SG::ReadHandle<xAOD::CaloClusterContainer> clusters( m_clusterKey, ctx );
   SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_truthKey, ctx );
 
@@ -253,7 +251,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
   MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
   MSG_DEBUG( "We found " << particles->size() << " particles (seeds) inside of this event." );
 
-  store.cd(m_histPath);
+  store->cd(m_histPath);
 
 
 
@@ -266,42 +264,42 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx, StoreGate &store 
     const auto* clus = particle->caloCluster() ;
     
     
-    store.hist1("res_eta")->Fill( (clus->eta() - particle->eta())/particle->eta() );
-    store.hist1("res_phi")->Fill( (clus->phi() - particle->phi())/particle->phi() );
+    store->hist1("res_eta")->Fill( (clus->eta() - particle->eta())/particle->eta() );
+    store->hist1("res_phi")->Fill( (clus->phi() - particle->phi())/particle->phi() );
 
     {
       // Calculate the energy resolution between the estimated energy by the OF and the truth
       // energy calculated by the geant.
       float raw_e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7, true);
       float e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7);
-      store.hist1("res_e157")->Fill( (e157-raw_e157)/raw_e157 );
+      store->hist1("res_e157")->Fill( (e157-raw_e157)/raw_e157 );
       float raw_e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7, true);
       float e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7);
-      store.hist1("res_e257")->Fill( (e257-raw_e257)/raw_e257 );
+      store->hist1("res_e257")->Fill( (e257-raw_e257)/raw_e257 );
       float raw_e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7, true);
       float e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7);
-      store.hist1("res_e357")->Fill( (e357-raw_e357)/raw_e357 );
+      store->hist1("res_e357")->Fill( (e357-raw_e357)/raw_e357 );
       float etot57=e157+e257+e357;
       float raw_etot57=raw_e157+raw_e257+raw_e357;
-      store.hist1("res_etot57")->Fill( (etot57-raw_etot57)/raw_etot57 );
+      store->hist1("res_etot57")->Fill( (etot57-raw_etot57)/raw_etot57 );
       
       
-      store.hist2("res_etot57vsEt")->Fill( (etot57-raw_etot57)*1e-3, clus->et()*1e-3 );
+      store->hist2("res_etot57vsEt")->Fill( (etot57-raw_etot57)*1e-3, clus->et()*1e-3 );
     
     
     }
 
 
-    store.hist1("cl_et")->Fill( clus->et() / 1.e3);
-    store.hist1("cl_eta")->Fill( clus->eta() );
-    store.hist1("cl_phi")->Fill( clus->phi() );
-    store.hist1("cl_reta")->Fill( clus->reta() );
-    store.hist1("cl_rphi")->Fill( clus->rphi() );
-    store.hist1("cl_rhad")->Fill( clus->rhad() );
-    store.hist1("cl_eratio")->Fill( clus->eratio() );
-    store.hist1("cl_f1")->Fill( clus->f1() );
-    store.hist1("cl_f3")->Fill( clus->f3() );
-    store.hist1("cl_weta2")->Fill( clus->weta2() );
+    store->hist1("cl_et")->Fill( clus->et() / 1.e3);
+    store->hist1("cl_eta")->Fill( clus->eta() );
+    store->hist1("cl_phi")->Fill( clus->phi() );
+    store->hist1("cl_reta")->Fill( clus->reta() );
+    store->hist1("cl_rphi")->Fill( clus->rphi() );
+    store->hist1("cl_rhad")->Fill( clus->rhad() );
+    store->hist1("cl_eratio")->Fill( clus->eratio() );
+    store->hist1("cl_f1")->Fill( clus->f1() );
+    store->hist1("cl_f3")->Fill( clus->f3() );
+    store->hist1("cl_weta2")->Fill( clus->weta2() );
 
 
     

@@ -24,7 +24,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
     virtual StatusCode initialize() override;
 
     /*! Book all histograms into the current storegate **/
-    virtual StatusCode bookHistograms( SG::StoreGate &store ) const override;
+    virtual StatusCode bookHistograms( SG::EventContext &ctx ) const override;
     
     virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
     
@@ -32,7 +32,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
     
     virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
     
-    virtual StatusCode fillHistograms( SG::EventContext &ctx, SG::StoreGate &store ) const override;
+    virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     
     virtual StatusCode finalize() override;
 

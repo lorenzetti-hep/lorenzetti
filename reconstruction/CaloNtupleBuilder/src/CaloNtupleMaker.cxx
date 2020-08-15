@@ -27,7 +27,7 @@ CaloNtupleMaker::CaloNtupleMaker( std::string name ) :
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
   declareProperty( "DeltaR"         , m_deltaR=0.15                     );
   declareProperty( "DumpCells"      , m_dumpCells=false                 );
-  declareProperty( "NtupleName"     , m_ntupleName="events"             );
+  declareProperty( "NtupleName"     , m_ntupleName="physics"            );
 }
 
 
@@ -43,8 +43,10 @@ StatusCode CaloNtupleMaker::initialize()
 }
 
 
-StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
+StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
 {
+  auto store = ctx.getStoreGateSvc();
+
   // Create all local variables since this must be a const method
   int eventNumber         = -1;
   float avgmu             = -1;
@@ -128,7 +130,7 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   std::vector<int>   cl_cell_sampling    ;
 
 
-  store.cd();
+  store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   
   tree->Branch(  "EventNumber"        , &eventNumber        );
@@ -211,7 +213,7 @@ StatusCode CaloNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "cl_cell_sampling"   , &cl_cell_sampling   );
  
 
-  store.add( tree );
+  store->add( tree );
   
   return StatusCode::SUCCESS;
 }
@@ -241,11 +243,9 @@ StatusCode CaloNtupleMaker::post_execute( EventContext &/*ctx*/ ) const
 }
 
 
-
-
-
-StatusCode CaloNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store ) const
+StatusCode CaloNtupleMaker::fillHistograms( EventContext &ctx ) const
 {
+  auto store = ctx.getStoreGateSvc();
   // Event info
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
 
@@ -253,8 +253,8 @@ StatusCode CaloNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store
     MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
   }
 
-  store.cd();
-  TTree *tree = store.tree(m_ntupleName);
+  store->cd();
+  TTree *tree = store->tree(m_ntupleName);
  
   for ( auto& seed : (**event.ptr()).front()->allSeeds() ){
     int eventNumber = (**event.ptr()).front()->eventNumber();

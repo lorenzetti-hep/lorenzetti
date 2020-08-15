@@ -47,14 +47,9 @@ namespace Gaugi{
       /*! Return the name of the algorithm */
       const std::string& name() const;
 
-      /*! set the store gate service */
-      void setStoreGateSvc( SG::StoreGate * );
     
     protected:
       
-      /*! get the monitoring tool */
-      SG::StoreGate* getStoreGateSvc() const;
-  
       /*! Level message */
       int m_outputLevel;
 
@@ -65,9 +60,6 @@ namespace Gaugi{
       bool isFinalized() const;
 
     private:
-     
-      /*! monitoring tool */
-      SG::StoreGate *m_store;  
 
       bool m_isInitialized;
       bool m_isFinalized;

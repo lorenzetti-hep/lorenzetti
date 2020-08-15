@@ -4,6 +4,7 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/AlgTool.h"
 #include "GaugiKernel/IAlgTool.h"
+#include "GaugiKernel/Timer.h"
 #include "GaugiKernel/versions/Lorenzett_v1.h"
 
 #ifdef __CINT__
@@ -14,6 +15,7 @@
 #pragma link C++ nestedclass;
 
 
+#pragma link C++ class Timer+;
 #pragma link C++ class MsgService+;
 #pragma link C++ class IMsgService+;
 #pragma link C++ class PropertyService+;

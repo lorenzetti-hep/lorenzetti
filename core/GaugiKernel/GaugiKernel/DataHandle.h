@@ -1,6 +1,7 @@
 #ifndef DataHandle_h
 #define DataHandle_h
 
+#include "GaugiKernel/StoreGate.h"
 #include "GaugiKernel/MsgStream.h"
 #include <string>
 #include <map>
@@ -36,11 +37,20 @@ namespace SG{
       /*! get the pointer given a key */
       template<class T> const T* get( std::string &sgkey );
 
+      /*! Clear all data handlers map */
       void clear();
         
+      /*! Set the store gate service */
+      void setStoreGateSvc( StoreGate *store ){ m_store=store; }
+
+      /*! Get the store gate service */
+      StoreGate* getStoreGateSvc(){ return m_store; };
+
     private:
 
       std::map< std::string, std::unique_ptr<const DataHandle > > m_storable_ptr;
+  
+      StoreGate *m_store;
   };
 
 
