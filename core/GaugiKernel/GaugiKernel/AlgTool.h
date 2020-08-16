@@ -28,23 +28,13 @@ namespace Gaugi{
 
       const std::string& name() const;
 
-      /*! set the store gate service */
-      void setStoreGateSvc( SG::StoreGate * );
-    
 
     protected:
       
-      /** get the monitoring tool **/
-      SG::StoreGate* getStoreGateSvc() const;
   
       /*! Output level message */
       int m_outputLevel;
 
-    private:
-      
-      // the monitoring tool
-      SG::StoreGate *m_store;
-  
   };
 
 

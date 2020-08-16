@@ -1,11 +1,12 @@
 #include "OptimalFilter.h"
+#include "CaloCell/RawCell.h"
 
 using namespace Gaugi;
 
 
 OptimalFilter::OptimalFilter( std::string name ) : 
   IMsgService(name),
-  CaloTool()
+  AlgTool()
 {
   declareProperty( "Weights"    , m_ofweights={}  );
   declareProperty( "OutputLevel", m_outputLevel=1 );
@@ -31,8 +32,11 @@ StatusCode OptimalFilter::finalize()
 
 
 
-StatusCode OptimalFilter::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::RawCell *cell ) const
+StatusCode OptimalFilter::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
+
+  auto *cell = static_cast<xAOD::RawCell*>(edm);
+
 	auto pulse = cell->pulse();
 	float energy=0.0;
 
@@ -49,11 +53,5 @@ StatusCode OptimalFilter::executeTool( const xAOD::EventInfo * /*evt*/, xAOD::Ra
 	cell->setEnergy(energy);
 	return StatusCode::SUCCESS;
 }
-
-
-// Just for python import in ROOT
-StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::CaloCell * ) const {return StatusCode::SUCCESS;}
-StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::CaloCluster * ) const {return StatusCode::SUCCESS;}
-StatusCode OptimalFilter::executeTool( const xAOD::EventInfo *, xAOD::TruthParticle * ) const {return StatusCode::SUCCESS;}
 
 

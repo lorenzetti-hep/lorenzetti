@@ -29,6 +29,8 @@ def recordable( key ):
             "TruthRings",
             ]
 
+  return key
+
   if key in keys:
     return key
   else:

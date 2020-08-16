@@ -4,6 +4,7 @@
 
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
 /** geant 4 includes **/
@@ -16,7 +17,7 @@
 // Event Object Data
 namespace xAOD{
   
-  class CaloCluster
+  class CaloCluster: public Gaugi::EDM
   {  
     public:
       

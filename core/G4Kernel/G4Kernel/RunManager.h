@@ -31,6 +31,8 @@ class RunManager: public MsgService,
 
   private:
 
+    void header();
+
     int m_nThreads;
 
     bool m_runVis;

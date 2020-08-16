@@ -91,6 +91,15 @@ TH2F* StoreGate::hist2( std::string name )
 }
 
 
+TH1I* StoreGate::histI( std::string name )
+{
+  std::string path = m_currentPath+"/"+name;
+	//if( m_objs.find( path ) == m_objs.end() )  
+  //  MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
+  return ((TH1I*)m_objs[path]);
+}
+
+
 TTree* StoreGate::tree( std::string name )
 {
   std::string path = m_currentPath+"/"+name;
@@ -98,4 +107,20 @@ TTree* StoreGate::tree( std::string name )
 }
 
 
+
+void StoreGate::setLabels(TH1* histo, const std::vector<std::string>& labels) {
+    if ( ! labels.empty() ){
+        for ( int i = 0; i < std::min( (int)labels.size(), (int)histo->GetNbinsX() ); ++i ) {
+            int bin = i+1;
+            histo->GetXaxis()->SetBinLabel(bin, labels[i].c_str());
+            MSG_INFO("setting label X" <<  labels[i] << " for bin " << bin);
+        }
+
+        for ( int i = (int)histo->GetNbinsX(); i < std::min( (int)labels.size(), (int)histo->GetNbinsX()+(int)histo->GetNbinsY() ); ++i ) {
+            int bin = i+1-(int)histo->GetNbinsX();
+            histo->GetYaxis()->SetBinLabel(bin, labels[i].c_str());
+            MSG_INFO("setting label Y" <<  labels[i] << " for bin " << bin);
+        }
+    }
+}
 

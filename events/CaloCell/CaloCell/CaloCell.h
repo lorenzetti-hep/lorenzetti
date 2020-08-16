@@ -4,12 +4,13 @@
 /** simulator includes **/
 #include "CaloCell/enumeration.h"
 #include "CaloCell/RawCell.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
 
 namespace xAOD{
   
-  class CaloCell
+  class CaloCell: public Gaugi::EDM
   {  
     public:
 

@@ -1,11 +1,13 @@
+[![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762)
+
 # Lorenzetti Simulator
 
-Lorenzetti is provided as a tool for the HEP community to freely exploit the full potential of calorimetry data. We expect that it enables the community to fill the gap for R&D in calorimetry technology by providing:
+Lorenzetti is a framework for the HEP community to freely exploit the full potential of calorimetry data. We expect to enable the community to mitigate bottlenecks for R&D in processing algorithms using calorimetry data by providing:
 
- - Full simulation (geant-based) low-level calorimetry information;
+ - Unified low-level calorimetry and physics information based on full simulation (geant);
  - Free-to-use data. 
  
-Hence, it allows the HEP community to freely work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and publish them independently. We believe that the possibility to publish POCs apart from the experiments can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate integration with the broader scientific community.
+In other words, it provides a way for the HEP community to work on proof-of-concepts (POCs) using simulated data that is currently difficult to obtain on experiments and to publish them independently. We believe that this possibility, i.e. to publish POCs apart from the experiments, can be a powerful way to foster scientific exchange within the HEP community, but also to facilitate the exchange of processing algorithms with the broader scientific community.
 
 We welcome everyone to contribute!
 
@@ -38,7 +40,7 @@ This will setup everything you need for running Lorenzetti.
 
 ### LNCC (cluster) usage
 
-More details [here](https://github.com/jodafons/lorenzetti/tree/master/docker/cluster):
+More details [here](https://github.com/jodafons/lorenzetti/tree/master/docker/cluster).
 
 ## Running Lorenzetti
 

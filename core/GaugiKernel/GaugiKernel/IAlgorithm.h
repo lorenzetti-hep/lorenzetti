@@ -38,11 +38,8 @@ namespace Gaugi{
 	    virtual StatusCode initialize()=0;
 		  
       /*! Book all histograms into the current store gate */
-      virtual StatusCode bookHistograms( SG::StoreGate &/*sg*/ ) const=0;
+      virtual StatusCode bookHistograms( SG::EventContext &/*sg*/ ) const=0;
 
-			/*! Destroy all allocated memory and close all services */
-			virtual StatusCode finalize()=0;
-	
 			/*! This step will be executed before Geant step action */
 	    virtual StatusCode pre_execute( SG::EventContext & /*ctx*/ ) const=0;
 			
@@ -53,7 +50,10 @@ namespace Gaugi{
 	    virtual StatusCode post_execute( SG::EventContext & /*ctx*/ ) const=0;
 	    
       /*! Fill all histograms into the current store gate */
-	    virtual StatusCode fillHistograms( SG::EventContext & /*ctx*/ , SG::StoreGate &/*sg*/ )const =0;
+	    virtual StatusCode fillHistograms( SG::EventContext & /*ctx*/ )const =0;
+	
+			/*! Destroy all allocated memory and close all services */
+			virtual StatusCode finalize()=0;
 	
 	};
 

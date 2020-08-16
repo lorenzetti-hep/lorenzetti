@@ -5,12 +5,12 @@
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/StoreGate.h"
+#include "GaugiKernel/Timer.h"
 #include "G4Run.hh"
 #include "globals.hh"
 #include "G4Step.hh"
 #include <string>
 #include <vector>
-#include <time.h>
 
 class EventLoop : public G4Run, public MsgService
 {
@@ -34,17 +34,16 @@ class EventLoop : public G4Run, public MsgService
 
     SG::EventContext& getContext();
 
-    /** Start the event counter **/
-    void start();
-    /** Update the event counter **/
-    void update();
     /** Is timeout? **/
     bool timeout();
+
 
     void lock();
     void unlock();
 
   private:
+
+    void bookHistograms();
 
     // Store gate
     SG::StoreGate m_store;
@@ -55,13 +54,10 @@ class EventLoop : public G4Run, public MsgService
     // list of alg tools to be executed in loop
     std::vector < Gaugi::Algorithm* > m_toolHandles;
 
-    
-    time_t m_start, m_end;
-
-    unsigned m_nEvents, m_nGoodEvents;
-
     // lock all steps
     bool m_lock;
+
+    Gaugi::Timer m_timeout;
 };
 
   

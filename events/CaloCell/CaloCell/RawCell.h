@@ -2,6 +2,7 @@
 #define RawCell_h
 
 #include "CaloCell/enumeration.h"
+#include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 #include "G4Step.hh"
 #include "globals.hh"
@@ -9,13 +10,13 @@
 
 namespace xAOD{
 
-  class RawCell
+  class RawCell: public Gaugi::EDM
   {  
     public:
 
       /** Contructor **/
       RawCell( float eta, float phi, float deta, float dphi, float radius_min, float radius_max,
-               std::string hash, int channel_eta, int channel_phi, CaloSampling::CaloSample sampling, 
+               unsigned int hash,  CaloSampling::CaloSample sampling, 
                float bc_duration, int bc_nsamples, int bcid_start, int bcid_end, int bcid_truth );
 
       /** Destructor **/
@@ -38,7 +39,8 @@ namespace xAOD{
       /*! Cell maximal radius in the plane xy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_radius_max, setRmax, rmax );
       /*! Cell hash */
-      PRIMITIVE_SETTER_AND_GETTER( std::string, m_hash, setHash, hash );
+      PRIMITIVE_SETTER_AND_GETTER( unsigned int, m_hash, setHash, hash );
+      //PRIMITIVE_SETTER_AND_GETTER( std::string, m_hash, setHash, hash );
       /*! Cell sampling id */
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample, m_sampling, setSampling, sampling );
       /*! Estimated energy **/
@@ -70,20 +72,14 @@ namespace xAOD{
       void setPulsePerBunch( int bc_id , std::vector<float> pulse ){ m_pulsePerBunch[bc_id] = pulse;};
 
 
-      PRIMITIVE_SETTER_AND_GETTER( int, m_channel_eta , setChannelEta , channelEta   );
-      PRIMITIVE_SETTER_AND_GETTER( int, m_channel_phi , setChannelPhi , channelPhi   );
-
 
     private:
  
+      int findIndex( float value) const ;
+
+
       /*! id sampling */
       CaloSampling::CaloSample m_sampling;
-      /*! the eta id of this cell*/
-      int m_channel_eta;
-      /*! the phi id of this cell*/
-      int m_channel_phi;
-
-
       /*! eta center */
       float m_eta;
       /*! phi center */
@@ -121,7 +117,8 @@ namespace xAOD{
       /*! Digitalized pulse per bunch */
       std::map< int, std::vector<float> > m_pulsePerBunch;
       /*! Access information */
-      std::string m_hash;
+      unsigned int m_hash;
+      //std::string m_hash;
   };
 
 }

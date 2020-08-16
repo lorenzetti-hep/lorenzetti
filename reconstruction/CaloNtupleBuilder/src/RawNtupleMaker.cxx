@@ -39,8 +39,9 @@ StatusCode RawNtupleMaker::initialize()
 }
 
 
-StatusCode RawNtupleMaker::bookHistograms( StoreGate &store ) const
+StatusCode RawNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
 {
+  auto store = ctx.getStoreGateSvc();
   // Create all local variables since this must be a const method
   int eventNumber         = -1;
   float avgmu             = -1;
@@ -48,7 +49,7 @@ StatusCode RawNtupleMaker::bookHistograms( StoreGate &store ) const
   float seed_phi          = -1;
   std::vector<raw_cell_t> cells;
  
-  store.cd();
+  store->cd();
   TTree *tree = new TTree( m_ntupleName.c_str(), "");
   
   tree->Branch(  "EventNumber"        , &eventNumber        );
@@ -57,7 +58,7 @@ StatusCode RawNtupleMaker::bookHistograms( StoreGate &store ) const
   tree->Branch(  "seed_phi"           , &seed_phi           );
   tree->Branch(  "cells",               &cells              );
 
-  store.add( tree );
+  store->add( tree );
   
   return StatusCode::SUCCESS;
 }
@@ -87,10 +88,11 @@ StatusCode RawNtupleMaker::post_execute( EventContext &/*ctx*/ ) const
 }
 
 
-StatusCode RawNtupleMaker::fillHistograms( EventContext &ctx , StoreGate &store ) const
+StatusCode RawNtupleMaker::fillHistograms( EventContext &ctx ) const
 {
-  store.cd();
-  TTree *tree = store.tree(m_ntupleName);
+  auto store = ctx.getStoreGateSvc();
+  store->cd();
+  TTree *tree = store->tree(m_ntupleName);
 
   Fill( ctx, tree );
 

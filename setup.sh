@@ -39,6 +39,7 @@ export PATH=`pwd`/lib:$PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
 cd ..
 export PATH=$PATH:$PWD/scripts
+export PATH=$PATH:$PWD/generator/PythiaGenerator/share
 
 
 

@@ -13,7 +13,10 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TH1F.h"
+#include "TH1I.h"
 #include "TH2F.h"
+#include "TH1.h"
+
 
 namespace SG
 {
@@ -41,10 +44,15 @@ namespace SG
       
       /** Get 2D pointer **/
       TH2F* hist2( std::string );
-      
+     
+      /** Get ID pointer **/
+      TH1I* histI( std::string );
+
       /** Get 2D pointer **/
       TTree* tree( std::string );
   
+      void setLabels(TH1* histo, const std::vector<std::string>& labels);
+
     private:
 
       // the current path

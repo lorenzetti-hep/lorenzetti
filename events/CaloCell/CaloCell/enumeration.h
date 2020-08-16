@@ -21,6 +21,7 @@ namespace CaloSampling{
     ECal = 0,
     HCal = 1
   };
+
 } 
 
 #endif

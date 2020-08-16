@@ -1,6 +1,7 @@
 
 #include "G4Kernel/constants.h"
 #include "G4Kernel/EventLoop.h"
+#include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
 #include <iostream>
 #include <time.h>
@@ -12,48 +13,44 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
   m_store( output , G4Threading::G4GetThreadId() ),
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
-  m_nEvents(0),
-  m_nGoodEvents(0),
   m_lock(false)
 {
+  // Tranfer all rights to the event context
+  m_ctx.setStoreGateSvc( &m_store );
+
+  bookHistograms();
+
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Booking histograms for " << toolHandle->name() );
-    if (toolHandle->bookHistograms( m_store ).isFailure() ){
+    if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }
   }
-
-
 }
 
 
 EventLoop::~EventLoop()
-{
-
-  unsigned badEvents = m_nEvents - m_nGoodEvents;
-  MSG_INFO( "Good events    : " << m_nGoodEvents );
-  MSG_INFO( "Aborted events : " << badEvents );
-}
-
-
+{}
 
 
 void EventLoop::BeginOfEvent()
 {
   MSG_INFO("EventLoop::BeginOfEvent...");
   
-  m_nEvents++;
+
+  
+  Gaugi::Timer timer;
+  m_timeout.start();
+  timer.start();
 
   // Unlock the execution
   unlock();
   
-  // start the event counter
-  start();
-
-
   // Pre execution of all tools in sequence
   if(!m_lock){
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Event",1);
     for( auto &toolHandle : m_toolHandles){
       MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
       if (toolHandle->pre_execute( m_ctx ).isFailure() ){
@@ -61,12 +58,19 @@ void EventLoop::BeginOfEvent()
       }
     }
   }
+
+  timer.stop();
+  m_store.cd("Event");
+  m_store.hist1( "BeginOfEvent" )->Fill( timer.resume() );
 }
 
 
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
-  update();
+  Gaugi::Timer timer;
+  m_timeout.update();
+  
+  timer.start();
   if(!m_lock){
     for( auto &toolHandle : m_toolHandles){
       if (toolHandle->execute( m_ctx, step ).isFailure() ){
@@ -74,11 +78,20 @@ void EventLoop::ExecuteEvent( const G4Step* step )
       }
     }
   }
+  timer.stop();
+
+  m_store.cd("Event");
+  m_store.hist1( "ExecuteEvent" )->Fill( timer.resume() );
 }
 
 
 void EventLoop::EndOfEvent()
 {
+
+  
+  Gaugi::Timer timer;
+  
+  timer.start();
   if (!m_lock){
     MSG_INFO("EventLoop::EndOfEvent...");
     for( auto &toolHandle : m_toolHandles){
@@ -86,20 +99,47 @@ void EventLoop::EndOfEvent()
       if (toolHandle->post_execute( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
       }
-      if (toolHandle->fillHistograms( m_ctx , m_store).isFailure() ){
+      if (toolHandle->fillHistograms( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
       }
     }
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Completed",1);
+  }else{
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Timeout",1);
   }
-
 
   // Clear all storable pointers
   m_ctx.clear();
-  update();
 
-  m_nGoodEvents++;
-  MSG_INFO( "Event loop take " << (m_end-m_start) << " seconds to be processed." );
+
+  timer.stop();
+  m_timeout.stop();  
+
+  m_store.cd("Event");
+  m_store.hist1( "EndOfEvent" )->Fill( timer.resume() );
+  m_store.hist1( "Event" )->Fill( m_timeout.resume() );
 }
+
+
+void EventLoop::bookHistograms(){
+
+  m_store.cd();
+  m_store.mkdir( "Event" );
+  m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
+  m_store.add( new TH1F("ExecuteEvent" , ";time[s];Count;"   , 100 , 0 , 0.1) );
+  m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10) );
+  m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 100 , 0, 150) );
+  m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0,   3) );
+  
+  std::vector<std::string> labels{"Event", "Completed", "Timeout"};
+  m_store.setLabels( m_store.histI("EventCounter"), labels );
+
+  
+} 
+
+
 
 
 SG::EventContext & EventLoop::getContext()
@@ -107,21 +147,8 @@ SG::EventContext & EventLoop::getContext()
   return m_ctx;
 }
 
-
-
 bool EventLoop::timeout(){
-  return (m_end-m_start) > event_timeout ? true : false;
-}
-
-
-
-void EventLoop::start(){
-  m_start = m_end = time(nullptr);
-}
-
-
-void EventLoop::update(){
-  m_end = time(nullptr);
+  return m_timeout.resume() > event_timeout ? true : false;
 }
 
 void EventLoop::lock(){
