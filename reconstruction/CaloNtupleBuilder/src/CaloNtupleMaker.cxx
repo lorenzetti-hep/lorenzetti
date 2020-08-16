@@ -589,8 +589,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           mc_cl_cell_dphi->push_back( cell->deltaPhi() );
           mc_cl_cell_energy->push_back( cell->energy() );
           // Get all necessary ids to locate the cell outside
-          mc_cl_cell_channel_eta->push_back( cell->parent()->channelEta() );
-          mc_cl_cell_channel_phi->push_back( cell->parent()->channelPhi() );
           mc_cl_cell_sampling->push_back( (int)cell->sampling() );
         }
       }
@@ -648,8 +646,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           cl_cell_dphi->push_back( cell->deltaPhi() );
           cl_cell_energy->push_back( cell->energy() );
           // Get all necessary ids to locate the cell outside
-          cl_cell_channel_eta->push_back( cell->parent()->channelEta() );
-          cl_cell_channel_phi->push_back( cell->parent()->channelPhi() );
           cl_cell_sampling->push_back( (int)cell->sampling() );
  
         

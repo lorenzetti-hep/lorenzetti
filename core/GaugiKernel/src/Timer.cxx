@@ -8,8 +8,8 @@ namespace Gaugi{
     start();
   }
 
-  float Timer::resume(){
-    return (float)(m_end - m_start);
+  time_t Timer::resume(){
+    return (m_end - m_start);
   }
 
   void Timer::start(){

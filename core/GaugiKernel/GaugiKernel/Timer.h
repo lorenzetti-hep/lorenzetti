@@ -13,7 +13,7 @@ namespace Gaugi{
         ~Timer()=default;
        
         /*! Get the diff time */
-        float resume();
+        time_t resume();
     
         /*! Start clock */
         void start();

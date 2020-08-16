@@ -112,7 +112,6 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   }
 
 
-
   return StatusCode::SUCCESS;
 }
 
@@ -126,7 +125,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
   collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection(m_eta_min,m_eta_max,m_eta_bins,m_phi_min,
                                                                                             m_phi_max,m_phi_bins,m_rmin,m_rmax,
                                                                                             (CaloSample)m_sampling)));
-  // Read the file
+  // Read the file:
   std::ifstream file( m_caloCellFile );
 
 	std::string line;
@@ -138,12 +137,13 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
     // Get only cell config 
     if (command=="C"){
       float  eta, phi, deta, dphi, rmin, rmax;
-      int sampling, channel_eta, channel_phi; // Calorimeter layer and eta/phi ids
-      std::string hash;
-      file >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> hash >> channel_eta >> channel_phi;
+      int sampling, section; // Calorimeter layer and eta/phi ids
+      unsigned int hash;
+      //std::string hash;
+      file >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> hash;
 
       // Create the calorimeter cell
-      auto *cell = new xAOD::RawCell( eta, phi, deta, dphi, rmin, rmax, hash, channel_eta, channel_phi, (CaloSample)sampling,
+      auto *cell = new xAOD::RawCell( eta, phi, deta, dphi, rmin, rmax, hash, (CaloSample)sampling,
                                       m_bc_duration, m_bc_nsamples, m_bcid_start, m_bcid_end, m_bcid_truth);
       
       // Add the CaloCell into the collection
@@ -157,11 +157,15 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
  
 StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
+  //MSG_INFO( "AKI" );
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+
+  //MSG_INFO( "AKI 1" );
 
   if( !collection.isValid() ){
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
+  //MSG_INFO( "AKI 2" );
 
   // Get the position
   G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
@@ -171,9 +175,12 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
 
   // This object can not be const since we will change the intenal value
   xAOD::RawCell *cell=nullptr;
+  //MSG_INFO( "AKI 3" );
   collection->retrieve( vpos, cell );
+  //MSG_INFO( "AKI 4" );
   
   if(cell) cell->Fill( step );
+  //MSG_INFO( "AKI 5" );
 
   return StatusCode::SUCCESS;
 }
@@ -214,7 +221,6 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 
 StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {
-  
   auto store = ctx.getStoreGateSvc();
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
  
@@ -260,7 +266,6 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 
 
   }
-
   return StatusCode::SUCCESS;
 }
 

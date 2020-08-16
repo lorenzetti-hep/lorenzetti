@@ -14,9 +14,8 @@ RawCell::RawCell( float eta,
                   float dphi, 
                   float radius_min, 
                   float radius_max,
-                  std::string hash,
-                  int channel_eta, 
-                  int channel_phi, 
+                  unsigned int hash,
+                  //std::string hash,
                   CaloSample sampling, 
                   float bc_duration,
                   int bc_nsamples,
@@ -24,8 +23,6 @@ RawCell::RawCell( float eta,
                   int bcid_end,
                   int bcid_truth ):
   m_sampling(sampling),
-  m_channel_eta(channel_eta),
-  m_channel_phi(channel_phi),
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
@@ -73,17 +70,26 @@ void RawCell::Fill( const G4Step* step )
   G4ThreeVector pos = point->GetPosition();
   // Get the particle time
   float t = (float)point->GetGlobalTime() / ns;
+  // Get the bin index into the time vector
+  int sample = findIndex(t);
   
-  // Loop over all samples
-  for(unsigned int sample=0; sample < m_rawEnergySamples.size(); ++sample){
-    if( t >= m_time[sample] && t < m_time[sample+1]){
-      m_rawEnergySamples[sample]+=(edep/MeV);
-      break;
-    }
+
+  if ( sample != -1 ){
+    m_rawEnergySamples[sample]+=(edep/MeV);
   }
+
   if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
     m_truthRawEnergy+=(edep/MeV);
   }
+}
+
+
+
+int RawCell::findIndex( float value) const 
+{
+  auto binIterator = std::adjacent_find( m_time.begin(), m_time.end(), [=](float left, float right){ return left < value and value <= right; }  );
+  if ( binIterator == m_time.end() ) return -1;
+  return  binIterator - m_time.begin();
 }
 
 

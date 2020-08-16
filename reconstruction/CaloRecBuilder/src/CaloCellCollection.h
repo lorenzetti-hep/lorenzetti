@@ -13,7 +13,8 @@ namespace xAOD{
 
   class CaloCellCollection : public SG::DataHandle
   {  
-    typedef std::map<std::string, xAOD::RawCell* > collection_map_t;
+    typedef std::map<unsigned int, xAOD::RawCell* > collection_map_t;
+    //typedef std::map<std::string, xAOD::RawCell* > collection_map_t;
 
     public:
 
@@ -39,6 +40,8 @@ namespace xAOD{
     
     private:
 
+      int findIndex( const std::vector<float> &vec, float value) const; 
+
       /*! Cell map into strings to faster access */
       collection_map_t  m_collection;
       /*! eta bins inside of this collection */
@@ -52,6 +55,7 @@ namespace xAOD{
       /*! Calorimeter sampling id */
       CaloSampling::CaloSample m_sampling;
 
+      float m_etamin, m_etamax, m_phimin, m_phimax;
   };
 }// namespace
 #endif

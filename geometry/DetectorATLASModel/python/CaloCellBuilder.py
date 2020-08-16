@@ -25,7 +25,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 3, # +75ns
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
-        'OFWeights'       : [0., 0.1816,    0.6840,    0.3569,   -0.0245],
+        'OFWeights'       : [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
       },
       # Lar Barrel Calorimter, EM2
       { 'name'            : 'barrel_em2',
@@ -36,7 +36,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 3, # +75ns
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
-        'OFWeights'       : [0., 0.1208,    0.7654,    0.3189,   -0.1652],
+        'OFWeights'       : [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
       },
       # Lar Barrel Calorimter, EM3
       { 'name'            : 'barrel_em3',
@@ -47,7 +47,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 3, # +75ns
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
-        'OFWeights'       : [0., 0.2341,    0.6148,    0.3847,    0.1071],
+        'OFWeights'       : [ -0.0125, 0.2379, 0.6097, 0.3863, 0.1183],
       },
       # Tile Barrel Calorimter, HAD1
       { 'name'            : 'barrel_had1',
@@ -58,7 +58,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 4, # 100ns
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
-        'OFWeights'       : [-0.0828,   -0.3598,    0.0467,    0.9619,    0.1593,   -0.3346,   -0.3906],
+        'OFWeights'       : [ -0.3683, -0.3389, 0.1549, 0.8386, 0.2539, -0.2149, -0.3253],
       },
       # Tile Barrel Calorimter, HAD2
       { 'name'            : 'barrel_had2',
@@ -69,7 +69,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 4, # 100ns
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
-        'OFWeights'       : [-0.3246,   -0.3411,    0.1496,    0.8439,    0.2554,   -0.2330,   -0.3502],
+        'OFWeights'       : [ -0.3808, -0.3594, 0.1807, 0.8108, 0.2796, -0.1997, -0.3311],
       },
       # Tile Barrel Calorimter, HAD3
       { 'name'            : 'barrel_had3',
@@ -80,7 +80,7 @@ class CaloCellBuilder( Logger ):
         'BunchIdEnd'      : 4, # 100ns
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
-        'OFWeights'       : [-0.4099,   -0.3620,    0.1891,    0.8020,    0.2825,   -0.1801,   -0.3217],
+        'OFWeights'       : [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
       },
 
      ] 
