@@ -166,6 +166,6 @@ for fname in outputFileList:
   os.system( 'rm '+ fname )
 
 
-
-
+if args.visualization:
+    input("Press Enter to quit...")
 

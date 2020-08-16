@@ -18,6 +18,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/EventInfo)
 # included by hand, should be fixed for future
 include_directories( ${FASTJET_INCLUDE_DIRS} )
 include_directories( ${PYTHIA8_INCLUDE_DIRS} )
+include_directories( ${HEPMC_INCLUDE_DIRS} )
 
 ROOT_GENERATE_DICTIONARY(PythiaGeneratorDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE PythiaGenerator)
                                       

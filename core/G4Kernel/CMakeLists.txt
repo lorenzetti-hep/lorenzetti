@@ -1,6 +1,11 @@
 
 file(GLOB SOURCES src/*.cxx)
 file(GLOB_RECURSE HEADERS G4Kernel/*.h )
+
+find_package(X11 REQUIRED)
+link_libraries(${X11_LIBRARIES})
+
+include_directories(${X11_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GaugiKernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/EventInfo)

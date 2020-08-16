@@ -8,6 +8,8 @@
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
+#include <thread> 
+#include <X11/Xlib.h>
 #else
 #include "G4RunManager.hh"
 #endif
@@ -17,7 +19,6 @@
 #include "Randomize.hh"
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
-
 
 #include <iostream>
 #include "time.h"
@@ -30,8 +31,9 @@ RunManager::RunManager( std::string name ):
   m_detector(nullptr)
 {
   
-#ifdef G4MULTITHREADED
   declareProperty( "NumberOfThreads", m_nThreads=1              );
+#ifdef G4MULTITHREADED
+  XInitThreads();
 #endif
   declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "RunVis"         , m_runVis=false            );
@@ -106,7 +108,7 @@ void RunManager::run( int evt )
   G4VisManager* visManager = new G4VisExecutive;
   visManager->Initialize();
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-  UImanager->ApplyCommand("/globalField/setValue 0 1000000 0 tesla");
+  //UImanager->ApplyCommand("/globalField/setValue 0 1000000 0 tesla");
 
   std::stringstream runCommand; runCommand << "/run/beamOn " << evt ;
 
@@ -116,7 +118,7 @@ void RunManager::run( int evt )
     UImanager->ApplyCommand("/run/verbose 2");
     UImanager->ApplyCommand(runCommand.str());
   } else  {
-    MSG_INFO("Apply my vis macro");
+    MSG_INFO("Applying /core/G4Kernel/data/vis.mac macro");
     UImanager->ApplyCommand("/run/initialize");
     UImanager->ApplyCommand("/run/printProgress 1");
     UImanager->ApplyCommand("/run/verbose 2");

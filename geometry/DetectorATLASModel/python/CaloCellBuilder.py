@@ -26,6 +26,7 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
         'OFWeights'       : [0., 0.1816,    0.6840,    0.3569,   -0.0245],
+        'ElectronicNoise'  : 26, # MeV
       },
       # Lar Barrel Calorimter, EM2
       { 'name'            : 'barrel_em2',
@@ -37,6 +38,7 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
         'OFWeights'       : [0., 0.1208,    0.7654,    0.3189,   -0.1652],
+        'ElectronicNoise'  : 60, # MeV
       },
       # Lar Barrel Calorimter, EM3
       { 'name'            : 'barrel_em3',
@@ -48,6 +50,7 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -2,
         'NSamples'        : 5,
         'OFWeights'       : [0., 0.2341,    0.6148,    0.3847,    0.1071],
+        'ElectronicNoise'  : 40, # MeV
       },
       # Tile Barrel Calorimter, HAD1
       { 'name'            : 'barrel_had1',
@@ -59,6 +62,7 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
         'OFWeights'       : [-0.0828,   -0.3598,    0.0467,    0.9619,    0.1593,   -0.3346,   -0.3906],
+        'ElectronicNoise'  : 20, # MeV
       },
       # Tile Barrel Calorimter, HAD2
       { 'name'            : 'barrel_had2',
@@ -70,6 +74,7 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
         'OFWeights'       : [-0.3246,   -0.3411,    0.1496,    0.8439,    0.2554,   -0.2330,   -0.3502],
+        'ElectronicNoise'  : 20, # MeV
       },
       # Tile Barrel Calorimter, HAD3
       { 'name'            : 'barrel_had3',
@@ -81,7 +86,15 @@ class CaloCellBuilder( Logger ):
         'StartSamplingBC' : -3,
         'NSamples'        : 7,
         'OFWeights'       : [-0.4099,   -0.3620,    0.1891,    0.8020,    0.2825,   -0.1801,   -0.3217],
+        'ElectronicNoise'  : 20, # MeV
       },
+        # EMEC1 'ElectronicNoise'  : 26, # MeV
+        # EMEC2 'ElectronicNoise'  : 60, # MeV
+        # EMEC3 'ElectronicNoise'  : 40, # MeV
+
+        # HEC1 'ElectronicNoise'  : 250, # MeV
+        # HEC2 'ElectronicNoise'  : 400, # MeV
+        # HEC3 'ElectronicNoise'  : 750, # MeV
 
      ] 
 
@@ -115,10 +128,9 @@ class CaloCellBuilder( Logger ):
                               DeformationMean = 0.0, 
                               DeformationStd  = 0.0,
                               NoiseMean       = 0.0,
-                              NoiseStd        = 20.0, # MeV
+                              NoiseStd        = config['ElectronicNoise'],
                               StartSamplingBC = config['StartSamplingBC'], 
-                              #NoiseStd        = 0,
-                              )
+                            )
       of = OptimalFilter("OptimalFilter",
                           Weights  = config['OFWeights'],
                           OutputLevel=self.__outputLevel)

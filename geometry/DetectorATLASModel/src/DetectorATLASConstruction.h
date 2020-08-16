@@ -45,8 +45,23 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
                         double gapThickness,
                         double calorRmin,
                         double calorZ,
-                        G4ThreeVector center_pos,
+                        const G4ThreeVector &center_pos,
                         G4Region* region);
+
+    void CreateEndcap(  G4LogicalVolume *worldLV, 
+                        std::string name,  
+                        G4Material *defaultMaterial,
+                        G4Material *absorberMaterial,
+                        G4Material *gapMaterial,
+                        int nofLayers,
+                        double absoThickness,
+                        double gapThickness,
+                        double calorRmin,
+                        double calorRmax,
+                        double calorZ,
+                        const G4ThreeVector &center_pos,
+                        G4Region *region
+                      );
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_useMagneticField;
