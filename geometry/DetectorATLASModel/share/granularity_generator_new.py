@@ -545,7 +545,7 @@ hec2 = Layer(
 
 hec3 = Layer(
     name = "HEC3",
-    sample_id = 14,
+    sample_id = 15,
     segmentations = [
       LateralSegmentation( 
         rMin = hec_start_radius[2], 

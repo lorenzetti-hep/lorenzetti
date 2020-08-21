@@ -224,7 +224,7 @@ def create_ATLAS_layers():
       [ emb3, emec3 ], # EM3=3, ECal=0
       [ tilecal1, tilecalExt1, hec1 ], # HAD1=4, HCal=1
       [ tilecal2, tilecalExt2, hec2 ], # HAD2=5, HCal=1
-      [ tilecal3, tilecalExt3] #hec3 ], # HAD3=6, HCal=1
+      [ tilecal3, tilecalExt3, hec3 ], # HAD3=6, HCal=1
      ] 
 
 
