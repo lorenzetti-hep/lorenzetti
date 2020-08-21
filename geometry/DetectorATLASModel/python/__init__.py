@@ -5,9 +5,11 @@ from . import CaloCellBuilder
 __all__.extend(CaloCellBuilder.__all__)
 from .CaloCellBuilder import *
 
-from . import CaloDefs
-__all__.extend(CaloDefs.__all__)
-from .CaloDefs import *
+
+from . import DetectorLayers
+__all__.extend(DetectorLayers.__all__)
+from .DetectorLayers import *
+
 
 from . import DetectorConstruction
 __all__.extend(DetectorConstruction.__all__)

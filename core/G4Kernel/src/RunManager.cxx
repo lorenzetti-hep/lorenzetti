@@ -35,7 +35,7 @@ RunManager::RunManager( std::string name ):
   
   declareProperty( "NumberOfThreads", m_nThreads=1              );
 #ifdef G4MULTITHREADED
-  XInitThreads();
+  //XInitThreads();
 #endif
   declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "RunVis"         , m_runVis=false            );

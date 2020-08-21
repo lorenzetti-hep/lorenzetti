@@ -37,7 +37,7 @@ StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::ED
   // Eratio for strip em layer (EM1)
   auto em1Cells = clus->allCells();
 	em1Cells.erase(std::remove_if(em1Cells.begin(),em1Cells.end(),
-                [](const xAOD::CaloCell* c){return c->sampling() != CaloSampling::CaloSample::EM1;}),
+                [](const xAOD::CaloCell* c){return c->layer() != CaloSampling::CaloLayer::EM1;}),
                 em1Cells.end());
   std::sort(em1Cells.begin(), em1Cells.end(),
             [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->energy() > c2->energy();});
@@ -50,20 +50,20 @@ StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::ED
 
  
   
-  float e277 = sumEnergy( clus, CaloSample::EM2, 7, 7 );
-  float e233 = sumEnergy( clus, CaloSample::EM2, 3, 3 );
-  float e237 = sumEnergy( clus, CaloSample::EM2, 3, 7 );
+  float e277 = sumEnergy( clus, CaloLayer::EM2, 7, 7 );
+  float e233 = sumEnergy( clus, CaloLayer::EM2, 3, 3 );
+  float e237 = sumEnergy( clus, CaloLayer::EM2, 3, 7 );
   float reta = e237/e277;
   float rphi = e233/e237;
-  float e0 = sumEnergy( clus, CaloSample::PS );
-  float e1 = sumEnergy( clus, CaloSample::EM1 );
-  float e2 = sumEnergy( clus, CaloSample::EM2 );
-  float e3 = sumEnergy( clus, CaloSample::EM3 );
-  float ehad1 = sumEnergy( clus, CaloSample::HAD1 ) + sumEnergy( clus, CaloSample::HAD1_Extended );
-  float ehad2 = sumEnergy( clus, CaloSample::HAD2 ) + sumEnergy( clus, CaloSample::HAD2_Extended );
-  float ehad3 = sumEnergy( clus, CaloSample::HAD3 ) + sumEnergy( clus, CaloSample::HAD3_Extended );
+  float e0 = sumEnergy( clus, CaloLayer::PS );
+  float e1 = sumEnergy( clus, CaloLayer::EM1 );
+  float e2 = sumEnergy( clus, CaloLayer::EM2 );
+  float e3 = sumEnergy( clus, CaloLayer::EM3 );
+  float ehad1 = sumEnergy( clus, CaloLayer::HAD1 );
+  float ehad2 = sumEnergy( clus, CaloLayer::HAD2 );
+  float ehad3 = sumEnergy( clus, CaloLayer::HAD3 );
     
-  float weta2 = calculateWeta2(clus, CaloSample::EM2, 3, 5);
+  float weta2 = calculateWeta2(clus, CaloLayer::EM2, 3, 5);
 
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
   float emtot = e0+e1+e2+e3;
@@ -107,12 +107,12 @@ StatusCode ShowerShapes::executeTool( const xAOD::EventInfo * /*evt*/, Gaugi::ED
 }
 
 
-float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell ) const
+float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloLayer layer, unsigned eta_ncell, unsigned phi_ncell ) const
 {
   float energy = 0.0;
   for ( const auto& cell : clus->allCells() )
   {
-    if(cell->sampling() != sampling)  continue;
+    if(cell->layer() != layer)  continue;
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     
@@ -127,14 +127,14 @@ float ShowerShapes::sumEnergy( xAOD::CaloCluster *clus, CaloSample sampling, uns
 
 
 
-float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell) const
+float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , CaloLayer layer, unsigned eta_ncell, unsigned phi_ncell) const
 {
   float En2=0.0;
   float En=0.0;
   float E=0.0;
 
   for ( auto& cell : clus->allCells() ){
-    if(cell->sampling() != sampling)  continue;
+    if(cell->layer() != layer)  continue;
     
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ) );

@@ -5,18 +5,18 @@ using namespace xAOD;
 using namespace CaloSampling;
 
 
-RingSet::RingSet( CaloSampling::CaloSample sampling, unsigned nrings, float deta, float dphi ):
+RingSet::RingSet( CaloSampling::CaloLayer layer, unsigned nrings, float deta, float dphi ):
   m_pattern(nrings,0), 
   m_deta(deta), 
   m_dphi(dphi),
-  m_sampling(sampling)
+  m_layer(layer)
 {;}
 
 
 void RingSet::add( const xAOD::CaloCell *cell , float eta_center, float phi_center )
 {
   // This cell does not allow to this RingSet
-  if( cell->sampling() != m_sampling )  return;
+  if( cell->layer() != m_layer )  return;
   float deta = std::abs( eta_center - cell->eta() ) / m_deta;
   float dphi = std::abs( CaloPhiRange::diff(phi_center , cell->phi()) ) / m_dphi;
   float deltaGreater = std::max(deta, dphi);
@@ -39,9 +39,9 @@ const std::vector<float>& RingSet::pattern() const
   return m_pattern;
 }
 
-CaloSampling::CaloSample RingSet::sampling() const
+CaloSampling::CaloLayer RingSet::layer() const
 {
-  return m_sampling;
+  return m_layer;
 }
 
 void RingSet::clear()

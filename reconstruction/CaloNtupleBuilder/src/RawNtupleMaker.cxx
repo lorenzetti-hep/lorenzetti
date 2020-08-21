@@ -163,14 +163,14 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
     seed_phi = seed.phi;
 
 
-    for ( int sampling=1; sampling<=6; ++sampling )
+    for ( int layer=1; layer<=6; ++layer )
     {
       float min_deltaR=999;
       const xAOD::CaloCell* closest_cell=nullptr;
 
       for ( const auto cell : **container.ptr() )
       {
-        if ( (int)cell->sampling() ==  sampling )
+        if ( (int)cell->layer() ==  layer )
         { 
           float deltaR = dR( cell->eta(), cell->phi(), seed.eta, seed.phi );
           if ( deltaR < min_deltaR)
@@ -201,7 +201,7 @@ void RawNtupleMaker::Fill( EventContext &ctx , TTree *tree  ) const
                         raw->pulse(), 
                         pulsePerBunch,
                         raw->rawEnergySamples(), 
-                        closest_cell->sampling()};
+                        closest_cell->layer()};
 
         // Make something here...
         cells->push_back(obj); 

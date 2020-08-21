@@ -29,6 +29,7 @@ class CaloCellMaker : public Gaugi::Algorithm
     virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
+    
     /*! Add tools to be executed into the post execute step. The order is matter here */
     void push_back( Gaugi::AlgTool *);
 
@@ -42,8 +43,14 @@ class CaloCellMaker : public Gaugi::Algorithm
     std::string m_histPath;
     /*! The path to the cell configuration file */
     std::string m_caloCellFile;
+    /*! Segment index for this sample calorimeter */
+    int m_segmentation;
     /*! Sampling id for this reconstruction */
-    int m_sampling;
+    int m_sample;
+    /*! Layer id for this reconstruction */
+    int m_layer;
+    /*! Section id for this reconstruction */
+    int m_section;
     /*! The start bunch crossing id for energy estimation */
     int m_bcid_start;
     /*! The end bunch crossing id for energy estimation */
@@ -60,12 +67,11 @@ class CaloCellMaker : public Gaugi::Algorithm
 
     float m_eta_min;
     float m_eta_max; 
-    float m_eta_bins; 
-    float m_phi_min;
-    float m_phi_max; 
-    float m_phi_bins; 
     float m_rmin;
     float m_rmax;  
+    
+    std::vector<float> m_eta_bins; 
+    std::vector<float> m_phi_bins; 
 
     bool m_detailedHistograms;
 };

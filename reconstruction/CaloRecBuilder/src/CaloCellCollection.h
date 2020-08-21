@@ -19,8 +19,12 @@ namespace xAOD{
     public:
 
       /*! Contructor */
-      CaloCellCollection( float etamin, float etamax, float etabins, float phimin, float phimax, 
-                          float phibins,float rmin,   float rmax, CaloSampling::CaloSample sampling);
+      CaloCellCollection( float etamin, float etamax,
+                          std::vector<float> etabins,
+                          std::vector<float> phibins,
+                          float rmin,   float rmax, 
+                          CaloSampling::CaloSample sample,
+                          unsigned segmentation);
  
       /*! Destructor */
       ~CaloCellCollection();
@@ -36,7 +40,7 @@ namespace xAOD{
       /*! Get the cell map */ 
       const collection_map_t& operator*() const;
       /*! Sampling */
-      CaloSampling::CaloSample sampling() const;
+      CaloSampling::CaloSample sample() const;
     
     private:
 
@@ -52,10 +56,12 @@ namespace xAOD{
       float m_radius_min;
       /*! In plan xy */
       float m_radius_max;
+      /*! Segmentation id */
+      unsigned m_segmentation;
       /*! Calorimeter sampling id */
-      CaloSampling::CaloSample m_sampling;
-
-      float m_etamin, m_etamax, m_phimin, m_phimax;
+      CaloSampling::CaloSample m_sample;
+      // eta bounds for this collection
+      float m_etamin, m_etamax;
   };
 }// namespace
 #endif

@@ -92,7 +92,9 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setPhi( raw->phi() );
       truth_cell->setDeltaEta( raw->deltaEta() );
       truth_cell->setDeltaPhi( raw->deltaPhi() );
-      truth_cell->setSampling( raw->sampling() );
+      truth_cell->setSample( raw->sample() );
+      truth_cell->setLayer( raw->layer() );
+      truth_cell->setSection( raw->section() );
       truth_cell->setEnergy( raw->truthRawEnergy() );
       truth_cell->setEt( truth_cell->energy() / std::cosh( truth_cell->eta() ) );
       truth_cell->setParent( raw );
@@ -105,7 +107,9 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       cell->setPhi( raw->phi() );
       cell->setDeltaEta( raw->deltaEta() );
       cell->setDeltaPhi( raw->deltaPhi() );
-      cell->setSampling( raw->sampling() );
+      cell->setSample( raw->sample() );
+      cell->setLayer( raw->layer() );
+      cell->setSection( raw->section() );
       cell->setEnergy( raw->energy() );
       cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
       cell->setParent( raw );

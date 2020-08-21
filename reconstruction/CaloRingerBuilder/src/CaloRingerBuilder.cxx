@@ -88,7 +88,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
   MSG_DEBUG( "Creating all RingSets...");
   for ( int rs=0 ; rs < m_maxRingSets; ++rs )
   {  
-    ringsets.push_back( xAOD::RingSet( (CaloSample)m_layerRings[rs], m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
+    ringsets.push_back( xAOD::RingSet( (CaloLayer)m_layerRings[rs], m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
 
   }
 
@@ -103,7 +103,7 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
     auto rings = new xAOD::CaloRings();
     for ( auto& rs : ringsets ){
 
-      auto *hotCell = maxCell( clus, rs.sampling() );
+      auto *hotCell = maxCell( clus, rs.layer() );
      
       // Fill all rings using the hottest cell as center
       if( hotCell ){
@@ -131,12 +131,12 @@ StatusCode CaloRingerBuilder::post_execute( EventContext &ctx ) const
 }
 
 
-const xAOD::CaloCell * CaloRingerBuilder::maxCell( const xAOD::CaloCluster *clus, CaloSample sampling) const
+const xAOD::CaloCell * CaloRingerBuilder::maxCell( const xAOD::CaloCluster *clus, CaloLayer layer ) const
 {
   const xAOD::CaloCell *maxCell=nullptr;
   for ( auto *cell : clus->allCells() ){
 
-    if( cell->sampling() != sampling ) continue;
+    if( cell->layer() != layer ) continue;
 
     if(!maxCell)  maxCell=cell;
 

@@ -16,7 +16,13 @@ namespace xAOD{
 
       /** Contructor **/
       RawCell( float eta, float phi, float deta, float dphi, float radius_min, float radius_max,
-               unsigned int hash,  CaloSampling::CaloSample sampling, 
+               // Hash
+               unsigned int hash,
+               // cell identification
+               CaloSampling::CaloSample sample, 
+               CaloSampling::CaloLayer layer,
+               CaloSampling::CaloSection section,
+               // bunch crossing information
                float bc_duration, int bc_nsamples, int bcid_start, int bcid_end, int bcid_truth );
 
       /** Destructor **/
@@ -40,9 +46,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_radius_max, setRmax, rmax );
       /*! Cell hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned int, m_hash, setHash, hash );
-      //PRIMITIVE_SETTER_AND_GETTER( std::string, m_hash, setHash, hash );
-      /*! Cell sampling id */
-      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample, m_sampling, setSampling, sampling );
       /*! Estimated energy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
       /*! Truth raw energy calculated on top of the special bunch crossing */ 
@@ -61,9 +64,14 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_rawEnergySamples, setRawEnergySamples, rawEnergySamples );
       /*! Integrated pulse in bunch crossing zero */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_pulse, setPulse, pulse );
-
       /*! Time (in ns) for each bunch crossing */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_time , setTime , time   );
+      /*! Cell sampling id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample  , m_sample , setSample   , sample  );
+      /*! Cell layer id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloLayer   , m_layer  , setLayer    , layer   );
+      /*! Cell section id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSection , m_section, setSection  , section );
 
 
       /*! get pulse for each bunch crossing */
@@ -76,10 +84,14 @@ namespace xAOD{
     private:
  
       int findIndex( float value) const ;
-
-
-      /*! id sampling */
-      CaloSampling::CaloSample m_sampling;
+       
+      /*! id sample */
+      CaloSampling::CaloSample m_sample;
+      /*! id layer */
+      CaloSampling::CaloLayer m_layer;
+      /*! id section */
+      CaloSampling::CaloSection m_section;
+      
       /*! eta center */
       float m_eta;
       /*! phi center */

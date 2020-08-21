@@ -160,7 +160,7 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
 
     // Searching the hottest cell looking for EM2 layer
     for (const auto cell : **container.ptr() ){
-      if( cell->sampling() != CaloSample::EM2 ) continue;
+      if( cell->layer() != CaloLayer::EM2 ) continue;
       float deltaEta = std::abs( seed.eta - cell->eta() );
       float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , cell->phi() ));
       if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 && cell->energy() > emaxs2){
@@ -180,7 +180,7 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
       // Apply simple algorithm to check if most part of energy is not in the edges or not. Applying 0.1 X 0.1 window
       float etot=0.0;
       for (const auto cell : **container.ptr() ){
-        if( cell->detector()!=CaloLayer::ECal ) continue;
+        if( cell->section()!=CaloSection::ECal ) continue;
         float deltaEta = std::abs( hotcell->eta() - cell->eta() );
         float deltaPhi = std::abs( CaloPhiRange::diff( hotcell->phi() , cell->phi() ));
         if (deltaEta < 0.05 && deltaPhi < 0.05){
@@ -270,14 +270,14 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
     {
       // Calculate the energy resolution between the estimated energy by the OF and the truth
       // energy calculated by the geant.
-      float raw_e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7, true);
-      float e157 = sumEnergy(clus, CaloSampling::EM1, 5, 7);
+      float raw_e157 = sumEnergy(clus, CaloLayer::EM1, 5, 7, true);
+      float e157 = sumEnergy(clus, CaloLayer::EM1, 5, 7);
       store->hist1("res_e157")->Fill( (e157-raw_e157)/raw_e157 );
-      float raw_e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7, true);
-      float e257 = sumEnergy(clus, CaloSampling::EM2, 5, 7);
+      float raw_e257 = sumEnergy(clus, CaloLayer::EM2, 5, 7, true);
+      float e257 = sumEnergy(clus, CaloLayer::EM2, 5, 7);
       store->hist1("res_e257")->Fill( (e257-raw_e257)/raw_e257 );
-      float raw_e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7, true);
-      float e357 = sumEnergy(clus, CaloSampling::EM3, 5, 7);
+      float raw_e357 = sumEnergy(clus, CaloLayer::EM3, 5, 7, true);
+      float e357 = sumEnergy(clus, CaloLayer::EM3, 5, 7);
       store->hist1("res_e357")->Fill( (e357-raw_e357)/raw_e357 );
       float etot57=e157+e257+e357;
       float raw_etot57=raw_e157+raw_e257+raw_e357;
@@ -342,12 +342,12 @@ float CaloClusterMaker::dR( float eta1, float phi1, float eta2, float phi2 ) con
 }
 
 
-float CaloClusterMaker::sumEnergy( const xAOD::CaloCluster *clus, CaloSample sampling, unsigned eta_ncell, unsigned phi_ncell, bool raw ) const
+float CaloClusterMaker::sumEnergy( const xAOD::CaloCluster *clus, CaloLayer layer, unsigned eta_ncell, unsigned phi_ncell, bool raw ) const
 {
   float energy = 0.0;
   for ( const auto& cell : clus->allCells() )
   {
-    if(cell->sampling() != sampling)  continue;
+    if(cell->layer() != layer)  continue;
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     

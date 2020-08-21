@@ -5,28 +5,18 @@
 using namespace xAOD;
 using namespace CaloSampling;
 
+CaloCellCollection::CaloCellCollection( float etamin, float etamax, std::vector<float> etabins, std::vector<float> phibins, 
+                                        float rmin,   float rmax, CaloSample sample, unsigned segmentation):
 
-CaloCellCollection::CaloCellCollection( float etamin, float etamax, float etabins, float phimin, float phimax, 
-                                        float phibins,float rmin,   float rmax, CaloSample sampling):
+  m_eta_bins(etabins),
+  m_phi_bins(phibins),
   m_radius_min(rmin), 
   m_radius_max(rmax), 
-  m_sampling(sampling), 
+  m_segmentation(segmentation),
+  m_sample(sample), 
   m_etamin(etamin), 
-  m_etamax(etamax),
-  m_phimin(phimin),
-  m_phimax(phimax)
-{
-  float deta = (etamax-etamin)/etabins;
-  float dphi = (phimax-phimin)/phibins;
-  for (unsigned eta_idx=0 ; eta_idx<etabins+1; ++eta_idx){
-    m_eta_bins.push_back( etamin + deta * eta_idx );
-  }
-    
-  for (unsigned phi_idx=0 ; phi_idx<phibins+1; ++phi_idx) {
-    m_phi_bins.push_back( phimin + dphi * phi_idx );
-  }
-
-}
+  m_etamax(etamax)
+{;}
 
 
 CaloCellCollection::~CaloCellCollection()
@@ -37,9 +27,9 @@ CaloCellCollection::~CaloCellCollection()
 }
 
 
-CaloSample CaloCellCollection::sampling() const
+CaloSample CaloCellCollection::sample() const
 {
-  return m_sampling;
+  return m_sample;
 }
 
 
@@ -65,18 +55,14 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::RawCell *&cell ) const
   if( !(radius > m_radius_min && radius <= m_radius_max) )
     return false;
 
-  if( !(eta > m_etamin && eta <= m_etamax) )
+  if( !(abs(eta) > m_etamin && abs(eta) <= m_etamax) )
     return false;
-
-  if( !(phi > m_phimin && phi <= m_phimax) )
-    return false;
-
 
   int etaBin = findIndex( m_eta_bins, eta );
   int phiBin = findIndex( m_phi_bins, phi );
   
   if (etaBin!=-1 && phiBin!=-1){
-    unsigned int hash = (int)m_sampling*1e7 + ( etaBin*(m_phi_bins.size()-1) + phiBin );
+    unsigned int hash = m_sample*1e7 + m_segmentation*1e6 + ( etaBin*(m_phi_bins.size()-1) + phiBin );
     cell = m_collection.at(hash);
     return true;
   }

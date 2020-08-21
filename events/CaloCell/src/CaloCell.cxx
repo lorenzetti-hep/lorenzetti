@@ -11,8 +11,13 @@ CaloCell::CaloCell( float eta,
                     float phi, 
                     float deta, 
                     float dphi, 
-                    CaloSample sampling ):
-  m_sampling(sampling),
+                    CaloSample  sample,
+                    CaloLayer   layer,
+                    CaloSection section
+                    ):
+  m_sample(sample),
+  m_layer(layer),
+  m_section(section),
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
@@ -32,11 +37,4 @@ void CaloCell::setParent( const xAOD::RawCell *parent )
 }
 
 
-CaloLayer CaloCell::detector() const
-{
-  if(sampling()==CaloSample::EM1 || sampling()==CaloSample::EM2 || sampling()==CaloSample::EM3)
-    return CaloLayer::ECal;
-  else // HAD1, HAD2 or HAD3
-    return CaloLayer::HCal;
-}
 

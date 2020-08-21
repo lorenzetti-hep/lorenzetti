@@ -39,7 +39,7 @@ class CaloRingerBuilder : public Gaugi::Algorithm
     int m_maxRingSets;    
     int m_maxRingsAccumulated;
 
-    const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , CaloSampling::CaloSample ) const;
+    const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , CaloSampling::CaloLayer ) const;
    
     std::string m_histPath;
 

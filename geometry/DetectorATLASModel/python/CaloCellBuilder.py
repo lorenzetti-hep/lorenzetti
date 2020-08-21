@@ -7,100 +7,14 @@ from G4Kernel import treatPropertyValue, recordable
 import os
 
 
-
-
-
-
+#
+# Calo cell builder
+#
 class CaloCellBuilder( Logger ):
 
-  # ( CollectionKey, Detector Cell File, Pulse Shaper File )
-  __configs = [
 
-      # Lar Barrel Calorimter, EM1
-      { 'name'            : 'barrel_em1',
-        'CollectionKey'   : "Collection_EM1",
-        'CaloCellFile'    : "detector_sampling_1.dat",
-        'ShaperFile'      : "pulseLar.dat",
-        'BunchIdStart'    : -21, # -525ns
-        'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -2,
-        'NSamples'        : 5,
-        'ElectronicNoise'  : 26, # MeV
-        'OFWeights'       : [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-      },
-      # Lar Barrel Calorimter, EM2
-      { 'name'            : 'barrel_em2',
-        'CollectionKey'   : "Collection_EM2",
-        'CaloCellFile'    : "detector_sampling_2.dat",
-        'ShaperFile'      : "pulseLar.dat",
-        'BunchIdStart'    : -21, # -525ns
-        'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -2,
-        'NSamples'        : 5,
-        'ElectronicNoise'  : 60, # MeV
-        'OFWeights'       : [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
-      },
-      # Lar Barrel Calorimter, EM3
-      { 'name'            : 'barrel_em3',
-        'CollectionKey'   : "Collection_EM3",
-        'CaloCellFile'    : "detector_sampling_3.dat",
-        'ShaperFile'      : "pulseLar.dat",
-        'BunchIdStart'    : -21, # -525ns
-        'BunchIdEnd'      : 3, # +75ns
-        'StartSamplingBC' : -2,
-        'NSamples'        : 5,
-        'ElectronicNoise'  : 40, # MeV
-        'OFWeights'       : [ -0.0125, 0.2379, 0.6097, 0.3863, 0.1183],
-      },
-      # Tile Barrel Calorimter, HAD1
-      { 'name'            : 'barrel_had1',
-        'CollectionKey'   : "Collection_HAD1",
-        'CaloCellFile'    : "detector_sampling_4.dat",
-        'ShaperFile'      : "pulseTile.dat",
-        'BunchIdStart'    : -6, # -150ns
-        'BunchIdEnd'      : 4, # 100ns
-        'StartSamplingBC' : -3,
-        'NSamples'        : 7,
-        'ElectronicNoise'  : 20, # MeV
-        'OFWeights'       : [ -0.3683, -0.3389, 0.1549, 0.8386, 0.2539, -0.2149, -0.3253],
-      },
-      # Tile Barrel Calorimter, HAD2
-      { 'name'            : 'barrel_had2',
-        'CollectionKey'   : "Collection_HAD2",
-        'CaloCellFile'    : "detector_sampling_5.dat",
-        'ShaperFile'      : "pulseTile.dat",
-        'BunchIdStart'    : -6, # -150ns
-        'BunchIdEnd'      : 4, # 100ns
-        'StartSamplingBC' : -3,
-        'NSamples'        : 7,
-        'ElectronicNoise'  : 20, # MeV
-        'OFWeights'       : [ -0.3808, -0.3594, 0.1807, 0.8108, 0.2796, -0.1997, -0.3311],
-      },
-      # Tile Barrel Calorimter, HAD3
-      { 'name'            : 'barrel_had3',
-        'CollectionKey'   : "Collection_HAD3",
-        'CaloCellFile'    : "detector_sampling_6.dat",
-        'ShaperFile'      : "pulseTile.dat",
-        'BunchIdStart'    : -6, # -150ns
-        'BunchIdEnd'      : 4, # 100ns
-        'StartSamplingBC' : -3,
-        'NSamples'        : 7,
-        'ElectronicNoise'  : 20, # MeV
-        'OFWeights'       : [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
-      },
-        # EMEC1 'ElectronicNoise'  : 26, # MeV
-        # EMEC2 'ElectronicNoise'  : 60, # MeV
-        # EMEC3 'ElectronicNoise'  : 40, # MeV
-
-        # HEC1 'ElectronicNoise'  : 250, # MeV
-        # HEC2 'ElectronicNoise'  : 400, # MeV
-        # HEC3 'ElectronicNoise'  : 750, # MeV
-
-     ] 
-
-
-
-  __basepath = os.environ['LZT_PATH']+'/geometry/DetectorATLASModel/data/'
+  # basepath
+  __basepath = os.environ['LZT_PATH']+'/geometry/DetectorATLASModel/data/cells/'
 
 
   def __init__( self, name, HistogramPath = "Expert", OutputLevel=1):
@@ -113,44 +27,57 @@ class CaloCellBuilder( Logger ):
 
 
 
-
+  #
+  # Configure 
+  #
   def configure(self):
 
-
     from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
-    for idx, config in enumerate( self.__configs ):
-      pulse = PulseGenerator( "PulseGenerator", 
-                              NSamples        = config['NSamples'], 
-                              ShaperFile      = self.__basepath+config['ShaperFile'],
-                              OutputLevel     = self.__outputLevel,
-                              SamplingRate    = 25.0,
-                              Pedestal        = 0.0,
-                              DeformationMean = 0.0, 
-                              DeformationStd  = 0.0,
-                              NoiseMean       = 0.0,
-                              NoiseStd        = config['ElectronicNoise'],
-                              StartSamplingBC = config['StartSamplingBC'], 
-                            )
-      of = OptimalFilter("OptimalFilter",
-                          Weights  = config['OFWeights'],
-                          OutputLevel=self.__outputLevel)
+    from DetectorATLASModel import create_ATLAS_layers 
+    collectionKeys = []
 
-      alg = CaloCellMaker("CaloCellMaker", 
-                          CollectionKey           = recordable( config['CollectionKey'] ), 
-                          EventKey                = recordable( "EventInfo" ), 
-                          CaloCellFile            = self.__basepath+config['CaloCellFile'], 
-                          BunchIdStart            = config['BunchIdStart'],
-                          BunchIdEnd              = config['BunchIdEnd'],
-                          BunchDuration           = 25,
-                          NumberOfSamplesPerBunch = 1,
-                          HistogramPath           = self.__histpath + '/' + config['name'],
-                          OutputLevel             = self.__outputLevel,
-                          DetailedHistograms      = True)
-      alg.Tools = [pulse, of]
-      self.__recoAlgs.append( alg )
-  
+    layers = create_ATLAS_layers()
 
-    collectionKeys =  [ recordable(config["CollectionKey"]) for config in self.__configs ]
+    for layer_id, layer in enumerate( layers ):
+
+      for sample in layer:
+
+        for seg in sample.segmentations:
+
+          pulse = PulseGenerator( "PulseGenerator", 
+                                  NSamples        = seg.NSamples, 
+                                  ShaperFile      = self.__basepath+seg.ShaperFile,
+                                  OutputLevel     = self.__outputLevel,
+                                  SamplingRate    = 25.0,
+                                  Pedestal        = 0.0,
+                                  DeformationMean = 0.0, 
+                                  DeformationStd  = 0.0,
+                                  NoiseMean       = 0.0,
+                                  NoiseStd        = seg.EletronicNoise,
+                                  StartSamplingBC = seg.StartSamplingBC, 
+                                )
+          of = OptimalFilter("OptimalFilter",
+                              Weights  = seg.OFWeights,
+                              OutputLevel=self.__outputLevel)
+
+          alg = CaloCellMaker("CaloCellMaker", 
+                              CollectionKey           = recordable( seg.CollectionKey ), 
+                              EventKey                = recordable( "EventInfo" ), 
+                              CaloCellFile            = self.__basepath+seg.CaloCellFile, 
+                              BunchIdStart            = seg.BunchIdStart,
+                              BunchIdEnd              = seg.BunchIdEnd,
+                              BunchDuration           = 25,
+                              NumberOfSamplesPerBunch = 1,
+                              HistogramPath           = self.__histpath + '/' + seg.name,
+                              OutputLevel             = self.__outputLevel,
+                              Layer                   = layer_id,
+                              Section                 = 0 if layer_id < 4 else 1, # ECal = 0,1,2,3 and HCal = 4,5,6
+                              DetailedHistograms      = False)
+          alg.Tools = [pulse, of]
+          self.__recoAlgs.append( alg )
+          collectionKeys.append( seg.CollectionKey )
+
+
     
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloCellMerge( "CaloCellMerge" , 

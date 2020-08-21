@@ -16,8 +16,12 @@ namespace xAOD{
 
       /** Constructor **/
       CaloCell()=default;
+      
       /** Contructor **/
-      CaloCell( float eta, float phi, float deta, float dphi, CaloSampling::CaloSample sampling );
+      CaloCell( float eta, float phi, float deta, float dphi, 
+                CaloSampling::CaloSample sample, CaloSampling::CaloLayer layer,
+                CaloSampling::CaloSection section);
+
       /** Destructor **/
       ~CaloCell()=default;
       /*! Cell eta center */
@@ -28,23 +32,34 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_deta, setDeltaEta , deltaEta);
       /*! Cell delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
-      /*! Cell sampling id */
-      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample, m_sampling, setSampling, sampling );
       /*! Cell energy **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
       /*! Tranverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
+
+      /*! Cell sampling id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample  , m_sample , setSample   , sample  );
+      /*! Cell layer id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloLayer   , m_layer  , setLayer    , layer   );
+      /*! Cell section id */
+      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSection , m_section, setSection  , section );
+
       /*! Get the associated Raw information */ 
       const xAOD::RawCell* parent() const;
       /*! Set the associated Raw information */ 
       void setParent( const xAOD::RawCell* );
-      /*! Return the detector: ECal or HCal */
-      CaloSampling::CaloLayer detector() const;
+
 
     private:
  
-      /*! id sampling */
-      CaloSampling::CaloSample m_sampling;
+      /*! id sample */
+      CaloSampling::CaloSample m_sample;
+      /*! id layer */
+      CaloSampling::CaloLayer m_layer;
+      /*! id section */
+      CaloSampling::CaloSection m_section;
+
+
       /*! eta center */
       float m_eta;
       /*! phi center */
@@ -57,6 +72,7 @@ namespace xAOD{
       float m_energy;
       /*! Transverse energy*/
       float m_et;
+
       /*! Associated raw information */
       const xAOD::RawCell *m_parent;
   };

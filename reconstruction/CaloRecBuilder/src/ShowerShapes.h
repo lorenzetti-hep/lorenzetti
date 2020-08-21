@@ -23,8 +23,8 @@ class ShowerShapes : public Gaugi::AlgTool
   private:
  
 
-    float calculateWeta2( xAOD::CaloCluster *clus , CaloSampling::CaloSample sampling, unsigned eta_ncell=3, unsigned phi_ncell=5 ) const;
-    float sumEnergy( xAOD::CaloCluster *, CaloSampling::CaloSample, unsigned eta_ncell=1000, unsigned phi_ncell=1000 ) const;
+    float calculateWeta2( xAOD::CaloCluster * , CaloSampling::CaloLayer, unsigned eta_ncell=3, unsigned phi_ncell=5 ) const;
+    float sumEnergy( xAOD::CaloCluster *, CaloSampling::CaloLayer, unsigned eta_ncell=1000, unsigned phi_ncell=1000 ) const;
 };
 
 #endif

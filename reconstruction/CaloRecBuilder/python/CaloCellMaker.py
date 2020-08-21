@@ -1,4 +1,4 @@
-__all__ = ["CaloCellMaker"]
+__all__ = ["CaloCellMaker", "CaloSample", "CaloSegmentation"]
 
 
 from Gaugi import Logger
@@ -19,6 +19,8 @@ class CaloCellMaker( Logger ):
                   "NumberOfSamplesPerBunch",
                   "HistogramPath",
                   "DetailedHistograms",
+                  "Section",
+                  "Layer",
                   ]
 
   def __init__( self, name, **kw ): 
@@ -43,6 +45,8 @@ class CaloCellMaker( Logger ):
 
 
   def setProperty( self, key, value ):
+    print(key)
+    print(value)
     if key in self.__allow_keys:
       setattr( self, '__' + key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
@@ -65,4 +69,43 @@ class CaloCellMaker( Logger ):
 
 
 
+class CaloSegmentation( Logger ):
+
+  __allow_keys = [
+                  "ShaperFile",      
+                  "BunchIdStart",    
+                  "BunchIdEnd",      
+                  "StartSamplingBC",
+                  "NSamples",        
+                  "EletronicNoise",  
+                  "OFWeights",       
+                  ]
+
+
+  def __init__( self, name, collectionKey, f, **kw ): 
+    Logger.__init__(self)
+    self.name = name
+    self.CaloCellFile = f
+    self.CollectionKey = collectionKey
+    for key, value in kw.items():
+      if key in self.__allow_keys:
+        setattr( self, key , value )
+      else:
+        MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+
+class CaloSample( Logger ):
+
+  #
+  # Constructor
+  #
+  def __init__( self, name, collectionKey, files, **kw ):
+    Logger.__init__(self)
+
+    print(files)
+
+    for f in files:
+      print (f)
+
+    self.segmentations = [ CaloSegmentation( name+"_"+str(idx), collectionKey+"_"+str(idx), f , **kw ) for idx, f in enumerate(files)]
 

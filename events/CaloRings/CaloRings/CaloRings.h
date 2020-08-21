@@ -43,7 +43,7 @@ namespace xAOD{
   
     public:
       /*! Contructor */
-      RingSet( CaloSampling::CaloSample , unsigned nrings, float deta, float dphi );
+      RingSet( CaloSampling::CaloLayer , unsigned nrings, float deta, float dphi );
       /*! Destructor */
       RingSet()=default;
       /*! Add the cell energy to the correct ring position in this RingSet */
@@ -53,7 +53,7 @@ namespace xAOD{
       /*! The number of rings in this RingSet */
       size_t size() const;
       /*! Sampling id */
-      CaloSampling::CaloSample sampling() const;
+      CaloSampling::CaloLayer layer() const;
       /*! Zeroize all energy values */
       void clear();
 
@@ -66,7 +66,7 @@ namespace xAOD{
       /*! Delta phi */
       float m_dphi;
       /*! Sampling layer */
-      CaloSampling::CaloSample m_sampling;
+      CaloSampling::CaloLayer m_layer;
   };
 
 
