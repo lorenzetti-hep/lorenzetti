@@ -219,7 +219,7 @@ def create_ATLAS_layers():
 
   layers = [    
       [ psb ], # PS=0, ECal=0
-      [ emb1, emec1 ], # EM1=1, ECal=0
+      [ emb1 ], #emec1 ], # EM1=1, ECal=0
       [ emb2, emec2 ], # EM2=2, ECal=0
       [ emb3, emec3 ], # EM3=3, ECal=0
       [ tilecal1, tilecalExt1, hec1 ], # HAD1=4, HCal=1

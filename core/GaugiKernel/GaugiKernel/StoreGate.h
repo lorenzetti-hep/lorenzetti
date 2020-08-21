@@ -16,6 +16,7 @@
 #include "TH1I.h"
 #include "TH2F.h"
 #include "TH1.h"
+#include "TH2Poly.h"
 
 
 namespace SG
@@ -47,6 +48,10 @@ namespace SG
      
       /** Get ID pointer **/
       TH1I* histI( std::string );
+
+      /** Get special TH2 histogram */
+      TH2Poly* hist2P( std::string );
+
 
       /** Get 2D pointer **/
       TTree* tree( std::string );

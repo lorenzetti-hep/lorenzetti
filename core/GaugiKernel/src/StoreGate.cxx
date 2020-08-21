@@ -13,8 +13,6 @@ StoreGate::StoreGate( std::string outputfile, int index):
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  // remove .root in case of the user include it
-  //std::replace( outputfile.begin(), outputfile.end(), ".root", "" );
   boost::replace_all(outputfile, ".root", "");
   if (index>=0){
     std::stringstream ss; 
@@ -28,13 +26,15 @@ StoreGate::StoreGate( std::string outputfile, int index):
 StoreGate::~StoreGate()
 {
   MSG_INFO( "Writing all root objects into the file" ); 
-  m_file->Write();
-  /*
+  
+  /*  
   for( const auto &o : m_objs){
-    //o.second->Write();
-    MSG_INFO( o->GetName() << " With " << o->GetEntries() << " entries." );
-    delete o.second;
+    o.second->Write();
+    //MSG_INFO( o->GetName() << " With " << o->GetEntries() << " entries." );
+    //delete o.second;
   }*/
+  
+  m_file->Write();
   m_file->Close();
 }
 
@@ -72,21 +72,13 @@ bool StoreGate::add( TObject* obj){
 TH1F* StoreGate::hist1( std::string name )
 {
   std::string path = m_currentPath+"/"+name;
-	//if( m_objs.find( path ) == m_objs.end() )  
-  //  MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
   return ((TH1F*)m_objs[path]);
 }
 
 
 TH2F* StoreGate::hist2( std::string name )
 {
-	//if( m_objs.find( path ) == m_objs.end() )  
-  //  MSG_FATAL("It's not possible to retrieve the 2D histogram with abspath " << path << " from the StoreGate");
-  //MSG_INFO( "Getting path " << path );
-
-  //MSG_INFO( m_objs[path] );
   std::string path = m_currentPath+"/"+name;
-	//if( m_objs.find( path ) == m_objs.end() )  
   return ((TH2F*)m_objs[path]);
 }
 
@@ -94,9 +86,13 @@ TH2F* StoreGate::hist2( std::string name )
 TH1I* StoreGate::histI( std::string name )
 {
   std::string path = m_currentPath+"/"+name;
-	//if( m_objs.find( path ) == m_objs.end() )  
-  //  MSG_FATAL("It's not possible to retrieve the 1D histogram with abspath " << path << " from the StoreGate");
   return ((TH1I*)m_objs[path]);
+}
+
+TH2Poly* StoreGate::hist2P( std::string name )
+{
+  std::string path = m_currentPath+"/"+name;
+  return ((TH2Poly*)m_objs[path]);
 }
 
 

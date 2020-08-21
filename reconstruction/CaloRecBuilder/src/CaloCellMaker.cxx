@@ -201,7 +201,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());
 
 
-
+  /*
   {
     // Event info
     SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
@@ -222,6 +222,8 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
     }
 
   }
+  */
+
 
   // This object can not be const since we will change the intenal value
   xAOD::RawCell *cell=nullptr;

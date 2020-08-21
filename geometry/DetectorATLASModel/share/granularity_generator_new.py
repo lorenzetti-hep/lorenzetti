@@ -91,7 +91,7 @@ class LateralSegmentation(object):
   def zMin(self, value):
     self._zMin = value
     if self.eta_min is None: 
-      self._eta_min = xy_z_to_eta( self.rMax, self._zMin )
+      self._eta_min = round(xy_z_to_eta( self.rMax, self._zMin ), 8)
 
   #
   # z max
@@ -104,7 +104,7 @@ class LateralSegmentation(object):
   def zMax(self, value):
     self._zMax = value
     if self.eta_max is None: 
-      self._eta_max = xy_z_to_eta( self.rMin, self._zMax )
+      self._eta_max = round(xy_z_to_eta( self.rMin, self._zMax ),8)
   
   #
   # phi min/max
@@ -123,14 +123,14 @@ class LateralSegmentation(object):
   @property
   def eta_bins(self):
     eta_bins = np.arange( self.eta_min, self.eta_max  + eps, step = self.delta_eta ) 
-    return np.concatenate ( [np.flip(-eta_bins[1::]), eta_bins] )
+    return np.unique( np.round( np.concatenate ( [np.flip(-eta_bins), eta_bins] ), 8 ) )
  
   #
   # Get the phi bins for all segmentations
   #
   @property
   def phi_bins(self):
-    return np.arange( self.phi_min, self.phi_max  + eps, step = self.delta_phi ) 
+    return np.round( np.arange( self.phi_min, self.phi_max  + eps, step = self.delta_phi ), 8 ) 
 
 
   #
@@ -204,8 +204,10 @@ class LateralSegmentation(object):
       phi_centers = self.compute_phi_cell_centers()
       for  eta_idx , eta in enumerate(eta_centers):
         for phi_idx , phi in enumerate(phi_centers):
-         
-          hash_id = int(self.sample_id*1e7 + seg_id*1e6 + (eta_idx*(len(phi_bins)-1) + phi_idx ) )
+        
+          bin_fix = 1 if (self.eta_min>0.0 and eta>0.0) else 0
+
+          hash_id = int(self.sample_id*1e7 + seg_id*1e6 + ((eta_idx+bin_fix)*(len(phi_bins)-1) + phi_idx ) )
           s = "cell {SAMPLE} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {ZMIN} {ZMAX} {CELL_HASH}\n".format( 
             SAMPLE    = self.sample_id,
             ETA       = round(eta,8),
