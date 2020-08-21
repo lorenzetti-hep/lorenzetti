@@ -37,6 +37,8 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "NumberOfSamplesPerBunch"  , m_bc_nsamples=1                       );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
+
+  declareProperty( "OnlyRoI"                  , m_onlyRoI=false                       );
 }
 
 
@@ -201,8 +203,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());
 
 
-  /*
-  {
+  if(m_onlyRoI){
     // Event info
     SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
     
@@ -220,9 +221,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
         return StatusCode::SUCCESS;
       }
     }
-
   }
-  */
 
 
   // This object can not be const since we will change the intenal value

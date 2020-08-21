@@ -129,9 +129,9 @@ void EventLoop::bookHistograms(){
   m_store.mkdir( "Event" );
   m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
   m_store.add( new TH1F("ExecuteEvent" , ";time[s];Count;"   , 100 , 0 , 0.1) );
-  m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10) );
-  m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 100 , 0, 150) );
-  m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0,   3) );
+  m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10 ) );
+  m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 600 , 0 , 600) );
+  m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0 ,   3) );
   
   std::vector<std::string> labels{"Event", "Completed", "Timeout"};
   m_store.setLabels( m_store.histI("EventCounter"), labels );

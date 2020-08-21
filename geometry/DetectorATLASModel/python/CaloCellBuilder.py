@@ -72,7 +72,9 @@ class CaloCellBuilder( Logger ):
                               OutputLevel             = self.__outputLevel,
                               Layer                   = layer_id,
                               Section                 = 0 if layer_id < 4 else 1, # ECal = 0,1,2,3 and HCal = 4,5,6
-                              DetailedHistograms      = False)
+                              DetailedHistograms      = False,
+                              #OnlyRoI                 = True,
+                              )
           alg.Tools = [pulse, of]
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )

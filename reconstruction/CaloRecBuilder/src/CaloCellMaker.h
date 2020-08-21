@@ -74,6 +74,8 @@ class CaloCellMaker : public Gaugi::Algorithm
     std::vector<float> m_phi_bins; 
 
     bool m_detailedHistograms;
+
+    bool m_onlyRoI;
 };
 
 

@@ -21,6 +21,7 @@ class CaloCellMaker( Logger ):
                   "DetailedHistograms",
                   "Section",
                   "Layer",
+                  "OnlyRoI"
                   ]
 
   def __init__( self, name, **kw ): 
@@ -45,8 +46,6 @@ class CaloCellMaker( Logger ):
 
 
   def setProperty( self, key, value ):
-    print(key)
-    print(value)
     if key in self.__allow_keys:
       setattr( self, '__' + key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
@@ -101,11 +100,5 @@ class CaloSample( Logger ):
   #
   def __init__( self, name, collectionKey, files, **kw ):
     Logger.__init__(self)
-
-    print(files)
-
-    for f in files:
-      print (f)
-
     self.segmentations = [ CaloSegmentation( name+"_"+str(idx), collectionKey+"_"+str(idx), f , **kw ) for idx, f in enumerate(files)]
 
