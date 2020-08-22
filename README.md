@@ -84,6 +84,11 @@ Lorenzetti has the following dependencies:
 - FastJet;
 - Gaugi (pip3 install gaugi).
 
+## View option
+
+![Screenshot](detector.png)
+
+
 ## Framework status:
 
 |  Branch    | Build Status |
