@@ -19,10 +19,9 @@ Please cite [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/
 [//]: # (and/or the applicable papers.)
 
 
-## Generic ATLAS detector:
+## Detector Construction:
 
-We include a generic versions of the ATLAS detector using the layer con
-
+We should include some description here.
 
 ![Screenshot](geometry/DetectorATLASModel/doc/front_view.png)
 
