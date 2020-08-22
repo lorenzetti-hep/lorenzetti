@@ -18,6 +18,20 @@ Please cite [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/
 
 [//]: # (and/or the applicable papers.)
 
+
+## Generic ATLAS detector:
+
+We include a generic versions of the ATLAS detector using the layer con
+
+
+![Screenshot](geometry/DetectorATLASModel/doc/front_view.png)
+
+
+![Screenshot](geometry/DetectorATLASModel/doc/lateral_view.png)
+
+
+
+
 ## Getting Started:
 
 The easiest way to use Lorenzetti is by employing either docker or singularity based on the images we provide at the [Lorenzetti's DockerHub](https://hub.docker.com/r/lorenzetti/lorenzetti). Technical details on how these images are generated are available [here](https://github.com/jodafons/lorenzetti/tree/master/docker).
@@ -83,11 +97,6 @@ Lorenzetti has the following dependencies:
 - HEPMC;
 - FastJet;
 - Gaugi (pip3 install gaugi).
-
-## View option
-
-![Screenshot](detector.png)
-
 
 ## Framework status:
 
