@@ -1,0 +1,2 @@
+## Define all detectors here
+

@@ -2,9 +2,6 @@
 __all__ = ["create_ATLAS_layers"]
 
 
-
-
-
 #
 # ATLAS detector cell configuration
 #
@@ -179,43 +176,49 @@ def create_ATLAS_layers():
                       "detector_sample_13_seg_0.dat",
                       "detector_sample_13_seg_1.dat",
                       ], 
-                    ShaperFile      = "pulseTile.dat",
-                    BunchIdStart    = -6, # -150ns
-                    BunchIdEnd      = 4, # +100ns
-                    StartSamplingBC = -3, 
-                    NSamples        = 7,
-                    EletronicNoise  = 250, # MeV
-                    OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
+                    # layer configuration
+                    ShaperFile      = "pulseLar.dat",
+                    BunchIdStart    = -21, # -525ns
+                    BunchIdEnd      = 3, # +75ns
+                    StartSamplingBC = -2, 
+                    NSamples        = 5,
+                    EletronicNoise  = 60, # MeV
+                    OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
                     )
-  
+ 
+
   hec2 = CaloSample( "HEC2", "Collection_HEC2", 
                     [ 
                       "detector_sample_14_seg_0.dat",
                       "detector_sample_14_seg_1.dat",
                       ], 
-                    ShaperFile      = "pulseTile.dat",
-                    BunchIdStart    = -6, # -150ns
-                    BunchIdEnd      = 4, # +100ns
-                    StartSamplingBC = -3, 
-                    NSamples        = 7,
-                    EletronicNoise  = 400, # MeV
-                    OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
+                    # layer configuration
+                    ShaperFile      = "pulseLar.dat",
+                    BunchIdStart    = -21, # -525ns
+                    BunchIdEnd      = 3, # +75ns
+                    StartSamplingBC = -2, 
+                    NSamples        = 5,
+                    EletronicNoise  = 60, # MeV
+                    OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
                     )
-  
+ 
+
+
   hec3 = CaloSample( "HEC3", "Collection_HEC3", 
                     [ 
                       "detector_sample_15_seg_0.dat",
                       "detector_sample_15_seg_1.dat",
                       ], 
-                    ShaperFile      = "pulseTile.dat",
-                    BunchIdStart    = -6, # -150ns
-                    BunchIdEnd      = 4, # +100ns
-                    StartSamplingBC = -3, 
-                    NSamples        = 7,
-                    EletronicNoise  = 750, # MeV
-                    OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
+                    # layer configuration
+                    ShaperFile      = "pulseLar.dat",
+                    BunchIdStart    = -21, # -525ns
+                    BunchIdEnd      = 3, # +75ns
+                    StartSamplingBC = -2, 
+                    NSamples        = 5,
+                    EletronicNoise  = 60, # MeV
+                    OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
                     )
-
+ 
 
   layers = [    
       [ psb ], # PS=0, ECal=0
