@@ -43,8 +43,6 @@ parser.add_argument('--disableMagneticField', action='store_true', dest='disable
                     help = "Disable the magnetic field.")
 
 
-
-
 if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
@@ -84,7 +82,12 @@ gun = EventReader( "PythiaGenerator",
 
 calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
                               HistogramPath = "Expert/CaloCells",
-                              OutputLevel   = args.outputLevel)
+                              OutputLevel   = args.outputLevel,
+                              Barrel        = True,
+                              ExtendedBarrel= False,
+                              EndCap        = False,
+                              Foward        = False,
+                              )
 
 
 gun.merge(acc)

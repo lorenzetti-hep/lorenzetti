@@ -140,8 +140,9 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   if (m_detailedHistograms){
     int nbunchs = m_bcid_end - m_bcid_start + 1;
     store->add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
-    store->add(new TH2F( "timesteps", "Time steps; time [ns]; Energy [MeV];", nbunchs*100, m_bcid_start*(m_bc_duration-0.5), m_bcid_end*(m_bc_duration+0.5), 
-                         30, 0, 30) );
+    store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*20, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration) );
+    store->add(new TH2F( "timestepsVsEnergy", "Step time per bunch; time [ns]; Energy [MeV];", 
+          nbunchs*20, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 30) );
   }
 
   return StatusCode::SUCCESS;
@@ -230,9 +231,15 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   
   if(cell) cell->Fill( step );
 
-
-
-
+  // Fill time steps
+  G4StepPoint* point = step->GetPreStepPoint();
+  float t = (float)point->GetGlobalTime() / ns;
+  auto store = ctx.getStoreGateSvc();
+  store->cd(m_histPath);
+  store->hist1("timesteps")->Fill(t);
+  float edep = (float)step->GetTotalEnergyDeposit();
+  store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
+  
 
   return StatusCode::SUCCESS;
 }

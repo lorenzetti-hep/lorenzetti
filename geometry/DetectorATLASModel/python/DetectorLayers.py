@@ -5,7 +5,7 @@ __all__ = ["create_ATLAS_layers"]
 #
 # ATLAS detector cell configuration
 #
-def create_ATLAS_layers():
+def create_ATLAS_layers( DoBarrel=True, DoExtendedBarrel=False, DoEndCap=False, DoFoward=False ):
 
   from CaloRecBuilder import CaloSample
 
@@ -218,17 +218,43 @@ def create_ATLAS_layers():
                     EletronicNoise  = 60, # MeV
                     OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
                     )
- 
+  #
+  # ATLAS layer map
+  #
+  #layers = [    
+  #    [ psb ], # PS=0, ECal=0
+  #    [ emb1, emec1 ], # EM1=1, ECal=0
+  #    [ emb2, emec2 ], # EM2=2, ECal=0
+  #    [ emb3, emec3 ], # EM3=3, ECal=0
+  #    [ tilecal1, tilecalExt1, hec1 ], # HAD1=4, HCal=1
+  #    [ tilecal2, tilecalExt2, hec2 ], # HAD2=5, HCal=1
+  #    [ tilecal3, tilecalExt3, hec3 ], # HAD3=6, HCal=1
+  #   ] 
 
-  layers = [    
-      [ psb ], # PS=0, ECal=0
-      [ emb1, emec1 ], # EM1=1, ECal=0
-      [ emb2, emec2 ], # EM2=2, ECal=0
-      [ emb3, emec3 ], # EM3=3, ECal=0
-      [ tilecal1, tilecalExt1, hec1 ], # HAD1=4, HCal=1
-      [ tilecal2, tilecalExt2, hec2 ], # HAD2=5, HCal=1
-      [ tilecal3, tilecalExt3, hec3 ], # HAD3=6, HCal=1
-     ] 
+ 
+  layers         = [[],[],[],[],[],[],[]]
+
+  #                  PS    EM1      EM2     EM3     HAD1          HAD2           HAD3
+  barrel         = [psb  , emb1  , emb2  , emb3  , tilecal1    , tilecal2    , tilecal3    ]
+  extendedBarrel = [None , None  , None  , None  , tilecalExt1 , tilecalExt2 , tilecalExt3 ]
+  endcap         = [None , emec1 , emec2 , emec3 , hec1        , hec2        , hec3        ]
+  foward         = [None , None  , None  , None  , None        , None        , None        ]
+
+  def addSamples( configs ):
+    for idx, sample in enumerate(configs):
+      if sample:  layers[idx].append(sample)
+
+  if DoBarrel:
+    addSamples(barrel)
+  if DoEndCap:
+    addSamples(endcap)
+  if DoExtendedBarrel:
+    addSamples(extendedBarrel)
+  if DoFoward:
+    addSamples(foward)
+
+  from pprint import pprint
+  pprint(layers)
 
 
   return layers

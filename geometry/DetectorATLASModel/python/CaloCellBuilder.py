@@ -17,12 +17,25 @@ class CaloCellBuilder( Logger ):
   __basepath = os.environ['LZT_PATH']+'/geometry/DetectorATLASModel/data/'
 
 
-  def __init__( self, name, HistogramPath = "Expert", OutputLevel=1):
+  def __init__( self, name, 
+                      HistogramPath  = "Expert", 
+                      OutputLevel    = 1,
+                      Barrel         = True,
+                      ExtendedBarrel = False,
+                      EndCap         = False,
+                      Foward         = False,
+                      ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
+    
+    # Get the layer cell configuration
+    from DetectorATLASModel import create_ATLAS_layers 
+    self.__layers = create_ATLAS_layers( DoBarrel=Barrel, DoExtendedBarrel=ExtendedBarrel, DoEndCap=EndCap, DoFoward=Foward)
+    
+    # configure
     self.configure()
 
 
@@ -33,12 +46,11 @@ class CaloCellBuilder( Logger ):
   def configure(self):
 
     from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
-    from DetectorATLASModel import create_ATLAS_layers 
+
     collectionKeys = []
 
-    layers = create_ATLAS_layers()
 
-    for layer_id, layer in enumerate( layers ):
+    for layer_id, layer in enumerate( self.__layers ):
 
       for sample in layer:
 
@@ -72,7 +84,7 @@ class CaloCellBuilder( Logger ):
                               OutputLevel             = self.__outputLevel,
                               Layer                   = layer_id,
                               Section                 = 0 if layer_id < 4 else 1, # ECal = 0,1,2,3 and HCal = 4,5,6
-                              DetailedHistograms      = False,
+                              DetailedHistograms      = True,
                               #OnlyRoI                 = True,
                               )
           alg.Tools = [pulse, of]
