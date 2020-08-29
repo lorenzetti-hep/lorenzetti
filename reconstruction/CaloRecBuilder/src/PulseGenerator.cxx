@@ -113,7 +113,7 @@ void PulseGenerator::ReadShaper( std::string filepath )
 void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStd) const
 {
   for ( auto &value : pulse )
-    value+= m_pedestal + m_rng.Gaus( noiseMean, noiseStd );
+    value += m_rng.Gaus( noiseMean, noiseStd );
 }
 
 
