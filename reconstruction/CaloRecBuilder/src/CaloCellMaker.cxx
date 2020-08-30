@@ -37,7 +37,6 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "NumberOfSamplesPerBunch"  , m_bc_nsamples=1                       );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
-
   declareProperty( "OnlyRoI"                  , m_onlyRoI=false                       );
 }
 
@@ -115,7 +114,7 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 
   store->mkdir(m_histPath);
 
-  store->add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",100,-40,40) );
+  store->add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",20,-1,1) );
 
   int nEtabins = m_eta_bins.size() -1;
   int nPhibins = m_phi_bins.size() -1;
@@ -293,7 +292,8 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     const auto *cell = p.second;
 
     store->cd(m_histPath);
-    store->hist1("res_layer")->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
+    if( cell->truthRawEnergy() > 0 && cell->energy() > 1*GeV )
+      store->hist1("res_layer")->Fill( (cell->energy()-cell->truthRawEnergy())/cell->truthRawEnergy() );
 
 
     {// Fill estimated energy 2D histograms

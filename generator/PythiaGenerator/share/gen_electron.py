@@ -82,7 +82,8 @@ pileup = Pileup( "MinimumBias",
 from PythiaGenerator import ParticleGun, Particle
 # Create the seed
 gun = ParticleGun( "ParticleGun",
-                   Eta          = 0.3,
+                   Eta          = 0.0,
+                   #Eta          = 0.3,
                    Phi          = 1.52170894,
                    EnergyMin    = 15*GeV,
                    EnergyMax    = 100*GeV,
