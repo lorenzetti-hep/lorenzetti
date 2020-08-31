@@ -56,45 +56,51 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
 
-from P8Kernel import EventGenerator
+try:
+  minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
+  
+  from P8Kernel import EventGenerator
+  
+  gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
+  
+  
+  from PythiaGenerator import Pileup
+  # Generate the pileup
+  pileup = Pileup( "MinimumBias",
+                   File           = minbias_file,
+                   EtaMax         = 1.4,
+                   Select         = 2,
+                   PileupAvg      = args.pileupAvg,
+                   BunchIdStart   = args.bc_id_start,
+                   BunchIdEnd     = args.bc_id_end,
+                   OutputLevel    = args.outputLevel,
+                   Seed           = args.seed,
+                   DeltaEta       = 0.22,
+                   DeltaPhi       = 0.22,
+                   )
+  
+  
+  from PythiaGenerator import ParticleGun, Particle
+  # Create the seed
+  gun = ParticleGun( "ParticleGun",
+                     Eta          = 0.0,
+                     #Eta          = 0.3,
+                     Phi          = 1.52170894,
+                     EnergyMin    = 15*GeV,
+                     EnergyMax    = 100*GeV,
+                     Particle     = Particle.Electron )
+  
+  # Shoot an electron in the fixed direction
+  gen+=gun
+  # Add pileup around this electron
+  gen+=pileup
+  # Run!
+  gen.run(args.numberOfEvents)
 
-gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
-
-
-from PythiaGenerator import Pileup
-# Generate the pileup
-pileup = Pileup( "MinimumBias",
-                 File           = minbias_file,
-                 EtaMax         = 1.4,
-                 Select         = 2,
-                 PileupAvg      = args.pileupAvg,
-                 BunchIdStart   = args.bc_id_start,
-                 BunchIdEnd     = args.bc_id_end,
-                 OutputLevel    = args.outputLevel,
-                 Seed           = args.seed,
-                 DeltaEta       = 0.22,
-                 DeltaPhi       = 0.22,
-                 )
-
-
-from PythiaGenerator import ParticleGun, Particle
-# Create the seed
-gun = ParticleGun( "ParticleGun",
-                   Eta          = 0.0,
-                   #Eta          = 0.3,
-                   Phi          = 1.52170894,
-                   EnergyMin    = 15*GeV,
-                   EnergyMax    = 100*GeV,
-                   Particle     = Particle.Electron )
-
-# Shoot an electron in the fixed direction
-gen+=gun
-# Add pileup around this electron
-gen+=pileup
-# Run!
-gen.run(args.numberOfEvents)
-
+  sys.exit(0)
+except  Exception as e:
+  print(e)
+  sys.exit(1)
 
 

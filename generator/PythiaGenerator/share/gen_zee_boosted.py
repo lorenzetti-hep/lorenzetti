@@ -56,61 +56,65 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/zee_config.cmnd'
+try:
 
-from P8Kernel import EventGenerator
+  minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
+  main_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/zee_config.cmnd'
+  
+  from P8Kernel import EventGenerator
+  
+  # The pythia generator!
+  gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
+  
+  from PythiaGenerator import Pileup
+  
+  # Pileup generator
+  pileup = Pileup( "MinimumBias",
+                   File           = minbias_file,
+                   EtaMax         = 1.4,
+                   Select         = 2,
+                   PileupAvg      = args.pileupAvg,
+                   BunchIdStart   = args.bc_id_start,
+                   BunchIdEnd     = args.bc_id_end,
+                   OutputLevel    = args.outputLevel,
+                   Seed           = args.seed,
+                   DeltaEta       = 0.22,
+                   DeltaPhi       = 0.22,
+                   )
+  
+  # To collect using this cell position
+  from PythiaGenerator import Zee
+  
+  # Create the Zee events
+  zee = Zee( "Zee",
+            File        = main_file,
+            EtaMax      = 1.4,
+            MinPt       = 15*GeV,
+            Seed        = args.seed,
+            OutputLevel = args.outputLevel,
+           )
+  
+  from PythiaGenerator import BoostedEvents, Particle
+  # Add boosted events
+  boostedElectron = BoostedEvents( "ElectronBoosted", 
+                                   Particle=Particle.Electron, 
+                                   DeltaR=0.5,
+                                   Seed = args.seed,
+                                   OutputLevel = args.outputLevel
+                                   )
+  
+  # Z->ee
+  gen+=zee
+  # Z->ee + e
+  gen+=boostedElectron
+  # Z->ee + e + minbias
+  gen+=pileup
+  # Run!
+  gen.run(args.numberOfEvents)
 
-# The pythia generator!
-gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
-
-
-
-from PythiaGenerator import Pileup
-
-# Pileup generator
-pileup = Pileup( "MinimumBias",
-                 File           = minbias_file,
-                 EtaMax         = 1.4,
-                 Select         = 2,
-                 PileupAvg      = args.pileupAvg,
-                 BunchIdStart   = args.bc_id_start,
-                 BunchIdEnd     = args.bc_id_end,
-                 OutputLevel    = args.outputLevel,
-                 Seed           = args.seed,
-                 DeltaEta       = 0.22,
-                 DeltaPhi       = 0.22,
-                 )
-
-# To collect using this cell position
-from PythiaGenerator import Zee
-
-# Create the Zee events
-zee = Zee( "Zee",
-          File        = main_file,
-          EtaMax      = 1.4,
-          MinPt       = 15*GeV,
-          Seed        = args.seed,
-          OutputLevel = args.outputLevel,
-         )
-
-from PythiaGenerator import BoostedEvents, Particle
-# Add boosted events
-boostedElectron = BoostedEvents( "ElectronBoosted", 
-                                 Particle=Particle.Electron, 
-                                 DeltaR=0.5,
-                                 Seed = args.seed,
-                                 OutputLevel = args.outputLevel
-                                 )
-
-# Z->ee
-gen+=zee
-# Z->ee + e
-gen+=boostedElectron
-# Z->ee + e + minbias
-gen+=pileup
-# Run!
-gen.run(args.numberOfEvents)
-
+  sys.exit(0)
+except  Exception as e:
+  print(e)
+  sys.exit(1)
 
 
