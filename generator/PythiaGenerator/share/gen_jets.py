@@ -56,52 +56,58 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
-main_file    = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/jet_config.cmnd'
 
-from P8Kernel import EventGenerator
+try:
+  minbias_file = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/minbias_config.cmnd'
+  main_file    = os.environ['LZT_PATH']+'/generator/PythiaGenerator/data/jet_config.cmnd'
+  
+  from P8Kernel import EventGenerator
+  
+  gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
+  
+  
+  
+  from PythiaGenerator import Pileup
+  
+  pileup = Pileup( "MinimumBias",
+                   File           = minbias_file,
+                   EtaMax         = 1.4,
+                   Select         = 2,
+                   PileupAvg      = args.pileupAvg,
+                   BunchIdStart   = args.bc_id_start,
+                   BunchIdEnd     = args.bc_id_end,
+                   OutputLevel    = args.outputLevel,
+                   Seed           = args.seed,
+                   DeltaEta       = 0.22,
+                   DeltaPhi       = 0.22,
+                   )
+  
+  
+  
+  # To collect using this cell position
+  from PythiaGenerator import JF17
+  
+  jets = JF17( "JF17",
+               File        = main_file,
+               EtaMax      = 1.4,
+               MinPt       = 17*GeV,
+               Select      = 2,
+               EtaWindow   = 0.4,
+               PhiWindow   = 0.4,
+               Seed        = args.seed,
+               OutputLevel = args.outputLevel,
+              )
+  
+  # generate jets
+  gen+=jets
+  # Add pileup
+  gen+=pileup
+  # Run!
+  gen.run(args.numberOfEvents)
 
-gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
-
-
-
-from PythiaGenerator import Pileup
-
-pileup = Pileup( "MinimumBias",
-                 File           = minbias_file,
-                 EtaMax         = 1.4,
-                 Select         = 2,
-                 PileupAvg      = args.pileupAvg,
-                 BunchIdStart   = args.bc_id_start,
-                 BunchIdEnd     = args.bc_id_end,
-                 OutputLevel    = args.outputLevel,
-                 Seed           = args.seed,
-                 DeltaEta       = 0.22,
-                 DeltaPhi       = 0.22,
-                 )
-
-
-
-# To collect using this cell position
-from PythiaGenerator import JF17
-
-jets = JF17( "JF17",
-             File        = main_file,
-             EtaMax      = 1.4,
-             MinPt       = 17*GeV,
-             Select      = 2,
-             EtaWindow   = 0.4,
-             PhiWindow   = 0.4,
-             Seed        = args.seed,
-             OutputLevel = args.outputLevel,
-            )
-
-# generate jets
-gen+=jets
-# Add pileup
-gen+=pileup
-# Run!
-gen.run(args.numberOfEvents)
-
+  sys.exit(0)
+except  Exception as e:
+  print(e)
+  sys.exit(1)
 
 
