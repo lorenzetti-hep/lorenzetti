@@ -230,6 +230,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   
   if(cell) cell->Fill( step );
 
+  /*
   // Fill time steps
   G4StepPoint* point = step->GetPreStepPoint();
   float t = (float)point->GetGlobalTime() / ns;
@@ -238,7 +239,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   store->hist1("timesteps")->Fill(t);
   float edep = (float)step->GetTotalEnergyDeposit();
   store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
-  
+  */
 
   return StatusCode::SUCCESS;
 }
