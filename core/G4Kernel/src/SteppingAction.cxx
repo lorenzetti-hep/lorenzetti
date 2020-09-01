@@ -19,6 +19,13 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
+
+  //auto track = step->GetTrack();
+
+  //track->SetTrackStatus(fSuspend);
+
+
+
   EventLoop* loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun()); 
   loop->ExecuteEvent(step);
   

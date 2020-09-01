@@ -190,52 +190,50 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
 
-  float edep = (float)step->GetTotalEnergyDeposit()/MeV;
-
-  if (edep > 0){
-
-    SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
 
 
-    if( !collection.isValid() ){
-      MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
-    }
-
-    // Get the position
-    G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
-    // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
-    // Get ATLAS coordinates (in transverse plane xy)
-    auto vpos = TVector3( pos.x(), pos.y(), pos.z());
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
 
 
-    if(m_onlyRoI){
-      // Event info
-      SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-      
-      if( !event.isValid() ){
-        MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
-      }
-
-      auto evt = (**event.ptr()).front();
-
-      for ( auto& seed : evt->allSeeds() )
-      {
-        float deltaEta = std::abs( seed.eta - vpos.PseudoRapidity() );
-        float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , vpos.Phi() ));
-        if ( !( deltaEta < 0.3 && deltaPhi < 0.3) ){
-          return StatusCode::SUCCESS;
-        }
-      }
-    }
-
-
-    // This object can not be const since we will change the intenal value
-    xAOD::RawCell *cell=nullptr;
-    collection->retrieve( vpos, cell );
-    
-    if(cell) cell->Fill( step );
-
+  if( !collection.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
+
+  // Get the position
+  G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
+  // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
+  // Get ATLAS coordinates (in transverse plane xy)
+  auto vpos = TVector3( pos.x(), pos.y(), pos.z());
+
+
+  if(m_onlyRoI){
+    // Event info
+    SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
+    
+    if( !event.isValid() ){
+      MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
+    }
+
+    auto evt = (**event.ptr()).front();
+
+    for ( auto& seed : evt->allSeeds() )
+    {
+      float deltaEta = std::abs( seed.eta - vpos.PseudoRapidity() );
+      float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , vpos.Phi() ));
+      if ( !( deltaEta < 0.3 && deltaPhi < 0.3) ){
+        return StatusCode::SUCCESS;
+      }
+    }
+  }
+
+
+  // This object can not be const since we will change the intenal value
+  xAOD::RawCell *cell=nullptr;
+  collection->retrieve( vpos, cell );
+  
+  if(cell) cell->Fill( step );
+
+  
 
   /*
   // Fill time steps

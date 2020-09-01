@@ -3,6 +3,7 @@
 #include "G4Kernel/EventLoop.h"
 #include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
+#include "G4SystemOfUnits.hh"
 #include <iostream>
 #include <time.h>
 
@@ -70,16 +71,20 @@ void EventLoop::ExecuteEvent( const G4Step* step )
   Gaugi::Timer timer;
   m_timeout.update();
   
-  timer.start();
-  if(!m_lock){
-    for( auto &toolHandle : m_toolHandles){
-      if (toolHandle->execute( m_ctx, step ).isFailure() ){
-        MSG_FATAL("Execution failure for  " << toolHandle->name());
+  float edep = (float)step->GetTotalEnergyDeposit()/MeV;
+
+  if(edep>0){
+    timer.start();
+    if(!m_lock){
+      for( auto &toolHandle : m_toolHandles){
+        if (toolHandle->execute( m_ctx, step ).isFailure() ){
+          MSG_FATAL("Execution failure for  " << toolHandle->name());
+        }
       }
     }
+    timer.stop();
   }
-  timer.stop();
-
+  
   m_store.cd("Event");
   m_store.hist1( "ExecuteEvent" )->Fill( timer.resume() );
 }
