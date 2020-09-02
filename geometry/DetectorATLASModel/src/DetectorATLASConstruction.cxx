@@ -18,8 +18,10 @@
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4UniformMagField.hh"
+#include "G4ProductionCuts.hh"
 #include "G4TransportationManager.hh"
 #include "G4FieldManager.hh"
+#include "G4RegionStore.hh"
 #include <string>
 #include <sstream>
 
@@ -37,6 +39,10 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
    m_checkOverlaps(true)
 {
   declareProperty( "UseMagneticField", m_useMagneticField=true );
+  declareProperty( "UseBarrel"           , m_useBarrel=true           );
+  declareProperty( "UseExtendedBarrel"   , m_useExtendedBarrel=true   );
+  declareProperty( "UseEndCap"           , m_useEndCap=true           );
+  
   MSG_INFO( "Using ATLAS-like detector." );
 }
 
@@ -285,6 +291,9 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 G4ThreeVector(0,0,0), // center
                 had3);
 
+
+  if ( m_useExtendedBarrel ){
+  
 	const auto extended_barrel_size = 2.83*m;
   const auto extended_barrel_center_pos = endcap_start+extended_barrel_size/2;
 
@@ -362,10 +371,15 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 G4ThreeVector(0,0,-extended_barrel_center_pos), // center
                 had3 );
 
+  }// Extended Barrel
+
   //
   // EndCap
   //
   //
+  //
+  if( m_useEndCap){
+
   G4Region* emec1 = new G4Region("EMEC1");
   G4Region* emec2 = new G4Region("EMEC2");
   G4Region* emec3 = new G4Region("EMEC3");
@@ -800,9 +814,38 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
 
   // TODO Reduce the depth of EMEC1.
   // TODO Run on single electron instead of minbias...
+  
+  }// EndCap
 
+
+  SetCuts();
   return worldPV;
 }
+
+
+void DetectorATLASConstruction::SetCuts()
+{
+
+  //std::vector<std::string> barrelNames = {"PS","EM1","EM2","EM3", "EMEC1", "EMEC2", "EMEC3", "HEC1", "HEC2", "HEC3"};
+  std::vector<std::string> barrelNames = {"PS","EM1","EM2","EM3"};
+
+
+
+  for ( auto& regName : barrelNames ){
+    auto region = G4RegionStore::GetInstance()->GetRegion(regName);
+    auto cuts = new G4ProductionCuts;
+    cuts->SetProductionCut(0.01*mm,G4ProductionCuts::GetIndex("gamma"));
+    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("e-"));
+    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("e+"));
+    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("proton"));
+    region->SetProductionCuts(cuts);
+  }
+
+
+
+}
+
+
 
 void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV, 
                                           std::string name,  

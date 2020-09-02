@@ -43,6 +43,12 @@ parser.add_argument('--disableMagneticField', action='store_true', dest='disable
                     help = "Disable the magnetic field.")
 
 
+#              No Cells   With Cells
+# Barrel         14s         24s
+# +ExtBarrel
+# +EndCap       
+
+
 if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
@@ -66,9 +72,14 @@ try:
   from DetectorATLASModel import CaloCellBuilder
   
   
+  # Build the ATLAS detector
+  detector = ATLAS("GenericATLASDetector", 
+                   UseMagneticField = False if args.disableMagneticField else True,
+                   UseBarrel = True,
+                   UseExtendedBarrel = False,
+                   UseEndCap = False )
   
-  acc = ComponentAccumulator("ComponentAccumulator",
-                              ATLAS("GenericATLASDetector", UseMagneticField = False if args.disableMagneticField else True),
+  acc = ComponentAccumulator("ComponentAccumulator", detector,
                               RunVis=args.visualization,
                               NumberOfThreads = args.numberOfThreads,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation

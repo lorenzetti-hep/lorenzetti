@@ -4,7 +4,7 @@
 
 #include "G4Step.hh"
 #include "G4RunManager.hh"
-
+#include "G4SystemOfUnits.hh"
 
 SteppingAction::SteppingAction()
   : IMsgService("SteppingAction"),
@@ -19,12 +19,6 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-
-  //auto track = step->GetTrack();
-
-  //track->SetTrackStatus(fSuspend);
-
-
 
   EventLoop* loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun()); 
   loop->ExecuteEvent(step);

@@ -190,10 +190,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
 
-
-
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
-
 
   if( !collection.isValid() ){
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);

@@ -39,7 +39,7 @@ void EventLoop::BeginOfEvent()
 {
   MSG_INFO("EventLoop::BeginOfEvent...");
   
-
+  m_stepCounter=0;
   
   Gaugi::Timer timer;
   m_timeout.start();
@@ -70,7 +70,7 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 {
   Gaugi::Timer timer;
   m_timeout.update();
-  
+  m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
   if(edep>0){
@@ -125,6 +125,8 @@ void EventLoop::EndOfEvent()
   m_store.cd("Event");
   m_store.hist1( "EndOfEvent" )->Fill( timer.resume() );
   m_store.hist1( "Event" )->Fill( m_timeout.resume() );
+
+  MSG_INFO( "Event loop was completed with " << m_stepCounter << " G4Steps." );
 }
 
 
