@@ -68,13 +68,10 @@ void EventLoop::BeginOfEvent()
 
 void EventLoop::ExecuteEvent( const G4Step* step )
 {
-  Gaugi::Timer timer;
-  m_timeout.update();
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
   if(edep>0){
-    timer.start();
     if(!m_lock){
       for( auto &toolHandle : m_toolHandles){
         if (toolHandle->execute( m_ctx, step ).isFailure() ){
@@ -82,11 +79,8 @@ void EventLoop::ExecuteEvent( const G4Step* step )
         }
       }
     }
-    timer.stop();
   }
   
-  //m_store.cd("Event");
-  //m_store.hist1( "ExecuteEvent" )->Fill( timer.resume() );
 }
 
 
@@ -135,7 +129,6 @@ void EventLoop::bookHistograms(){
   m_store.cd();
   m_store.mkdir( "Event" );
   m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
-  m_store.add( new TH1F("ExecuteEvent" , ";time[s];Count;"   , 100 , 0 , 0.1) );
   m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10 ) );
   m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 600 , 0 , 600) );
   m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0 ,   3) );

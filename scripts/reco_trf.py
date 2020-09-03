@@ -76,8 +76,8 @@ try:
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = False if args.disableMagneticField else True,
                    UseBarrel = True,
-                   UseExtendedBarrel = False,
-                   UseEndCap = False )
+                   UseExtendedBarrel = True,
+                   UseEndCap = True )
   
   acc = ComponentAccumulator("ComponentAccumulator", detector,
                               RunVis=args.visualization,
@@ -96,14 +96,14 @@ try:
                                 HistogramPath = "Expert/CaloCells",
                                 OutputLevel   = args.outputLevel,
                                 Barrel        = True,
-                                ExtendedBarrel= False,
-                                EndCap        = False,
-                                Foward        = False,
+                                ExtendedBarrel= True,
+                                EndCap        = True,
+                                Foward        = True,
                                 )
   
   
   gun.merge(acc)
-  #calorimeter.merge(acc)
+  calorimeter.merge(acc)
   
   
   if args.ntuple == 'physics':
@@ -145,9 +145,9 @@ try:
                                 DeltaR          = 0.15,
                                 DumpCells       = True,
                                 OutputLevel     = args.outputLevel)
-      #acc+= cluster
-      #acc+= ringer
-      #acc += ntuple
+    acc+= cluster
+    acc+= ringer
+    acc += ntuple
   
   
   elif args.ntuple == 'raw':

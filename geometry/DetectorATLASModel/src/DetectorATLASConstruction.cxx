@@ -818,7 +818,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   }// EndCap
 
 
-  SetCuts();
+  //SetCuts();
   return worldPV;
 }
 
