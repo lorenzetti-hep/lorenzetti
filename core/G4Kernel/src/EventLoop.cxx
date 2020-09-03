@@ -120,7 +120,7 @@ void EventLoop::EndOfEvent()
   m_store.hist1( "EndOfEvent" )->Fill( timer.resume() );
   m_store.hist1( "Event" )->Fill( m_timeout.resume() );
 
-  MSG_INFO( "Event loop was completed with " << m_stepCounter << " G4Steps and " << m_timer.resume() << " seconds." );
+  MSG_INFO( "Event loop was completed with " << m_stepCounter << " G4Steps and " << m_timeout.resume() << " seconds." );
 }
 
 
