@@ -103,10 +103,7 @@ try:
   
   
   gun.merge(acc)
-  calorimeter.merge(acc)
-  
-  
-  
+  #calorimeter.merge(acc)
   
   
   if args.ntuple == 'physics':
@@ -148,9 +145,9 @@ try:
                                 DeltaR          = 0.15,
                                 DumpCells       = True,
                                 OutputLevel     = args.outputLevel)
-      acc+= cluster
-      acc+= ringer
-      acc += ntuple
+      #acc+= cluster
+      #acc+= ringer
+      #acc += ntuple
   
   
   elif args.ntuple == 'raw':
