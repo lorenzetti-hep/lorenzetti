@@ -85,8 +85,8 @@ void EventLoop::ExecuteEvent( const G4Step* step )
     timer.stop();
   }
   
-  m_store.cd("Event");
-  m_store.hist1( "ExecuteEvent" )->Fill( timer.resume() );
+  //m_store.cd("Event");
+  //m_store.hist1( "ExecuteEvent" )->Fill( timer.resume() );
 }
 
 
