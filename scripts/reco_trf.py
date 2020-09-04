@@ -167,7 +167,7 @@ try:
   
   acc.run(args.numberOfEvents)
   
-  
+  print('fim...') 
   
   if numberOfThreads > 1:
     command = "hadd -f " + args.outputFile + ' '
