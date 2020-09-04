@@ -2,8 +2,8 @@
 /vis/viewer/set/autoRefresh false
 /vis/verbose errors
 /vis/drawVolume
-/vis/viewer/set/viewpointVector -1 0 0
-/vis/viewer/set/lightsVector -1 0 0
+/vis/viewer/set/viewpointVector 1 0 0
+/vis/viewer/set/lightsVector 1 0 0
 /vis/viewer/set/style wireframe
 /vis/viewer/set/auxiliaryEdge true
 /vis/viewer/set/lineSegmentsPerCircle 100
@@ -13,6 +13,7 @@
 /vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
 /vis/scene/endOfEventAction accumulate
 /vis/geometry/set/visibility World 0 false
+#/vis/geometry/set/visibility World 0 true
 # Dead material in between of calorimeters
 /vis/geometry/set/colour ECal_Boundary 0 grey
 /vis/geometry/set/colour ECal_Boundary_Layer 0 grey
@@ -45,10 +46,10 @@
 /vis/geometry/set/colour CrackDeadMaterial_Abso 0 white
 /vis/geometry/set/colour CrackDeadMaterial_Gap 0 white
 # Pre-sampler
-/vis/geometry/set/colour PS 0 aquamarine
-/vis/geometry/set/colour PS_Layer 0 aquamarine
-/vis/geometry/set/colour PS_Abso 0 aquamarine
-/vis/geometry/set/colour PS_Gap 0 aquamarine
+/vis/geometry/set/colour PS 0 orange
+/vis/geometry/set/colour PS_Layer 0 orange
+/vis/geometry/set/colour PS_Abso 0 orange
+/vis/geometry/set/colour PS_Gap 0 orange
 # LAr EM barrel
 /vis/geometry/set/colour EM1 0 aquamarine
 /vis/geometry/set/colour EM1_Layer 0 aquamarine

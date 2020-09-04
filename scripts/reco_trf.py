@@ -169,12 +169,12 @@ try:
   
   
   
-  # Merge all files
-  command = "hadd -f " + args.outputFile + ' '
-  for fname in outputFileList:
-    command+=fname + ' '
-  print( command )
-  os.system(command)
+  if numberOfThreads > 1:
+    command = "hadd -f " + args.outputFile + ' '
+    for fname in outputFileList:
+      command+=fname + ' '
+    print( command )
+    os.system(command)
   
   # remove thread files
   for fname in outputFileList:
@@ -189,4 +189,3 @@ try:
 except  Exception as e:
   print(e)
   sys.exit(1)
-

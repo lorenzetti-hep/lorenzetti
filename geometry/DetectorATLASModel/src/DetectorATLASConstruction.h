@@ -71,6 +71,7 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
     bool m_useExtendedBarrel;
     bool m_useEndCap;
 
+    bool m_cutOnPhi;
 
     G4Cache<FieldSetup*>  m_fieldSetup;
 };

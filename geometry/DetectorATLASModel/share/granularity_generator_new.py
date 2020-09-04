@@ -282,10 +282,17 @@ barrel_had_calo_radius = np.array( [40*cm, 110*cm, 50*cm] )
 
 endcap_start_z = 3704.*mm;
 
-emec_dead_material_z = 78.*mm;
+ps_endcap_z = 5.*mm;
+emec_dead_material_z = 78.*mm - ps_endcap_z;
+ps_endcap_start = endcap_start_z+emec_dead_material_z;
+
+ps_endcap_start_radius = 1232.*mm;
+ps_endcap_end_radius = 1700.*mm;
+
 emec_start_radius = 302.*mm
 emec_end_radius = 2032.*mm
-emec_start_z = endcap_start_z+emec_dead_material_z;
+
+emec_start_z = endcap_start_z+emec_dead_material_z+ps_endcap_z;
 
 hec_start_z = 4262*mm;
 hec_start_radius = np.array([372.*mm,475.*mm, 475.*mm])
@@ -396,9 +403,18 @@ tileext3 = SingleSegmentationLayer(
     z_min = endcap_start_z,
     z_max = endcap_start_z + extended_barrel_nominal_z )
 
-
-
-
+pse = SingleSegmentationLayer(
+    name = "PSE",
+    sample_id = 16,
+    rMin = ps_endcap_start_radius, 
+    rMax = ps_endcap_end_radius,
+    delta_eta = 0.025,
+    delta_phi = pi/32,
+    z_min = ps_endcap_start, 
+    z_max = ps_endcap_start+ps_endcap_z,
+    eta_min = 1.5, 
+    eta_max = 1.8, 
+)
 
 emec1 = Layer(
     name = "EMEC1",
@@ -568,14 +584,13 @@ hec3 = Layer(
     ],
 )
 
-em_barrel = [psb, emb1, emb2, emb3]
+em_barrel = [psb, pse, emb1, emb2, emb3]
 had_barrel = [ tilecal1, tilecal2, tilecal3
              , tileext1, tileext2, tileext3 ]
 emec = [emec1, emec2, emec3]
 hec = [hec1, hec2, hec3]
 
 all_calo = [em_barrel, had_barrel, emec, hec]
-
 
 for calo in all_calo:
   for layer in calo:

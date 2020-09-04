@@ -36,7 +36,8 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
   IMsgService(name), 
    G4VUserDetectorConstruction(),
-   m_checkOverlaps(true)
+   m_checkOverlaps(true),
+   m_cutOnPhi(false)
 {
   declareProperty( "UseMagneticField", m_useMagneticField=true );
   declareProperty( "UseBarrel"           , m_useBarrel=true           );
@@ -117,7 +118,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                                  5*m,         // R max
                                  10*m,        // Z max
                                  0*deg,       // phi_min
-                                 360*deg      // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)      // phi_max
                                  );
 
   G4LogicalVolume* worldLV = new G4LogicalVolume(
@@ -384,10 +385,14 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   G4Region* emec2 = new G4Region("EMEC2");
   G4Region* emec3 = new G4Region("EMEC3");
 
-  double emec_dead_material_z = 78.*mm;
+  double ps_endcap_z = 5.*mm;
+  double emec_dead_material_z = 78.*mm - ps_endcap_z;
   double emec_dead_material_center = endcap_start+emec_dead_material_z/2;
 
-  double emec_start = endcap_start+emec_dead_material_z;
+  double ps_endcap_start = endcap_start+emec_dead_material_z;
+  double ps_endcap_center = ps_endcap_start + ps_endcap_z/2;
+
+  double emec_start = ps_endcap_start+ps_endcap_z;
 
   double emec1_zsize = 96.*mm;
   double emec2_zsize = 330.*mm;
@@ -407,7 +412,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 G4Material::GetMaterial("Galactic"), // gap
                 2, // layers,
                 5.*mm,  // abso
-                34.*mm,  // gap
+                31.5*mm,  // gap
                 302.*mm,  // start radio,
                 2032.*mm, // end radio,
                 emec_dead_material_z,  // z
@@ -420,12 +425,42 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                 G4Material::GetMaterial("Galactic"), // gap
                 2, // layers,
                 5.*mm,  // abso
-                34.*mm,  // gap
+                31.5*mm,  // gap
                 302.*mm,  // start radio,
                 2032.*mm, // end radio,
                 emec_dead_material_z,  // z
                 G4ThreeVector(0,0,-emec_dead_material_center), // center
                 deadMatBeforeCal );
+
+  //
+  // Dead-material
+  //
+  CreateEndcap( worldLV,
+                "PS",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("Galactic"), // absorber
+                G4Material::GetMaterial("liquidArgon"), // gap
+                1, // layers,
+                0.001*mm,  // abso
+                4.99*mm,  // gap
+                1232.*mm,  // start radio,
+                1700.*mm, // end radio,
+                ps_endcap_z,  // z
+                G4ThreeVector(0,0,ps_endcap_center), // center
+                presample );
+  CreateEndcap( worldLV,
+                "PS",
+                G4Material::GetMaterial("Galactic"), // default
+                G4Material::GetMaterial("Galactic"), // absorber
+                G4Material::GetMaterial("liquidArgon"), // gap
+                1, // layers,
+                0.001*mm,  // abso
+                4.99*mm,  // gap
+                1232.*mm,  // start radio,
+                1700.*mm, // end radio,
+                ps_endcap_z,  // z
+                G4ThreeVector(0,0,-ps_endcap_center), // center
+                presample );
 
   // Create EMEC1
   CreateEndcap( worldLV,
@@ -876,7 +911,7 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                  calorRmin+ nofLayers*layerThickness, // R max 48cm+1700mm
                                  calorZ/2,    // Z max, +250cm
                                  0*deg,     // phi_min
-                                 360*deg    // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)    // phi_max
                                  ) ;
 
 
@@ -906,7 +941,7 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                  calorRmin + (layer+1)*layerThickness,   // R max 48cm+1700mm
                                  calorZ/2,            // Z max, +250cm
                                  0*deg,             // phi_min
-                                 360*deg            // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)            // phi_max
                                  ) ;
 
     G4LogicalVolume* layerLV = new G4LogicalVolume(
@@ -933,7 +968,7 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                  calorRmin + layer*(absoThickness + gapThickness) + absoThickness,   // R max 48cm+1700mm
                                  calorZ/2,          // Z max, +250cm
                                  0*deg,                 // phi_min
-                                 360*deg             // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)             // phi_max
                                  ) ;
 
     G4LogicalVolume* absorverLV = new G4LogicalVolume(
@@ -961,7 +996,7 @@ void DetectorATLASConstruction::CreateBarrel(  G4LogicalVolume *worldLV,
                                  calorRmin + (layer+1)*(absoThickness + gapThickness),   // R max 48cm+1700mm
                                  calorZ/2,          // Z max, +250cm
                                  0*deg,           // phi_min
-                                 360*deg          // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)          // phi_max
         ); 
 
     G4LogicalVolume* gapLV = new G4LogicalVolume(
@@ -1017,7 +1052,7 @@ void DetectorATLASConstruction::CreateEndcap(  G4LogicalVolume *worldLV,
                                  calorRmax,
                                  calorZ/2, // Size in z
                                  0*deg,     // phi_min
-                                 360*deg    // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)    // phi_max
                                  ) ;
 
   G4LogicalVolume* calorLV = new G4LogicalVolume( calorimeterS,     // its solid
@@ -1049,7 +1084,7 @@ void DetectorATLASConstruction::CreateEndcap(  G4LogicalVolume *worldLV,
                                  calorRmax,
                                  layerThickness/2,
                                  0*deg,
-                                 360*deg
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)
                                  );
 
     G4LogicalVolume* layerLV = new G4LogicalVolume(
@@ -1082,7 +1117,7 @@ void DetectorATLASConstruction::CreateEndcap(  G4LogicalVolume *worldLV,
                                  calorRmax,     // R max
                                  absoThickness/2,  // 
                                  0*deg,         // phi_min
-                                 360*deg        // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)        // phi_max
                                  ) ;
 
     G4LogicalVolume* absorverLV = new G4LogicalVolume(
@@ -1114,7 +1149,7 @@ void DetectorATLASConstruction::CreateEndcap(  G4LogicalVolume *worldLV,
                                  calorRmax,   // R max
                                  gapThickness/2,   // Z max,
                                  0*deg,           // phi_min
-                                 360*deg          // phi_max
+                                 (!m_cutOnPhi)?(360*deg):(235*deg)          // phi_max
         ); 
 
     G4LogicalVolume* gapLV = new G4LogicalVolume(

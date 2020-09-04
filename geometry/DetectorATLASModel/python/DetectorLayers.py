@@ -126,6 +126,20 @@ def create_ATLAS_layers( DoBarrel=True, DoExtendedBarrel=False, DoEndCap=False, 
                     EletronicNoise  = 40, # MeV
                     OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
                     )
+
+  pse = CaloSample( "PSE", "Collection_PSE", 
+                    # segmentation
+                    [ "detector_sample_16_seg_0.dat" ], 
+                    # layer configuration
+                    ShaperFile      = "pulseLar.dat",
+                    BunchIdStart    = -21, # -525ns
+                    BunchIdEnd      = 3, # +75ns
+                    StartSamplingBC = -2, 
+                    NSamples        = 5,
+                    EletronicNoise  = 26, # MeV
+                    OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
+                    )
+  
   
   emec1 = CaloSample( "EMEC1", "Collection_EMEC1", 
                     [ 
@@ -237,7 +251,7 @@ def create_ATLAS_layers( DoBarrel=True, DoExtendedBarrel=False, DoEndCap=False, 
   #                  PS    EM1      EM2     EM3     HAD1          HAD2           HAD3
   barrel         = [psb  , emb1  , emb2  , emb3  , tilecal1    , tilecal2    , tilecal3    ]
   extendedBarrel = [None , None  , None  , None  , tilecalExt1 , tilecalExt2 , tilecalExt3 ]
-  endcap         = [None , emec1 , emec2 , emec3 , hec1        , hec2        , hec3        ]
+  endcap         = [pse  , emec1 , emec2 , emec3 , hec1        , hec2        , hec3        ]
   foward         = [None , None  , None  , None  , None        , None        , None        ]
 
   def addSamples( configs ):
@@ -255,7 +269,6 @@ def create_ATLAS_layers( DoBarrel=True, DoExtendedBarrel=False, DoEndCap=False, 
 
   from pprint import pprint
   pprint(layers)
-
 
   return layers
 
