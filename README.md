@@ -23,10 +23,8 @@ Please cite [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/
 
 We should include some description here.
 
-![Screenshot](geometry/DetectorATLASModel/doc/front_view.png)
 
-
-![Screenshot](geometry/DetectorATLASModel/doc/lateral_view.png)
+![Screenshot](geometry/DetectorATLASModel/doc/cut_view.png)
 
 
 
