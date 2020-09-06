@@ -51,7 +51,7 @@ FieldSetup::FieldSetup(G4ThreeVector fieldVector, G4int stepperNum, G4bool useFS
  : IMsgService("FieldSetup"),
    m_magneticField(new G4UniformMagField(fieldVector)),
    m_useFSALstepper(useFSALstepper),
-   m_stepperType(0),
+   m_stepperType(stepperNum),
    m_minStep(0.)
 {
   MSG_INFO( " FieldSetup: magnetic field set to Uniform( " << fieldVector << " ) " );
