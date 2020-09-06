@@ -50,8 +50,8 @@ void EventLoop::BeginOfEvent()
   
   // Pre execution of all tools in sequence
   if(!m_lock){
-    m_store.cd("Event");
-    m_store.histI("EventCounter")->Fill("Event",1);
+    //m_store.cd("Event");
+    //m_store.histI("EventCounter")->Fill("Event",1);
     for( auto &toolHandle : m_toolHandles){
       MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
       if (toolHandle->pre_execute( m_ctx ).isFailure() ){
