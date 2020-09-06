@@ -126,6 +126,7 @@ void EventLoop::EndOfEvent()
 
 void EventLoop::bookHistograms(){
 
+  /*
   m_store.cd();
   m_store.mkdir( "Event" );
   m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
@@ -135,7 +136,7 @@ void EventLoop::bookHistograms(){
   
   std::vector<std::string> labels{"Event", "Completed", "Timeout"};
   m_store.setLabels( m_store.histI("EventCounter"), labels );
-
+  */
   
 } 
 
