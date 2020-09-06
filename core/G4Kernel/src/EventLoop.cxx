@@ -11,7 +11,7 @@
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output): 
   IMsgService("EventLoop"),
   G4Run(), 
-  m_store( output , G4Threading::G4GetThreadId() ),
+  //m_store( output , G4Threading::G4GetThreadId() ),
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
   m_lock(false)
@@ -24,9 +24,9 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Booking histograms for " << toolHandle->name() );
-    if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
-      MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
-    }
+    //if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
+    //  MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
+    //}
   }
 }
 
@@ -98,9 +98,9 @@ void EventLoop::EndOfEvent()
       if (toolHandle->post_execute( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
       }
-      if (toolHandle->fillHistograms( m_ctx ).isFailure() ){
-        MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
-      }
+      //if (toolHandle->fillHistograms( m_ctx ).isFailure() ){
+      //  MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
+      //}
     }
     //m_store.cd("Event");
     //m_store.histI("EventCounter")->Fill("Completed",1);
