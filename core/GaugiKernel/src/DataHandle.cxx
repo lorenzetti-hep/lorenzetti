@@ -21,7 +21,6 @@ EventContext::~EventContext()
 
 void EventContext::clear()
 {
-  MSG_INFO("Clearing all allocated memory");
   m_storable_ptr.clear();
 }
 

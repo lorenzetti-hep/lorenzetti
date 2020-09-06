@@ -123,8 +123,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
   }
 
-  MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
-  MSG_DEBUG( "We found " << particles->size() << " particles (seeds) inside of this event." );
+  MSG_INFO( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
+  MSG_INFO( "We found " << particles->size() << " particles (seeds) inside of this event." );
 
   return StatusCode::SUCCESS;
 }

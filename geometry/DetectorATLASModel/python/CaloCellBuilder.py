@@ -20,20 +20,12 @@ class CaloCellBuilder( Logger ):
   def __init__( self, name, 
                       HistogramPath  = "Expert", 
                       OutputLevel    = 1,
-                      Barrel         = True,
-                      ExtendedBarrel = False,
-                      EndCap         = False,
-                      Foward         = False,
                       ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
-    
-    # Get the layer cell configuration
-    from DetectorATLASModel import create_ATLAS_layers 
-    self.__layers = create_ATLAS_layers( DoBarrel=Barrel, DoExtendedBarrel=ExtendedBarrel, DoEndCap=EndCap, DoFoward=Foward)
     
     # configure
     self.configure()
@@ -48,9 +40,14 @@ class CaloCellBuilder( Logger ):
     from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
 
     collectionKeys = []
+ 
+    # Get the layer cell configuration
+    from DetectorATLASModel import create_ATLAS_layers 
+    layers = create_ATLAS_layers()
+    
 
 
-    for layer_id, layer in enumerate( self.__layers ):
+    for layer_id, layer in enumerate( layers ):
 
       for sample in layer:
 

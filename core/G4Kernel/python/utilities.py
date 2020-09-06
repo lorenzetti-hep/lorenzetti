@@ -29,13 +29,14 @@ def recordable( key ):
             "TruthRings",
             ]
 
+
+
+  #if key in keys:
+  #  return key
+  #else:
+  #  RuntimeError("The key %s it's not allow to the accetable key list. Please check the key.")
+
   return key
-
-  if key in keys:
-    return key
-  else:
-    RuntimeError("The key %s it's not allow to the accetable key list. Please check the key.")
-
 
 
 def treatPropertyValue( value ):

@@ -22,7 +22,7 @@ EventAction::~EventAction()
 void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 {  
   EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-  MSG_INFO( "EventAction::BeginOfEvent()" );
+  MSG_DEBUG( "EventAction::BeginOfEvent()" );
   loop->BeginOfEvent();
 }
 
@@ -30,7 +30,7 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 
 void EventAction::EndOfEventAction(const G4Event* /*event*/)
 {
-  MSG_INFO( "EventAction::EndOfEvent()" );
+  MSG_DEBUG( "EventAction::EndOfEvent()" );
   EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   loop->EndOfEvent();
 }

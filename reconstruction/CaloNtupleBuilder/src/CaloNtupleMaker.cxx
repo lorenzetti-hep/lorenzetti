@@ -87,8 +87,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<float> mc_cl_cell_deta     ;
   std::vector<float> mc_cl_cell_dphi     ;
   std::vector<float> mc_cl_cell_energy   ;
-  std::vector<int>   mc_cl_cell_channel_eta; 
-  std::vector<int>   mc_cl_cell_channel_phi; 
   std::vector<int>   mc_cl_cell_layer ; 
   
   bool  cl_match          = false;
@@ -125,8 +123,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<float> cl_cell_deta        ;
   std::vector<float> cl_cell_dphi        ;
   std::vector<float> cl_cell_energy      ;
-  std::vector<int>   cl_cell_channel_eta ;
-  std::vector<int>   cl_cell_channel_phi ;
   std::vector<int>   cl_cell_layer    ;
 
 
@@ -171,8 +167,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   tree->Branch(  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
   tree->Branch(  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
   tree->Branch(  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
-  tree->Branch(  "mc_cl_cell_channel_eta", &mc_cl_cell_channel_eta);
-  tree->Branch(  "mc_cl_cell_channel_phi", &mc_cl_cell_channel_phi);
   tree->Branch(  "mc_cl_cell_layer", &mc_cl_cell_layer);
 
   tree->Branch(  "cl_match"           , &cl_match           );
@@ -208,8 +202,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   tree->Branch(  "cl_cell_deta"       , &cl_cell_deta       );
   tree->Branch(  "cl_cell_dphi"       , &cl_cell_dphi       );
   tree->Branch(  "cl_cell_energy"     , &cl_cell_energy     );
-  tree->Branch(  "cl_cell_channel_eta", &cl_cell_channel_eta);
-  tree->Branch(  "cl_cell_channel_phi", &cl_cell_channel_phi);
   tree->Branch(  "cl_cell_layer"   , &cl_cell_layer   );
  
 
@@ -352,8 +344,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   std::vector<float> *mc_cl_cell_deta     = nullptr;
   std::vector<float> *mc_cl_cell_dphi     = nullptr;
   std::vector<float> *mc_cl_cell_energy   = nullptr;
-  std::vector<int>   *mc_cl_cell_channel_eta = nullptr;
-  std::vector<int>   *mc_cl_cell_channel_phi = nullptr;
   std::vector<int>   *mc_cl_cell_layer = nullptr;
   std::vector<float> *cl_cell_et          = nullptr;
   std::vector<float> *cl_cell_eta         = nullptr;
@@ -361,8 +351,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   std::vector<float> *cl_cell_deta        = nullptr;
   std::vector<float> *cl_cell_dphi        = nullptr;
   std::vector<float> *cl_cell_energy      = nullptr;
-  std::vector<int>   *cl_cell_channel_eta = nullptr;
-  std::vector<int>   *cl_cell_channel_phi = nullptr;
   std::vector<int>   *cl_cell_layer    = nullptr;
   
 
@@ -404,9 +392,7 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   InitBranch( tree,  "mc_cl_cell_deta"        , &mc_cl_cell_deta        );
   InitBranch( tree,  "mc_cl_cell_dphi"        , &mc_cl_cell_dphi        );
   InitBranch( tree,  "mc_cl_cell_energy"      , &mc_cl_cell_energy      );
-  InitBranch( tree,  "mc_cl_cell_layer"    , &mc_cl_cell_layer    );
-  InitBranch( tree,  "mc_cl_cell_channel_eta" , &mc_cl_cell_channel_eta );
-  InitBranch( tree,  "mc_cl_cell_channel_phi" , &mc_cl_cell_channel_phi );
+  InitBranch( tree,  "mc_cl_cell_layer"       , &mc_cl_cell_layer       );
 
   
   InitBranch( tree,  "cl_match"               , &cl_match               );
@@ -442,9 +428,7 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   InitBranch( tree,  "cl_cell_deta"           , &cl_cell_deta           );
   InitBranch( tree,  "cl_cell_dphi"           , &cl_cell_dphi           );
   InitBranch( tree,  "cl_cell_energy"         , &cl_cell_energy         );
-  InitBranch( tree,  "cl_cell_layer"       , &cl_cell_layer       );
-  InitBranch( tree,  "cl_cell_channel_eta"    , &cl_cell_channel_eta    );
-  InitBranch( tree,  "cl_cell_channel_phi"    , &cl_cell_channel_phi    );
+  InitBranch( tree,  "cl_cell_layer"       , &cl_cell_layer             );
 
   
   MSG_DEBUG( "Link all branches..." );
@@ -516,8 +500,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   mc_cl_cell_deta->clear()    ;
   mc_cl_cell_dphi->clear()    ;
   mc_cl_cell_energy->clear()  ;
-  mc_cl_cell_channel_eta->clear();
-  mc_cl_cell_channel_phi->clear();
   mc_cl_cell_layer->clear();
 
 
@@ -528,8 +510,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   cl_cell_deta->clear()       ;
   cl_cell_dphi->clear()       ;
   cl_cell_energy->clear()     ;
-  cl_cell_channel_eta->clear()   ;
-  cl_cell_channel_phi->clear()   ;
   cl_cell_layer->clear()   ;
 
   eventNumber = evt;

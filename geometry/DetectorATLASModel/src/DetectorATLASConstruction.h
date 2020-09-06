@@ -73,7 +73,8 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
 
     bool m_cutOnPhi;
 
-    G4Cache<FieldSetup*>  m_fieldSetup;
+    //G4Cache<FieldSetup*>  m_fieldSetup;
+    FieldSetup*  m_fieldSetup;
 };
 
 

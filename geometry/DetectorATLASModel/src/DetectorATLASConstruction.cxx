@@ -1184,9 +1184,10 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
   if (m_useMagneticField){
     MSG_INFO("Set magnetic field")
-    FieldSetup* fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
-    G4AutoDelete::Register(fieldSetup);
-    m_fieldSetup.Put(fieldSetup);
+    m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
+    //FieldSetup* m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
+    //G4AutoDelete::Register(fieldSetup);
+    //m_fieldSetup.Put(fieldSetup);
   }
 
 }
