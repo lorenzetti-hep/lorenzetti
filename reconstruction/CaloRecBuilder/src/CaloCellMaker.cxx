@@ -71,7 +71,6 @@ StatusCode CaloCellMaker::initialize()
         m_eta_bins.push_back(value);
     }else if(command=="phi_bins"){
       float value;
-      MSG_INFO("phi_bins");
       while(ss>>value)
         m_phi_bins.push_back(value);
     }else if(command=="#"){

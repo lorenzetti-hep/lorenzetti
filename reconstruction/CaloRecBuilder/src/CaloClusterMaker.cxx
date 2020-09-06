@@ -156,8 +156,6 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
     const xAOD::CaloCell *hotcell=nullptr;
     float emaxs2 = 0.0;
 
-    
-
     // Searching the hottest cell looking for EM2 layer
     for (const auto cell : **container.ptr() ){
       if( cell->layer() != CaloLayer::EM2 ) continue;

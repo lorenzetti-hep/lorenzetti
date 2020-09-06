@@ -12,8 +12,8 @@
 EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output): 
   IMsgService("EventLoop"),
   G4Run(), 
-  m_ctx( "EventContext" ),
   m_store( output , G4Threading::G4GetThreadId() ),
+  m_ctx( "EventContext" ),
   m_toolHandles(acc),
   m_lock(false)
 {
@@ -24,7 +24,7 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Booking histograms for " << toolHandle->name() );
+    MSG_DEBUG( "Booking histograms for " << toolHandle->name() );
     if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }
@@ -54,7 +54,7 @@ void EventLoop::BeginOfEvent()
     m_store.cd("Event");
     m_store.histI("EventCounter")->Fill("Event",1);
     for( auto &toolHandle : m_toolHandles){
-      MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
+      MSG_DEBUG( "Launching pre execute step for " << toolHandle->name() );
       if (toolHandle->pre_execute( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to pre execute " << toolHandle->name());
       }
@@ -95,7 +95,7 @@ void EventLoop::EndOfEvent()
   if (!m_lock){
     MSG_INFO("EventLoop::EndOfEvent...");
     for( auto &toolHandle : m_toolHandles){
-      MSG_INFO( "Launching post execute step for " << toolHandle->name() );
+      MSG_DEBUG( "Launching post execute step for " << toolHandle->name() );
       if (toolHandle->post_execute( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
       }
