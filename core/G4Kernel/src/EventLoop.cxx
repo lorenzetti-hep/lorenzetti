@@ -18,16 +18,16 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
   m_lock(false)
 {
   // Tranfer all rights to the event context
-  //m_ctx.setStoreGateSvc( &m_store );
+  m_ctx.setStoreGateSvc( &m_store );
 
-  //bookHistograms();
+  bookHistograms();
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
     MSG_INFO( "Booking histograms for " << toolHandle->name() );
-    //if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
-    //  MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
-    //}
+    if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
+      MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
+    }
   }
 }
 
@@ -51,8 +51,8 @@ void EventLoop::BeginOfEvent()
   
   // Pre execution of all tools in sequence
   if(!m_lock){
-    //m_store.cd("Event");
-    //m_store.histI("EventCounter")->Fill("Event",1);
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Event",1);
     for( auto &toolHandle : m_toolHandles){
       MSG_INFO( "Launching pre execute step for " << toolHandle->name() );
       if (toolHandle->pre_execute( m_ctx ).isFailure() ){
@@ -62,8 +62,8 @@ void EventLoop::BeginOfEvent()
   }
 
   timer.stop();
-  //m_store.cd("Event");
-  //m_store.hist1( "BeginOfEvent" )->Fill( timer.resume() );
+  m_store.cd("Event");
+  m_store.hist1( "BeginOfEvent" )->Fill( timer.resume() );
 }
 
 
@@ -99,15 +99,15 @@ void EventLoop::EndOfEvent()
       if (toolHandle->post_execute( m_ctx ).isFailure() ){
         MSG_FATAL("It's not possible to post execute for " << toolHandle->name());
       }
-      //if (toolHandle->fillHistograms( m_ctx ).isFailure() ){
-      //  MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
-      //}
+      if (toolHandle->fillHistograms( m_ctx ).isFailure() ){
+        MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
+      }
     }
-    //m_store.cd("Event");
-    //m_store.histI("EventCounter")->Fill("Completed",1);
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Completed",1);
   }else{
-    //m_store.cd("Event");
-    //m_store.histI("EventCounter")->Fill("Timeout",1);
+    m_store.cd("Event");
+    m_store.histI("EventCounter")->Fill("Timeout",1);
   }
 
   // Clear all storable pointers
@@ -117,9 +117,9 @@ void EventLoop::EndOfEvent()
   timer.stop();
   m_timeout.stop();  
 
-  //m_store.cd("Event");
-  //m_store.hist1( "EndOfEvent" )->Fill( timer.resume() );
-  //m_store.hist1( "Event" )->Fill( m_timeout.resume() );
+  m_store.cd("Event");
+  m_store.hist1( "EndOfEvent" )->Fill( timer.resume() );
+  m_store.hist1( "Event" )->Fill( m_timeout.resume() );
 
   MSG_INFO( "Event loop was completed with " << m_stepCounter << " G4Steps and " << m_timeout.resume() << " seconds." );
 }
@@ -127,7 +127,6 @@ void EventLoop::EndOfEvent()
 
 void EventLoop::bookHistograms(){
 
-  /*
   m_store.cd();
   m_store.mkdir( "Event" );
   m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
@@ -137,7 +136,6 @@ void EventLoop::bookHistograms(){
   
   std::vector<std::string> labels{"Event", "Completed", "Timeout"};
   m_store.setLabels( m_store.histI("EventCounter"), labels );
-  */
   
 } 
 
