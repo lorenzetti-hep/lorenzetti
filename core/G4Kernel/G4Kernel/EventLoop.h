@@ -46,7 +46,7 @@ class EventLoop : public G4Run, public MsgService
     void bookHistograms();
 
     // Store gate
-    SG::StoreGate m_store;
+    //SG::StoreGate m_store;
 
     // the event context
     SG::EventContext m_ctx;
