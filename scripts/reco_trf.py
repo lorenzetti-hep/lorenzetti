@@ -43,10 +43,6 @@ parser.add_argument('--disableMagneticField', action='store_true', dest='disable
                     help = "Disable the magnetic field.")
 
 
-#              No Cells   With Cells
-# Barrel         14s         24s
-# +ExtBarrel
-# +EndCap       
 
 
 if len(sys.argv)==1:
@@ -103,7 +99,7 @@ try:
   
   
   gun.merge(acc)
-  #calorimeter.merge(acc)
+  calorimeter.merge(acc)
   
   
   if args.ntuple == 'physics':
@@ -145,9 +141,9 @@ try:
                                 DeltaR          = 0.15,
                                 DumpCells       = True,
                                 OutputLevel     = args.outputLevel)
-      #acc+= cluster
-      #acc+= ringer
-      #acc += ntuple
+      acc+= cluster
+      acc+= ringer
+      acc += ntuple
   
   
   elif args.ntuple == 'raw':
