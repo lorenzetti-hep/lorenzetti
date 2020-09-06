@@ -18,32 +18,6 @@ struct Lorenzett_v1 {
   float seed_eta          ;
   float seed_phi          ;
   float seed_et           ;
-  bool  mc_cl_match       ;
-  float mc_cl_eta         ;
-  float mc_cl_phi         ;
-  float mc_cl_et          ;
-  float mc_cl_e1          ;
-  float mc_cl_e2          ;
-  float mc_cl_e3          ;
-  float mc_cl_ehad1       ;
-  float mc_cl_ehad2       ;
-  float mc_cl_ehad3       ;
-  float mc_cl_etot        ;
-  float mc_cl_reta        ;
-  float mc_cl_rphi        ;
-  float mc_cl_rhad        ;
-  float mc_cl_eratio      ;
-  float mc_cl_f0          ;
-  float mc_cl_f1          ;
-  float mc_cl_f2          ;
-  float mc_cl_f3          ;
-  float mc_cl_weta2       ;
-  float mc_cl_e233        ;
-  float mc_cl_e237        ;
-  float mc_cl_e277        ;
-  float mc_cl_emaxs1      ;
-  float mc_cl_e2tsts1     ;
-  bool  mc_cl_ringer_match;
   bool  cl_match          ;
   float cl_eta            ;
   float cl_phi            ;
@@ -71,19 +45,9 @@ struct Lorenzett_v1 {
   float cl_e2tsts1        ;
   bool  cl_ringer_match   ;
 
-  std::vector<float> *mc_cl_rings       ;
   std::vector<float> *cl_rings          ;
 
 
-  std::vector<float> *mc_cl_cell_et           ;
-  std::vector<float> *mc_cl_cell_eta          ;
-  std::vector<float> *mc_cl_cell_phi          ;
-  std::vector<float> *mc_cl_cell_deta         ;
-  std::vector<float> *mc_cl_cell_dphi         ;
-  std::vector<float> *mc_cl_cell_energy       ;
-  std::vector<int>   *mc_cl_cell_channel_eta  ;
-  std::vector<int>   *mc_cl_cell_channel_phi  ;
-  std::vector<int>   *mc_cl_cell_sampling     ;
   
   
   std::vector<float> *cl_cell_et              ;
@@ -92,8 +56,6 @@ struct Lorenzett_v1 {
   std::vector<float> *cl_cell_deta            ;
   std::vector<float> *cl_cell_dphi            ;
   std::vector<float> *cl_cell_energy          ;
-  std::vector<int>   *cl_cell_channel_eta     ;
-  std::vector<int>   *cl_cell_channel_phi     ;
   std::vector<int>   *cl_cell_sampling        ;
 
 

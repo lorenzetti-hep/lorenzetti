@@ -18,7 +18,7 @@ class EventReader( TEventLoop ):
     # Retrieve all information needed
     TEventLoop.__init__(self, name, **kw)
     # Loading libraries
-    ROOT.gSystem.Load('liblorenzett')
+    ROOT.gSystem.Load('liblorenzetti')
 
     
   # Initialize all services
