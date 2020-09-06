@@ -10,10 +10,8 @@ class CaloNtupleMaker( Logger ):
   __allow_keys = [
                   "EventKey",
                   "ClusterKey", 
-                  "TruthClusterKey", 
                   "CaloKey", 
                   "RingerKey", 
-                  "TruthRingerKey", 
                   "OutputLevel", 
                   "DeltaR", 
                   "DumpCells",

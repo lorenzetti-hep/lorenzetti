@@ -185,10 +185,10 @@ std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > >
           etot+=cell->energy();
         }
       }
-      MSG_DEBUG( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
+      MSG_INFO( "Eletromagnetic energy in 0.1 x 0.1 center in the hotcell is: " << etot );
       MSG_DEBUG( "Is cluster energy higher than " << m_minCenterEnergy ); 
       if(etot >= m_minCenterEnergy ){
-        MSG_DEBUG( "Creating one cluster since the center energy is higher than the energy cut" );
+        MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
         clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
         fillCluster( ctx, clus, m_cellsKey );
         m_showerShapes->executeTool( evt, clus );

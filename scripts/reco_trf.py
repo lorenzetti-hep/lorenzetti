@@ -42,11 +42,12 @@ parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = F
 parser.add_argument('--disableMagneticField', action='store_true', dest='disableMagneticField',required = False, 
                     help = "Disable the magnetic field.")
 
-parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=9,
+parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
 
 
+pi = np.pi
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -115,22 +116,8 @@ try:
                                   MinCenterEnergy = 15*GeV, # 15GeV in the EM core 
                                   HistogramPath   = "Expert/Clusters",
                                   OutputLevel     = outputLevel)
-      
-      
-      mc_cluster = CaloClusterMaker( "TruthCaloClusterMaker",
-                                  CellsKey        = recordable("TruthCells"),
-                                  EventKey        = recordable("EventInfo"),
-                                  ClusterKey      = recordable("TruthClusters"),
-                                  TruthKey        = recordable("TruthParticles"),
-                                  EtaWindow       = 0.4,
-                                  PhiWindow       = 0.4,
-                                  MinCenterEnergy = 15*GeV, # 15GeV in the EM core 
-                                  HistogramPath   = "Expert/TruthClusters",
-                                  OutputLevel     = outputLevel)
-      
-      
 
-      pi = np.pi
+
       ringer = CaloRingerBuilder( "CaloRingerBuilder",
                                   RingerKey     = recordable("Rings"),
                                   ClusterKey    = recordable("Clusters"),
@@ -140,38 +127,21 @@ try:
                                   LayerRings    = [0,1,2,3,4,5,6],
                                   HistogramPath = "Expert/Ringer",
                                   OutputLevel   = outputLevel)
-  
-      pi = np.pi
-      mc_ringer = CaloRingerBuilder( "TruthCaloRingerBuilder",
-                                  RingerKey     = recordable("TruthRings"),
-                                  ClusterKey    = recordable("TruthClusters"),
-                                  DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                                  DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                                  NRings        = [8, 64, 8, 8, 4, 4, 4],
-                                  LayerRings    = [0,1,2,3,4,5,6],
-                                  HistogramPath = "Expert/TruthRinger",
-                                  OutputLevel   = outputLevel)
  
-
-
-
-
   
       from CaloNtupleBuilder import CaloNtupleMaker
       ntuple = CaloNtupleMaker( "CaloNtupleMaker",
                                 EventKey        = recordable("EventInfo"),
                                 RingerKey       = recordable("Rings"),
-                                TruthRingerKey  = recordable("TruthRings"),
                                 ClusterKey      = recordable("Clusters"),
-                                TruthClusterKey = recordable("TruthClusters"),
                                 DeltaR          = 0.15,
                                 DumpCells       = True,
                                 OutputLevel     = outputLevel)
+      
+      
       acc+= cluster
-      acc+= mc_cluster
       acc+= ringer
-      acc+= mc_ringer
-      acc += ntuple
+      acc+= ntuple
   
   
   elif args.ntuple == 'raw':

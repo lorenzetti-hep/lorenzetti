@@ -13,6 +13,7 @@ class DetectorConstruction(Logger):
                   "UseBarrel",
                   "UseExtendedBarrel",
                   "UseEndCap",
+                  "CutOnPhi",
                   ]
   
   def __init__( self, name, **kw ):

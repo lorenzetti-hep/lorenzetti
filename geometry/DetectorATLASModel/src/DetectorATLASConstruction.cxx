@@ -36,13 +36,13 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
   IMsgService(name), 
    G4VUserDetectorConstruction(),
-   m_checkOverlaps(true),
-   m_cutOnPhi(false)
+   m_checkOverlaps(true)
 {
-  declareProperty( "UseMagneticField", m_useMagneticField=true );
+  declareProperty( "UseMagneticField"    , m_useMagneticField=true    );
   declareProperty( "UseBarrel"           , m_useBarrel=true           );
   declareProperty( "UseExtendedBarrel"   , m_useExtendedBarrel=true   );
   declareProperty( "UseEndCap"           , m_useEndCap=true           );
+  declareProperty( "CutOnPhi"            , m_cutOnPhi=false           );
   
   MSG_INFO( "Using ATLAS-like detector." );
 }
@@ -1184,7 +1184,7 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
   if (m_useMagneticField){
     MSG_INFO("Set magnetic field")
-    m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
+    m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2*tesla ),17, false );
     //FieldSetup* m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
     //G4AutoDelete::Register(fieldSetup);
     //m_fieldSetup.Put(fieldSetup);

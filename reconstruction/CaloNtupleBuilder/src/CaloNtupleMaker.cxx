@@ -21,9 +21,7 @@ CaloNtupleMaker::CaloNtupleMaker( std::string name ) :
 {
   declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
   declareProperty( "ClusterKey"     , m_clusterKey="Clusters"           );
-  declareProperty( "TruthClusterKey", m_truthClusterKey="TruthClusters" );
-  declareProperty( "RingerKey"      , m_ringerKey="TruthRinger"         );
-  declareProperty( "TruthRingerKey" , m_truthRingerKey="TruthRinger"    );
+  declareProperty( "RingerKey"      , m_ringerKey="Rings"               );
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
   declareProperty( "DeltaR"         , m_deltaR=0.15                     );
   declareProperty( "DumpCells"      , m_dumpCells=false                 );
@@ -53,41 +51,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   float seed_eta          = -1;
   float seed_phi          = -1;
   float seed_et           = -1;
-  bool  mc_cl_match       = false;
-  float mc_cl_eta         = -1;
-  float mc_cl_phi         = -1;
-  float mc_cl_et          = -1;
-  float mc_cl_e1          = -1;
-  float mc_cl_e2          = -1;
-  float mc_cl_e3          = -1;
-  float mc_cl_ehad1       = -1;
-  float mc_cl_ehad2       = -1;
-  float mc_cl_ehad3       = -1;
-  float mc_cl_etot        = -1;
-  float mc_cl_reta        = -1;
-  float mc_cl_rphi        = -1;
-  float mc_cl_rhad        = -1;
-  float mc_cl_eratio      = -1;
-  float mc_cl_f0          = -1;
-  float mc_cl_f1          = -1;
-  float mc_cl_f2          = -1;
-  float mc_cl_f3          = -1;
-  float mc_cl_weta2       = -1;
-  float mc_cl_e233        = -1;
-  float mc_cl_e237        = -1;
-  float mc_cl_e277        = -1;
-  float mc_cl_emaxs1      = -1;
-  float mc_cl_e2tsts1     = -1;
-  bool  mc_cl_ringer_match=false;
-  
-  std::vector<float> mc_cl_rings         ;
-  std::vector<float> mc_cl_cell_et       ;
-  std::vector<float> mc_cl_cell_eta      ;
-  std::vector<float> mc_cl_cell_phi      ;
-  std::vector<float> mc_cl_cell_deta     ;
-  std::vector<float> mc_cl_cell_dphi     ;
-  std::vector<float> mc_cl_cell_energy   ;
-  std::vector<int>   mc_cl_cell_layer ; 
   
   bool  cl_match          = false;
   float cl_eta            = -1;
@@ -134,40 +97,6 @@ StatusCode CaloNtupleMaker::bookHistograms( SG::EventContext &ctx ) const
   tree->Branch(  "seed_eta"           , &seed_eta           );
   tree->Branch(  "seed_phi"           , &seed_phi           );
   tree->Branch(  "seed_et"            , &seed_et            );
-  tree->Branch(  "mc_cl_match"        , &mc_cl_match        );
-  tree->Branch(  "mc_cl_eta"          , &mc_cl_eta          );
-  tree->Branch(  "mc_cl_phi"          , &mc_cl_phi          );
-  tree->Branch(  "mc_cl_et"           , &mc_cl_et           );
-  tree->Branch(  "mc_cl_e1"           , &mc_cl_e1           );
-  tree->Branch(  "mc_cl_e2"           , &mc_cl_e2           );
-  tree->Branch(  "mc_cl_e3"           , &mc_cl_e3           );
-  tree->Branch(  "mc_cl_ehad1"        , &mc_cl_ehad1        );
-  tree->Branch(  "mc_cl_ehad2"        , &mc_cl_ehad2        );
-  tree->Branch(  "mc_cl_ehad3"        , &mc_cl_ehad3        );
-  tree->Branch(  "mc_cl_etot"         , &mc_cl_etot         );
-  tree->Branch(  "mc_cl_reta"         , &mc_cl_reta         );
-  tree->Branch(  "mc_cl_rphi"         , &mc_cl_rphi         );
-  tree->Branch(  "mc_cl_rhad"         , &mc_cl_rhad         );
-  tree->Branch(  "mc_cl_eratio"       , &mc_cl_eratio       );
-  tree->Branch(  "mc_cl_f0"           , &mc_cl_f0           );
-  tree->Branch(  "mc_cl_f1"           , &mc_cl_f1           );
-  tree->Branch(  "mc_cl_f2"           , &mc_cl_f2           );
-  tree->Branch(  "mc_cl_f3"           , &mc_cl_f3           );
-  tree->Branch(  "mc_cl_weta2"        , &mc_cl_weta2        );
-  tree->Branch(  "mc_cl_e233"         , &mc_cl_e233         );
-  tree->Branch(  "mc_cl_e237"         , &mc_cl_e237         );
-  tree->Branch(  "mc_cl_e277"         , &mc_cl_e277         );
-  tree->Branch(  "mc_cl_emaxs1"       , &mc_cl_emaxs1       );
-  tree->Branch(  "mc_cl_e2tsts1"      , &mc_cl_e2tsts1      );
-  tree->Branch(  "mc_cl_ringer_match" , &mc_cl_ringer_match );
-  tree->Branch(  "mc_cl_rings"        , &mc_cl_rings        );
-  tree->Branch(  "mc_cl_cell_et"      , &mc_cl_cell_et      );
-  tree->Branch(  "mc_cl_cell_eta"     , &mc_cl_cell_eta     );
-  tree->Branch(  "mc_cl_cell_phi"     , &mc_cl_cell_phi     );
-  tree->Branch(  "mc_cl_cell_deta"    , &mc_cl_cell_deta    );
-  tree->Branch(  "mc_cl_cell_dphi"    , &mc_cl_cell_dphi    );
-  tree->Branch(  "mc_cl_cell_energy"  , &mc_cl_cell_energy  );
-  tree->Branch(  "mc_cl_cell_layer", &mc_cl_cell_layer);
 
   tree->Branch(  "cl_match"           , &cl_match           );
   tree->Branch(  "cl_eta"             , &cl_eta             );
@@ -283,32 +212,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   float seed_eta       ;
   float seed_phi       ;
   float seed_et        ;
-  bool  mc_cl_match    ;
-  float mc_cl_eta      ;
-  float mc_cl_phi      ;
-  float mc_cl_et       ;
-  float mc_cl_e1       ;
-  float mc_cl_e2       ;
-  float mc_cl_e3       ;
-  float mc_cl_ehad1    ;
-  float mc_cl_ehad2    ;
-  float mc_cl_ehad3    ;
-  float mc_cl_etot     ;
-  float mc_cl_reta     ;
-  float mc_cl_rphi     ;
-  float mc_cl_rhad     ;
-  float mc_cl_eratio   ;
-  float mc_cl_f0       ;
-  float mc_cl_f1       ;
-  float mc_cl_f2       ;
-  float mc_cl_f3       ;
-  float mc_cl_weta2    ;
-  float mc_cl_e233     ;
-  float mc_cl_e237     ;
-  float mc_cl_e277     ;
-  float mc_cl_emaxs1   ;
-  float mc_cl_e2tsts1  ;
-  bool  mc_cl_ringer_match;
   bool  cl_match       ;
   float cl_eta         ;
   float cl_phi         ;
@@ -336,15 +239,7 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   float cl_e2tsts1     ;
   bool  cl_ringer_match;
 
-  std::vector<float> *mc_cl_rings         = nullptr;
   std::vector<float> *cl_rings            = nullptr;
-  std::vector<float> *mc_cl_cell_et       = nullptr;
-  std::vector<float> *mc_cl_cell_eta      = nullptr;
-  std::vector<float> *mc_cl_cell_phi      = nullptr;
-  std::vector<float> *mc_cl_cell_deta     = nullptr;
-  std::vector<float> *mc_cl_cell_dphi     = nullptr;
-  std::vector<float> *mc_cl_cell_energy   = nullptr;
-  std::vector<int>   *mc_cl_cell_layer = nullptr;
   std::vector<float> *cl_cell_et          = nullptr;
   std::vector<float> *cl_cell_eta         = nullptr;
   std::vector<float> *cl_cell_phi         = nullptr;
@@ -359,42 +254,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   InitBranch( tree,  "seed_eta"               , &seed_eta               );
   InitBranch( tree,  "seed_phi"               , &seed_phi               );
   InitBranch( tree,  "seed_et"                , &seed_et                );
-  InitBranch( tree,  "mc_cl_match"            , &mc_cl_match            );
-  InitBranch( tree,  "mc_cl_eta"              , &mc_cl_eta              );
-  InitBranch( tree,  "mc_cl_phi"              , &mc_cl_phi              );
-  InitBranch( tree,  "mc_cl_et"               , &mc_cl_et               );
-  InitBranch( tree,  "mc_cl_e1"               , &mc_cl_e1               );
-  InitBranch( tree,  "mc_cl_e2"               , &mc_cl_e2               );
-  InitBranch( tree,  "mc_cl_e3"               , &mc_cl_e3               );
-  InitBranch( tree,  "mc_cl_ehad1"            , &mc_cl_ehad1            );
-  InitBranch( tree,  "mc_cl_ehad2"            , &mc_cl_ehad2            );
-  InitBranch( tree,  "mc_cl_ehad3"            , &mc_cl_ehad3            );
-  InitBranch( tree,  "mc_cl_etot"             , &mc_cl_etot             );
-  InitBranch( tree,  "mc_cl_reta"             , &mc_cl_reta             );
-  InitBranch( tree,  "mc_cl_rphi"             , &mc_cl_rphi             );
-  InitBranch( tree,  "mc_cl_rhad"             , &mc_cl_rhad             );
-  InitBranch( tree,  "mc_cl_eratio"           , &mc_cl_eratio           );
-  InitBranch( tree,  "mc_cl_f0"               , &mc_cl_f0               );
-  InitBranch( tree,  "mc_cl_f1"               , &mc_cl_f1               );
-  InitBranch( tree,  "mc_cl_f2"               , &mc_cl_f2               );
-  InitBranch( tree,  "mc_cl_f3"               , &mc_cl_f3               );
-  InitBranch( tree,  "mc_cl_weta2"            , &mc_cl_weta2            );
-  InitBranch( tree,  "mc_cl_e233"             , &mc_cl_e233             );
-  InitBranch( tree,  "mc_cl_e237"             , &mc_cl_e237             );
-  InitBranch( tree,  "mc_cl_e277"             , &mc_cl_e277             );
-  InitBranch( tree,  "mc_cl_emaxs1"           , &mc_cl_emaxs1           );
-  InitBranch( tree,  "mc_cl_e2tsts1"          , &mc_cl_e2tsts1          );
-  InitBranch( tree,  "mc_cl_ringer_match"     , &mc_cl_ringer_match     );
-  InitBranch( tree,  "mc_cl_rings"            , &mc_cl_rings            );
-  InitBranch( tree,  "mc_cl_cell_et"          , &mc_cl_cell_et          );
-  InitBranch( tree,  "mc_cl_cell_eta"         , &mc_cl_cell_eta         );
-  InitBranch( tree,  "mc_cl_cell_phi"         , &mc_cl_cell_phi         );
-  InitBranch( tree,  "mc_cl_cell_deta"        , &mc_cl_cell_deta        );
-  InitBranch( tree,  "mc_cl_cell_dphi"        , &mc_cl_cell_dphi        );
-  InitBranch( tree,  "mc_cl_cell_energy"      , &mc_cl_cell_energy      );
-  InitBranch( tree,  "mc_cl_cell_layer"       , &mc_cl_cell_layer       );
-
-  
   InitBranch( tree,  "cl_match"               , &cl_match               );
   InitBranch( tree,  "cl_eta"                 , &cl_eta                 );
   InitBranch( tree,  "cl_phi"                 , &cl_phi                 );
@@ -439,32 +298,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   seed_eta            = 0;
   seed_phi            = 0;
   seed_et             = 0;
-  mc_cl_match         = false;
-  mc_cl_eta           = 0;
-  mc_cl_phi           = 0;
-  mc_cl_et            = 0;
-  mc_cl_e1            = 0;
-  mc_cl_e2            = 0;
-  mc_cl_e3            = 0;
-  mc_cl_ehad1         = 0;
-  mc_cl_ehad2         = 0;
-  mc_cl_ehad3         = 0;
-  mc_cl_etot          = 0;
-  mc_cl_reta          = 0;
-  mc_cl_rphi          = 0;
-  mc_cl_rhad          = 0;
-  mc_cl_eratio        = 0;
-  mc_cl_f0            = 0;
-  mc_cl_f1            = 0;
-  mc_cl_f2            = 0;
-  mc_cl_f3            = 0;
-  mc_cl_weta2         = 0;
-  mc_cl_e233          = 0;
-  mc_cl_e237          = 0;
-  mc_cl_e277          = 0;
-  mc_cl_emaxs1        = 0;
-  mc_cl_e2tsts1       = 0;
-  mc_cl_ringer_match  = false;
   cl_match            = false;
   cl_eta              = 0;
   cl_phi              = 0;
@@ -492,17 +325,7 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   cl_e2tsts1          = 0;
   cl_ringer_match     =false;
 
-  mc_cl_rings->clear()     ;
   cl_rings->clear()        ;
-  mc_cl_cell_et->clear()      ;
-  mc_cl_cell_eta->clear()     ;
-  mc_cl_cell_phi->clear()     ;
-  mc_cl_cell_deta->clear()    ;
-  mc_cl_cell_dphi->clear()    ;
-  mc_cl_cell_energy->clear()  ;
-  mc_cl_cell_layer->clear();
-
-
 
   cl_cell_et->clear()         ;
   cl_cell_eta->clear()        ;
@@ -517,64 +340,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   seed_eta    = seed.eta;
   seed_phi    = seed.phi;
   seed_et     = seed.et * 1.e3; // in MeV
-
-  { // Fill all truth values
-    const xAOD::CaloCluster *clus=nullptr;
-    if( match( ctx, m_truthClusterKey, seed, clus ) )
-    {
-      MSG_DEBUG( "Dump truth cluster..." );
-      mc_cl_match   =  true;
-      mc_cl_eta     =  clus->eta()    ;
-      mc_cl_phi     =  clus->phi()    ;
-      mc_cl_et      =  clus->et()     ;
-      mc_cl_e1      =  clus->e1()     ;
-      mc_cl_e2      =  clus->e2()     ;
-      mc_cl_e3      =  clus->e3()     ;
-      mc_cl_ehad1   =  clus->ehad1()  ;
-      mc_cl_ehad2   =  clus->ehad2()  ;
-      mc_cl_ehad3   =  clus->ehad3()  ;
-      mc_cl_etot    =  clus->etot()   ;
-      mc_cl_reta    =  clus->reta()   ;
-      mc_cl_rphi    =  clus->rphi()   ;
-      mc_cl_rhad    =  clus->rhad()   ;
-      mc_cl_eratio  =  clus->eratio() ;
-      mc_cl_f0      =  clus->f0()     ;
-      mc_cl_f1      =  clus->f1()     ;
-      mc_cl_f2      =  clus->f2()     ;
-      mc_cl_f3      =  clus->f3()     ;
-      mc_cl_weta2   =  clus->weta2()  ;
-      mc_cl_e233    =  clus->e233()   ;
-      mc_cl_e237    =  clus->e237()   ;
-      mc_cl_e277    =  clus->e277()   ;
-      mc_cl_emaxs1  =  clus->emaxs1() ;
-      mc_cl_e2tsts1 =  clus->e2tsts1();
-
-
-      //fillTruthCells(clus);
-      const xAOD::CaloRings *ringer=nullptr;
-      if( match( ctx, m_truthRingerKey, clus, ringer ) )
-      {
-        mc_cl_ringer_match = true;
-        auto vec = ringer->rings();
-        mc_cl_rings->assign( vec.begin(), vec.end() );
-      }
-
-      if (m_dumpCells){
-        MSG_INFO( "Dump cells.." );
-        for (auto &cell : clus->allCells() ){
-          mc_cl_cell_et->push_back( cell->et() );
-          mc_cl_cell_eta->push_back( cell->eta() );
-          mc_cl_cell_phi->push_back( cell->phi() );
-          mc_cl_cell_deta->push_back( cell->deltaEta() );
-          mc_cl_cell_dphi->push_back( cell->deltaPhi() );
-          mc_cl_cell_energy->push_back( cell->energy() );
-          // Get all necessary ids to locate the cell outside
-          mc_cl_cell_layer->push_back( (int)cell->layer() );
-        }
-      }
-
-    }
-  }
 
 
   { // Fill all reco values
@@ -625,7 +390,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           cl_cell_deta->push_back( cell->deltaEta() );
           cl_cell_dphi->push_back( cell->deltaPhi() );
           cl_cell_energy->push_back( cell->energy() );
-          // Get all necessary ids to locate the cell outside
           cl_cell_layer->push_back( (int)cell->layer() );
  
         

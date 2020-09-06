@@ -40,7 +40,7 @@ StoreGate::~StoreGate()
 
 
 void StoreGate::mkdir( std::string path ){
-  MSG_INFO( "Creating a directory with name " << path );
+  MSG_DEBUG( "Creating a directory with name " << path );
   if (!m_file->GetDirectory(path.c_str())){
     m_file->mkdir(path.c_str());
     m_file->cd(path.c_str());
@@ -109,13 +109,13 @@ void StoreGate::setLabels(TH1* histo, const std::vector<std::string>& labels) {
         for ( int i = 0; i < std::min( (int)labels.size(), (int)histo->GetNbinsX() ); ++i ) {
             int bin = i+1;
             histo->GetXaxis()->SetBinLabel(bin, labels[i].c_str());
-            MSG_INFO("setting label X" <<  labels[i] << " for bin " << bin);
+            MSG_DEBUG("setting label X" <<  labels[i] << " for bin " << bin);
         }
 
         for ( int i = (int)histo->GetNbinsX(); i < std::min( (int)labels.size(), (int)histo->GetNbinsX()+(int)histo->GetNbinsY() ); ++i ) {
             int bin = i+1-(int)histo->GetNbinsX();
             histo->GetYaxis()->SetBinLabel(bin, labels[i].c_str());
-            MSG_INFO("setting label Y" <<  labels[i] << " for bin " << bin);
+            MSG_DEBUG("setting label Y" <<  labels[i] << " for bin " << bin);
         }
     }
 }

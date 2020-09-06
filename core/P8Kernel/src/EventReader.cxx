@@ -90,8 +90,8 @@ void EventReader::link(TTree *t)
   InitBranch( t, "p_isMain"	  ,&m_p_isMain		);
   InitBranch( t, "p_pdg_id"	  ,&m_p_pdg_id	  );
   InitBranch( t, "p_bc_id"	  ,&m_p_bc_id	    );
-  InitBranch( t, "bc_mu"			,&m_bc_mu				);
-  InitBranch( t, "bc_id_nhits",&m_bc_id_nhits	);
+  //InitBranch( t, "bc_mu"			,&m_bc_mu				);
+  //InitBranch( t, "bc_id_nhits",&m_bc_id_nhits	);
   InitBranch( t, "p_px"				,&m_p_px				);
   InitBranch( t, "p_py"       ,&m_p_py        );
   InitBranch( t, "p_pz"		    ,&m_p_pz		    );
@@ -112,8 +112,8 @@ void EventReader::clear()
   m_p_isMain		->clear();
   m_p_pdg_id	  ->clear();
   m_p_bc_id	    ->clear();
-  m_bc_mu				->clear(); 
-  m_bc_id_nhits	->clear();
+  //m_bc_mu				->clear(); 
+  //m_bc_id_nhits	->clear();
   m_p_px				->clear();
   m_p_py        ->clear();
   m_p_pz		    ->clear();
@@ -133,8 +133,8 @@ void EventReader::allocate()
   m_p_isMain		= new std::vector<int>();
   m_p_pdg_id	  = new std::vector<int>();
   m_p_bc_id	    = new std::vector<int>();
-  m_bc_mu				= new std::vector<float>();
-  m_bc_id_nhits	= new std::vector<int>();
+  //m_bc_mu				= new std::vector<float>();
+  //m_bc_id_nhits	= new std::vector<int>();
   m_p_px				= new std::vector<float>();
   m_p_py        = new std::vector<float>();
   m_p_pz		    = new std::vector<float>();
@@ -154,8 +154,8 @@ void EventReader::release()
   delete m_p_isMain		;
   delete m_p_pdg_id	  ;
   delete m_p_bc_id	  ;
-  delete m_bc_mu			;
-  delete m_bc_id_nhits;	
+  //delete m_bc_mu			;
+  //delete m_bc_id_nhits;	
   delete m_p_px				;
   delete m_p_py       ;
   delete m_p_pz		    ;
