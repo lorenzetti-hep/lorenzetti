@@ -130,9 +130,9 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 }
 
 
-std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster* > > 
-                                             CaloClusterMaker::getAllClusters( EventContext &ctx , std::string key) const
+std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster*> >  CaloClusterMaker::getAllClusters( EventContext &ctx , std::string key) const
 {
+
   std::vector< std::pair<xAOD::TruthParticle*, xAOD::CaloCluster *> > particles;
   
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);

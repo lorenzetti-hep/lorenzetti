@@ -51,7 +51,6 @@ parser.add_argument('-r','--reco_script', action='store', dest='reco_script', re
 parser.add_argument('-n','--ntuple', action='store', dest='ntuple', required = False , default='physics',
                     help = "The ntuple schemma. Choose between physics or raw (for energy reconstruction studies).")
 
-
 parser.add_argument('--disableMagneticField', action='store_true', dest='disableMagneticField', required = False ,
                     help = "Disable the magnetic field")
 

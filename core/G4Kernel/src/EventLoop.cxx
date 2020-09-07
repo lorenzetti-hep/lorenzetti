@@ -64,6 +64,8 @@ void EventLoop::BeginOfEvent()
   timer.stop();
   m_store.cd("Event");
   m_store.hist1( "BeginOfEvent" )->Fill( timer.resume() );
+
+  m_msgCounter=0;
 }
 
 
@@ -71,6 +73,11 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 {
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
+
+  if ( m_msgCounter>2e6 ){
+    MSG_INFO( "Running..." );
+    m_msgCounter=0;
+  }
 
   if(edep>0){
     if(!m_lock){
@@ -82,6 +89,7 @@ void EventLoop::ExecuteEvent( const G4Step* step )
     }
   }
   
+  m_msgCounter++;
 }
 
 

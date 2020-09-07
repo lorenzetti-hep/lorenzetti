@@ -78,7 +78,9 @@ try:
   
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
-                   UseMagneticField = False if args.disableMagneticField else True)
+                   #UseMagneticField = False if args.disableMagneticField else True)
+                   UseMagneticField = False, # Force to be false since the mag field it is not working yet
+                   )
 
   
   acc = ComponentAccumulator("ComponentAccumulator", detector,
@@ -162,12 +164,11 @@ try:
   acc.run(args.numberOfEvents)
   
   
-  if args.numberOfThreads > 1:
-    command = "hadd -f " + args.outputFile + ' '
-    for fname in outputFileList:
-      command+=fname + ' '
-    print( command )
-    os.system(command)
+  command = "hadd -f " + args.outputFile + ' '
+  for fname in outputFileList:
+    command+=fname + ' '
+  print( command )
+  os.system(command)
   
   # remove thread files
   for fname in outputFileList:

@@ -59,7 +59,7 @@ class EventLoop : public G4Run, public MsgService
 
     Gaugi::Timer m_timeout;
 
-    unsigned m_stepCounter;
+    unsigned m_stepCounter, m_msgCounter;
 };
 
   
