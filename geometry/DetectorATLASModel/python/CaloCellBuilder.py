@@ -81,7 +81,7 @@ class CaloCellBuilder( Logger ):
                               OutputLevel             = self.__outputLevel,
                               Layer                   = layer_id,
                               Section                 = 0 if layer_id < 4 else 1, # ECal = 0,1,2,3 and HCal = 4,5,6
-                              DetailedHistograms      = True,
+                              DetailedHistograms      = False, # Use True when debug with only one thread
                               OnlyRoI                 = False,
                               )
           alg.Tools = [pulse, of]

@@ -118,17 +118,7 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   int nEtabins = m_eta_bins.size() -1;
   int nPhibins = m_phi_bins.size() -1;
 
-  /*
-  auto h2_cells = new TH2Poly();
-  h2_cells->SetName("cells");
-  h2_cells->SetTitle("Estimated Cells Energy; #eta; #phi; Energy [MeV]" );
-  for ( size_t eta_idx=0; eta_idx<( m_eta_bins.size() -1); ++eta_idx ){
-    for ( size_t phi_idx=0; phi_idx<( m_phi_bins.size() -1); ++phi_idx ){
-      h2_cells->AddBin( m_eta_bins[eta_idx], m_eta_bins[eta_idx+1], m_phi_bins[phi_idx], m_phi_bins[phi_idx+1] );
-    }
-  }
-  store->add( (TH2F*)h2_cells );
-  */
+ 
 
   // Create the 2D histogram for monitoring purpose
   store->add(new TH2F( "cells", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
@@ -231,16 +221,16 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
 
   
 
-  /*
-  // Fill time steps
-  G4StepPoint* point = step->GetPreStepPoint();
-  float t = (float)point->GetGlobalTime() / ns;
-  auto store = ctx.getStoreGateSvc();
-  store->cd(m_histPath);
-  store->hist1("timesteps")->Fill(t);
-  float edep = (float)step->GetTotalEnergyDeposit();
-  store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
-  */
+  if (m_detailedHistograms ){
+    // Fill time steps
+    G4StepPoint* point = step->GetPreStepPoint();
+    float t = (float)point->GetGlobalTime() / ns;
+    auto store = ctx.getStoreGateSvc();
+    store->cd(m_histPath);
+    store->hist1("timesteps")->Fill(t);
+    float edep = (float)step->GetTotalEnergyDeposit();
+    store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
+  }
 
   return StatusCode::SUCCESS;
 }

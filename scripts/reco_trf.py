@@ -97,7 +97,7 @@ try:
                      )
   
   calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
-                                HistogramPath = "Expert/CaloCells",
+                                HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 )
   
@@ -127,7 +127,7 @@ try:
                                   DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
                                   NRings        = [8, 64, 8, 8, 4, 4, 4],
                                   LayerRings    = [0,1,2,3,4,5,6],
-                                  HistogramPath = "Expert/Ringer",
+                                  HistogramPath = "Expert/Rings",
                                   OutputLevel   = outputLevel)
  
   

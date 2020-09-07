@@ -4,6 +4,12 @@
 #include "TVector3.h"
 #include <cstdlib>
 
+#include "TCanvas.h"
+#include "TH1F.h"
+#include "TH2F.h"
+#include "TH2Poly.h"
+
+
 using namespace Gaugi;
 using namespace SG;
 using namespace CaloSampling;
@@ -123,8 +129,33 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 }
 
 
-StatusCode CaloCellMerge::fillHistograms( EventContext &/*ctx*/ ) const
+StatusCode CaloCellMerge::fillHistograms( EventContext & /*ctx*/ ) const
 {
+
+  /*
+  auto store = ctx.getStoreGateSvc();
+  SG::ReadHandle<xAOD::CaloCellContainer> container( m_cellsKey, ctx );
+ 
+  if( !container.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellContainer using this key: " << m_cellsKey);
+  }
+
+  auto canvas = new TCanvas("canvas","canvas",500,500);
+  auto hist = new TH2Poly();
+  hist->SetName("cells_x");
+  hist->SetTitle("Estimated Cells Energy; #eta; #phi; Energy [MeV]" );
+ 
+  for ( const auto cell : **container.ptr() ){ 
+    if( cell->layer() != CaloLayer::EM2 ) continue;
+    hist->AddBin( cell->eta() - cell->deltaEta(), cell->eta() + cell->deltaEta(),
+                  cell->phi() - cell->deltaPhi(), cell->phi() + cell->deltaPhi() );
+  
+  }
+  hist->Draw("colz");
+  canvas->SaveAs("test.pdf");
+  delete canvas, hist;
+  */
+
   return StatusCode::SUCCESS;
 }
 
