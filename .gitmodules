@@ -1,4 +1,0 @@
-[submodule "external/cpk"]
-	path = external/cpk
-	url = https://github.com/jodafons/cpk.git
-	ignore = all
