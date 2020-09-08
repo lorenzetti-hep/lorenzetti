@@ -61,15 +61,15 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::RawCell *&cell ) const
   int etaBin = findIndex( m_eta_bins, eta );
   int phiBin = findIndex( m_phi_bins, phi );
   
-  if (etaBin!=-1 && phiBin!=-1){
-    
+  if (etaBin!=-1 && phiBin!=-1){    
     unsigned int hash = m_sample*1e7 + m_segmentation*1e6 + ( etaBin*(m_phi_bins.size()-1) + phiBin );
-    //std::cout << eta << " " << phi << " " << etaBin << " " << phiBin << " = " << hash << std::endl;
-    cell = m_collection.at(hash);
-    return true;
+    if (m_collection.count(hash)>0){
+      cell = m_collection.at(hash);
+      return true;
+    }else{
+      std::cout << "error! hash " << hash << " does not exist into the map collection but the bin grid find some one. Let's skip this..." << std::endl;
+    }
   }
-
-
 
   return false;
 }
