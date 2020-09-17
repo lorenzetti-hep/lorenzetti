@@ -241,8 +241,19 @@ void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
 bool EventReader::Add( G4Event* g4event , int i, int bc_id )
 {
   G4LorentzVector xvtx( m_p_prod_x->at(i)*mm, m_p_prod_y->at(i)*mm, m_p_prod_z->at(i)*mm, (m_p_prod_t->at(i) /*mm*/ * mm /*m*/ / (c_light*ns) /*ns*/) + (bc_id*m_bc_duration) /*ns*/  );
-  if (! CheckVertexInsideWorld(xvtx.vect())) return false;
   G4PrimaryVertex* g4vtx= new G4PrimaryVertex(  xvtx.x(), xvtx.y(), xvtx.z(), xvtx.t()  );
+  if (! CheckVertexInsideWorld(xvtx.vect())){
+    //std::cout << "particle is not inside the world!" << std::endl;
+    std::cerr << "Particle is not inside the world!" << std::endl;
+    std::cerr << "Pythia : " 
+        << " x: " << m_p_prod_x->at(i)
+        << " y: " << m_p_prod_y->at(i)
+        << " z: " << m_p_prod_z->at(i)
+        << " t[mm]: " << m_p_prod_t->at(i)
+        << " pgd_id: " << m_p_pdg_id->at(i)
+        << std::endl;
+    return false;
+  }
   G4int pdgcode= m_p_pdg_id->at(i);
   G4LorentzVector p( m_p_px->at(i)*GeV, m_p_py->at(i)*GeV, m_p_pz->at(i)*GeV,  m_p_e->at(i)*GeV );
   G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x(), p.y(), p.z());

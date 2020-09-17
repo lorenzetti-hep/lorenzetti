@@ -1,0 +1,31 @@
+! 1) Settings used in the main program.
+
+! 2) Settings related to output in init(), next() and stat().
+Init:showChangedSettings = on      ! list changed settings
+Init:showChangedParticleData = on  ! list changed particle data
+Next:numberCount = 100             ! print message every n events
+Next:numberShowInfo = 1            ! print event information n times
+Next:numberShowProcess = 1         ! print process record n times
+
+!Key requirement: switch off ProcessLevel, and thereby also PartonLevel.
+! 3) Beam parameter settings. Incoming beams do not radiate.
+ProcessLevel:all = off
+
+! 4) Set up properties of the GenericParticle and its decays.
+! id:all = name antiName spinType chargeType colType m0 mWidth mMin mMax tau0
+999999:all = GenericLLP void 0 0 0 3. 0. 0. 0. 1.
+! id:addChannel = onMode bRatio meMode product1 product2 ...
+999999:addChannel = 1 1.15 101 22 22  !  -> gamma gamma
+999999:mayDecay = 1
+999999:isResonance = 0
+
+! 5) Tell that also long-lived should decay.
+!13:mayDecay   = true                 ! mu+-
+!211:mayDecay  = true                 ! pi+-
+!321:mayDecay  = true                 ! K+-
+!130:mayDecay  = true                 ! K0_L
+!2112:mayDecay = true                 ! n
+
+! 6) Other stuff
+ParticleDecays:tau0Max = 10000.0
+ParticleDecays:limitTau0 = off

@@ -41,6 +41,7 @@ namespace Gaugi{
       /* Declare */
       void declareProperty( std::string name, int                       &value );
       void declareProperty( std::string name, float                     &value );
+      void declareProperty( std::string name, double                    &value );
       void declareProperty( std::string name, bool                      &value );
       void declareProperty( std::string name, std::string               &value );
       void declareProperty( std::string name, std::vector<int>          &value );
@@ -51,6 +52,7 @@ namespace Gaugi{
       /* Setter */
       void setProperty( std::string name, int                       value );
       void setProperty( std::string name, float                     value );
+      void setProperty( std::string name, double                    value );
       void setProperty( std::string name, bool                      value );
       void setProperty( std::string name, std::string               value );
       void setProperty( std::string name, std::vector<int>          value );
@@ -61,6 +63,7 @@ namespace Gaugi{
       /* Getter */
       void getProperty( std::string name, int                       &value );
       void getProperty( std::string name, float                     &value );
+      void getProperty( std::string name, double                    &value );
       void getProperty( std::string name, bool                      &value );
       void getProperty( std::string name, std::string               &value );
       void getProperty( std::string name, std::vector<int>          &value );
@@ -95,6 +98,7 @@ namespace Gaugi{
    
   inline void PropertyService::declareProperty( std::string name, int          &value              ){__declareProperty<int>(name,value);}
   inline void PropertyService::declareProperty( std::string name, float        &value              ){__declareProperty<float>(name,value);}
+  inline void PropertyService::declareProperty( std::string name, double       &value              ){__declareProperty<double>(name,value);}
   inline void PropertyService::declareProperty( std::string name, bool         &value              ){__declareProperty<bool>(name,value);}
   inline void PropertyService::declareProperty( std::string name, std::string  &value              ){__declareProperty<std::string>(name,value);}
   inline void PropertyService::declareProperty( std::string name, std::vector<int>          &value ){__declareProperty<std::vector<int>>(name,value);}
@@ -115,6 +119,7 @@ namespace Gaugi{
   
   inline void PropertyService::setProperty( std::string name, int                       value ){__setProperty<int>(name,value);}
   inline void PropertyService::setProperty( std::string name, float                     value ){__setProperty<float>(name,value);}
+  inline void PropertyService::setProperty( std::string name, double                    value ){__setProperty<double>(name,value);}
   inline void PropertyService::setProperty( std::string name, bool                      value ){__setProperty<bool>(name,value);}
   inline void PropertyService::setProperty( std::string name, std::string               value ){__setProperty<std::string>(name,value);}
   inline void PropertyService::setProperty( std::string name, std::vector<int>          value ){__setProperty<std::vector<int>>(name,value);}
@@ -132,6 +137,7 @@ namespace Gaugi{
    
   inline void PropertyService::getProperty( std::string name, int                       &value ){__getProperty<int>(name,value);}
   inline void PropertyService::getProperty( std::string name, float                     &value ){__getProperty<float>(name,value);}
+  inline void PropertyService::getProperty( std::string name, double                    &value ){__getProperty<double>(name,value);}
   inline void PropertyService::getProperty( std::string name, bool                      &value ){__getProperty<bool>(name,value);}
   inline void PropertyService::getProperty( std::string name, std::string               &value ){__getProperty<std::string>(name,value);}
   inline void PropertyService::getProperty( std::string name, std::vector<int>          &value ){__getProperty<std::vector<int>>(name,value);}

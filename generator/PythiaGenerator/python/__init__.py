@@ -17,6 +17,10 @@ from . import ParticleGun
 __all__.extend(ParticleGun.__all__)
 from .ParticleGun import *
 
+from . import LLPGun
+__all__.extend(LLPGun.__all__)
+from .LLPGun import *
+
 from . import Pileup
 __all__.extend(Pileup.__all__)
 from .Pileup import *
