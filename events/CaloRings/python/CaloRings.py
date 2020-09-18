@@ -11,16 +11,10 @@ class CaloRings(EDM):
 
   # define all skimmed branches here.
   __eventBranches = {
-      "Lorenzett_v1" : {
-        "Truth__CaloRings": [
-                              "mc_cl_ringer_match",
-  														"mc_cl_rings", 
-                            ],         
-        "CaloRings"      : [
-															"cl_ringer_match",
-  														"cl_rings",
-                            ]
-                      }
+      "Lorenzetti_v1" : [
+													"cl_ringer_match",
+  												"cl_rings",
+                      ]
                   }
 
   def __init__(self):
@@ -29,11 +23,8 @@ class CaloRings(EDM):
 
   def initialize(self):
     
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
-      if not self._is_hlt:
-        branches = self.__eventBranches['Lorenzett_v1']['Truth__CaloRings']
-      else:
-        branches = self.__eventBranches['Lorenzett_v1']['CaloRings']
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
+      branches = self.__eventBranches['Lorenzetti_v1']
       # Link all branches 
       for branch in branches:
         self._logger.debug(branch)
@@ -51,13 +42,10 @@ class CaloRings(EDM):
   
   def ringsE(self):
     """
-      Retrieve the rings information from Lorenzett
+      Retrieve the rings information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
-      if not self._is_hlt:
-        return self._event.mc_cl_rings
-      else:
-        return self._event.cl_rings
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
+      return self._event.cl_rings
     else:
       self._logger.warning("Impossible to retrieve the value of Calo rings.")
       return -999
@@ -67,11 +55,8 @@ class CaloRings(EDM):
     """
       Check if cluster match with the seed
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
-      if not self._is_hlt:
-        return self._event.mc_cl_match
-      else:
-        return self._event.cl_match
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
+      return self._event.cl_match
     else:
       self._logger.warning("Impossible to retrieve the value of Calo match flag.")
       return -999

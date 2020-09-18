@@ -71,7 +71,7 @@ try:
   
   pileup = Pileup( "MinimumBias",
                    File           = minbias_file,
-                   EtaMax         = 1.4,
+                   EtaMax         = 3.2,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,
                    BunchIdStart   = args.bc_id_start,
@@ -89,7 +89,7 @@ try:
   
   jets = JF17( "JF17",
                File        = main_file,
-               EtaMax      = 1.4,
+               EtaMax      = 3.2,
                MinPt       = 17*GeV,
                Select      = 2,
                EtaWindow   = 0.4,

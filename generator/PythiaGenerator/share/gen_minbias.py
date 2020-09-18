@@ -73,7 +73,7 @@ try:
   
   pileup = Pileup( "MinimumBias",
                    File           = minbias,
-                   EtaMax         = 1.4,
+                   EtaMax         = 3.2,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,
                    BunchIdStart   = args.bc_id_start,

@@ -11,5 +11,9 @@ __all__.extend(enumerations.__all__)
 from .enumerations import *
 
 
+from . import schema
+__all__.extend(schema.__all__)
+from .schema import *
+
 
 

@@ -5,7 +5,6 @@
 #include "GaugiKernel/AlgTool.h"
 #include "GaugiKernel/IAlgTool.h"
 #include "GaugiKernel/Timer.h"
-#include "GaugiKernel/versions/Lorenzett_v1.h"
 
 #ifdef __CINT__
 
@@ -22,6 +21,5 @@
 #pragma link C++ class Algorithm+;
 #pragma link C++ class AlgTool+;
 #pragma link C++ class IAlgTool+;
-#pragma link C++ struct edm::Lorenzett_v1+;
 
 #endif

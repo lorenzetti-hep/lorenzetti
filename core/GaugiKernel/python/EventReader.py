@@ -31,29 +31,21 @@ class EventReader( TEventLoop ):
 
    
     # RingerPhysVal hold the address of required branches
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       #self._t.SetBranchStatus("*", False)
-      from ROOT import edm
       from CaloCell import CaloCellCollection
       from CaloRings import CaloRings
       from CaloCluster import CaloCluster
       from EventInfo import EventInfo
-      self._event = edm.Lorenzett_v1()
+      from GaugiKernel.schema import Lorenzetti_v1
+      self._event = Lorenzetti_v1()
       self._t.GetEntry(0)
     else:
       return StatusCode.FATAL
 
     MSG_INFO( self, "Creating containers...")
     
-    # Initialize the base of this container. 
-    # Do not change this key names!
-    # NOTE: Do not change this order.
-    # we must retrieve the cells first and the reco other features
-    # event dataframe containers
     self._containersSvc['EventInfoContainer']           = EventInfo()
-    self._containersSvc['Truth__CaloCellsContainer']    = CaloCellCollection() 
-    self._containersSvc['Truth__CaloRingsContainer']    = CaloRings()
-    self._containersSvc['Truth__CaloClusterContainer']  = CaloCluster()
     self._containersSvc['CaloCellsContainer']           = CaloCellCollection() 
     self._containersSvc['CaloRingsContainer']           = CaloRings()
     self._containersSvc['CaloClusterContainer']         = CaloCluster()
@@ -63,11 +55,6 @@ class EventReader( TEventLoop ):
 
     # configure all EDMs needed
     for key, edm in self._containersSvc.items():
-
-      # enable truth property by the container key name. 
-      # Using hlt flag to avoid reimplementation
-      edm.is_hlt = False if 'Truth__' in key else True
-
 
       # attach the EDM pointer into the context list
       self.getContext().setHandler(key,edm)

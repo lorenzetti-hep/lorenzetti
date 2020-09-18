@@ -219,8 +219,6 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
   
   if(cell) cell->Fill( step );
 
-  
-
   if (m_detailedHistograms ){
     // Fill time steps
     G4StepPoint* point = step->GetPreStepPoint();

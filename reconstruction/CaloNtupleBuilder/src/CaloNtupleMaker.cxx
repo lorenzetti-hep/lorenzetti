@@ -239,13 +239,13 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
   float cl_e2tsts1     ;
   bool  cl_ringer_match;
 
-  std::vector<float> *cl_rings            = nullptr;
-  std::vector<float> *cl_cell_et          = nullptr;
-  std::vector<float> *cl_cell_eta         = nullptr;
-  std::vector<float> *cl_cell_phi         = nullptr;
-  std::vector<float> *cl_cell_deta        = nullptr;
-  std::vector<float> *cl_cell_dphi        = nullptr;
-  std::vector<float> *cl_cell_energy      = nullptr;
+  std::vector<float> *cl_rings         = nullptr;
+  std::vector<float> *cl_cell_et       = nullptr;
+  std::vector<float> *cl_cell_eta      = nullptr;
+  std::vector<float> *cl_cell_phi      = nullptr;
+  std::vector<float> *cl_cell_deta     = nullptr;
+  std::vector<float> *cl_cell_dphi     = nullptr;
+  std::vector<float> *cl_cell_energy   = nullptr;
   std::vector<int>   *cl_cell_layer    = nullptr;
   
 
@@ -391,8 +391,6 @@ void CaloNtupleMaker::Fill( EventContext &ctx , TTree *tree, xAOD::seed_t seed, 
           cl_cell_dphi->push_back( cell->deltaPhi() );
           cl_cell_energy->push_back( cell->energy() );
           cl_cell_layer->push_back( (int)cell->layer() );
- 
-        
         }
       }
 

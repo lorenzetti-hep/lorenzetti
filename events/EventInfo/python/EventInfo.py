@@ -11,7 +11,7 @@ class EventInfo(EDM):
 
   # define all skimmed branches here.
   __eventBranches = {
-      "Lorenzett_v1" : [
+      "Lorenzetti_v1" : [
                         "EventNumber",
                         "avgmu",
                         "seed_et",
@@ -25,8 +25,8 @@ class EventInfo(EDM):
   
 
   def initialize(self):
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
-      branches = self.__eventBranches['Lorenzett_v1']
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
+      branches = self.__eventBranches['Lorenzetti_v1']
       # Link all branches 
       for branch in branches:
         self._logger.debug(branch)
@@ -41,9 +41,9 @@ class EventInfo(EDM):
   
   def eta(self):
     """
-      Retrieve the eta information from Lorenzett
+      Retrieve the eta information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       return self._event.seed_eta
     else:
       self._logger.warning("Impossible to retrieve the value of eta seed")
@@ -51,9 +51,9 @@ class EventInfo(EDM):
   
   def phi(self):
     """
-      Retrieve the phi information from Lorenzett
+      Retrieve the phi information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       return self._event.seed_phi
     else:
       self._logger.warning("Impossible to retrieve the value of phi seed")
@@ -61,9 +61,9 @@ class EventInfo(EDM):
   
   def et(self):
     """
-      Retrieve the et information from Lorenzett
+      Retrieve the et information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       return self._event.seed_et
     else:
       self._logger.warning("Impossible to retrieve the value of et seed")
@@ -71,9 +71,9 @@ class EventInfo(EDM):
   
   def avgmu(self):
     """
-      Retrieve the avgmu information from Lorenzett
+      Retrieve the avgmu information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       return self._event.avgmu
     else:
       self._logger.warning("Impossible to retrieve the value of avgmu")
@@ -81,9 +81,9 @@ class EventInfo(EDM):
   
   def eventNumber(self):
     """
-      Retrieve the event number information from Lorenzett
+      Retrieve the event number information from Lorenzetti
     """
-    if self._dataframe is DataframeEnum.Lorenzett_v1:
+    if self._dataframe is DataframeEnum.Lorenzetti_v1:
       return self._event.eventNumber
     else:
       self._logger.warning("Impossible to retrieve the value of event number")
