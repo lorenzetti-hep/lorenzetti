@@ -39,8 +39,8 @@ parser.add_argument('--visualization', action='store_true', dest='visualization'
 parser.add_argument('-n', '--ntuple', action='store', dest='ntuple',required = False, default = 'physics',
                     help = "Choose the ntuple schemma: raw (energy estimation studies) or physics (physics studies)")
 
-parser.add_argument('--disableMagneticField', action='store_true', dest='disableMagneticField',required = False, 
-                    help = "Disable the magnetic field.")
+parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
+                    help = "Enable the magnetic field.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
@@ -78,8 +78,7 @@ try:
   
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
-                   #UseMagneticField = False if args.disableMagneticField else True)
-                   UseMagneticField = False, # Force to be false since the mag field it is not working yet
+                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
                    CutOnPhi = False
                    )
 

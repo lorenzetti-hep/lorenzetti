@@ -28,7 +28,7 @@ class Convert( Algorithm ):
   def initialize(self):
   
     self._event_label = ['avgmu']
-    self._event_label.extend( [ 'ring_%d'%r for r in range(92) ] )
+    self._event_label.extend( [ 'ring_%d'%r for r in range(100) ] )
     self._event_label.extend( [ 
                                 'et',
                                 'eta',
