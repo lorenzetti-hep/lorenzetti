@@ -13,7 +13,7 @@ for file in "`pwd`"/*/*/*.pcm
 do
   echo "ln -sf $file lib"
   ln -sf $file lib
-done 
+done
 
 
 
@@ -22,14 +22,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   do
     echo "ln -sf $file lib"
     ln -sf $file lib
-  done 
+  done
 
 else
   for file in "`pwd`"/*.so
   do
     echo "ln -sf $file lib"
     ln -sf $file lib
-  done 
+  done
 fi
 
 
