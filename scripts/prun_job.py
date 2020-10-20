@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi.messenger.macros import *
 import argparse
