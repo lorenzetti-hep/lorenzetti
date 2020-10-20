@@ -1,6 +1,9 @@
 #!/bin/bash
 
-VOLUME=$1
+current=$1
+
+cd $(mktemp -d)
+temp=$PWD
 
 
 # Envs
@@ -43,17 +46,17 @@ do
   export LD_PRELOAD=$file:$LD_PRELOAD
 done
 
+cd $temp
 
 echo "compile lorenzetti..."
 echo $CPU_N
-cd $VOLUME
-git clone https://github.com/jodafons/lorenzetti.git && cd lorenzetti && source $PWD/setup_module.sh && source $PWD/setup_module.sh --head
+git clone https://github.com/jodafons/lorenzetti.git && cd lorenzetti
 mkdir build && cd build && cmake .. && make -j$CPU_N
 cd ..
 source $PWD/setup.sh
 
 echo $LZT_PATH
 echo "back to the base dir..."
-cd $VOLUME
+cd $current
 
 
