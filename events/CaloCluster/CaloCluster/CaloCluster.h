@@ -95,7 +95,7 @@ namespace xAOD{
       /*! release all memory holded by the cell collection into this RoI */
       void clear();
       /*! Get all cells **/
-      const std::vector<const xAOD::CaloCell*>& allCells() const;
+      const std::vector<const xAOD::CaloCell*>& cells() const;
 
 
     private:

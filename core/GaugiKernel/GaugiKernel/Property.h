@@ -48,6 +48,7 @@ namespace Gaugi{
       void declareProperty( std::string name, std::vector<bool>         &value );
       void declareProperty( std::string name, std::vector<float>        &value );
       void declareProperty( std::string name, std::vector<std::string>  &value );
+      void declareProperty( std::string name, std::vector<std::vector<int>>          &value );
       
       /* Setter */
       void setProperty( std::string name, int                       value );
@@ -59,6 +60,7 @@ namespace Gaugi{
       void setProperty( std::string name, std::vector<bool>         value );
       void setProperty( std::string name, std::vector<float>        value );
       void setProperty( std::string name, std::vector<std::string>  value );
+      void setProperty( std::string name, std::vector<std::vector<int>>          &value );
 
       /* Getter */
       void getProperty( std::string name, int                       &value );
@@ -70,6 +72,7 @@ namespace Gaugi{
       void getProperty( std::string name, std::vector<bool>         &value );
       void getProperty( std::string name, std::vector<float>        &value );
       void getProperty( std::string name, std::vector<std::string>  &value );
+      void getProperty( std::string name, std::vector<std::vector<int>>          &value );
   
 
     private:

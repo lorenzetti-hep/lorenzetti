@@ -8,6 +8,8 @@ from G4Kernel           import *
 from CaloRecBuilder     import CaloClusterMaker
 from CaloRingerBuilder  import *
 
+from CaloCell.CaloDefs import CaloSampling
+
 import numpy as np
 import argparse
 import sys,os
@@ -95,19 +97,26 @@ try:
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
                      )
+
+
+  particles = TruthParticleBuilder("TruthParticleBuilder",
+                                   HistogramPath = "Expert/Truth",
+                                   OutputLevel = outputLevel)
+
   
-  calorimeter = CaloCellBuilder("CaloCellATLASBuilder",
+  calorimeter = CaloCellBuilder("CaloCellBuilder",
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 )
   
-  
+  acc+= particles # truth
   gun.merge(acc)
   calorimeter.merge(acc)
-  
+
   
   if args.ntuple == 'physics':
   
+      # build cluster for all seeds
       cluster = CaloClusterMaker( "CaloClusterMaker",
                                   CellsKey        = recordable("Cells"),
                                   EventKey        = recordable("EventInfo"),
@@ -119,14 +128,21 @@ try:
                                   HistogramPath   = "Expert/Clusters",
                                   OutputLevel     = outputLevel)
 
-
       ringer = CaloRingerBuilder( "CaloRingerBuilder",
                                   RingerKey     = recordable("Rings"),
                                   ClusterKey    = recordable("Clusters"),
                                   DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
                                   DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
                                   NRings        = [8, 64, 8, 8, 4, 4, 4],
-                                  LayerRings    = [0,1,2,3,4,5,6],
+                                  LayerRings = [
+                                    [CaloSampling.PSB, CaloSampling.PSE],
+                                    [CaloSampling.EMB1, CaloSampling.EMEC1],
+                                    [CaloSampling.EMB2, CaloSampling.EMEC2],
+                                    [CaloSampling.EMB3, CaloSampling.EMEC3],
+                                    [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
+                                    [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
+                                    [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
+                                  ]
                                   HistogramPath = "Expert/Rings",
                                   OutputLevel   = outputLevel)
  
@@ -139,7 +155,6 @@ try:
                                 DeltaR          = 0.15,
                                 DumpCells       = True,
                                 OutputLevel     = outputLevel)
-      
       
       acc+= cluster
       acc+= ringer

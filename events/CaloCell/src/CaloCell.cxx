@@ -1,23 +1,16 @@
 
 #include "CaloCell/CaloCell.h"
-#include "CaloCell/RawCell.h"
+#include "CaloCell/CaloDetDescriptor.h"
 #include "CaloCell/enumeration.h"
 
 using namespace xAOD;
-using namespace CaloSampling;
+
 
 
 CaloCell::CaloCell( float eta, 
                     float phi, 
                     float deta, 
-                    float dphi, 
-                    CaloSample  sample,
-                    CaloLayer   layer,
-                    CaloSection section
-                    ):
-  m_sample(sample),
-  m_layer(layer),
-  m_section(section),
+                    float dphi):
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),
@@ -25,15 +18,15 @@ CaloCell::CaloCell( float eta,
 {;}
 
 
-const xAOD::RawCell* CaloCell::parent() const
+const xAOD::CaloDetDescriptor* CaloCell::descriptor() const
 {
-  return m_parent;
+  return m_descriptor;
 }
 
 
-void CaloCell::setParent( const xAOD::RawCell *parent )
+void CaloCell::setDescriptor( const xAOD::CaloDetDescriptor *descriptor )
 {
-  m_parent=parent;
+  m_descriptor=descriptor;
 }
 
 

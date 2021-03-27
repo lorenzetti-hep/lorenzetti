@@ -67,9 +67,11 @@ add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
-add_subdirectory( reconstruction/CaloRecBuilder )
+add_subdirectory( reconstruction/CaloCellBuilder )
+add_subdirectory( reconstruction/TruthParticleBuilder )
+add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
-add_subdirectory( reconstruction/CaloNtupleBuilder )
+#add_subdirectory( reconstruction/CaloNtupleBuilder )
 add_subdirectory( generator/PythiaGenerator )
 add_subdirectory( geometry/DetectorATLASModel )
 
@@ -83,9 +85,11 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:CaloRecBuilder>
+  $<TARGET_OBJECTS:CaloCellBuilder>
+  $<TARGET_OBJECTS:TruthParticleBuilder>
+  $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingerBuilder>
-  $<TARGET_OBJECTS:CaloNtupleBuilder>
+  #$<TARGET_OBJECTS:CaloNtupleBuilder>
   $<TARGET_OBJECTS:PythiaGenerator>
   $<TARGET_OBJECTS:DetectorATLASModel>
 )

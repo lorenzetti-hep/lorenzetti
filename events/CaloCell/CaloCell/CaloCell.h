@@ -3,7 +3,7 @@
 
 /** simulator includes **/
 #include "CaloCell/enumeration.h"
-#include "CaloCell/RawCell.h"
+#include "CaloCell/CaloDetDescriptor.h"
 #include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
@@ -18,9 +18,7 @@ namespace xAOD{
       CaloCell()=default;
       
       /** Contructor **/
-      CaloCell( float eta, float phi, float deta, float dphi, 
-                CaloSampling::CaloSample sample, CaloSampling::CaloLayer layer,
-                CaloSampling::CaloSection section);
+      CaloCell( float eta, float phi, float deta, float dphi);
 
       /** Destructor **/
       ~CaloCell()=default;
@@ -37,29 +35,15 @@ namespace xAOD{
       /*! Tranverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
 
-      /*! Cell sampling id */
-      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSample  , m_sample , setSample   , sample  );
-      /*! Cell layer id */
-      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloLayer   , m_layer  , setLayer    , layer   );
-      /*! Cell section id */
-      PRIMITIVE_SETTER_AND_GETTER( CaloSampling::CaloSection , m_section, setSection  , section );
 
       /*! Get the associated Raw information */ 
-      const xAOD::RawCell* parent() const;
+      const xAOD::CaloDetDescriptor* descriptor() const;
       /*! Set the associated Raw information */ 
-      void setParent( const xAOD::RawCell* );
+      void setDescriptor( const xAOD::CaloDetDescriptor* );
 
 
     private:
  
-      /*! id sample */
-      CaloSampling::CaloSample m_sample;
-      /*! id layer */
-      CaloSampling::CaloLayer m_layer;
-      /*! id section */
-      CaloSampling::CaloSection m_section;
-
-
       /*! eta center */
       float m_eta;
       /*! phi center */
@@ -74,7 +58,7 @@ namespace xAOD{
       float m_et;
 
       /*! Associated raw information */
-      const xAOD::RawCell *m_parent;
+      const xAOD::CaloDetDescriptor *m_descriptor;
   };
 
 }

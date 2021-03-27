@@ -8,6 +8,7 @@
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/EDM.h"
 
+
 // Declare forward
 namespace xAOD{
   class EventInfo;
@@ -16,26 +17,19 @@ namespace xAOD{
 
 namespace Gaugi{
 
-
-	class IAlgTool
-	{
-	
-	  public:
+class IAlgTool
+{
+	public:
 	    
-			/*! Destructor */
-	    virtual ~IAlgTool() {};
+	/*! Destructor */
+	virtual ~IAlgTool() {};
 
-			/*! Create all resouces here */    
-	    virtual StatusCode initialize()=0;
+	/*! Create all resouces here */    
+	virtual StatusCode initialize()=0;
+	virtual StatusCode execute( const xAOD::EventInfo *, Gaugi::EDM * ) const=0;
+	/*! Destroy all allocated memory and close all services */
+	virtual StatusCode finalize()=0;
 
-      virtual StatusCode executeTool( const xAOD::EventInfo *, Gaugi::EDM * ) const=0;
-
-			/*! Destroy all allocated memory and close all services */
-			virtual StatusCode finalize()=0;
-
-	};
-
-	
-
+};
 }// namespace
 #endif

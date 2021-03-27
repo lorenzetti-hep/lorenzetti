@@ -2,45 +2,40 @@
 #define enumeration_h
 
 
-namespace CaloSampling{
 
-  enum CaloSample{
+enum CaloSampling{
 
     PSB       = 0,
-    EMB1      = 1,
-    EMB2      = 2,
-    EMB3      = 3,
-    TileCal1  = 4,
-    TileCal2  = 5,
-    TileCal3  = 6,
-    TileExt1  = 7,
-    TileExt2  = 8,
-    TileExt3  = 9,
-    EMEC1     = 10,
-    EMEC2     = 11,
-    EMEC3     = 12,
-    HEC1      = 13,
-    HEC2      = 14,
-    HEC3      = 15,
-  };
-
-  enum CaloSection{
-    ECal = 0,
-    HCal = 1
-  };
+    PSE       = 1,
+    EMB1      = 2,
+    EMB2      = 3,
+    EMB3      = 4,
+    TileCal1  = 5,
+    TileCal2  = 6,
+    TileCal3  = 7,
+    TileExt1  = 8,
+    TileExt2  = 9,
+    TileExt3  = 10,
+    EMEC1     = 11,
+    EMEC2     = 12,
+    EMEC3     = 13,
+    HEC1      = 14,
+    HEC2      = 15,
+    HEC3      = 16,
+};
 
 
-  enum CaloLayer{
-    PS    = 0,
-    EM1   = 1,
-    EM2   = 2,
-    EM3   = 3,
-    HAD1  = 4,
-    HAD2  = 5,
-    HAD3  = 6,
-  };
+
+enum Detector{
+    LAR = 0,
+    TILE = 1,
+    TTEM = 2,
+    TTHEC = 3,
+    FCALEM = 5,
+    FCALHAD = 6,
+};
 
 
-} 
+
 
 #endif

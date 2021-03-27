@@ -39,36 +39,6 @@ namespace xAOD{
 
 
   
-  class RingSet{
-  
-    public:
-      /*! Contructor */
-      RingSet( CaloSampling::CaloLayer , unsigned nrings, float deta, float dphi );
-      /*! Destructor */
-      RingSet()=default;
-      /*! Add the cell energy to the correct ring position in this RingSet */
-      void add( const xAOD::CaloCell *, float eta_center, float phi_center );
-      /*! Get the ringer shaper pattern for this RingSet */
-      const std::vector<float>& pattern() const;
-      /*! The number of rings in this RingSet */
-      size_t size() const;
-      /*! Sampling id */
-      CaloSampling::CaloLayer layer() const;
-      /*! Zeroize all energy values */
-      void clear();
-
-
-    private:
-
-      std::vector<float> m_pattern;
-      /*! Delta eta */
-      float m_deta;
-      /*! Delta phi */
-      float m_dphi;
-      /*! Sampling layer */
-      CaloSampling::CaloLayer m_layer;
-  };
-
 
 }
 #endif
