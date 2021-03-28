@@ -18,11 +18,8 @@ class CaloCellMaker( Logger ):
                   "BunchIdStart",
                   "BunchIdEnd",
                   "BunchDuration",
-                  "NumberOfSamplesPerBunch",
                   "HistogramPath",
                   "DetailedHistograms",
-                  "Section",
-                  "Layer",
                   "OnlyRoI"
                   ]
 
@@ -106,7 +103,7 @@ class CaloSamplingMaker( Logger ):
   #
   def __init__( self, name, collectionKey, files, **kw ):
     Logger.__init__(self)
-    self.segments = [ LateralSegmentation( name+"_"+str(idx), collectionKey+"_"+str(idx), f , **kw ) for idx, f in enumerate(files)]
+    self.__segments = [ LateralSegmentation( name+"_"+str(idx), collectionKey+"_"+str(idx), f , **kw ) for idx, f in enumerate(files)]
 
-  def segmentats():
-    return __segments
+  def segments(self):
+    return self.__segments

@@ -26,7 +26,6 @@ namespace xAOD{
                Detector detector,
                // bunch crossing information
                float bc_duration, 
-               int bc_nsamples, 
                int bcid_start, 
                int bcid_end, 
                int bcid_truth );
@@ -65,13 +64,25 @@ namespace xAOD{
      
 
       /*
-       * Energy estimation
+       * Energy values
        */
 
-      /*! Raw energy **/
-      PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
-      /*! Truth raw energy calculated on top of the special bunch crossing */ 
-      PRIMITIVE_SETTER_AND_GETTER( float, m_truthEnergy, setTruthEnergy, truthEnergy );
+
+      /*! Estimated energy from OF **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
+
+      /*! cells energy for the main event only */ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_etruth, setETruth, etruth );
+
+
+      /*! Energy deposity from simulated hits **/
+      float edep( int bc_id=0 ) const{
+        if (m_edep.count(bc_id)){
+          return m_edep.at(bc_id);
+        }else{// return zero case bc not exist
+          return 0;
+        }
+      }
 
 
       /*
@@ -82,14 +93,12 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , bcid_start    );
       /*! Bunch crossing id end */
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_end    , set_bcid_end    , bcid_end      );
-      /*! Number of samples per bunch crossing */
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bc_nsamples , set_bc_nsamples , bc_nsamples   );
       /*! Bunch crossing id truth */
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_truth , set_bcid_truth , bcid_truth );
       /* Time space (in ns) between two bunch crossings */
       PRIMITIVE_SETTER_AND_GETTER( float, m_bc_duration , set_bc_duration , bc_duration );
-      /*! Raw energy samples for each bunch crossing. */
-      PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_energySamples, setEnergySamples, energySamples );
+      
+      
       /*! Integrated pulse in bunch crossing zero */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_pulse, setPulse, pulse );
       /*! Time (in ns) for each bunch crossing */
@@ -100,10 +109,18 @@ namespace xAOD{
        * Eletronic pulse information
        */
 
-      /*! get pulse for each bunch crossing */
-      std::vector<float> pulse( int bc_id ) const {return m_pulsePerBunch.at(bc_id);};
+
+      /*! get pulse for each bunch crossing (centered in bunch zero)*/
+      std::vector<float> pulse( int bc_id ) const {
+        // TODO: We should include some protection here
+        return m_pulsePerBunch.at(bc_id);
+      }
+
+
       /*! set pulse for each bunch crossing */
-      void setPulsePerBunch( int bc_id , std::vector<float> pulse ){ m_pulsePerBunch[bc_id] = pulse;};
+      void setPulse( int bc_id , std::vector<float> pulse ){ 
+        m_pulsePerBunch[bc_id] = pulse;
+      };
 
 
 
@@ -130,27 +147,30 @@ namespace xAOD{
       float m_radius_min; 
       /*! In plane xy */
       float m_radius_max;
-      /*! The total Energy deposit betweeen bcid_start and bcid_end */
-      float m_energy;
+
+      /*! The estimated energy from OF in bcid=0 */
+      float m_e;
       /*! The total energy deposit in bcid_truth */
-      float m_truthEnergy;
+      float m_etruth;
+      /*! Digitalized integrated pulse for the main event (bcid=0) */
+      std::vector<float> m_pulse;
+
+
       /*! bunch crossing start id */
       int m_bcid_start;
       /*! bunch crossing end id */
       int m_bcid_end;
-      /*! number of samples per bunch crossing */
-      int m_bc_nsamples;
       /*! truth bunch crossing */
       int m_bcid_truth;
       /*! bunch crossing space in ns between two bunchs */
       float m_bc_duration;
-      /*! energy deposit for each sample calculated from geant between bcid_start and bcid_end */
-      std::vector<float> m_energySamples;
+
+
       /*! time (in ns) for each bunch between bcid_start and bcid_end */
       std::vector<float> m_time;
-      /*! Digitalized integrated pulse for the main event (bcid zero) */
-      std::vector<float> m_pulse;
-      /*! Digitalized pulse per bunch */
+      /*! energy deposit between bcid_start and bcid_end */
+      std::map< int, float> m_edep;
+      /*! Digitalized pulse for each bunch between bcid_start and bcid_end */
       std::map< int, std::vector<float> > m_pulsePerBunch;
 
 

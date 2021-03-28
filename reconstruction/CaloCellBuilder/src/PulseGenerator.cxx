@@ -52,31 +52,28 @@ StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM 
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);
 
   auto pulse_size = m_nsamples;
-  
-  // Get all energies for each bunch crossing 
-  auto energySamples = cell->energySamples();
 
   // Create an pulse with zeros with n samples
   std::vector<float> pulse_sum(pulse_size, 0.0);
   // Loop over each bunch crossing
-  for ( int bc = cell->bcid_start(), i=0;  bc <= cell->bcid_end(); ++bc, ++i )
+  for ( int bcid = cell->bcid_start();  bcid <= cell->bcid_end(); ++bcid )
   {
     // Generate the pulse
     std::vector<float> pulse;
-    GenerateDeterministicPulse( pulse, energySamples[i], 0, bc*cell->bc_duration() );
+    GenerateDeterministicPulse( pulse, cell->edep(bcid), 0, bcid*cell->bc_duration() );
     // Accumulate into pulse sum (Sum all pulses)
-    for ( int j=0; j < pulse_size; ++j ){
-      pulse_sum[j] += pulse[j];
+    for ( int samp=0; samp < pulse_size; ++samp ){
+      pulse_sum[samp] += pulse[samp];
     }
 
-    cell->setPulsePerBunch( bc, pulse ); 
+    cell->setPulse( bcid, pulse ); 
   }
 
   // Add gaussian noise
   AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
 
 
-  // Add the pulse centered in the bunch crossing zero
+  // Add the integrated pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );
 
 

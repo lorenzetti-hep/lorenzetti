@@ -1,5 +1,5 @@
 
-#include "src/CaloRingerBuilder.h"
+#include "src/CaloRingerMaker.h"
 
 
 #ifdef __CINT__
@@ -10,7 +10,7 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class CaloRingerBuilder+;
+#pragma link C++ class CaloRingerMaker+;
 
 
 #endif

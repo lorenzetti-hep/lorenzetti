@@ -19,7 +19,7 @@ class TruthParticleMaker( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloClusterMaker
+    from ROOT import TruthParticleMaker
     # Create the algorithm
     self.__core = TruthParticleMaker(name)
 

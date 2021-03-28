@@ -19,7 +19,6 @@ CaloDetDescriptor::CaloDetDescriptor(
                   CaloSampling sampling, 
                   Detector detector,
                   float bc_duration,
-                  int bc_nsamples,
                   int bcid_start,
                   int bcid_end,
                   int bcid_truth ):
@@ -31,21 +30,19 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_dphi(dphi),
   m_radius_min(radius_min),
   m_radius_max(radius_max),
-  m_energy(0),
-  m_truthEnergy(0),
+  m_e(0),
+  m_etruth(0),
   /* Bunch crossing information */
   m_bcid_start( bcid_start ),
   m_bcid_end( bcid_end ),
-  m_bc_nsamples( bc_nsamples ),
   m_bcid_truth( bcid_truth ),
   m_bc_duration( bc_duration ),
-  m_energySamples( (bcid_end-bcid_start+1)*bc_nsamples, 0 ),
   m_hash(hash)
 {
   // Initalize the time vector using the bunch crossing informations
   float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
-  float step  = m_bc_duration / m_bc_nsamples;
-  int total   = (m_bcid_end - m_bcid_start+1) * m_bc_nsamples + 1;
+  float step  = m_bc_duration;
+  int total   = (m_bcid_end - m_bcid_start+1) + 1;
   for (int t = 0; t < total; ++t) {
     m_time.push_back( (start + step*t) );
   }
@@ -54,12 +51,10 @@ CaloDetDescriptor::CaloDetDescriptor(
 
 void CaloDetDescriptor::clear()
 {
-  m_energy=0.0;
-  m_truthEnergy=0.0;
-  for (std::vector<float>::iterator it = m_energySamples.begin(); it < m_energySamples.end(); it++)
-  {
-    *it=0.0;
-  }
+  m_e = m_etruth = 0.0; // zeroize energy
+  m_edep.clear(); // zeroize deposit energy for all bunchs
+  m_pulsePerBunch.clear(); // zeroize all pulses for all bunchs
+  m_pulse.clear(); // zeroize the main pulse
 }
 
 
@@ -72,20 +67,20 @@ void CaloDetDescriptor::Fill( const G4Step* step )
   G4ThreeVector pos = point->GetPosition();
   // Get the particle time
   float t = (float)point->GetGlobalTime() / ns;
-  // Get the bin index into the time vector
-  int sample = findIndex(t);
-  
 
-  if ( sample != -1 ){
-    m_energySamples[sample]+=(edep/MeV);
+  // Get the bin index into the time vector
+  int samp = findIndex(t);
+  if ( samp != -1 ){
+    int bcid = m_bcid_start + samp;
+    m_edep[bcid]+=(edep/MeV);
   }
 
+  // TODO: Special studies.
+  // This represets the energy only for the main event in the bunch crossing zero
   if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
-    m_truthEnergy+=(edep/MeV);
+    m_etruth+=(edep/MeV);
   }
 }
-
-
 
 int CaloDetDescriptor::findIndex( float value) const 
 {

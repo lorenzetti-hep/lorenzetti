@@ -9,7 +9,7 @@ from .CaloCellCollection import *
 
 
 from . import CaloDefs
-__all__.extend(CaloCefs.__all__)
+__all__.extend(CaloDefs.__all__)
 from .CaloDefs import *
 
 

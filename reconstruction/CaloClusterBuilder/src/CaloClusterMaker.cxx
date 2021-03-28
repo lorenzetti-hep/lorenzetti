@@ -137,8 +137,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
       // Check if cell is inside 
       float deltaEta = std::abs( part->eta() - cell->eta() );
       float deltaPhi = std::abs( CaloPhiRange::diff( part->phi() , cell->phi() ));
-      if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 && cell->energy() > emaxs2){
-        hotcell=cell; emaxs2=cell->energy();
+      if (deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 && cell->e() > emaxs2){
+        hotcell=cell; emaxs2=cell->e();
       }
     }
 
@@ -155,7 +155,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
         float deltaPhi = std::abs( CaloPhiRange::diff( hotcell->phi() , cell->phi() ));
         // 0.1 X 0.1 window
         if (deltaEta < 0.05 && deltaPhi < 0.05){
-          etot+=cell->energy();
+          etot+=cell->e();
         }
       }
 
@@ -165,7 +165,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
       MSG_DEBUG( "Is cluster energy higher than " << m_minCenterEnergy ); 
       if(etot >= m_minCenterEnergy ){
         MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
-        xAOD::CaloCluster *clus = new xAOD::CaloCluster( hotcell->energy(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
+        xAOD::CaloCluster *clus = new xAOD::CaloCluster( hotcell->e(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
         fillCluster( ctx, clus, m_cellsKey );
         m_showerShapes->execute( nullptr, clus );
         clusters->push_back( clus );
@@ -211,7 +211,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
     //store->hist1("res_eta")->Fill( (clus->eta() - particle->eta())/particle->eta() );
     //store->hist1("res_phi")->Fill( (clus->phi() - particle->phi())/particle->phi() );
    
-    store->hist1("cl_et")->Fill( clus->et() / 1.e3);
+    store->hist1("cl_et")->Fill( clus->et() / GeV);
     store->hist1("cl_eta")->Fill( clus->eta() );
     store->hist1("cl_phi")->Fill( clus->phi() );
     store->hist1("cl_reta")->Fill( clus->reta() );
@@ -230,7 +230,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
     MSG_DEBUG( "Cluster information:" );
     MSG_DEBUG( "Eta      : " << clus->eta()    );
     MSG_DEBUG( "Phi      : " << clus->phi()    );
-    MSG_DEBUG( "Et       : " << clus->et()/1.e3);
+    MSG_DEBUG( "Et       : " << clus->et()/GeV );
     MSG_DEBUG( "e1       : " << clus->e1()     );
     MSG_DEBUG( "e2       : " << clus->e2()     );
     MSG_DEBUG( "e3       : " << clus->e3()     );

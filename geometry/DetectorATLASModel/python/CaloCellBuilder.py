@@ -37,7 +37,7 @@ class CaloCellBuilder( Logger ):
   #
   def configure(self):
 
-    from CaloRecBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
 
     collectionKeys = []
  
@@ -46,12 +46,11 @@ class CaloCellBuilder( Logger ):
     layers = create_ATLAS_layers()
     
 
-
     for layer_id, layer in enumerate( layers ):
 
-      for sample in layer:
+      for sampling in layer:
 
-        for seg in sample.segmentations:
+        for seg in sampling.segments():
 
           pulse = PulseGenerator( "PulseGenerator", 
                                   NSamples        = seg.NSamples, 
@@ -75,8 +74,7 @@ class CaloCellBuilder( Logger ):
                               CaloCellFile            = self.__basepath+seg.CaloCellFile, 
                               BunchIdStart            = seg.BunchIdStart,
                               BunchIdEnd              = seg.BunchIdEnd,
-                              BunchDuration           = 25,
-                              NumberOfSamplesPerBunch = 1,
+                              BunchDuration           = 25, #ns
                               HistogramPath           = self.__histpath + '/' + seg.name,
                               OutputLevel             = self.__outputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread

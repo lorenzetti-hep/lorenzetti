@@ -27,6 +27,7 @@ namespace xAOD{
                           std::vector<float> etabins,
                           std::vector<float> phibins,
                           float rmin,   float rmax, 
+                          Detector detector,
                           CaloSampling sampling,
                           unsigned segmentation);
  
@@ -65,6 +66,8 @@ namespace xAOD{
       unsigned m_segmentation;
       /*! Calorimeter sampling id */
       CaloSampling m_sampling;
+      /*! Calorimeter detector */
+      Detector m_detector;
 
       // eta bounds for this collection
       float m_etamin, m_etamax;

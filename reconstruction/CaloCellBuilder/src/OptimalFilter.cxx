@@ -40,8 +40,6 @@ StatusCode OptimalFilter::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *
 	auto pulse = cell->pulse();
 	float energy=0.0;
 
-  //float avgmu = evt->avgmu();
-
 	if( m_ofweights.size() != pulse.size() ){
 		MSG_ERROR( "The ofweights size its different than the pulse size." );
 		return StatusCode::FAILURE;
@@ -50,7 +48,7 @@ StatusCode OptimalFilter::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *
 			energy += pulse[sample]*m_ofweights[sample];
 	}
 
-	cell->setEnergy(energy);
+	cell->setE(energy);
 	return StatusCode::SUCCESS;
 }
 

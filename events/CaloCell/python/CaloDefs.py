@@ -4,7 +4,7 @@ __all__ = ["CaloSampling", "Detector"]
 from Gaugi import EnumStringification
 
 
-class Detectot(EnumStringification):
+class Detector(EnumStringification):
   LAR     = 0
   TILE    = 1
   TTEM    = 2

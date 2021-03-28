@@ -31,7 +31,7 @@ namespace xAOD{
       /*! Cell delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
       /*! Cell energy **/
-      PRIMITIVE_SETTER_AND_GETTER( float, m_energy, setEnergy, energy );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
       /*! Tranverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
 
@@ -53,7 +53,7 @@ namespace xAOD{
       /*! delta phi */
       float m_dphi;
       /*! Energy */
-      float m_energy;
+      float m_e;
       /*! Transverse energy*/
       float m_et;
 

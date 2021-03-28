@@ -96,8 +96,8 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setPhi( descriptor->phi() );
       truth_cell->setDeltaEta( descriptor->deltaEta() );
       truth_cell->setDeltaPhi( descriptor->deltaPhi() );
-      truth_cell->setEnergy( descriptor->truthEnergy() );
-      truth_cell->setEt( truth_cell->energy() / std::cosh( truth_cell->eta() ) );
+      truth_cell->setE( descriptor->edep() ); // The truth will be the energy deposity
+      truth_cell->setEt( truth_cell->e() / std::cosh( truth_cell->eta() ) );
 
       truth_cell->setDescriptor( descriptor );
       truthContainer->push_back( truth_cell );
@@ -109,8 +109,8 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       cell->setPhi( descriptor->phi() );
       cell->setDeltaEta( descriptor->deltaEta() );
       cell->setDeltaPhi( descriptor->deltaPhi() );
-      cell->setEnergy( descriptor->energy() );
-      cell->setEt( cell->energy() / std::cosh( cell->eta() ) );
+      cell->setE( descriptor->e() ); // Estimated energy from OF
+      cell->setEt( cell->e() / std::cosh( cell->eta() ) );
 
       cell->setDescriptor( descriptor );
       recoContainer->push_back( cell );

@@ -24,7 +24,6 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   Algorithm(),
   m_bcid_truth( special_bcid_for_truth_reconstruction )
 {
-  declareProperty( "Detector"                 , m_detector=0                          );
   declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
   declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
   declareProperty( "CaloCellFile"             , m_caloCellFile                        );
@@ -32,7 +31,6 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "BunchIdStart"             , m_bcid_start=-7                       );
   declareProperty( "BunchIdEnd"               , m_bcid_end=8                          );
   declareProperty( "BunchDuration"            , m_bc_duration=25                      );
-  declareProperty( "NumberOfSamplesPerBunch"  , m_bc_nsamples=1                       );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
   declareProperty( "OnlyRoI"                  , m_onlyRoI=false                       );
@@ -62,7 +60,7 @@ StatusCode CaloCellMaker::initialize()
     ss >> command;
     // Layer configuration
     if (command=="config"){
-      ss >> m_sampling >> m_segmentation >> m_eta_min >> m_eta_max >> m_rmin >> m_rmax;
+      ss >> m_detector >> m_sampling >> m_segmentation >> m_eta_min >> m_eta_max >> m_rmin >> m_rmax;
     }else if(command=="eta_bins"){
       float value;
       while(ss>>value)
@@ -111,25 +109,18 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 
   store->mkdir(m_histPath);
 
-  store->add( new TH1F("res_layer" ,"(#E_{Estimated}-#E_{Truth})/#E_{Truth};res_{E};Count",20,-1,1) );
-
+ 
   int nEtabins = m_eta_bins.size() -1;
   int nPhibins = m_phi_bins.size() -1;
 
- 
-
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( "cells", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  store->add(new TH2F( "cells_e", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( "truth_cells", "Truth Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  store->add(new TH2F( "cells_edep", "Truth Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  // Create the 2D histogram for monitoring purpose
+  store->add(new TH1F( "res_cells", "(#E_{OF}-#E_{dep})/#E_{dep};res_{E} ; res_{E} [MeV]; Count", 
+                        50, -10000, 10000 ) );
 
-  if (m_detailedHistograms){
-    int nbunchs = m_bcid_end - m_bcid_start + 1;
-    store->add(new TH2F( "energy_samples_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
-    store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*20, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration) );
-    store->add(new TH2F( "timestepsVsEnergy", "Step time per bunch; time [ns]; Energy [MeV];", 
-          nbunchs*20, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 30) );
-  }
 
   return StatusCode::SUCCESS;
 }
@@ -143,6 +134,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
   
   collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection( m_eta_min,m_eta_max,m_eta_bins, m_phi_bins,
                                                                                              m_rmin,m_rmax,
+                                                                                             (Detector)m_detector,
                                                                                              (CaloSampling)m_sampling, 
                                                                                              m_segmentation)));
   // Read the file:
@@ -158,15 +150,17 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
     // Get only cell config 
     if (command=="cell"){
       float  eta, phi, deta, dphi, rmin, rmax, zmin, zmax;
-      int sampling; // Calorimeter layer and eta/phi ids
+      int detector, sampling; // Calorimeter layer and eta/phi ids
       unsigned int hash;
       //std::string hash;
-      ss >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
+      ss >> detector >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
 
       // Create the calorimeter cell
-      auto *descriptor = new xAOD::CaloDetDescriptor( eta, phi, deta, dphi, rmin, rmax, hash, (CaloSampling)sampling,
-                                                (Detector)m_detector,
-                                                m_bc_duration, m_bc_nsamples, m_bcid_start, m_bcid_end, m_bcid_truth);
+      auto *descriptor = new xAOD::CaloDetDescriptor( eta, phi, deta, dphi, rmin, rmax, hash, 
+                                                      (CaloSampling)sampling,
+                                                      (Detector)detector,
+                                                      m_bc_duration, m_bcid_start, m_bcid_end, 
+                                                      m_bcid_truth);
       
       // Add the CaloCell into the collection
       collection->push_back( descriptor );
@@ -219,16 +213,17 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
 
   if(cell) cell->Fill( step );
 
+  /*
   if (m_detailedHistograms ){
     // Fill time steps
     G4StepPoint* point = step->GetPreStepPoint();
     float t = (float)point->GetGlobalTime() / ns;
     auto store = ctx.getStoreGateSvc();
-    store->cd(m_histPath);
-    store->hist1("timesteps")->Fill(t);
+    //store->cd(m_histPath);
+    //store->hist1("timesteps")->Fill(t);
     float edep = (float)step->GetTotalEnergyDeposit();
-    store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
-  }
+    //store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
+  }*/
 
   return StatusCode::SUCCESS;
 }
@@ -280,38 +275,27 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 
 
   for ( const auto& p : **collection.ptr() ){ 
+
     const auto *cell = p.second;
 
     store->cd(m_histPath);
-    if( cell->truthEnergy() > 0 && cell->energy() > 1*GeV )
-      store->hist1("res_layer")->Fill( (cell->energy()-cell->truthEnergy())/cell->truthEnergy() );
+    store->hist1("res_cells")->Fill( ((cell->e()-cell->edep())/cell->edep())/GeV );
 
 
     {// Fill estimated energy 2D histograms
-      int x = store->hist2("cells")->GetXaxis()->FindBin(cell->eta());
-      int y = store->hist2("cells")->GetYaxis()->FindBin(cell->phi());
-      int bin = store->hist2("cells")->GetBin(x,y,0);
-      float energy = store->hist2("cells")->GetBinContent( bin );
-      store->hist2("cells")->SetBinContent( bin, (energy + cell->energy()) );
-  
-      if(m_detailedHistograms){
-        int i=0;
-        auto samples = cell->energySamples();
-        for ( int bc=m_bcid_start; bc<m_bcid_end+1; ++bc)
-        {
-          store->hist2("energy_samples_per_bunch")->Fill(bc,samples[i]/1000.);
-          ++i;
-        }
-      }
-
+      int x = store->hist2("cells_e")->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2("cells_e")->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2("cells_e")->GetBin(x,y,0);
+      float energy = store->hist2("cells_e")->GetBinContent( bin );
+      store->hist2("cells_e")->SetBinContent( bin, (energy + cell->e()) );
     }
     
     {// Fill truth energy 2D histograms
-      int x = store->hist2("truth_cells")->GetXaxis()->FindBin(cell->eta());
-      int y = store->hist2("truth_cells")->GetYaxis()->FindBin(cell->phi());
-      int bin = store->hist2("truth_cells")->GetBin(x,y,0);
-      float energy = store->hist2("truth_cells")->GetBinContent( bin );
-      store->hist2("truth_cells")->SetBinContent( bin, (energy + cell->truthEnergy()) );
+      int x = store->hist2("cells_edep")->GetXaxis()->FindBin(cell->eta());
+      int y = store->hist2("cells_edep")->GetYaxis()->FindBin(cell->phi());
+      int bin = store->hist2("cells_edep")->GetBin(x,y,0);
+      float energy = store->hist2("cells_edep")->GetBinContent( bin );
+      store->hist2("cells_edep")->SetBinContent( bin, (energy + cell->edep()) );
     }
 
 

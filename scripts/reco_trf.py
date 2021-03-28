@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
-from Gaugi.messenger    import LoggingLevel, Logger
-from Gaugi              import GeV
-from P8Kernel           import EventReader
-from G4Kernel           import *
+from Gaugi.messenger      import LoggingLevel, Logger
+from Gaugi                import GeV
+from P8Kernel             import EventReader
+from G4Kernel             import *
 
-from CaloRecBuilder     import CaloClusterMaker
-from CaloRingerBuilder  import *
-
-from CaloCell.CaloDefs import CaloSampling
+from CaloClusterBuilder   import CaloClusterMaker
+from CaloRingerBuilder    import CaloRingerMaker
+from TruthParticleBuilder import TruthParticleMaker
+from CaloCell.CaloDefs    import CaloSampling
 
 import numpy as np
 import argparse
@@ -77,20 +77,17 @@ try:
   from DetectorATLASModel import DetectorConstruction as ATLAS
   from DetectorATLASModel import CaloCellBuilder
   
-  
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
                    CutOnPhi = False
                    )
 
-  
   acc = ComponentAccumulator("ComponentAccumulator", detector,
                               RunVis=args.visualization,
                               NumberOfThreads = args.numberOfThreads,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
                               OutputFile = args.outputFile)
-  
   
   gun = EventReader( "PythiaGenerator",
                      EventKey   = recordable("EventInfo"),
@@ -98,12 +95,10 @@ try:
                      BunchDuration = 25.0,#ns
                      )
 
-
-  particles = TruthParticleBuilder("TruthParticleBuilder",
+  particles = TruthParticleMaker( "TruthParticleMaker",
                                    HistogramPath = "Expert/Truth",
                                    OutputLevel = outputLevel)
 
-  
   calorimeter = CaloCellBuilder("CaloCellBuilder",
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
@@ -115,7 +110,7 @@ try:
 
   
   if args.ntuple == 'physics':
-  
+
       # build cluster for all seeds
       cluster = CaloClusterMaker( "CaloClusterMaker",
                                   CellsKey        = recordable("Cells"),
@@ -124,7 +119,7 @@ try:
                                   TruthKey        = recordable("Particles"),
                                   EtaWindow       = 0.4,
                                   PhiWindow       = 0.4,
-                                  MinCenterEnergy = 15*GeV, # 15GeV in the EM core 
+                                  MinCenterEnergy = 5*GeV, # 15GeV in the EM core 
                                   HistogramPath   = "Expert/Clusters",
                                   OutputLevel     = outputLevel)
 
@@ -142,23 +137,23 @@ try:
                                     [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
                                     [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
                                     [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
-                                  ]
+                                  ],
                                   HistogramPath = "Expert/Rings",
                                   OutputLevel   = outputLevel)
  
   
-      from CaloNtupleBuilder import CaloNtupleMaker
-      ntuple = CaloNtupleMaker( "CaloNtupleMaker",
-                                EventKey        = recordable("EventInfo"),
-                                RingerKey       = recordable("Rings"),
-                                ClusterKey      = recordable("Clusters"),
-                                DeltaR          = 0.15,
-                                DumpCells       = True,
-                                OutputLevel     = outputLevel)
+      #from CaloNtupleBuilder import CaloNtupleMaker
+      #ntuple = CaloNtupleMaker( "CaloNtupleMaker",
+      #                          EventKey        = recordable("EventInfo"),
+      #                          RingerKey       = recordable("Rings"),
+      #                          ClusterKey      = recordable("Clusters"),
+      #                          DeltaR          = 0.15,
+      #                          DumpCells       = True,
+      #                          OutputLevel     = outputLevel)
       
       acc+= cluster
       acc+= ringer
-      acc+= ntuple
+      #acc+= ntuple
   
   
   elif args.ntuple == 'raw':
@@ -173,7 +168,7 @@ try:
   
       acc += ntuple
   else:
-      mainLogger.fatal('Invalid ntuple tuple. Choose between raw or physics.')
+      mainLogger.debug('Invalid ntuple tuple. Choose between raw or physics.')
   
   
   acc.run(args.numberOfEvents)

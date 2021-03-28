@@ -43,12 +43,12 @@ StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *e
 
 
   std::sort(em1Cells.begin(), em1Cells.end(),
-            [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->energy() > c2->energy();});
+            [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->e() > c2->e();});
 
   
   
-  float emaxs1  = (em1Cells.size()>=4)?(em1Cells[0]->energy() + em1Cells[1]->energy()):0;
-  float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->energy() + em1Cells[3]->energy()):0;
+  float emaxs1  = (em1Cells.size()>=4)?(em1Cells[0]->e() + em1Cells[1]->e()):0;
+  float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->e() + em1Cells[3]->e()):0;
   float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
 
  
@@ -148,7 +148,7 @@ float ShowerShapes::sumEnergyEM( xAOD::CaloCluster *clus, int sampling, unsigned
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     
     if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
-      energy+= cell->energy();
+      energy+= cell->e();
     }
   }
   return energy;
@@ -188,7 +188,7 @@ float ShowerShapes::sumEnergyHAD( xAOD::CaloCluster *clus, int sampling, unsigne
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     
     if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
-      energy+= cell->energy();
+      energy+= cell->e();
     }
   }
   return energy;
@@ -214,9 +214,9 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , unsigned eta_ncell
     float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ) );
  
     if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
-      En2 += cell->energy() * std::pow(cell->eta(),2);
-      En += cell->energy() * cell->eta();
-      E += cell->energy();
+      En2 += cell->e() * std::pow(cell->eta(),2);
+      En += cell->e() * cell->eta();
+      E += cell->e();
     }
   }// Loop over all cells inside of the cluster
 
