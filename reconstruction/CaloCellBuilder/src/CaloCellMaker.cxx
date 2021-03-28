@@ -12,6 +12,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH2Poly.h"
+#include "TGraph.h"
 
 using namespace Gaugi;
 using namespace SG;
@@ -118,8 +119,27 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   // Create the 2D histogram for monitoring purpose
   store->add(new TH2F( "cells_edep", "Truth Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH1F( "res_cells", "(#E_{OF}-#E_{dep})/#E_{dep};res_{E} ; res_{E} [MeV]; Count", 
-                        50, -10000, 10000 ) );
+  store->add(new TH1F( "res_cells", "(E_{estimated}-E_{dep}); res_{E} [MeV]; Count",  100, -2*GeV, 2*GeV ) );
+
+
+
+  if (m_detailedHistograms){
+    int nbunchs = m_bcid_end - m_bcid_start + 1;
+    //store->add(new TH2F( "edep_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
+    store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*50, (m_bcid_start - 0.5)*m_bc_duration, (m_bcid_end + 0.5)*m_bc_duration) );
+
+    store->add(new TH1F( "main_event_timesteps", "Step time main event; time[ns]; Count", 50, -0.5*m_bc_duration, m_bc_duration*0.5 ) );
+
+    store->add(new TH2F( "timesteps_per_energy", "Step time per bunch; time [ns]; Energy [MeV];", 
+          nbunchs, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 30) );
+    
+    //store->add(new TH2F( "edep_per_bunch", "Step time per bunch; time [ns]; Energy [MeV];", 
+    //      nbunchs, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 100*GeV) );
+
+          
+
+  }
+
 
 
   return StatusCode::SUCCESS;
@@ -213,17 +233,18 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) cons
 
   if(cell) cell->Fill( step );
 
-  /*
+  
   if (m_detailedHistograms ){
     // Fill time steps
     G4StepPoint* point = step->GetPreStepPoint();
     float t = (float)point->GetGlobalTime() / ns;
     auto store = ctx.getStoreGateSvc();
-    //store->cd(m_histPath);
-    //store->hist1("timesteps")->Fill(t);
+    store->cd(m_histPath);
+    store->hist1("main_event_timesteps")->Fill(t);
+    store->hist1("timesteps")->Fill(t);
     float edep = (float)step->GetTotalEnergyDeposit();
-    //store->hist1("timestepsVsEnergy")->Fill(t,edep/MeV);
-  }*/
+    store->hist1("timesteps_per_energy")->Fill(t,edep/MeV);
+  }
 
   return StatusCode::SUCCESS;
 }
@@ -272,15 +293,19 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
   }
 
+  store->cd(m_histPath);
 
+  const xAOD::CaloDetDescriptor *hotCell = nullptr;
 
   for ( const auto& p : **collection.ptr() ){ 
 
     const auto *cell = p.second;
 
-    store->cd(m_histPath);
-    store->hist1("res_cells")->Fill( ((cell->e()-cell->edep())/cell->edep())/GeV );
+    if(!hotCell)  hotCell=cell;
+    if(cell->edep() > hotCell->edep())  hotCell=cell;
 
+
+    store->hist1("res_cells")->Fill( cell->e()-cell->edep() );
 
     {// Fill estimated energy 2D histograms
       int x = store->hist2("cells_e")->GetXaxis()->FindBin(cell->eta());
@@ -298,8 +323,25 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
       store->hist2("cells_edep")->SetBinContent( bin, (energy + cell->edep()) );
     }
 
-
   }
+
+  if(hotCell && m_detailedHistograms){
+      auto pulse = hotCell->pulse();
+      std::vector<float> samples;
+      for (int s=0;s<pulse.size();++s)
+        samples.push_back(s);
+      TGraph *graph = new TGraph(pulse.size(), samples.data(), pulse.data());
+      graph->SetName("test");
+      //raph->Fit("pol5");
+      store->add(graph);
+      graph->Write();
+  }
+
+
+
+
+
+ 
   return StatusCode::SUCCESS;
 }
 

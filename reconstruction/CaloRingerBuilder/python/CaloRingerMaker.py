@@ -24,8 +24,8 @@ class CaloRingerMaker(Logger):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, CaloRingerBuilder
-    self.__core = CaloRingerBuilder(name)
+    from ROOT import RunManager, CaloRingerMaker
+    self.__core = CaloRingerMaker(name)
     for key, value in kw.items():
       self.setProperty( key, value )
 

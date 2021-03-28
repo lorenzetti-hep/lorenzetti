@@ -36,6 +36,8 @@ namespace xAOD{
 			PRIMITIVE_SETTER_AND_GETTER( float, m_deta, setDeltaEta, deltaEta );
       /*! The RoI phi window */ 
 			PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
+      /*! set/get energy */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
       /*! set/get transverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
       /*! set/get total energy in first eletromagnetic layer */
@@ -100,6 +102,7 @@ namespace xAOD{
 
     private:
 
+      float m_e;
       float m_et;
       float m_e0;
       float m_e1;

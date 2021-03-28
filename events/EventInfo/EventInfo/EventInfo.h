@@ -15,7 +15,7 @@
 namespace xAOD{
 
 
-  struct seed_t{ float et; float eta; float phi; float px; float py; float pz; int pdgid; };
+  struct seed_t{ float e; float et; float eta; float phi; float px; float py; float pz; int pdgid; };
  
 
   class EventInfo: public Gaugi::EDM
@@ -39,7 +39,7 @@ namespace xAOD{
 
       void push_back( seed_t seed );
 
-      std::vector<seed_t> allSeeds() const ;
+      std::vector<seed_t> seeds() const ;
 
       size_t size() { return m_seed.size(); };
 

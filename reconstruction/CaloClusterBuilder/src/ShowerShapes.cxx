@@ -37,7 +37,7 @@ StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *e
   auto em1Cells = clus->cells();
 	em1Cells.erase(std::remove_if(em1Cells.begin(),em1Cells.end(),
                 [](const xAOD::CaloCell* c){return (
-                  (c->descriptor()->sampling() != CaloSampling::EMB1) ||
+                  (c->descriptor()->sampling() != CaloSampling::EMB1) &&
                   (c->descriptor()->sampling() != CaloSampling::EMEC1) );}),
                 em1Cells.end());
 
@@ -108,6 +108,7 @@ StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *e
   clus->setRhad1( rhad1 );
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
+  clus->setE(e0+e1+e2+e3);
   return StatusCode::SUCCESS;
 }
 
@@ -125,22 +126,22 @@ float ShowerShapes::sumEnergyEM( xAOD::CaloCluster *clus, int sampling, unsigned
 
     // if PS, the cell must be PSE or PSB
     if(sampling==0 && (
-      det->sampling()!=CaloSampling::PSB ||
+      det->sampling()!=CaloSampling::PSB &&
       det->sampling()!=CaloSampling::PSE )  ) continue;
 
     // if EM1, this cell must be EMB1 or EMEC1
     if(sampling==1 && (
-      det->sampling()!=CaloSampling::EMB1 ||
+      det->sampling()!=CaloSampling::EMB1 &&
       det->sampling()!=CaloSampling::EMEC1 )  ) continue;
 
     // if EM2, this cell must be EMB2 or EMEC2
     if(sampling==2 && (
-      det->sampling()!=CaloSampling::EMB2 ||
+      det->sampling()!=CaloSampling::EMB2 &&
       det->sampling()!=CaloSampling::EMEC2 )  ) continue;
 
     // if EM3, this cell must be EMB3 or EMEC3
     if(sampling==3 && (
-      det->sampling()!=CaloSampling::EMB3 ||
+      det->sampling()!=CaloSampling::EMB3 &&
       det->sampling()!=CaloSampling::EMEC3 )  ) continue;
 
 
@@ -167,20 +168,20 @@ float ShowerShapes::sumEnergyHAD( xAOD::CaloCluster *clus, int sampling, unsigne
 
     // HAD 1
     if(sampling==0 && 
-    ( (det->sampling()!=CaloSampling::HEC1) || 
-      (det->sampling()!=CaloSampling::TileCal1) ||
+    ( (det->sampling()!=CaloSampling::HEC1) &&
+      (det->sampling()!=CaloSampling::TileCal1) &&
       (det->sampling()!=CaloSampling::TileExt1) ) ) continue;
 
     // HAD 2
     if(sampling==1 && 
-    ( (det->sampling()!=CaloSampling::HEC2) || 
-      (det->sampling()!=CaloSampling::TileCal2) ||
+    ( (det->sampling()!=CaloSampling::HEC2) &&
+      (det->sampling()!=CaloSampling::TileCal2) &&
       (det->sampling()!=CaloSampling::TileExt2) ) ) continue;
 
     // HAD 3
     if(sampling==2 && 
-    ( (det->sampling()!=CaloSampling::HEC3) || 
-      (det->sampling()!=CaloSampling::TileCal3) ||
+    ( (det->sampling()!=CaloSampling::HEC3) &&
+      (det->sampling()!=CaloSampling::TileCal3) &&
       (det->sampling()!=CaloSampling::TileExt3) ) ) continue;
 
 
@@ -208,7 +209,7 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , unsigned eta_ncell
     const xAOD::CaloDetDescriptor* det = cell->descriptor();
 
     // Only EM2 cells should be used here...
-    if(det->sampling()!=CaloSampling::EMB2 || det->sampling()!=CaloSampling::EMEC2)  continue;
+    if(det->sampling()!=CaloSampling::EMB2 && det->sampling()!=CaloSampling::EMEC2)  continue;
     
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ) );

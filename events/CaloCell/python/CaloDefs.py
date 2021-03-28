@@ -13,7 +13,9 @@ class Detector(EnumStringification):
   FCALHAD = 6
 
 
-
+#
+# NOTE: If you change something here, you must do the same at enumeration.h
+#
 class CaloSampling(EnumStringification):
     PSB       = 0
     PSE       = 1

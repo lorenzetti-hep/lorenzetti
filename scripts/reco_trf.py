@@ -108,7 +108,8 @@ try:
   gun.merge(acc)
   calorimeter.merge(acc)
 
-  
+  print(args.ntuple)
+
   if args.ntuple == 'physics':
 
       # build cluster for all seeds
@@ -119,11 +120,12 @@ try:
                                   TruthKey        = recordable("Particles"),
                                   EtaWindow       = 0.4,
                                   PhiWindow       = 0.4,
-                                  MinCenterEnergy = 5*GeV, # 15GeV in the EM core 
+                                  MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
                                   HistogramPath   = "Expert/Clusters",
                                   OutputLevel     = outputLevel)
 
-      ringer = CaloRingerBuilder( "CaloRingerBuilder",
+      print('ringer build...')
+      ringer = CaloRingerMaker(   "CaloRingerMaker",
                                   RingerKey     = recordable("Rings"),
                                   ClusterKey    = recordable("Clusters"),
                                   DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
@@ -168,7 +170,7 @@ try:
   
       acc += ntuple
   else:
-      mainLogger.debug('Invalid ntuple tuple. Choose between raw or physics.')
+      mainLogger.fatal('Invalid ntuple tuple. Choose between raw or physics.')
   
   
   acc.run(args.numberOfEvents)

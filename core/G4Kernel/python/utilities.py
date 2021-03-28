@@ -40,6 +40,7 @@ def recordable( key ):
 
 
 def treatPropertyValue( value ):
+
   if (type(value) is list) and (type(value[0]) is str):
     return list_to_stdvector('string', value)
   elif (type(value) is list) and (type(value[0]) is int):
@@ -51,7 +52,7 @@ def treatPropertyValue( value ):
   # list of list with ints, should be vector<vector<int>>
   elif (type(value) is list) and (type(value[0]) is list) and (type(value[0][0]) is int) :
     from ROOT.std import vector
-    vec = vector("int")()
+    vec = vector("vector<int>")()
     for v in value:
       vec.push_back( list_to_stdvector('int', v) )
     return vec

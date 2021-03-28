@@ -60,7 +60,7 @@ namespace Gaugi{
       void setProperty( std::string name, std::vector<bool>         value );
       void setProperty( std::string name, std::vector<float>        value );
       void setProperty( std::string name, std::vector<std::string>  value );
-      void setProperty( std::string name, std::vector<std::vector<int>>          &value );
+      void setProperty( std::string name, std::vector<std::vector<int>>  value );
 
       /* Getter */
       void getProperty( std::string name, int                       &value );
@@ -109,6 +109,8 @@ namespace Gaugi{
   inline void PropertyService::declareProperty( std::string name, std::vector<float>        &value ){__declareProperty<std::vector<float>>(name,value);}
   inline void PropertyService::declareProperty( std::string name, std::vector<std::string>  &value ){__declareProperty<std::vector<std::string>>(name,value);}
   
+  inline void PropertyService::declareProperty( std::string name, std::vector<std::vector<int>>  &value ){__declareProperty<std::vector<std::vector<int>>>(name,value);}
+
 
 
 
@@ -129,7 +131,8 @@ namespace Gaugi{
   inline void PropertyService::setProperty( std::string name, std::vector<bool>         value ){__setProperty<std::vector<bool>>(name,value);}
   inline void PropertyService::setProperty( std::string name, std::vector<float>        value ){__setProperty<std::vector<float>>(name,value);}
   inline void PropertyService::setProperty( std::string name, std::vector<std::string>  value ){__setProperty<std::vector<std::string>>(name,value);}
-  
+  inline void PropertyService::setProperty( std::string name, std::vector<std::vector<int>>  value ){__setProperty<std::vector<std::vector<int>>>(name,value);}
+
   
   /** Getter **/
 
@@ -147,6 +150,7 @@ namespace Gaugi{
   inline void PropertyService::getProperty( std::string name, std::vector<bool>         &value ){__getProperty<std::vector<bool>>(name,value);}
   inline void PropertyService::getProperty( std::string name, std::vector<float>        &value ){__getProperty<std::vector<float>>(name,value);}
   inline void PropertyService::getProperty( std::string name, std::vector<std::string>  &value ){__getProperty<std::vector<std::string>>(name,value);}
+  inline void PropertyService::getProperty( std::string name, std::vector<std::vector<int>>  &value ){__getProperty<std::vector<std::vector<int>>>(name,value);}
 
 
 

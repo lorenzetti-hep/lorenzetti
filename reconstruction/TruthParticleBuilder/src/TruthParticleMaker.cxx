@@ -81,10 +81,11 @@ StatusCode TruthParticleMaker::post_execute( EventContext &ctx ) const
 
   auto *evt = (**event.ptr()).front();
 
-  for ( auto& seed : evt->allSeeds() )
+  for ( auto& seed : evt->seeds() )
   {
 
     xAOD::TruthParticle *particle = new xAOD::TruthParticle();
+    particle->setE( seed.e );
     particle->setEt( seed.et );
     particle->setEta( seed.eta );
     particle->setPhi( seed.phi );
@@ -123,8 +124,6 @@ StatusCode TruthParticleMaker::fillHistograms(EventContext &ctx ) const
 
   for( const auto& particle : **particles.ptr() ){
   
-
-    if ( !particle->caloCluster() ) continue;
     MSG_DEBUG("============== Particle Information ==============");
     
     MSG_DEBUG( "Et       : " << particle->et() );

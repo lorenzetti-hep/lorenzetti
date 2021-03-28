@@ -26,7 +26,7 @@ void EventInfo::push_back( const seed_t seed )
 }
 
 
-std::vector<seed_t> EventInfo::allSeeds() const 
+std::vector<seed_t> EventInfo::seeds() const 
 {
   return m_seed;
 }
