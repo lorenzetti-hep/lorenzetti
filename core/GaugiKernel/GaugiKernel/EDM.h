@@ -15,8 +15,6 @@ namespace Gaugi{
       EDM()=default;
       ~EDM()=default;
 
-    
-      int link;
   };
 
 }// namespace
