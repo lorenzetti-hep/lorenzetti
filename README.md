@@ -15,7 +15,7 @@ We welcome everyone to contribute!
 
 ## Citations
 
-Please cite [![DOI](https://zenodo.org/badge/248031762.svg)](https://zenodo.org/badge/latestdoi/248031762) if you use the software.
+Please cite [![DOI](https://zenodo.org/badge/370090835.svg)](https://zenodo.org/badge/latestdoi/370090835) if you use the software.
 
 [//]: # (and/or the applicable papers.)
 
