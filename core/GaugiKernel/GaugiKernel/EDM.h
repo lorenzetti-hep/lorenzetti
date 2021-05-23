@@ -5,15 +5,19 @@
 #ifndef EDM_h
 #define EDM_h
 
+
+
 namespace Gaugi{
 
-	class EDM
-	{	
-	  public:
-
+  class EDM
+  {
+    public:
       EDM()=default;
       ~EDM()=default;
-	};
+
+    
+      int link;
+  };
 
 }// namespace
 #endif

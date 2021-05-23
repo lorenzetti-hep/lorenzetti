@@ -1,19 +1,23 @@
-__all__ = ["RawNtupleMaker"]
+__all__ = ["RootStreamMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class RawNtupleMaker( Logger ):
+class RootStreamMaker( Logger ):
 
   __allow_keys = [
                   "EventKey",
+                  "TruthKey",
                   "CellsKey",
-                  "EtaWindow",
-                  "PhiWindow",
+                  "ClusterKey", 
+                  "CaloKey", 
+                  "RingerKey", 
                   "OutputLevel", 
                   "NtupleName",
+                  "DumpAllCells",
+                  "DumpClusterCells",
                   ]
 
 
@@ -22,8 +26,8 @@ class RawNtupleMaker( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RawNtupleMaker
-    self.__core = RawNtupleMaker(name)
+    from ROOT import RootStreamMaker
+    self.__core = RootStreamMaker(name)
 
     for key, value in kw.items():
       self.setProperty( key,value )

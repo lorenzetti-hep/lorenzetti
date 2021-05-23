@@ -12,6 +12,7 @@ CaloCluster::CaloCluster()
 
 CaloCluster::CaloCluster( float emaxs2, float eta, float phi, 
                           float deta, float dphi):
+  EDM(),
   m_emaxs2(emaxs2),
   m_eta(eta),
   m_phi(phi),

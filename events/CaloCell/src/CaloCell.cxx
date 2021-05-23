@@ -11,6 +11,7 @@ CaloCell::CaloCell( float eta,
                     float phi, 
                     float deta, 
                     float dphi):
+  EDM(),
   m_eta(eta),
   m_phi(phi),
   m_deta(deta),

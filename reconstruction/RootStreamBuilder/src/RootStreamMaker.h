@@ -1,40 +1,27 @@
-#ifndef RawNtupleMaker_h
-#define RawNtupleMaker_h
+#ifndef RootStreamMaker_h
+#define RootStreamMaker_h
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "CaloRings/CaloRings.h"
 #include "CaloCluster/CaloCluster.h"
+#include "TruthParticle/TruthParticle.h"
+
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 
-struct raw_cell_t {
-  float eta;
-  float phi;
-  float deta;
-  float dphi;
-  int bcid_start;
-  int bcid_end;
-  int bc_nsamples;
-  float bc_duration;
-  std::vector<float> pulse;
-  std::vector<std::vector<float>> pulsePerBunch;
-  std::vector<float> rawEnergySamples;
-  int sampling;
-};
 
 
-
-class RawNtupleMaker : public Gaugi::Algorithm
+class RootStreamMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    RawNtupleMaker( std::string );
+    RootStreamMaker( std::string );
     
-    virtual ~RawNtupleMaker();
+    virtual ~RootStreamMaker();
     
     virtual StatusCode initialize() override;
 
@@ -54,20 +41,24 @@ class RawNtupleMaker : public Gaugi::Algorithm
 
   private:
  
-    void Fill( SG::EventContext &ctx , TTree *tree  ) const;
+
+    StatusCode serialize( SG::EventContext &ctx ) const;
+
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
-  
-    float dR( float eta1, float phi1, float eta2, float phi2 ) const;
-    float m_etaWindow;
-    float m_phiWindow;
+    
     std::string m_ntupleName;
-    std::string m_eventKey;
+
     std::string m_cellsKey;
+    std::string m_eventKey;
+    std::string m_clusterKey;
+    std::string m_ringerKey;
+    std::string m_truthKey;
+
+    bool m_dumpAllCells;
+    bool m_dumpClusterCells;
+
     int m_outputLevel;
 };
 
 #endif
-
-
-
 

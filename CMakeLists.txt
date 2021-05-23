@@ -71,7 +71,7 @@ add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/TruthParticleBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
-#add_subdirectory( reconstruction/CaloNtupleBuilder )
+add_subdirectory( reconstruction/RootStreamBuilder )
 add_subdirectory( generator/PythiaGenerator )
 add_subdirectory( geometry/DetectorATLASModel )
 
@@ -89,7 +89,7 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:TruthParticleBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingerBuilder>
-  #$<TARGET_OBJECTS:CaloNtupleBuilder>
+  $<TARGET_OBJECTS:RootStreamBuilder>
   $<TARGET_OBJECTS:PythiaGenerator>
   $<TARGET_OBJECTS:DetectorATLASModel>
 )

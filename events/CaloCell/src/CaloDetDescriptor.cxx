@@ -22,6 +22,7 @@ CaloDetDescriptor::CaloDetDescriptor(
                   int bcid_start,
                   int bcid_end,
                   int bcid_truth ):
+  EDM(),
   m_sampling(sampling),
   m_detector(detector),
   m_eta(eta),

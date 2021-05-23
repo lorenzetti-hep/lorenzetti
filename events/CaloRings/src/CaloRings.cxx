@@ -3,3 +3,9 @@
 
 using namespace xAOD;
 
+
+CaloRings::CaloRings():
+    EDM(), 
+    m_caloCluster(nullptr) 
+{}
+

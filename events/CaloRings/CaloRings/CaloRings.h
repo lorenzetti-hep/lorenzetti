@@ -16,10 +16,13 @@ namespace xAOD{
     public:
       
       /*! Contructor */
-      CaloRings():m_caloCluster(nullptr) {};
+      CaloRings();
       /*! Destructor */
       ~CaloRings()=default;
-
+      /*! The eta center of the cluster given by the simulation (RoI) */ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_eta, setEta, eta );
+      /*! The phi center of the cluster given by the simulation (RoI) */ 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_phi, setPhi, phi );
       /*! Rings energy */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_rings, setRings, rings );
       /*! Set the associated CaloCluster to this CaloRings */
@@ -34,7 +37,9 @@ namespace xAOD{
       std::vector<float> m_rings;
       // CaloCluster used to build the rings
       const xAOD::CaloCluster *m_caloCluster;
-
+      
+      float m_eta;
+      float m_phi;
   };
 
 

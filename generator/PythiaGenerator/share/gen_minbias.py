@@ -46,8 +46,6 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "Pythia seed (zero is the system clock)")
-parser.add_argument('--full-detector', action='store_true', required = False, default=False,
-                    help = "Generate pile-up for the full detector")
 
 
 
@@ -65,12 +63,14 @@ try:
   
   gen = EventGenerator( "EventGenerator", OutputFile = args.outputFile)
   
+  # To collect using this cell position
+  from PythiaGenerator import FixedRegion
+  gen+=FixedRegion("PlanCenter_DummySeed", Eta=0, Phi=0 )
+   
+
   from PythiaGenerator import Pileup
-  
-  deltaEta = deltaPhi = 0.22
-  if args.full_detector:
-    deltaEta = deltaPhi = 999999.
-  
+
+  deltaEta = deltaPhi = 999.  
   pileup = Pileup( "MinimumBias",
                    File           = minbias,
                    EtaMax         = 3.2,
@@ -80,25 +80,10 @@ try:
                    BunchIdEnd     = args.bc_id_end,
                    OutputLevel    = args.outputLevel,
                    Seed           = args.seed,
-                   DeltaEta       = deltaEta,
-                   DeltaPhi       = deltaPhi, 
+                   DeltaEta       = 999, # full detector
+                   DeltaPhi       = 999, # full detector 
                    )
   
-  
-  
-  # To collect using this cell position
-  from PythiaGenerator import FixedRegion
-  
-  seeds = [
-            # -0.22 to 0.22
-            #Region("Region_1", Eta=0.0, Phi=1.52170894 ),
-            # 0.28 to 0.72
-            FixedRegion("Seed_2", Eta=0.3, Phi=1.52170894 ),
-          ]
-  
-  
-  for seed in seeds:
-    gen+=seed
   
   gen+=pileup
   

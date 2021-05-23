@@ -328,8 +328,8 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
   if(hotCell && m_detailedHistograms){
       auto pulse = hotCell->pulse();
       std::vector<float> samples;
-      for (int s=0;s<pulse.size();++s)
-        samples.push_back(s);
+      for (int samp=0;samp<(int)pulse.size();++samp)
+        samples.push_back(samp);
       TGraph *graph = new TGraph(pulse.size(), samples.data(), pulse.data());
       graph->SetName("test");
       //raph->Fit("pol5");

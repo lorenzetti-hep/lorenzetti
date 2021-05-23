@@ -110,69 +110,55 @@ try:
 
   print(args.ntuple)
 
-  if args.ntuple == 'physics':
-
-      # build cluster for all seeds
-      cluster = CaloClusterMaker( "CaloClusterMaker",
-                                  CellsKey        = recordable("Cells"),
-                                  EventKey        = recordable("EventInfo"),
-                                  ClusterKey      = recordable("Clusters"),
-                                  TruthKey        = recordable("Particles"),
-                                  EtaWindow       = 0.4,
-                                  PhiWindow       = 0.4,
-                                  MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
-                                  HistogramPath   = "Expert/Clusters",
-                                  OutputLevel     = outputLevel)
-
-      print('ringer build...')
-      ringer = CaloRingerMaker(   "CaloRingerMaker",
-                                  RingerKey     = recordable("Rings"),
-                                  ClusterKey    = recordable("Clusters"),
-                                  DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                                  DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                                  NRings        = [8, 64, 8, 8, 4, 4, 4],
-                                  LayerRings = [
-                                    [CaloSampling.PSB, CaloSampling.PSE],
-                                    [CaloSampling.EMB1, CaloSampling.EMEC1],
-                                    [CaloSampling.EMB2, CaloSampling.EMEC2],
-                                    [CaloSampling.EMB3, CaloSampling.EMEC3],
-                                    [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
-                                    [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
-                                    [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
-                                  ],
-                                  HistogramPath = "Expert/Rings",
-                                  OutputLevel   = outputLevel)
+  
+  # build cluster for all seeds
+  cluster = CaloClusterMaker( "CaloClusterMaker",
+                              CellsKey        = recordable("Cells"),
+                              EventKey        = recordable("EventInfo"),
+                              ClusterKey      = recordable("Clusters"),
+                              TruthKey        = recordable("Particles"),
+                              EtaWindow       = 0.4,
+                              PhiWindow       = 0.4,
+                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
+                              HistogramPath   = "Expert/Clusters",
+                              OutputLevel     = outputLevel )
+  
+  ringer = CaloRingerMaker(   "CaloRingerMaker",
+                              RingerKey     = recordable("Rings"),
+                              ClusterKey    = recordable("Clusters"),
+                              DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                              DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                              NRings        = [8, 64, 8, 8, 4, 4, 4],
+                              LayerRings = [
+                                [CaloSampling.PSB, CaloSampling.PSE],
+                                [CaloSampling.EMB1, CaloSampling.EMEC1],
+                                [CaloSampling.EMB2, CaloSampling.EMEC2],
+                                [CaloSampling.EMB3, CaloSampling.EMEC3],
+                                [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
+                                [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
+                                [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
+                              ],
+                              HistogramPath = "Expert/Rings",
+                              OutputLevel   = outputLevel)
  
-  
-      #from CaloNtupleBuilder import CaloNtupleMaker
-      #ntuple = CaloNtupleMaker( "CaloNtupleMaker",
-      #                          EventKey        = recordable("EventInfo"),
-      #                          RingerKey       = recordable("Rings"),
-      #                          ClusterKey      = recordable("Clusters"),
-      #                          DeltaR          = 0.15,
-      #                          DumpCells       = True,
-      #                          OutputLevel     = outputLevel)
+
+
+  from RootStreamBuilder import RootStreamMaker
+  ntuple = RootStreamMaker( "RootStreamMaker",
+                            CellsKey        = recordable("Cells"),
+                            EventKey        = recordable("EventInfo"),
+                            TruthKey        = recordable("Particles"),
+                            RingerKey       = recordable("Rings"),
+                            ClusterKey      = recordable("Clusters"),
+                            DumpAllCells    = False,
+                            DumpClusterCells= True,
+                            OutputLevel     = outputLevel)
       
-      acc+= cluster
-      acc+= ringer
-      #acc+= ntuple
-  
-  
-  elif args.ntuple == 'raw':
-  
-      from CaloNtupleBuilder import RawNtupleMaker
-      ntuple = RawNtupleMaker (  "RawNtupleMaker",
-                                 EventKey        = recordable("EventInfo"),
-                                 CellsKey        = recordable("Cells"),
-                                 EtaWindow       = 0.4,
-                                 PhiWindow       = 0.4,
-                                 OutputLevel     = outputLevel)
-  
-      acc += ntuple
-  else:
-      mainLogger.fatal('Invalid ntuple tuple. Choose between raw or physics.')
-  
-  
+  # sequence
+  acc+= cluster
+  acc+= ringer
+  acc += ntuple
+
   acc.run(args.numberOfEvents)
   
   
