@@ -75,7 +75,7 @@ prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
 Use first step output to feed `digit_trf` script. For instance: 
 
 ```
-digit_trf.py -i Zee.Gen.root -o Zee.ESD.root -nt 1
+digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
 ```
 
 ### Event Reconstruction
