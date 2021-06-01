@@ -8,7 +8,8 @@
 using namespace SG;
 
 
-EventContext::EventContext( std::string name ): IMsgService(name)
+EventContext::EventContext( std::string name ): 
+  IMsgService(name)
 {;}
 
 

@@ -1,5 +1,6 @@
 
-#include "src/RootStreamMaker.h"
+#include "src/RootStreamESDMaker.h"
+#include "src/RootStreamESDReader.h"
 
 
 #ifdef __CINT__
@@ -10,7 +11,9 @@
 #pragma link C++ nestedclass;
 
 
-#pragma link C++ class RootStreamMaker+;
+#pragma link C++ class RootStreamESDMaker+;
+#pragma link C++ class RootStreamESDReader+;
+
 
 
 #endif

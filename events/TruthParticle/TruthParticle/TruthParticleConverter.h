@@ -23,7 +23,7 @@ namespace xAOD{
 
             // convert a class object into a struct
             bool convert(const TruthParticle *truth, TruthParticle_t &truth_t );
-
+            bool convert(const TruthParticle_t & , TruthParticle *&);
         private:
 
     };

@@ -28,6 +28,8 @@ namespace xAOD{
             // convert a class object into a struct
             bool convert(const CaloCell *, CaloCell_t & , int link);
 
+            bool convert( const CaloCell_t &, CaloCell *& );
+
         private:
 
     };

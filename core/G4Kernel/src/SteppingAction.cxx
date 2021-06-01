@@ -1,5 +1,5 @@
 
-#include "G4Kernel/EventLoop.h"
+#include "G4Kernel/RunReconstruction.h"
 #include "G4Kernel/SteppingAction.h"
 
 #include "G4Step.hh"
@@ -20,14 +20,14 @@ SteppingAction::~SteppingAction()
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
 
-  EventLoop* loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun()); 
-  loop->ExecuteEvent(step);
+  RunReconstruction* reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun()); 
+  reco->ExecuteEvent(step);
   
-  if (loop->timeout())
+  if (reco->timeout())
   {
-    loop->lock(); // Force skip the post execute step
+    reco->lock(); // Force skip the post execute step
     std::string msg = "Event timeout!";
-    G4Exception("EventLoop::UserSteppingAction()", "WatchDog", EventMustBeAborted, msg.c_str());
+    G4Exception("RunReconstruction::UserSteppingAction()", "WatchDog", EventMustBeAborted, msg.c_str());
   }  
 }
 

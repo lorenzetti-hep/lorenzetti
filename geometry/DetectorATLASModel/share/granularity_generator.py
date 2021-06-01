@@ -254,6 +254,9 @@ class Layer(object):
   def dump(self):
     for seg_idx, seg in enumerate(self.segmentations):
       output = 'detector_sampling_%d_seg_%d.dat' % (self.sampling_id, seg_idx)
+      print(self.layer)
+      print(seg.sampling_id)
+
       seg.dump(output, seg_idx)
 
 
@@ -379,7 +382,7 @@ tilecal2 = SingleSegmentationLayer(
 
 tilecal3 = SingleSegmentationLayer(
     name = "TileCal3",
-    sampling_id = CaloSampling.TileCal1,
+    sampling_id = CaloSampling.TileCal3,
     detector_id = Detector.TILE,
     rMin = barrel_had_nominal_radius + barrel_had_calo_radius[1:3].sum(), 
     rMax = barrel_had_nominal_radius + barrel_had_calo_radius[1:4].sum(),
@@ -610,8 +613,7 @@ hec3 = Layer(
 )
 
 em_barrel = [psb, pse, emb1, emb2, emb3]
-had_barrel = [ tilecal1, tilecal2, tilecal3
-             , tileext1, tileext2, tileext3 ]
+had_barrel = [ tilecal1, tilecal2, tilecal3, tileext1, tileext2, tileext3 ]
 emec = [emec1, emec2, emec3]
 hec = [hec1, hec2, hec3]
 

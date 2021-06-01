@@ -19,6 +19,19 @@ bool TruthParticleConverter::convert( const TruthParticle *truth, TruthParticle_
     return true;
   }
   return false;
+  
+}
+
+
+bool TruthParticleConverter::convert( const TruthParticle_t &truth_t , TruthParticle *&truth )
+{
+  truth = new xAOD::TruthParticle( truth_t.e,
+                                   truth_t.et,
+                                   truth_t.eta,
+                                   truth_t.phi,
+                                   truth_t.pdgid
+                                  );
+  return true;
 }
 
 

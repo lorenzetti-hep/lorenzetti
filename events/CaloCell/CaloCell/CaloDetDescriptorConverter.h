@@ -20,15 +20,13 @@ namespace xAOD{
         float rmin; 
         float rmax;
         float e;
-        float etruth;
+        float edep;
         int bcid_start;
         int bcid_end;
         int bcid_truth;
         float bc_duration;
-        //std::vector<float> pulse;
-        //std::vector<float> time;
-        //std::map< int, float> edep;
-        //std::map< int, std::vector<float> > pulsePerBunch;
+        std::vector<float> pulse;
+        std::vector<float> edep_per_bunch;
         unsigned int hash;
         int cell_link;
     };
@@ -42,6 +40,8 @@ namespace xAOD{
             // convert a class object into a struct
             bool convert(const CaloDetDescriptor *, CaloDetDescriptor_t &, int link );
 
+            bool convert( const CaloDetDescriptor_t &, CaloDetDescriptor *& );
+            
         private:
 
     };

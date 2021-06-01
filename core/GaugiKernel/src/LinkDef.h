@@ -6,6 +6,11 @@
 #include "GaugiKernel/IAlgTool.h"
 #include "GaugiKernel/Timer.h"
 
+#include "GaugiKernel/ComponentReader.h"
+//#include "GaugiKernel/IComponentReader.h"
+#include "GaugiKernel/ComponentAccumulator.h"
+
+
 #ifdef __CINT__
 
 #pragma link off all globals;
@@ -21,5 +26,11 @@
 #pragma link C++ class Algorithm+;
 #pragma link C++ class AlgTool+;
 #pragma link C++ class IAlgTool+;
+#pragma link C++ class IComponentReader+;
+#pragma link C++ class ComponentReader+;
+#pragma link C++ class Gaugi::ComponentAccumulator+;
+
+
+
 
 #endif

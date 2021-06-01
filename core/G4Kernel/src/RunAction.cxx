@@ -1,5 +1,5 @@
 
-#include "G4Kernel/EventLoop.h"
+#include "G4Kernel/RunReconstruction.h"
 #include "G4Kernel/RunAction.h"
 #include "G4Kernel/Analysis.h"
 
@@ -32,8 +32,8 @@ RunAction::~RunAction()
 
 G4Run* RunAction::GenerateRun()
 {
-  MSG_INFO("Creating the EventLoop...");
-  return new EventLoop(m_acc, m_output);
+  MSG_INFO("Creating the RunReconstruction...");
+  return new RunReconstruction(m_acc, m_output);
 }
 
 

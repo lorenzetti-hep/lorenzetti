@@ -46,10 +46,11 @@ namespace SG{
       /*! Get the store gate service */
       StoreGate* getStoreGateSvc(){ return m_store; };
 
+
     private:
 
       std::map< std::string, std::unique_ptr<const DataHandle > > m_storable_ptr;
-  
+      
       StoreGate *m_store;
   };
 

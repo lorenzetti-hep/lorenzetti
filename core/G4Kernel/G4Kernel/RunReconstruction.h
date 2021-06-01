@@ -1,5 +1,5 @@
-#ifndef EventLoop_h 
-#define EventLoop_h
+#ifndef RunReconstruction_h 
+#define RunReconstruction_h
 
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/MsgStream.h"
@@ -12,15 +12,15 @@
 #include <string>
 #include <vector>
 
-class EventLoop : public G4Run, public MsgService
+class RunReconstruction : public G4Run, public MsgService
 {
   public:
 
     /** Constructor **/
-    EventLoop( std::vector<Gaugi::Algorithm*>, std::string output );
+    RunReconstruction( std::vector<Gaugi::Algorithm*>, std::string output );
     
     /** Destructor **/
-    virtual ~EventLoop();
+    virtual ~RunReconstruction();
     
     /** Used in Geant core, Loop event **/
 

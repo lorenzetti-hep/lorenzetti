@@ -109,8 +109,6 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   auto store = ctx.getStoreGateSvc();
 
   store->mkdir(m_histPath);
-
- 
   int nEtabins = m_eta_bins.size() -1;
   int nPhibins = m_phi_bins.size() -1;
 
@@ -124,6 +122,7 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 
 
   if (m_detailedHistograms){
+
     int nbunchs = m_bcid_end - m_bcid_start + 1;
     //store->add(new TH2F( "edep_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
     store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*50, (m_bcid_start - 0.5)*m_bc_duration, (m_bcid_end + 0.5)*m_bc_duration) );

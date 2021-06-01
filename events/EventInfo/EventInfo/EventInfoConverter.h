@@ -21,7 +21,7 @@ namespace xAOD{
 
             // convert a class object into a struct
             bool convert(const EventInfo *, EventInfo_t & );
-
+            bool convert(const EventInfo_t &, EventInfo *& );
         private:
 
     };

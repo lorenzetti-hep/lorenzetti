@@ -1,6 +1,6 @@
 
 #include "G4Kernel/constants.h"
-#include "G4Kernel/EventLoop.h"
+#include "G4Kernel/RunReconstruction.h"
 #include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
 #include "G4SystemOfUnits.hh"
@@ -9,8 +9,8 @@
 
 
 
-EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output): 
-  IMsgService("EventLoop"),
+RunReconstruction::RunReconstruction( std::vector<Gaugi::Algorithm*> acc , std::string output): 
+  IMsgService("RunReconstruction"),
   G4Run(), 
   m_store( output , G4Threading::G4GetThreadId() ),
   m_ctx( "EventContext" ),
@@ -32,13 +32,13 @@ EventLoop::EventLoop( std::vector<Gaugi::Algorithm*> acc , std::string output):
 }
 
 
-EventLoop::~EventLoop()
+RunReconstruction::~RunReconstruction()
 {}
 
 
-void EventLoop::BeginOfEvent()
+void RunReconstruction::BeginOfEvent()
 {
-  MSG_INFO("EventLoop::BeginOfEvent...");
+  MSG_INFO("RunReconstruction::BeginOfEvent...");
   
   m_stepCounter=0;
   
@@ -69,7 +69,7 @@ void EventLoop::BeginOfEvent()
 }
 
 
-void EventLoop::ExecuteEvent( const G4Step* step )
+void RunReconstruction::ExecuteEvent( const G4Step* step )
 {
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
@@ -93,7 +93,7 @@ void EventLoop::ExecuteEvent( const G4Step* step )
 }
 
 
-void EventLoop::EndOfEvent()
+void RunReconstruction::EndOfEvent()
 {
 
   
@@ -101,7 +101,7 @@ void EventLoop::EndOfEvent()
   
   timer.start();
   if (!m_lock){
-    MSG_INFO("EventLoop::EndOfEvent...");
+    MSG_INFO("RunReconstruction::EndOfEvent...");
     for( auto &toolHandle : m_toolHandles){
       MSG_DEBUG( "Launching post execute step for " << toolHandle->name() );
       if (toolHandle->post_execute( m_ctx ).isFailure() ){
@@ -133,7 +133,7 @@ void EventLoop::EndOfEvent()
 }
 
 
-void EventLoop::bookHistograms(){
+void RunReconstruction::bookHistograms(){
 
   m_store.cd();
   m_store.mkdir( "Event" );
@@ -150,20 +150,20 @@ void EventLoop::bookHistograms(){
 
 
 
-SG::EventContext & EventLoop::getContext()
+SG::EventContext & RunReconstruction::getContext()
 {
   return m_ctx;
 }
 
-bool EventLoop::timeout(){
+bool RunReconstruction::timeout(){
   return m_timeout.resume() > event_timeout ? true : false;
 }
 
-void EventLoop::lock(){
+void RunReconstruction::lock(){
   m_lock=true;
 }
 
-void EventLoop::unlock(){
+void RunReconstruction::unlock(){
   m_lock=false;
 }
 

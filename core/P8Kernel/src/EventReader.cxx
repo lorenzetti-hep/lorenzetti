@@ -1,7 +1,7 @@
 
 #include "P8Kernel/EventReader.h"
 #include "EventInfo/EventInfo.h"
-#include "G4Kernel/EventLoop.h"
+#include "G4Kernel/RunReconstruction.h"
 #include "G4Kernel/constants.h"
 #include "G4LorentzVector.hh"
 #include "G4RunManager.hh"
@@ -176,7 +176,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   clear();
   m_evt = anEvent->GetEventID();
   
-  EventLoop *loop = static_cast<EventLoop*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  RunReconstruction *loop = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   if ( m_evt <  m_ttree->GetEntries() ){
 

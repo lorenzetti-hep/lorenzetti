@@ -1,12 +1,9 @@
-#ifndef RootStreamMaker_h
-#define RootStreamMaker_h
+#ifndef RootStreamESDMaker_h
+#define RootStreamESDMaker_h
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
-#include "CaloRings/CaloRings.h"
-#include "CaloCluster/CaloCluster.h"
 #include "TruthParticle/TruthParticle.h"
-
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
@@ -14,14 +11,14 @@
 
 
 
-class RootStreamMaker : public Gaugi::Algorithm
+class RootStreamESDMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    RootStreamMaker( std::string );
+    RootStreamESDMaker( std::string );
     
-    virtual ~RootStreamMaker();
+    virtual ~RootStreamESDMaker();
     
     virtual StatusCode initialize() override;
 
@@ -47,15 +44,11 @@ class RootStreamMaker : public Gaugi::Algorithm
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
     std::string m_ntupleName;
-
     std::string m_cellsKey;
     std::string m_eventKey;
-    std::string m_clusterKey;
-    std::string m_ringerKey;
     std::string m_truthKey;
 
-    bool m_dumpAllCells;
-    bool m_dumpClusterCells;
+    float m_etaWindow, m_phiWindow;
 
     int m_outputLevel;
 };

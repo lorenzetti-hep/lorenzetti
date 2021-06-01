@@ -1,23 +1,20 @@
-__all__ = ["RootStreamMaker"]
+__all__ = ["RootStreamESDMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class RootStreamMaker( Logger ):
+class RootStreamESDMaker( Logger ):
 
   __allow_keys = [
                   "EventKey",
                   "TruthKey",
                   "CellsKey",
-                  "ClusterKey", 
-                  "CaloKey", 
-                  "RingerKey", 
                   "OutputLevel", 
                   "NtupleName",
-                  "DumpAllCells",
-                  "DumpClusterCells",
+                  "EtaWindow",
+                  "PhiWindow",
                   ]
 
 
@@ -26,8 +23,8 @@ class RootStreamMaker( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamMaker
-    self.__core = RootStreamMaker(name)
+    from ROOT import RootStreamESDMaker
+    self.__core = RootStreamESDMaker(name)
 
     for key, value in kw.items():
       self.setProperty( key,value )

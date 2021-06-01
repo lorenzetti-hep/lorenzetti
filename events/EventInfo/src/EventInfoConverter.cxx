@@ -16,3 +16,11 @@ bool EventInfoConverter::convert( const EventInfo *event, EventInfo_t &event_t)
   }
   return false;
 }
+
+bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
+{
+  event = new xAOD::EventInfo();
+  event->setEventNumber( event_t.eventNumber );
+  event->setAvgmu( event_t.avgmu);
+  return true;
+}

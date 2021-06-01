@@ -11,7 +11,7 @@
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
 #include "TTree.h"
-#include "RootStreamMaker.h"
+#include "RootStreamAODMaker.h"
 #include "GaugiKernel/EDM.h"
 
 
@@ -20,7 +20,7 @@ using namespace Gaugi;
 
 
 
-RootStreamMaker::RootStreamMaker( std::string name ) : 
+RootStreamAODMaker::RootStreamAODMaker( std::string name ) : 
   IMsgService(name),
   Algorithm()
 {
@@ -40,11 +40,11 @@ RootStreamMaker::RootStreamMaker( std::string name ) :
 
 
 
-RootStreamMaker::~RootStreamMaker()
+RootStreamAODMaker::~RootStreamAODMaker()
 {;}
 
 
-StatusCode RootStreamMaker::initialize()
+StatusCode RootStreamAODMaker::initialize()
 {
   setMsgLevel(m_outputLevel);
 
@@ -57,7 +57,7 @@ StatusCode RootStreamMaker::initialize()
 }
 
 
-StatusCode RootStreamMaker::bookHistograms( SG::EventContext &ctx ) const
+StatusCode RootStreamAODMaker::bookHistograms( SG::EventContext &ctx ) const
 {
   
 
@@ -89,38 +89,38 @@ StatusCode RootStreamMaker::bookHistograms( SG::EventContext &ctx ) const
 }
 
 
-StatusCode RootStreamMaker::pre_execute( EventContext &/*ctx*/ ) const
+StatusCode RootStreamAODMaker::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
 
-StatusCode RootStreamMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
+StatusCode RootStreamAODMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
 
-StatusCode RootStreamMaker::finalize()
+StatusCode RootStreamAODMaker::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
 
-StatusCode RootStreamMaker::post_execute( EventContext &/*ctx*/ ) const
+StatusCode RootStreamAODMaker::post_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
 
-StatusCode RootStreamMaker::fillHistograms( EventContext &ctx ) const
+StatusCode RootStreamAODMaker::fillHistograms( EventContext &ctx ) const
 {
   return serialize(ctx);
 }
 
 
 template <class T>
-void RootStreamMaker::InitBranch(TTree* fChain, std::string branch_name, T* param) const
+void RootStreamAODMaker::InitBranch(TTree* fChain, std::string branch_name, T* param) const
 {
   std::string bname = branch_name;
   if (fChain->GetAlias(bname.c_str()))
@@ -137,7 +137,7 @@ void RootStreamMaker::InitBranch(TTree* fChain, std::string branch_name, T* para
 
 
 
-StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
+StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
 {
   
 

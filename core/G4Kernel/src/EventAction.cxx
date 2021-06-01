@@ -1,5 +1,5 @@
 
-#include "G4Kernel/EventLoop.h"
+#include "G4Kernel/RunReconstruction.h"
 #include "G4Kernel/EventAction.h"
 
 
@@ -21,9 +21,9 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 {  
-  EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  RunReconstruction* reco = static_cast<RunReconstruction*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
   MSG_DEBUG( "EventAction::BeginOfEvent()" );
-  loop->BeginOfEvent();
+  reco->BeginOfEvent();
 }
 
 
@@ -31,8 +31,8 @@ void EventAction::BeginOfEventAction(const G4Event* /*event*/)
 void EventAction::EndOfEventAction(const G4Event* /*event*/)
 {
   MSG_DEBUG( "EventAction::EndOfEvent()" );
-  EventLoop* loop = static_cast<EventLoop*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
-  loop->EndOfEvent();
+  RunReconstruction* reco = static_cast<RunReconstruction*>(G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  reco->EndOfEvent();
 }
 
 

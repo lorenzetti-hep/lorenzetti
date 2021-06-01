@@ -7,6 +7,8 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Property.h"
+#include "GaugiKernel/ComponentReader.h"
+
 
 #include <vector>
 #include <string>
