@@ -23,7 +23,6 @@ namespace xAOD{
         float edep;
         int bcid_start;
         int bcid_end;
-        int bcid_truth;
         float bc_duration;
         std::vector<float> pulse;
         std::vector<float> edep_per_bunch;

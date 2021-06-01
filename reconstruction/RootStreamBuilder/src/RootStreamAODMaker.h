@@ -54,9 +54,7 @@ class RootStreamAODMaker : public Gaugi::Algorithm
     std::string m_ringerKey;
     std::string m_truthKey;
 
-    bool m_dumpAllCells;
-    bool m_dumpClusterCells;
-
+    bool m_dumpCells;
     int m_outputLevel;
 };
 

@@ -31,10 +31,7 @@ RootStreamAODMaker::RootStreamAODMaker( std::string name ) :
   declareProperty( "RingerKey"          , m_ringerKey="Rings"               );
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="physics"            );
-  declareProperty( "DumpAllCells"       , m_dumpAllCells=false              );
-  declareProperty( "DumpClusterCells"   , m_dumpClusterCells=false          );
-
-
+  declareProperty( "DumpCells"          , m_dumpCells=false                 );
 }
 
 
@@ -47,12 +44,6 @@ RootStreamAODMaker::~RootStreamAODMaker()
 StatusCode RootStreamAODMaker::initialize()
 {
   setMsgLevel(m_outputLevel);
-
-  if(m_dumpClusterCells)
-  {
-    m_dumpAllCells=false; // force to be false in case of cluster only
-  }
-
   return StatusCode::SUCCESS;
 }
 
@@ -77,7 +68,7 @@ StatusCode RootStreamAODMaker::bookHistograms( SG::EventContext &ctx ) const
   tree->Branch( "TruthParticleContainer"      , &container_truth     );
   tree->Branch( "CaloRingsContainer"          , &container_rings     );
   tree->Branch( "CaloClusterContainer"        , &container_clus      );
-  if(m_dumpAllCells || m_dumpClusterCells)
+  if(m_dumpCells)
   {
     tree->Branch( "CaloCellContainer"           , &container_cells     );
     tree->Branch( "CaloDetDescriptorContainer"  , &container_descriptor);
@@ -159,7 +150,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   InitBranch( tree,  "TruthParticleContainer"        , &container_truth      );
   InitBranch( tree,  "CaloRingsContainer"            , &container_rings      );
   InitBranch( tree,  "CaloClusterContainer"          , &container_clus       );
-  if(m_dumpAllCells || m_dumpClusterCells){
+  if(m_dumpCells){
     InitBranch( tree,  "CaloCellContainer"             , &container_cells      );
     InitBranch( tree,  "CaloDetDescriptorContainer"    , &container_descriptor );
   }
@@ -182,39 +173,6 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   xAOD::cell_links_t       cell_links;
   xAOD::descriptor_links_t descriptor_links;
   xAOD::cluster_links_t    cluster_links;
-
-
-  
-  if(m_dumpAllCells){ // serialize Cells
-    SG::ReadHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
-
-    if( !container.isValid() )
-    {
-      MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
-    }
-
-    int link = 0; // decorate all cells 
-    for (const auto cell : **container.ptr() ){
-
-      const xAOD::CaloDetDescriptor *descriptor = cell->descriptor();
-
-      cell_links[cell]=link;
-      descriptor_links[descriptor]=link;
-
-
-      { // serialize
-        xAOD::CaloCell_t cell_t;
-        xAOD::CaloCellConverter cnv;
-        cnv.convert(cell, cell_t, link);
-        container_cells->push_back(cell_t);
-      }
-
-      link++;
-    }// loop over cells
-  }
-  
-
-
 
   { // Serialize Truth Particle
 
@@ -251,7 +209,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
     for (const auto &clus : **container.ptr() )
     {
 
-      if(m_dumpClusterCells){
+      if(m_dumpCells){
 
         int cell_link=0;
         for(const auto&cell : clus->cells()){

@@ -4,7 +4,6 @@ from Gaugi.messenger      import LoggingLevel, Logger
 from Gaugi                import GeV
 from CaloClusterBuilder   import CaloClusterMaker
 from CaloRingerBuilder    import CaloRingerMaker
-from TruthParticleBuilder import TruthParticleMaker
 from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel.utilities   import *
 import numpy as np
@@ -98,21 +97,20 @@ try:
                               OutputLevel   = outputLevel)
  
 
-  #from RootStreamBuilder import RootStreamMaker
-  #ntuple = RootStreamMaker( "RootStreamMaker",
-  #                          CellsKey        = recordable("Cells"),
-  #                          EventKey        = recordable("EventInfo"),
-  #                          TruthKey        = recordable("Particles"),
-  #                          RingerKey       = recordable("Rings"),
-  #                          ClusterKey      = recordable("Clusters"),
-  #                          DumpAllCells    = False,
-  #                          DumpClusterCells= True,
-  #                          OutputLevel     = outputLevel)
+  from RootStreamBuilder import RootStreamAODMaker
+  aod = RootStreamAODMaker( "RootStreamAODMaker",
+                          CellsKey        = recordable("Cells"),
+                          EventKey        = recordable("EventInfo"),
+                          TruthKey        = recordable("Particles"),
+                          RingerKey       = recordable("Rings"),
+                          ClusterKey      = recordable("Clusters"),
+                          DumpCells       = False,
+                          OutputLevel     = outputLevel)
       
   # sequence
   acc+= cluster
   acc+= ringer
-  #acc += ntuple
+  acc+= aod
 
   acc.run(args.numberOfEvents)
 

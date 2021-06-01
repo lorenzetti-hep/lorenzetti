@@ -96,19 +96,6 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
 
   { // deserialize EventInfo
-
-    SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
-    container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
-
-    xAOD::EventInfo  *event=nullptr;
-    xAOD::EventInfoConverter cnv;
-    cnv.convert(  collection_event->at(0), event);
-    container->push_back(event);
-  }
-  
-
-    { // deserialize EventInfo
-
     SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
     container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
 
@@ -120,6 +107,21 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       container->push_back(par);
     }
   }
+
+
+
+  { // deserialize EventInfo
+
+    SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
+    container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
+
+    xAOD::EventInfo  *event=nullptr;
+    xAOD::EventInfoConverter cnv;
+    cnv.convert(  collection_event->at(0), event);
+    container->push_back(event);
+  }
+  
+
 
 
   {

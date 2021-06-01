@@ -1,6 +1,9 @@
 
 __all__ = []
 
+from . import RootStreamAODMaker
+__all__.extend(RootStreamAODMaker.__all__)
+from .RootStreamAODMaker import *
 
 from . import RootStreamESDMaker
 __all__.extend(RootStreamESDMaker.__all__)

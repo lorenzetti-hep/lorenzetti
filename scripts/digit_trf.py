@@ -4,10 +4,6 @@ from Gaugi.messenger      import LoggingLevel, Logger
 from Gaugi                import GeV
 from P8Kernel             import EventReader
 from G4Kernel             import *
-
-from CaloClusterBuilder   import CaloClusterMaker
-from CaloRingerBuilder    import CaloRingerMaker
-from TruthParticleBuilder import TruthParticleMaker
 from CaloCell.CaloDefs    import CaloSampling
 
 import numpy as np
@@ -91,24 +87,33 @@ try:
 
   gun = EventReader( "PythiaGenerator",
                      EventKey   = recordable("EventInfo"),
+                     TruthKey   = recordable("Particles"),
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
                      )
 
-  particles = TruthParticleMaker( "TruthParticleMaker",
-                                   HistogramPath = "Expert/Truth",
-                                   OutputLevel = outputLevel)
 
   calorimeter = CaloCellBuilder("CaloCellBuilder",
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 )
-  
-  acc+= particles # truth
+
   gun.merge(acc)
   calorimeter.merge(acc)
 
-  
+  from CaloClusterBuilder   import CaloClusterMaker
+  cluster = CaloClusterMaker( "CaloClusterMaker",
+                              CellsKey        = recordable("Cells"),
+                              EventKey        = recordable("EventInfo"),
+                              ClusterKey      = recordable("Clusters"),
+                              TruthKey        = recordable("Particles"),
+                              EtaWindow       = 0.4,
+                              PhiWindow       = 0.4,
+                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
+                              HistogramPath   = "Expert/Clusters",
+                              OutputLevel     = outputLevel )
+  acc+=cluster
+
   from RootStreamBuilder import RootStreamESDMaker
   ntuple = RootStreamESDMaker( "RootStreamESDMaker",
                                 CellsKey        = recordable("Cells"),

@@ -53,8 +53,6 @@ class CaloCellMaker : public Gaugi::Algorithm
     int m_bcid_start;
     /*! The end bunch crossing id for energy estimation */
     int m_bcid_end;
-    /*! The truth bunch crossing id */
-    int m_bcid_truth;
     /*! The number of samples per bunch crossing */
     int m_bc_nsamples;
     /*! The time space (in ns) between two bunch crossings */

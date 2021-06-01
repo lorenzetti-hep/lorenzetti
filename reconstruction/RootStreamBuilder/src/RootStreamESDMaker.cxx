@@ -162,16 +162,16 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
     }
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> seeds( m_truthKey, ctx );
+    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_truthKey, ctx );
   
-    if( !seeds.isValid() )
+    if( !particles.isValid() )
     {
       MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_truthKey );
     }
 
     int link = 0; // decorate all cells 
 
-    for (const auto par : **seeds.ptr() )
+    for (const auto par : **particles.ptr() )
     {
         //MSG_DEBUG("New particle...");
         for (const auto cell : **container.ptr() ){

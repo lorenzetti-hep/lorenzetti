@@ -1,7 +1,6 @@
 #ifndef TruthParticle_h
 #define TruthParticle_h
 
-#include "CaloCluster/CaloCluster.h"
 #include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
@@ -14,7 +13,8 @@ namespace xAOD{
       /*! Contructor */
       TruthParticle();
       /*! Contructor */
-      TruthParticle( float e, float et, float eta, float phi, int pdgid );
+      TruthParticle( float e, float et, float eta, float phi, 
+                     float px, float py, float pz, int pdgid );
       /*! Destructor */
       ~TruthParticle()=default;
       /*! The eta center of the cluster given by the simulation (RoI) */ 
@@ -29,6 +29,14 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( int, m_pdgid, setPdgid, pdgid );
       
 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_px, setPx, px );
+      
+      PRIMITIVE_SETTER_AND_GETTER( float, m_py, setPy, py );
+
+      PRIMITIVE_SETTER_AND_GETTER( float, m_pz, setPz, pz );
+
+
+
     private:
 
       int m_pdgid;
@@ -36,6 +44,9 @@ namespace xAOD{
       float m_et;
       float m_eta;
       float m_phi;
+      float m_px;
+      float m_py;
+      float m_pz;
   };
 }
 #endif

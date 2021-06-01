@@ -1,4 +1,5 @@
 
+#include "src/RootStreamAODMaker.h"
 #include "src/RootStreamESDMaker.h"
 #include "src/RootStreamESDReader.h"
 
@@ -10,7 +11,7 @@
 #pragma link off all functions;
 #pragma link C++ nestedclass;
 
-
+#pragma link C++ class RootStreamAODMaker+;
 #pragma link C++ class RootStreamESDMaker+;
 #pragma link C++ class RootStreamESDReader+;
 

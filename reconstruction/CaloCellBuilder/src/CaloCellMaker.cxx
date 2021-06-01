@@ -22,8 +22,7 @@ using namespace SG;
 
 CaloCellMaker::CaloCellMaker( std::string name ) : 
   IMsgService(name),
-  Algorithm(),
-  m_bcid_truth( special_bcid_for_truth_reconstruction )
+  Algorithm()
 {
   declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
   declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
@@ -178,8 +177,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
       auto *descriptor = new xAOD::CaloDetDescriptor( eta, phi, deta, dphi, rmin, rmax, hash, 
                                                       (CaloSampling)sampling,
                                                       (Detector)detector,
-                                                      m_bc_duration, m_bcid_start, m_bcid_end, 
-                                                      m_bcid_truth);
+                                                      m_bc_duration, m_bcid_start, m_bcid_end );
       
       // Add the CaloCell into the collection
       collection->push_back( descriptor );

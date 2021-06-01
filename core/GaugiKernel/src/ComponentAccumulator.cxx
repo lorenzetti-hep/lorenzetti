@@ -78,15 +78,19 @@ void ComponentAccumulator::run(int nov)
   int completed = 0;
   for (int evt=0; evt < m_reader->GetEntries(); ++evt)
   {
+    
+    MSG_INFO("======================= Event "<< evt << "=========================");
     m_reader->GeneratePrimaryVertex(evt, m_ctx);
     BeginOfEvent();
     ExecuteEvent();
     EndOfEvent();
+    MSG_INFO("===================================================================");
 
     if (nov >= 0 && completed > nov ){
       break; // force stop
     }
     completed++;
+
   }
 
 }

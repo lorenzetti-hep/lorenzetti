@@ -20,8 +20,7 @@ CaloDetDescriptor::CaloDetDescriptor(
                   Detector detector,
                   float bc_duration,
                   int bcid_start,
-                  int bcid_end,
-                  int bcid_truth ):
+                  int bcid_end ):
   EDM(),
   m_sampling(sampling),
   m_detector(detector),
@@ -32,11 +31,9 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_radius_min(radius_min),
   m_radius_max(radius_max),
   m_e(0),
-  m_etruth(0),
   /* Bunch crossing information */
   m_bcid_start( bcid_start ),
   m_bcid_end( bcid_end ),
-  m_bcid_truth( bcid_truth ),
   m_bc_duration( bc_duration ),
   m_hash(hash)
 {
@@ -52,7 +49,7 @@ CaloDetDescriptor::CaloDetDescriptor(
 
 void CaloDetDescriptor::clear()
 {
-  m_e = m_etruth = 0.0; // zeroize energy
+  m_e = 0.0; // zeroize energy
   m_edep.clear(); // zeroize deposit energy for all bunchs
   m_pulsePerBunch.clear(); // zeroize all pulses for all bunchs
   m_pulse.clear(); // zeroize the main pulse
@@ -76,11 +73,7 @@ void CaloDetDescriptor::Fill( const G4Step* step )
     m_edep[bcid]+=(edep/MeV);
   }
 
-  // TODO: Special studies.
-  // This represets the energy only for the main event in the bunch crossing zero
-  if ( t >= ( (m_bcid_truth-1)*m_bc_duration) && t < ((m_bcid_truth+1)*m_bc_duration)){
-    m_etruth+=(edep/MeV);
-  }
+
 }
 
 int CaloDetDescriptor::findIndex( float value) const 

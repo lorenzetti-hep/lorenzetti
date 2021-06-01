@@ -1,6 +1,10 @@
 
 #include "P8Kernel/EventReader.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventInfoContainer.h"
+#include "TruthParticle/TruthParticle.h"
+#include "TruthParticle/TruthParticleContainer.h"
+
 #include "G4Kernel/RunReconstruction.h"
 #include "G4Kernel/constants.h"
 #include "G4LorentzVector.hh"
@@ -26,6 +30,7 @@ EventReader::EventReader(std::string name):
   ROOT::EnableThreadSafety();
   declareProperty( "FileName",      m_filename=""          );
   declareProperty( "EventKey",      m_eventKey="EventInfo" );
+  declareProperty( "TruthKey",      m_truthKey="Particles" );
   declareProperty( "BunchDuration", m_bc_duration=25*ns    );
 
 }
@@ -176,24 +181,27 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   clear();
   m_evt = anEvent->GetEventID();
   
-  RunReconstruction *loop = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+  RunReconstruction *reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   if ( m_evt <  m_ttree->GetEntries() ){
 
     MSG_INFO( "Get event (EventReader) with number " << m_evt )
     m_ttree->GetEntry(m_evt);
-    SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, loop->getContext());
-    event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
 
-    xAOD::EventInfo *evt = new xAOD::EventInfo();
-    evt->setEventNumber( m_evt );
-    evt->setAvgmu( m_avgmu );
-    Load( anEvent, evt );
+    {
+      SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, reco->getContext());
+      event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
+      xAOD::EventInfo *evt = new xAOD::EventInfo();
+      evt->setEventNumber( m_evt );
+      evt->setAvgmu( m_avgmu );
+      event->push_back(evt);
+    }
 
-    MSG_INFO( "Event id         : " << evt->eventNumber() );
-    MSG_INFO( "Avgmu            : " << evt->avgmu() );
-    MSG_INFO( "Number of seeds  : " << evt->size() );
-    event->push_back(evt);
+    int num_of_seeds = Load( anEvent );
+
+    MSG_INFO( "Event id         : " << m_evt        );
+    MSG_INFO( "Avgmu            : " << m_avgmu      );
+    MSG_INFO( "Number of seeds  : " << num_of_seeds );
 
   }else{
     MSG_INFO( "EventReader: no generated particles. run terminated..." );
@@ -213,29 +221,47 @@ bool EventReader::CheckVertexInsideWorld(const G4ThreeVector& pos) const
 }
 
 
-void EventReader::Load( G4Event* g4event, xAOD::EventInfo *event )
+int EventReader::Load( G4Event* g4event )
 {
-  float totalEnergy = 0.0;
+  RunReconstruction *reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
+
+  SG::WriteHandle<xAOD::TruthParticleContainer>  particles(m_truthKey, reco->getContext());
+  particles.record( std::unique_ptr<xAOD::TruthParticleContainer>( new xAOD::TruthParticleContainer() ) );
+  
+  float totalEnergy=0;
+  int num_of_seeds = 0;
   
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     int bc_id = m_p_bc_id->at(i);
+
     if(m_p_pdg_id->at(i)==0){
-      event->push_back( xAOD::seed_t{m_p_e->at(i)*GeV, m_p_et->at(i)*GeV, m_p_eta->at(i), 
-                        m_p_phi->at(i), m_p_px->at(i)*GeV, m_p_py->at(i)*GeV, m_p_pz->at(i)*GeV, 0} );
+      xAOD::TruthParticle *par = new xAOD::TruthParticle( m_p_e->at(i)*MeV, 
+                                                          m_p_et->at(i)*MeV, 
+                                                          m_p_eta->at(i), 
+                                                          m_p_phi->at(i), 
+                                                          m_p_px->at(i)*MeV, 
+                                                          m_p_py->at(i)*MeV, 
+                                                          m_p_pz->at(i)*MeV, 
+                                                          0 );
+
+      particles->push_back(par);
+      num_of_seeds++;
     }
     
     if( m_p_isMain->at(i) ){
       if(m_p_pdg_id->at(i)!=0){
         totalEnergy+= m_p_et->at(i);
         Add( g4event, i, bc_id );
-        Add( g4event, i, special_bcid_for_truth_reconstruction );
+        //Add( g4event, i, special_bcid_for_truth_reconstruction );
       }
     }else{
       Add( g4event, i, bc_id );
     }
   }
+
+  return num_of_seeds;
 }
 
 

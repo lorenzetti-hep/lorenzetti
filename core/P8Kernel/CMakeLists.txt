@@ -7,6 +7,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOU
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GaugiKernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../G4Kernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/EventInfo)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/TruthParticle)
 
 # included by hand, should be fixed for future
 include_directories( ${FASTJET_INCLUDE_DIRS} )

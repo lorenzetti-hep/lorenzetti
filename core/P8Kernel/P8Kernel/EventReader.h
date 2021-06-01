@@ -42,14 +42,15 @@ namespace generator{
       // can be implemented in your own class.
       bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
       
-      void Load( G4Event *, xAOD::EventInfo *);
+      int Load( G4Event * );
   
       bool Add( G4Event* g4event , int i, int bc_id );
   
       unsigned int           m_evt;
       std::string            m_filename;
       std::string            m_eventKey;
-  
+      std::string            m_truthKey;
+
       TFile *m_f;
       TTree *m_ttree;
   

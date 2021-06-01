@@ -27,8 +27,7 @@ namespace xAOD{
                // bunch crossing information
                float bc_duration, 
                int bcid_start, 
-               int bcid_end, 
-               int bcid_truth );
+               int bcid_end );
 
       /** Destructor **/
       ~CaloDetDescriptor()=default;
@@ -71,9 +70,6 @@ namespace xAOD{
       /*! Estimated energy from OF **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
 
-      /*! cells energy for the main event only */ 
-      PRIMITIVE_SETTER_AND_GETTER( float, m_etruth, setETruth, etruth );
-
 
       /*! Energy deposity from simulated hits **/
       float edep( int bc_id=0 ) const{
@@ -82,6 +78,10 @@ namespace xAOD{
         }else{// return zero case bc not exist
           return 0;
         }
+      }
+
+      void edep( int bc_id, float e ){
+        m_edep[bc_id] += e;
       }
 
 
@@ -93,8 +93,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , bcid_start    );
       /*! Bunch crossing id end */
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_end    , set_bcid_end    , bcid_end      );
-      /*! Bunch crossing id truth */
-      PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_truth , set_bcid_truth , bcid_truth );
       /* Time space (in ns) between two bunch crossings */
       PRIMITIVE_SETTER_AND_GETTER( float, m_bc_duration , set_bc_duration , bc_duration );
       
@@ -148,10 +146,9 @@ namespace xAOD{
       /*! In plane xy */
       float m_radius_max;
 
+
       /*! The estimated energy from OF in bcid=0 */
       float m_e;
-      /*! The total energy deposit in bcid_truth */
-      float m_etruth;
       /*! Digitalized integrated pulse for the main event (bcid=0) */
       std::vector<float> m_pulse;
 
@@ -160,8 +157,6 @@ namespace xAOD{
       int m_bcid_start;
       /*! bunch crossing end id */
       int m_bcid_end;
-      /*! truth bunch crossing */
-      int m_bcid_truth;
       /*! bunch crossing space in ns between two bunchs */
       float m_bc_duration;
 

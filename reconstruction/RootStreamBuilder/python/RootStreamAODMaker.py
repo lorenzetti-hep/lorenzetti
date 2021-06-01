@@ -1,17 +1,22 @@
-__all__ = ["TruthParticleMaker"]
+__all__ = ["RootStreamAODMaker"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class TruthParticleMaker( Logger ):
+class RootStreamAODMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey", 
-                  "TruthKey", 
+                  "EventKey",
+                  "TruthKey",
+                  "CellsKey",
+                  "ClusterKey",
+                  "RingerKey",
                   "OutputLevel", 
-                  "HistogramPath"]
+                  "NtupleName",
+                  "DumpCells",
+                  ]
 
 
   def __init__( self, name, **kw ): 
@@ -19,9 +24,8 @@ class TruthParticleMaker( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import TruthParticleMaker
-    # Create the algorithm
-    self.__core = TruthParticleMaker(name)
+    from ROOT import RootStreamAODMaker
+    self.__core = RootStreamAODMaker(name)
 
     for key, value in kw.items():
       self.setProperty( key,value )

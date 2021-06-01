@@ -28,9 +28,7 @@ bool CaloCellConverter::convert( const CaloCell_t &cell_t, CaloCell *&cell )
                              cell_t.phi, 
                              cell_t.deta, 
                              cell_t.dphi );
-  cell->setE(cell_t.e);
-  cell->setEt(cell_t.et);
-  //auto descriptor = descriptor_links[cell_t.link];
-  //cell->setDescriptor(descriptor);
+  cell->setE(cell_t.e); // estimated energy from OF. Same as descriptor->e()
+  cell->setEt(cell_t.et); // estimated transverse energy from OF
   return true;
 }

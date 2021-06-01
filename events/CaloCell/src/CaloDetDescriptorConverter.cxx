@@ -22,7 +22,6 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.edep        = descriptor->edep(); // truth energy into the bunch crossing zero
     descriptor_t.bcid_start  = descriptor->bcid_start();
     descriptor_t.bcid_end    = descriptor->bcid_end();
-    descriptor_t.bcid_truth  = descriptor->bcid_truth();
     descriptor_t.bc_duration = descriptor->bc_duration();
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
@@ -56,15 +55,14 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             (Detector)descriptor_t.detector,
                                             descriptor_t.bc_duration,
                                             descriptor_t.bcid_start,
-                                            descriptor_t.bcid_end,
-                                            descriptor_t.bcid_truth );
+                                            descriptor_t.bcid_end );
 
-  descriptor->setE(descriptor_t.e);
-  descriptor->setPulse( descriptor_t.pulse);
-  /*
+  descriptor->setE(descriptor_t.e); // estimated energy from OF
+  descriptor->setPulse( descriptor_t.pulse); // pulse from generator
+  
   for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
   {
-    descriptor->setEdep( bcid, descriptor_t.edep.at(bcid));
-  }*/
+    descriptor->edep( bcid, descriptor_t.edep_per_bunch[bcid] ); // truth energy for each bunch crossing
+  }
   return true;
 }
