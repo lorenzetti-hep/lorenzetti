@@ -50,7 +50,7 @@ cd $temp
 
 echo "compile lorenzetti..."
 echo $CPU_N
-git clone https://github.com/jodafons/lorenzetti.git && cd lorenzetti
+git clone https://github.com/lorenzetti-hep/lorenzetti.git && cd lorenzetti
 mkdir build && cd build && cmake .. && make -j$CPU_N
 cd ..
 source $PWD/setup.sh

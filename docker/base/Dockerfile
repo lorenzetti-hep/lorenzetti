@@ -66,7 +66,7 @@ ENV PYTHONPATH "/opt/root_cern/build/lib:$PYTHONPATH"
 # Install Geant4
 RUN apt-get install -y libxerces-c-dev
 RUN ls -lisah
-RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && ls && cd /opt && git clone https://github.com/jodafons/geant4.git && cd geant4 && mkdir buildthis && cd buildthis && cmake -DGEANT4_INSTALL_DATA=ON \
+RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && ls && cd /opt && git clone https://github.com/lorenzetti-hep/geant4.git && cd geant4 && mkdir buildthis && cd buildthis && cmake -DGEANT4_INSTALL_DATA=ON \
  -DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON -DGEANT4_USE_QT=ON -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON .. && make -j$CPU_N && \
 cp ../scripts/geant4_10.5.1.sh geant4.sh && source geant4.sh
 
@@ -80,11 +80,11 @@ cp ../scripts/geant4_10.5.1.sh geant4.sh && source geant4.sh
 
 
 # Install HEPMC
-RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://github.com/jodafons/hepmc.git && cd hepmc && ./configure --with-momentum=MEV --with-length=CM && make -j$CPU_N && make install
+RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://github.com/lorenzetti-hep/hepmc.git && cd hepmc && ./configure --with-momentum=MEV --with-length=CM && make -j$CPU_N && make install
 
 
 # Install Pythia8
-RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://github.com/jodafons/pythia.git && cd pythia && mv README.md README && ./configure && make -j$CPU_N
+RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://github.com/lorenzetti-hep/pythia.git && cd pythia && mv README.md README && ./configure && make -j$CPU_N
 
 # Install FastJet
 RUN apt install curl -y

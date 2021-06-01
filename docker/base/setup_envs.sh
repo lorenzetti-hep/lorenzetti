@@ -40,7 +40,7 @@ done
 
 cd $current_path
 echo "compile lorenzetti"
-git clone https://github.com/jodafons/lorenzetti.git
+git clone https://github.com/lorenzetti-hep/lorenzetti.git
 cd lorenzetti
 source $PWD/setup_module.sh
 source $PWD/setup_module.sh --head
