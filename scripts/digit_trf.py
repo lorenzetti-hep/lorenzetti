@@ -115,13 +115,13 @@ try:
   acc+=cluster
 
   from RootStreamBuilder import RootStreamESDMaker
-  ntuple = RootStreamESDMaker( "RootStreamESDMaker",
-                                CellsKey        = recordable("Cells"),
-                                EventKey        = recordable("EventInfo"),
-                                TruthKey        = recordable("Particles"),
-                                OutputLevel     = outputLevel)
+  ESD = RootStreamESDMaker( "RootStreamESDMaker",
+                             CellsKey        = recordable("Cells"),
+                             EventKey        = recordable("EventInfo"),
+                             TruthKey        = recordable("Particles"),
+                             OutputLevel     = outputLevel)
 
-  acc += ntuple
+  acc += ESD
   acc.run(args.numberOfEvents)
   
   

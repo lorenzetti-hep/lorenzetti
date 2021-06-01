@@ -56,14 +56,14 @@ try:
 
 
   from RootStreamBuilder import RootStreamESDReader
-  esd = RootStreamESDReader("ESDReader", 
+  ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
                             CellsKey        = recordable("Cells"),
                             EventKey        = recordable("EventInfo"),
                             TruthKey        = recordable("Particles"),
                             NtupleName      = "CollectionTree",
                           )
-  esd.merge(acc)
+  ESD.merge(acc)
 
 
   # build cluster for all seeds
@@ -98,7 +98,7 @@ try:
  
 
   from RootStreamBuilder import RootStreamAODMaker
-  aod = RootStreamAODMaker( "RootStreamAODMaker",
+  AOD = RootStreamAODMaker( "RootStreamAODMaker",
                           CellsKey        = recordable("Cells"),
                           EventKey        = recordable("EventInfo"),
                           TruthKey        = recordable("Particles"),
@@ -110,7 +110,7 @@ try:
   # sequence
   acc+= cluster
   acc+= ringer
-  acc+= aod
+  acc+= AOD
 
   acc.run(args.numberOfEvents)
 
