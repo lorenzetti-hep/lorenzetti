@@ -104,6 +104,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
     {
       xAOD::TruthParticle  *par=nullptr;
       cnv.convert(par_t, par);
+      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
       container->push_back(par);
     }
   }
@@ -114,10 +115,10 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
     SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
     container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
-
     xAOD::EventInfo  *event=nullptr;
     xAOD::EventInfoConverter cnv;
     cnv.convert(  collection_event->at(0), event);
+    MSG_INFO( "EventNumber = " << event->eventNumber() << ", Avgmu = " << event->avgmu());
     container->push_back(event);
   }
   

@@ -11,7 +11,7 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
 
   if(descriptor){
     descriptor_t.sampling    = (int)descriptor->sampling();
-    descriptor_t.detector    = (int)descriptor->sampling();
+    descriptor_t.detector    = (int)descriptor->detector();
     descriptor_t.eta         = descriptor->eta();
     descriptor_t.phi         = descriptor->phi();
     descriptor_t.deta        = descriptor->deltaEta(); 

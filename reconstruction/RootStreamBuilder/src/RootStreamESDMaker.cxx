@@ -179,7 +179,6 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
         
             float deltaEta = std::abs( par->eta() - descriptor->eta());
             float deltaPhi = std::abs( par->phi() - descriptor->phi());
-            //MSG_DEBUG("Cell..." << deltaEta << " " << deltaPhi);
 
             if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
             {

@@ -245,7 +245,7 @@ int EventReader::Load( G4Event* g4event )
                                                           m_p_py->at(i)*MeV, 
                                                           m_p_pz->at(i)*MeV, 
                                                           0 );
-
+      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
       particles->push_back(par);
       num_of_seeds++;
     }

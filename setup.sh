@@ -33,12 +33,15 @@ fi
 
 
 
+
+
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
 export PATH=`pwd`/lib:$PATH
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
 cd ..
-export PATH=$PATH:$PWD/scripts
+export PATH=$PATH:$PWD/core/GaugiKernel/scripts
 export PATH=$PATH:$PWD/generator/PythiaGenerator/share
+export PATH=$PATH:$PWD/scripts
 
 
 
