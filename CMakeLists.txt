@@ -62,11 +62,14 @@ link_directories( ${Boost_LIBRARY_DIR} )
 add_subdirectory( core/GaugiKernel )
 add_subdirectory( core/G4Kernel )
 add_subdirectory( core/P8Kernel )
+add_subdirectory( events/CaloHit )
 add_subdirectory( events/CaloCell )
 add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
+add_subdirectory( reconstruction/CaloHitBuilder )
+
 add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
@@ -79,11 +82,13 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
   $<TARGET_OBJECTS:P8Kernel>
+  $<TARGET_OBJECTS:CaloHit>
   $<TARGET_OBJECTS:CaloCell>
   $<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
+  $<TARGET_OBJECTS:CaloHitBuilder>
   $<TARGET_OBJECTS:CaloCellBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingerBuilder>

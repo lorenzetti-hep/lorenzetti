@@ -104,7 +104,7 @@ try:
                           TruthKey        = recordable("Particles"),
                           RingerKey       = recordable("Rings"),
                           ClusterKey      = recordable("Clusters"),
-                          DumpCells       = False,
+                          DumpCells       = True,
                           OutputLevel     = outputLevel)
       
   # sequence

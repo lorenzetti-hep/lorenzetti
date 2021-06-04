@@ -1,5 +1,5 @@
 
-__all__ = ["CaloCellBuilder"]
+__all__ = ["CaloHitBuilder"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
@@ -10,7 +10,7 @@ import os
 #
 # Calo cell builder
 #
-class CaloCellBuilder( Logger ):
+class CaloHitBuilder( Logger ):
 
 
   # basepath
@@ -19,7 +19,6 @@ class CaloCellBuilder( Logger ):
 
   def __init__( self, name, 
                       HistogramPath  = "Expert", 
-                      HitsKey = "Hits",
                       OutputLevel    = 1,
                       ):
 
@@ -27,7 +26,6 @@ class CaloCellBuilder( Logger ):
     self.__recoAlgs = []
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
-    self.__hitsKey = HitsKey
     
     # configure
     self.configure()
@@ -39,7 +37,7 @@ class CaloCellBuilder( Logger ):
   #
   def configure(self):
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloHitBuilder import CaloHitMaker, CaloHitMerge
 
     collectionKeys = []
  
@@ -47,34 +45,16 @@ class CaloCellBuilder( Logger ):
     from DetectorATLASModel import create_ATLAS_layers 
     layers = create_ATLAS_layers()
     
-
     for layer_id, layer in enumerate( layers ):
 
       for sampling in layer:
 
         for seg in sampling.segments():
 
-          pulse = PulseGenerator( "PulseGenerator", 
-                                  NSamples        = seg.NSamples, 
-                                  ShaperFile      = self.__basepath+seg.ShaperFile,
-                                  OutputLevel     = self.__outputLevel,
-                                  SamplingRate    = 25.0,
-                                  Pedestal        = 0.0,
-                                  DeformationMean = 0.0, 
-                                  DeformationStd  = 0.0,
-                                  NoiseMean       = 0.0,
-                                  NoiseStd        = seg.EletronicNoise,
-                                  StartSamplingBC = seg.StartSamplingBC, 
-                                )
-          of = OptimalFilter("OptimalFilter",
-                              Weights  = seg.OFWeights,
-                              OutputLevel=self.__outputLevel)
-
-          alg = CaloCellMaker("CaloCellMaker", 
-                              CollectionKey           = recordable( seg.CollectionKey ), 
-                              HitsKey                 = recordable(self.__hitsKey),
+          alg = CaloHitMaker("CaloHitMaker", 
+                              CollectionKey           = recordable( seg.CollectionKey ) + "_Hits", 
                               EventKey                = recordable( "EventInfo" ), 
-                              CaloCellFile            = self.__basepath+seg.CaloCellFile, 
+                              CaloHitFile             = self.__basepath+seg.CaloCellFile, # same as cell
                               BunchIdStart            = seg.BunchIdStart,
                               BunchIdEnd              = seg.BunchIdEnd,
                               BunchDuration           = 25, #ns
@@ -82,17 +62,16 @@ class CaloCellBuilder( Logger ):
                               OutputLevel             = self.__outputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
-          alg.Tools = [pulse, of]
+
           self.__recoAlgs.append( alg )
-          collectionKeys.append( seg.CollectionKey )
+          collectionKeys.append( seg.CollectionKey + "_Hits" )
 
 
     
     # Merge all collection into a container and split between truth and reco
-    mergeAlg = CaloCellMerge( "CaloCellMerge" , 
+    mergeAlg = CaloHitMerge( "CaloHitMerge" , 
                               CollectionKeys  = collectionKeys,
-                              CellsKey        = recordable("Cells"),
-                              TruthCellsKey   = recordable("TruthCells"),
+                              HitsKey         = recordable("Hits"),
                               OutputLevel     = self.__outputLevel )
 
     self.__recoAlgs.append( mergeAlg )

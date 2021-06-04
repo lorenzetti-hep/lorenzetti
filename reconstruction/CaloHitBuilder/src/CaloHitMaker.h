@@ -1,19 +1,19 @@
-#ifndef CaloCellMaker_h
-#define CaloCellMaker_h
+#ifndef CaloHitMaker_h
+#define CaloHitMaker_h
 
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/AlgTool.h"
 
 
-class CaloCellMaker : public Gaugi::Algorithm
+class CaloHitMaker : public Gaugi::Algorithm
 {
   public:
   
     /** Contructor **/
-    CaloCellMaker( std::string name );
+    CaloHitMaker( std::string name );
     /** Destructor **/
-    ~CaloCellMaker()=default;
+    ~CaloHitMaker()=default;
     
     /*! initialize the algorithm **/
     virtual StatusCode initialize() override;
@@ -30,8 +30,6 @@ class CaloCellMaker : public Gaugi::Algorithm
     /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
     
-    /*! Add tools to be executed into the post execute step. The order is matter here */
-    void push_back( Gaugi::AlgTool *);
 
   private:
    
@@ -39,12 +37,10 @@ class CaloCellMaker : public Gaugi::Algorithm
     std::string m_collectionKey;
     /*! event key */
     std::string m_eventKey;
-    /*! hits key */
-    std::string m_hitsKey;
     /*! Base histogram path */
     std::string m_histPath;
-    /*! The path to the cell configuration file */
-    std::string m_caloCellFile;
+    /*! The path to the hit configuration file */
+    std::string m_caloHitFile;
     /*! Segment index for this sample calorimeter */
     int m_segmentation;
     /*! Sampling id for this reconstruction */
@@ -55,12 +51,8 @@ class CaloCellMaker : public Gaugi::Algorithm
     int m_bcid_start;
     /*! The end bunch crossing id for energy estimation */
     int m_bcid_end;
-    /*! The number of samples per bunch crossing */
-    int m_bc_nsamples;
     /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
-    /*! The tool list that will be executed into the post execute step */
-    std::vector< Gaugi::AlgTool* > m_toolHandles;
 
 
     float m_eta_min;
@@ -72,8 +64,6 @@ class CaloCellMaker : public Gaugi::Algorithm
     std::vector<float> m_phi_bins; 
 
     bool m_detailedHistograms;
-
-
 };
 
 

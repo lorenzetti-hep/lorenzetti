@@ -1,5 +1,7 @@
 
 #include "CaloCell/CaloCellContainer.h"
+#include "helper/CaloCellCollection.h"
+
 #include "CaloCellMerge.h"
 #include "TVector3.h"
 #include <cstdlib>
@@ -69,9 +71,12 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
   SG::WriteHandle<xAOD::CaloCellContainer> recoContainer( m_cellsKey , ctx );
   recoContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
   
+
   MSG_DEBUG( "Creating truth cells containers with key " << m_truthCellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> truthContainer( m_truthCellsKey , ctx );
   truthContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
+
+
 
   for ( auto key : m_collectionKeys ){
 
@@ -125,31 +130,6 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 
 StatusCode CaloCellMerge::fillHistograms( EventContext & /*ctx*/ ) const
 {
-
-  /*
-  auto store = ctx.getStoreGateSvc();
-  SG::ReadHandle<xAOD::CaloCellContainer> container( m_cellsKey, ctx );
- 
-  if( !container.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellContainer using this key: " << m_cellsKey);
-  }
-
-  auto canvas = new TCanvas("canvas","canvas",500,500);
-  auto hist = new TH2Poly();
-  hist->SetName("cells_x");
-  hist->SetTitle("Estimated Cells Energy; #eta; #phi; Energy [MeV]" );
- 
-  for ( const auto cell : **container.ptr() ){ 
-    if( cell->layer() != CaloLayer::EM2 ) continue;
-    hist->AddBin( cell->eta() - cell->deltaEta(), cell->eta() + cell->deltaEta(),
-                  cell->phi() - cell->deltaPhi(), cell->phi() + cell->deltaPhi() );
-  
-  }
-  hist->Ddescriptor("colz");
-  canvas->SaveAs("test.pdf");
-  delete canvas, hist;
-  */
-
   return StatusCode::SUCCESS;
 }
 

@@ -2,10 +2,8 @@
 
 from Gaugi.messenger      import LoggingLevel, Logger
 from Gaugi                import GeV
-from P8Kernel             import EventReader
-from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling
-
+from G4Kernel.utilities   import *
 import numpy as np
 import argparse
 import sys,os
@@ -25,17 +23,8 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('-d', '--debug', action='store_true', dest='debug', required = False,
                     help = "In debug mode.")
 
-parser.add_argument('-nt','--numberOfThreads', action='store', dest='numberOfThreads', required = False, type=int, default=1,
-                    help = "The number of threads")
-
-parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=None,
+parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
-
-parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
-                    help = "Run with Qt interface.")
-
-parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
-                    help = "Enable the magnetic field.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
@@ -55,90 +44,51 @@ args = parser.parse_args()
 if not '.root' in args.outputFile:
   args.outputFile+='.root'
 
-# Add index for each thread
-outputFileList = []
-for thread in range( args.numberOfThreads ):
-  outputFileList.append( args.outputFile.replace( '.root', "_%d.root"%thread ) )
-
-
-
 
 outputLevel = 0 if args.debug else args.outputLevel
 
 try:
 
-  from DetectorATLASModel import DetectorConstruction as ATLAS
+  
+ 
+  from GaugiKernel import ComponentAccumulator
+  acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
+
+
+  from RootStreamBuilder import RootStreamHITReader
+  print('0')
+
+  HIT = RootStreamHITReader("HITReader", 
+                            InputFile       = args.inputFile,
+                            HitsKey         = recordable("Hits"),
+                            EventKey        = recordable("EventInfo"),
+                            TruthKey        = recordable("Particles"),
+                            NtupleName      = "CollectionTree",
+                          )
+  HIT.merge(acc)
+
+  # digitalization!
   from DetectorATLASModel import CaloCellBuilder
-  
-  
-  # Build the ATLAS detector
-  detector = ATLAS("GenericATLASDetector", 
-                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   CutOnPhi = False
-                   )
-  
-
-  acc = ComponentAccumulator("ComponentAccumulator", detector,
-                              RunVis=args.visualization,
-                              NumberOfThreads = args.numberOfThreads,
-                              Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
-                              OutputFile = args.outputFile)
-  
-
-  gun = EventReader( "PythiaGenerator",
-                     EventKey   = recordable("EventInfo"),
-                     TruthKey   = recordable("Particles"),
-                     FileName   = args.inputFile,
-                     BunchDuration = 25.0,#ns
-                     )
-
-
   calorimeter = CaloCellBuilder("CaloCellBuilder",
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
+                                HitsKey       = recordable("Hits"),
                                 )
-
-  gun.merge(acc)
   calorimeter.merge(acc)
 
-  from CaloClusterBuilder   import CaloClusterMaker
-  cluster = CaloClusterMaker( "CaloClusterMaker",
-                              CellsKey        = recordable("Cells"),
-                              EventKey        = recordable("EventInfo"),
-                              ClusterKey      = recordable("Clusters"),
-                              TruthKey        = recordable("Particles"),
-                              EtaWindow       = 0.4,
-                              PhiWindow       = 0.4,
-                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
-                              HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
-  acc+=cluster
 
   from RootStreamBuilder import RootStreamESDMaker
   ESD = RootStreamESDMaker( "RootStreamESDMaker",
                              CellsKey        = recordable("Cells"),
                              EventKey        = recordable("EventInfo"),
                              TruthKey        = recordable("Particles"),
+                             NtupleName      = "CollectionTree",
                              OutputLevel     = outputLevel)
 
   acc += ESD
   acc.run(args.numberOfEvents)
   
   
-  command = "hadd -f " + args.outputFile + ' '
-  for fname in outputFileList:
-    command+=fname + ' '
-  print( command )
-  os.system(command)
-  
-  # remove thread files
-  for fname in outputFileList:
-    os.system( 'rm '+ fname )
-  
-  
-  if args.visualization:
-      input("Press Enter to quit...")
-
   sys.exit(0)
   
 except  Exception as e:

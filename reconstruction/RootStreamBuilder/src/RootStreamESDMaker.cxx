@@ -8,6 +8,8 @@
 #include "TTree.h"
 #include "RootStreamESDMaker.h"
 #include "GaugiKernel/EDM.h"
+#include "G4Kernel/CaloPhiRange.h"
+
 
 
 using namespace SG;
@@ -178,7 +180,7 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
             const xAOD::CaloDetDescriptor *descriptor = cell->descriptor();
         
             float deltaEta = std::abs( par->eta() - descriptor->eta());
-            float deltaPhi = std::abs( par->phi() - descriptor->phi());
+            float deltaPhi = std::abs( CaloPhiRange::diff(par->phi(), descriptor->phi()) );
 
             if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
             {

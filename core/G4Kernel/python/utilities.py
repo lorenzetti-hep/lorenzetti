@@ -15,6 +15,7 @@ def recordable( key ):
             "Collection_HAD1",
             "Collection_HAD2",
             "Collection_HAD3",
+            "Hits",
             # CaloCellMerge
             "Cells",
             "TruthCells",

@@ -1,17 +1,18 @@
+
 #include <iostream>
-#include "CaloCell/helper/CaloCellCollection.h"
+#include "CaloHitCollection.h"
 #include "GaugiKernel/Timer.h"
 
 using namespace xAOD;
 
 
-CaloCellCollection::CaloCellCollection( float etamin, float etamax, 
-                                        std::vector<float> etabins, 
-                                        std::vector<float> phibins, 
-                                        float rmin,   float rmax, 
-                                        Detector detector, // Can be TTEM, TTHEC, TILE, ...
-                                        CaloSampling sampling, // Can be EMEC1, PSB, TileExt1, ...
-                                        unsigned segmentation):
+CaloHitCollection::CaloHitCollection( float etamin, float etamax, 
+                                      std::vector<float> etabins, 
+                                      std::vector<float> phibins, 
+                                      float rmin,   float rmax, 
+                                      Detector detector, // Can be TTEM, TTHEC, TILE, ...
+                                      CaloSampling sampling, // Can be EMEC1, PSB, TileExt1, ...
+                                      unsigned segmentation):
 
   m_eta_bins(etabins),
   m_phi_bins(phibins),
@@ -25,7 +26,7 @@ CaloCellCollection::CaloCellCollection( float etamin, float etamax,
 {;}
 
 
-CaloCellCollection::~CaloCellCollection()
+CaloHitCollection::~CaloHitCollection()
 {
   for(auto& p : m_collection)
     if(p.second)  delete p.second;
@@ -33,23 +34,23 @@ CaloCellCollection::~CaloCellCollection()
 }
 
 
-CaloSampling CaloCellCollection::sampling() const
+CaloSampling CaloHitCollection::sampling() const
 {
   return m_sampling;
 }
 
 
 
-void CaloCellCollection::push_back( xAOD::CaloDetDescriptor *cell )
+void CaloHitCollection::push_back( xAOD::CaloHit *hit )
 {
-  m_collection.insert( std::make_pair( cell->hash(), cell ) );
+  m_collection.insert( std::make_pair( hit->hash(), hit ) );
 }
 
 
-bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloDetDescriptor *&cell ) const
+bool CaloHitCollection::retrieve( TVector3 &pos , xAOD::CaloHit *&hit) const
 {
   // Retrun nullptr in case of not match
-  cell = nullptr;
+  hit= nullptr;
   
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
@@ -61,6 +62,7 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloDetDescriptor *&cell
   if( !(radius > m_radius_min && radius <= m_radius_max) )
     return false;
 
+  // segmentation
   if( !(abs(eta) > m_etamin && abs(eta) <= m_etamax) )
     return false;
 
@@ -70,7 +72,7 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloDetDescriptor *&cell
   if (etaBin!=-1 && phiBin!=-1){    
     unsigned int hash = m_detector*1e9 + m_sampling*1e7 + m_segmentation*1e6 + ( etaBin*(m_phi_bins.size()-1) + phiBin );
     if (m_collection.count(hash)>0){
-      cell = m_collection.at(hash);
+      hit = m_collection.at(hash);
       return true;
     }else{
       std::cout << "error! hash " << hash << " does not exist into the map collection but the bin " <<  
@@ -82,19 +84,19 @@ bool CaloCellCollection::retrieve( TVector3 &pos, xAOD::CaloDetDescriptor *&cell
 }
 
 
-size_t CaloCellCollection::size() const
+size_t CaloHitCollection::size() const
 {
   return m_collection.size();
 }
 
 
-const CaloCellCollection::collection_map_t& CaloCellCollection::operator*() const
+const CaloHitCollection::collection_map_t& CaloHitCollection::operator*() const
 {
   return m_collection;
 }
 
 
-int CaloCellCollection::findIndex( const std::vector<float> &vec, float value) const 
+int CaloHitCollection::findIndex( const std::vector<float> &vec, float value) const 
 {
   auto binIterator = std::adjacent_find( vec.begin(), vec.end(), [=](float left, float right){ return left < value and value <= right; }  );
   if ( binIterator == vec.end() ) return -1;

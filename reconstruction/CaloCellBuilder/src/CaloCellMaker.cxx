@@ -1,7 +1,8 @@
 
-#include "CaloCell/helper/CaloCellCollection.h"
+#include "helper/CaloCellCollection.h"
 #include "G4Kernel/CaloPhiRange.h"
 #include "CaloCell/CaloDetDescriptor.h"
+#include "CaloHit/CaloHitContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "G4Kernel/constants.h"
 #include "CaloCellMaker.h"
@@ -25,6 +26,8 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   Algorithm()
 {
   declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
+  declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      );
+
   declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
   declareProperty( "CaloCellFile"             , m_caloCellFile                        );
   declareProperty( "CollectionKey"            , m_collectionKey="CaloCellCollection"  );
@@ -33,7 +36,6 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "BunchDuration"            , m_bc_duration=25                      );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
-  declareProperty( "OnlyRoI"                  , m_onlyRoI=false                       );
 }
 
 
@@ -123,22 +125,11 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   if (m_detailedHistograms){
 
     int nbunchs = m_bcid_end - m_bcid_start + 1;
-    //store->add(new TH2F( "edep_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
     store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*50, (m_bcid_start - 0.5)*m_bc_duration, (m_bcid_end + 0.5)*m_bc_duration) );
-
     store->add(new TH1F( "main_event_timesteps", "Step time main event; time[ns]; Count", 50, -0.5*m_bc_duration, m_bc_duration*0.5 ) );
-
     store->add(new TH2F( "timesteps_per_energy", "Step time per bunch; time [ns]; Energy [MeV];", 
           nbunchs, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 30) );
-    
-    //store->add(new TH2F( "edep_per_bunch", "Step time per bunch; time [ns]; Energy [MeV];", 
-    //      nbunchs, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 100*GeV) );
-
-          
-
   }
-
-
 
   return StatusCode::SUCCESS;
 }
@@ -188,71 +179,19 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 }
 
  
-StatusCode CaloCellMaker::execute( EventContext &ctx , const G4Step *step ) const
+StatusCode CaloCellMaker::execute( EventContext &/*ctx*/ , const G4Step */*step*/ ) const
 {
-
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
-
-  if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
-  }
-
-  // Get the position
-  G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
-  // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
-  // Get ATLAS coordinates (in transverse plane xy)
-  auto vpos = TVector3( pos.x(), pos.y(), pos.z());
-
-  /*
-  if(m_onlyRoI){
-    // Event info
-    SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-    
-    if( !event.isValid() ){
-      MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
-    }
-
-    auto evt = (**event.ptr()).front();
-    for ( auto& seed : evt->allSeeds() )
-    {
-      float deltaEta = std::abs( seed.eta - vpos.PseudoRapidity() );
-      float deltaPhi = std::abs( CaloPhiRange::diff( seed.phi , vpos.Phi() ));
-      if ( !( deltaEta < 0.3 && deltaPhi < 0.3) ){
-        return StatusCode::SUCCESS;
-      }
-    }
-  }
-  */
-
-  // This object can not be const since we will change the intenal value
-  xAOD::CaloDetDescriptor *cell=nullptr;
-  collection->retrieve( vpos, cell );
-
-  if(cell) cell->Fill( step );
-
-  
-  if (m_detailedHistograms ){
-    // Fill time steps
-    G4StepPoint* point = step->GetPreStepPoint();
-    float t = (float)point->GetGlobalTime() / ns;
-    auto store = ctx.getStoreGateSvc();
-    store->cd(m_histPath);
-    store->hist1("main_event_timesteps")->Fill(t);
-    store->hist1("timesteps")->Fill(t);
-    float edep = (float)step->GetTotalEnergyDeposit();
-    store->hist1("timesteps_per_energy")->Fill(t,edep/MeV);
-  }
-
   return StatusCode::SUCCESS;
 }
 
 
 StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 {
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+
+  SG::ReadHandle<xAOD::CaloHitContainer> hits( m_hitsKey, ctx );
  
-  if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
+  if( !hits.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloHitContainer using this key: " << m_hitsKey);
   }
 
   // Event info
@@ -262,19 +201,49 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
   }
 
+  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+ 
+  if( !collection.isValid() ){
+    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
+  }
+
   auto evt = (**event.ptr()).front();
 
-  for ( const auto& p : **collection.ptr() )
+  for ( const auto& hit : **hits.ptr() )
   {
-    for ( auto tool : m_toolHandles )
-    {
-      // hit digitalization
-      if( tool->execute( evt, p.second ).isFailure() ){
-        MSG_ERROR( "It's not possible to execute the tool with name " << tool->name() );
-        return StatusCode::FAILURE;
+    xAOD::CaloDetDescriptor *descriptor=nullptr;
+
+    // Check if the current hit allow to this cells collection
+    collection->retrieve( hit, descriptor );
+    if(descriptor){
+
+      if (descriptor->hash() != hit->hash()){
+        MSG_FATAL( "Descriptor hash code is different than hit hash code. Abort!");
+      }
+
+   
+
+      for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
+      {
+        // transfer truth energy for each bunch crossing to descriptor
+        descriptor->edep( bcid, hit->edep(bcid) ); 
+      }
+
+      if( hit->sampling() == CaloSampling::EMB2 && hit->edep()>100) {
+        MSG_INFO( hit->edep() << " - > " << descriptor->edep());
+      }
+
+      for ( auto tool : m_toolHandles )
+      {
+        // digitalization
+        if( tool->execute( evt, descriptor ).isFailure() ){
+          MSG_ERROR( "It's not possible to execute the tool with name " << tool->name() );
+          return StatusCode::FAILURE;
+        }
       }
     }
-  }
+    
+  }// loop over all hits
  
 
   return StatusCode::SUCCESS;
@@ -283,6 +252,8 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 
 StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {
+  
+
   auto store = ctx.getStoreGateSvc();
   SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
  
@@ -333,12 +304,6 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
       store->add(graph);
       graph->Write();
   }
-
-
-
-
-
- 
   return StatusCode::SUCCESS;
 }
 

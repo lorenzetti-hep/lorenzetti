@@ -1,19 +1,19 @@
-#ifndef CaloCellMerge_h
-#define CaloCellMerge_h
+#ifndef CaloHitMerge_h
+#define CaloHitMerge_h
 
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
-#include "CaloCell/CaloCell.h"
+#include "CaloHit/CaloHit.h"
 
 
-class CaloCellMerge : public Gaugi::Algorithm
+class CaloHitMerge : public Gaugi::Algorithm
 {
   public:
   
     /** Contructor **/
-    CaloCellMerge( std::string name );
+    CaloHitMerge( std::string name );
     /** Destructor **/
-    ~CaloCellMerge();
+    ~CaloHitMerge();
     
     /*! initialize the algorithm **/
     virtual StatusCode initialize() override;
@@ -34,10 +34,9 @@ class CaloCellMerge : public Gaugi::Algorithm
     
     /*! collection key */
     std::vector<std::string> m_collectionKeys;
-    /*! CaloCellContainer key for reco cells */
-    std::string m_cellsKey;
-    /*! CaloCellContainer key for truth cells */
-    std::string m_truthCellsKey;
+    /*! CaloHitContainer key */
+    std::string m_hitsKey;
+
 };
 
 
