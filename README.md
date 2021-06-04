@@ -56,33 +56,34 @@ More details [here](https://github.com/jodafons/lorenzetti/tree/master/docker/cl
 
 ## Running Lorenzetti
 
-The pipeline has two steps:
+The pipeline has three steps:
 
 1. Event generation with `pythia` wrappers;
-1. Shower propagation with `geant` and reconstruction.
+2. Shower propagation with `geant` and digitalization;
+3. Event reconstruction.
 
 ### Generation
 
 A set of pythia wrappers is provided on `generator/PythiaGenerator/share/`. Usage example:
 
 ```
-python generator/PythiaGenerator/share/gen_zee.py -o zee.root --nov 100 --seed 0 --pileupAvg 100
+prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
 ```
 
-### Shower Propagation and Reconstruction
+### Shower Propagation and Digitalization
 
-Use first step output to feed `reco_trf` script. For instance: 
-
-```
-python scripts/reco_trf.py -i zee.root -o zee.reco.root
-```
-
-### Export data to numpy array
-
-If needed, we provide the `convert.py` transformation job:
+Use first step output to feed `digit_trf` script. For instance: 
 
 ```
-python scripts/convert.py -i zee.reco.root -o zee.reco.npz --nov -1
+digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
+```
+
+### Event Reconstruction
+
+Use the second step output to feed `reco_trf` script. For instance:
+
+```
+reco_trf.py -i Zee.ESD.root -o Zee.AOD.root
 ```
 
 ## Local Installation
