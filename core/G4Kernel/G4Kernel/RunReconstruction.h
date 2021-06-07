@@ -17,7 +17,7 @@ class RunReconstruction : public G4Run, public MsgService
   public:
 
     /** Constructor **/
-    RunReconstruction( std::vector<Gaugi::Algorithm*>, std::string output );
+    RunReconstruction( int numberOfThreads, std::vector<Gaugi::Algorithm*>, std::string output );
     
     /** Destructor **/
     virtual ~RunReconstruction();

@@ -18,7 +18,7 @@ namespace xAOD{
 
   class CaloHitCollection : public SG::DataHandle
   {  
-    typedef std::map<unsigned int, xAOD::CaloHit* > collection_map_t;
+    typedef std::map<unsigned long int, xAOD::CaloHit* > collection_map_t;
 
     public:
 

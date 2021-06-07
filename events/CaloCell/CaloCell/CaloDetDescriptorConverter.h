@@ -26,7 +26,7 @@ namespace xAOD{
         float bc_duration;
         std::vector<float> pulse;
         std::vector<float> edep_per_bunch;
-        unsigned int hash;
+        unsigned long int hash;
         int cell_link;
     };
 

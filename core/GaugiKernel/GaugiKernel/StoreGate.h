@@ -17,7 +17,8 @@
 #include "TH2F.h"
 #include "TH1.h"
 #include "TH2Poly.h"
-
+#include <ROOT/TBufferMerger.hxx>
+using namespace ROOT::Experimental;
 
 namespace SG
 {
@@ -26,11 +27,13 @@ namespace SG
     public:
   
       /** Constructor **/
-      StoreGate( std::string outputfile, int index=-1);
-      
+      StoreGate( std::string outputfile);
+
       /** Destructor **/
-      ~StoreGate();     
+      ~StoreGate()=default;     
       
+      void save();
+
       /** Create directory **/
       void mkdir(std::string );
       
@@ -58,15 +61,22 @@ namespace SG
   
       void setLabels(TH1* histo, const std::vector<std::string>& labels);
 
+      bool decorate( std::string key, TObject* );
+      
+      TObject* decorator(std::string);
+
+
     private:
 
       // the current path
       std::string m_currentPath;
-      // the root file
-      TFile *m_file;
+      // file
+      std::unique_ptr<TFile> m_file;
+
       // ROOT objects
       std::map<std::string, TObject *> m_objs;
-  
+      std::map<std::string, TObject *> m_decorators;
+
   };
 }
 #endif

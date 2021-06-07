@@ -16,8 +16,7 @@ using namespace Gaugi;
 
 RootStreamESDReader::RootStreamESDReader( std::string name ) : 
   IMsgService(name),
-  ComponentReader(),
-  m_entries(0)
+  Algorithm()
 {
   declareProperty( "InputFile"          , m_inputFile=""                    );
   declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
@@ -27,56 +26,73 @@ RootStreamESDReader::RootStreamESDReader( std::string name ) :
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
 }
 
-
-
+//!=====================================================================
 
 RootStreamESDReader::~RootStreamESDReader()
-{
-  delete m_file;
-  delete m_tree;
-}
+{}
 
+//!=====================================================================
 
 StatusCode RootStreamESDReader::initialize()
 {
+  CHECK_INIT();
   setMsgLevel(m_outputLevel);
-  m_file = new TFile(m_inputFile.c_str(), "read");
-  m_tree = (TTree*)m_file->Get(m_ntupleName.c_str());
-  m_entries = m_tree->GetEntries();
-  MSG_INFO( "Got " << m_entries << " Events!");
   return StatusCode::SUCCESS;
 }
+
+//!=====================================================================
 
 StatusCode RootStreamESDReader::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
-StatusCode RootStreamESDReader::GeneratePrimaryVertex( int evt, EventContext &ctx ) const
+StatusCode RootStreamESDReader::bookHistograms( EventContext &ctx ) const
+{
+  auto store = ctx.getStoreGateSvc();
+  TFile *file = new TFile(m_inputFile.c_str(), "read");
+  store->decorate( "events", file );
+  return StatusCode::SUCCESS; 
+}
+
+//!=====================================================================
+
+StatusCode RootStreamESDReader::pre_execute( EventContext &/*ctx*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
+
+StatusCode RootStreamESDReader::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
+
+StatusCode RootStreamESDReader::execute( EventContext &ctx, int evt ) const
 {
   return deserialize( evt, ctx );
 }
 
+//!=====================================================================
 
-
-template <class T>
-void RootStreamESDReader::InitBranch(TTree* fChain, std::string branch_name, T* param) const
+StatusCode RootStreamESDReader::post_execute( EventContext &/*ctx*/ ) const
 {
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
+  return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
+StatusCode RootStreamESDReader::fillHistograms( EventContext &ctx ) const
+{
+  return StatusCode::SUCCESS;
+}
 
+//!=====================================================================
 
 StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 {
@@ -87,12 +103,16 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
   MSG_DEBUG( "Link all branches..." );
 
-  InitBranch( m_tree,  "EventInfoContainer"            , &collection_event      );
-  InitBranch( m_tree,  "TruthParticleContainer"        , &collection_truth      );
-  InitBranch( m_tree,  "CaloCellContainer"             , &collection_cells      );
-  InitBranch( m_tree,  "CaloDetDescriptorContainer"    , &collection_descriptor );
+  auto store = ctx.getStoreGateSvc();
+  TFile *file = (TFile*)store->decorator("events");
+  TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
-  m_tree->GetEntry( evt );
+  InitBranch( tree, ("EventInfoContainer_"         + m_eventKey).c_str() , &collection_event     );
+  InitBranch( tree, ("TruthParticleContainer_"     + m_truthKey).c_str() , &collection_truth     );
+  InitBranch( tree, ("CaloCellContainer_"          + m_cellsKey).c_str() , &collection_cells     );
+  InitBranch( tree, ("CaloDetDescriptorContainer_" + m_cellsKey).c_str() , &collection_descriptor);
+
+  tree->GetEntry( evt );
 
 
   { // deserialize EventInfo
@@ -156,8 +176,20 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
  
 }
 
-int RootStreamESDReader::GetEntries() const
+//!=====================================================================
+
+template <class T>
+void RootStreamESDReader::InitBranch(TTree* fChain, std::string branch_name, T* param) const
 {
-  return m_entries;
+  std::string bname = branch_name;
+  if (fChain->GetAlias(bname.c_str()))
+     bname = std::string(fChain->GetAlias(bname.c_str()));
+
+  if (!fChain->FindBranch(bname.c_str()) ) {
+    MSG_WARNING( "unknown branch " << bname );
+    return;
+  }
+  fChain->SetBranchStatus(bname.c_str(), 1.);
+  fChain->SetBranchAddress(bname.c_str(), param);
 }
 

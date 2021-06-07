@@ -7,7 +7,8 @@
 #include "G4MTRunManager.hh"
 #include <iostream>
 
-ActionInitialization::ActionInitialization( PrimaryGenerator *gen,
+ActionInitialization::ActionInitialization( int numberOfThreads,
+                                            PrimaryGenerator *gen,
                                             std::vector<Gaugi::Algorithm*> acc , 
                                             std::string output)
  : 
@@ -15,7 +16,8 @@ ActionInitialization::ActionInitialization( PrimaryGenerator *gen,
   G4VUserActionInitialization(),
   m_acc(acc),
   m_generator(gen),
-  m_output(output)
+  m_output(output),
+  m_numberOfThreads(numberOfThreads)
 {
 
   for ( auto toolHandle : m_acc )
@@ -53,7 +55,7 @@ void ActionInitialization::Build() const
 {
   MSG_INFO( "Build()" );
   SetUserAction(new PrimaryGeneratorAction(m_generator));
-  SetUserAction(new RunAction(m_acc, m_output));
+  SetUserAction(new RunAction(m_numberOfThreads, m_acc, m_output));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());
 }  

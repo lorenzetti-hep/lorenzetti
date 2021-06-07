@@ -18,7 +18,7 @@ namespace xAOD{
 
   class CaloCellCollection : public SG::DataHandle
   {  
-    typedef std::map<unsigned int, xAOD::CaloDetDescriptor* > collection_map_t;
+    typedef std::map<unsigned long int, xAOD::CaloDetDescriptor* > collection_map_t;
 
     public:
 

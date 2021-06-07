@@ -8,11 +8,18 @@ from G4Kernel import treatPropertyValue
 class RootStreamAODMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey",
-                  "TruthKey",
-                  "CellsKey",
-                  "ClusterKey",
-                  "RingerKey",
+                  "InputEventKey",
+                  "InputTruthKey",
+                  "InputCellsKey",
+                  "InputClusterKey",
+                  "InputRingerKey",
+
+                  "OutputEventKey",
+                  "OutputTruthKey",
+                  "OutputCellsKey",
+                  "OutputClusterKey",
+                  "OutputRingerKey",
+
                   "OutputLevel", 
                   "NtupleName",
                   "DumpCells",

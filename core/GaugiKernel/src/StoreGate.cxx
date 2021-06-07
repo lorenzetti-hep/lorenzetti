@@ -7,33 +7,34 @@
 using namespace SG;
 
 
-StoreGate::StoreGate( std::string outputfile, int index): 
+StoreGate::StoreGate( std::string outputfile): 
   IMsgService("StoreGate"),
   m_currentPath("")
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  boost::replace_all(outputfile, ".root", "");
-  if (index>=0){
-    std::stringstream ss; 
-    ss << outputfile << "_" << index; outputfile = ss.str();
-  }
-  m_file = new TFile( (outputfile+".root").c_str(), "recreate");
+  m_file = std::unique_ptr<TFile>(new TFile( outputfile.c_str(), "recreate"));
+  
 }
 
 
-
-StoreGate::~StoreGate()
+void StoreGate::save()
 {
-  MSG_INFO( "Writing all root objects into the file" ); 
+  MSG_INFO("Saving StoreGate...")
   
-  /*  
-  for( const auto &o : m_objs){
-    o.second->Write();
-    //MSG_INFO( o->GetName() << " With " << o->GetEntries() << " entries." );
-    //delete o.second;
-  }*/
-  
+  for( auto&it : m_decorators)
+  {
+    delete it.second;
+  }
+
+  MSG_INFO( "Writing all root objects into the file and delete all decorators" ); 
+  MSG_INFO( "Decorators will no be saved into the root file.")
+  for( auto it : m_objs)
+  {
+    MSG_INFO( it.first  << " " << it.second);
+    //it.second->Write();
+  }
+
   m_file->Write();
   m_file->Close();
 }
@@ -53,7 +54,6 @@ void StoreGate::cd( std::string path ){
   m_currentPath = path;
   m_file->cd(path.c_str());
 }
-
 
 
 bool StoreGate::add( TObject* obj){  
@@ -89,6 +89,7 @@ TH1I* StoreGate::histI( std::string name )
   return ((TH1I*)m_objs[path]);
 }
 
+
 TH2Poly* StoreGate::hist2P( std::string name )
 {
   std::string path = m_currentPath+"/"+name;
@@ -101,7 +102,6 @@ TTree* StoreGate::tree( std::string name )
   std::string path = m_currentPath+"/"+name;
   return ((TTree*)m_objs[path]);
 }
-
 
 
 void StoreGate::setLabels(TH1* histo, const std::vector<std::string>& labels) {
@@ -120,3 +120,19 @@ void StoreGate::setLabels(TH1* histo, const std::vector<std::string>& labels) {
     }
 }
 
+
+bool StoreGate::decorate( std::string name, TObject* obj){  
+  if( m_decorators.find( name ) != m_decorators.end() ) 
+  {
+    MSG_WARNING("It's not possible decorate with name " << name);
+		return false;
+  }
+  m_decorators[name] = obj;
+  return true;
+}
+
+
+TObject* StoreGate::decorator( std::string name )
+{
+  return m_decorators[name];
+}

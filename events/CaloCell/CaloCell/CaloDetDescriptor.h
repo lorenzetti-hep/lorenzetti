@@ -20,7 +20,7 @@ namespace xAOD{
                // eta/phi position at the detector, deta/dphi size into the detector, radius
                float eta, float phi, float deta, float dphi, float radius_min, float radius_max,
                // Hash
-               unsigned int hash,
+               unsigned long int hash,
                // cell identification
                CaloSampling sampling, 
                Detector detector,
@@ -51,7 +51,7 @@ namespace xAOD{
       /*! Cell maximal radius in the plane xy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_radius_max, setRmax, rmax );
       /*! Cell hash */
-      PRIMITIVE_SETTER_AND_GETTER( unsigned int, m_hash, setHash, hash );
+      PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
       /*! Cell sampling id */
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
       /*! Cell layer id */
@@ -165,7 +165,7 @@ namespace xAOD{
 
 
       /*! Access information unique ID number */
-      unsigned int m_hash;
+      unsigned long int m_hash;
 
   };
 

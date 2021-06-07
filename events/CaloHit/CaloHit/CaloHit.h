@@ -25,7 +25,7 @@ namespace xAOD{
                float deta, 
                float dphi,
                // Hash
-               unsigned int hash,
+               unsigned long int hash,
                // cell identification
                CaloSampling sampling, 
                Detector detector,
@@ -57,7 +57,7 @@ namespace xAOD{
       /*! Cell delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
       /*! Cell hash */
-      PRIMITIVE_SETTER_AND_GETTER( unsigned int, m_hash, setHash, hash );
+      PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
       /*! Cell sampling id */
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
       /*! Cell layer id */
@@ -130,7 +130,7 @@ namespace xAOD{
       std::map< int, float> m_edep;
      
       /*! Access information unique ID number */
-      unsigned int m_hash;
+      unsigned long int m_hash;
 
   };
 

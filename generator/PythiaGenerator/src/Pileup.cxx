@@ -13,6 +13,7 @@ Pileup::Pileup(): IMsgService("Pileup"), Algorithm()
 {
   declareProperty( "File"           , m_file=""          );
   declareProperty( "PileupAvg"      , m_nPileupAvg=0     );
+  declareProperty( "ForcePileupAvg" , m_forcePileupAvg=false);
   declareProperty( "BunchIdStart"   , m_bc_id_start=-8   );
   declareProperty( "BunchIdEnd"     , m_bc_id_end=7      );
   declareProperty( "EtaMax"         , m_etaMax=1.4       );
@@ -64,8 +65,14 @@ StatusCode Pileup::execute(  generator::Event &event )
   
   for ( int bc_id = m_bc_id_start; bc_id <= m_bc_id_end; ++bc_id ){
 
+    int nPileup = 0;
     // Select the number of pileup events to generate.
-    int nPileup = poisson(m_nPileupAvg);
+    if(m_forcePileupAvg){
+      nPileup = m_nPileupAvg;
+    }else{
+      nPileup = poisson(m_nPileupAvg);
+    }
+
     nPileUpMean += nPileup;
 
 

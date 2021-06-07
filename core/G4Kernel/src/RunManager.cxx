@@ -113,7 +113,7 @@ void RunManager::run( int evt )
 
   MSG_INFO( "Creating the action initalizer..." );
   MSG_INFO( m_output );
-  ActionInitialization* actionInitialization = new ActionInitialization(m_generator, m_acc, m_output);
+  ActionInitialization* actionInitialization = new ActionInitialization(m_nThreads, m_generator, m_acc, m_output);
   runManager->SetUserInitialization(actionInitialization);
 
   MSG_INFO( "Creating the vis executive...");

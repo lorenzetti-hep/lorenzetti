@@ -21,9 +21,13 @@ RootStreamESDMaker::RootStreamESDMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"           , m_truthKey="Particles"            );
-  declareProperty( "CellsKey"           , m_cellsKey="Cells"                );
+  declareProperty( "InputEventKey"      , m_inputEventKey="EventInfo"       );
+  declareProperty( "InputTruthKey"      , m_inputTruthKey="Particles"       );
+  declareProperty( "InputCellsKey"      , m_inputCellsKey="Cells"           );
+  declareProperty( "OutputEventKey"     , m_outputEventKey="EventInfo"      );
+  declareProperty( "OutputTruthKey"     , m_outputTruthKey="Particles"      );
+  declareProperty( "OutputCellsKey"     , m_outputCellsKey="Cells"          );
+
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
   declareProperty( "EtaWindow"          , m_etaWindow=0.6                   );
@@ -31,19 +35,21 @@ RootStreamESDMaker::RootStreamESDMaker( std::string name ) :
 
 }
 
-
-
+//!=====================================================================
 
 RootStreamESDMaker::~RootStreamESDMaker()
 {;}
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::initialize()
 {
+  CHECK_INIT();
   setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::bookHistograms( SG::EventContext &ctx ) const
 {
@@ -57,46 +63,59 @@ StatusCode RootStreamESDMaker::bookHistograms( SG::EventContext &ctx ) const
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
-  tree->Branch( "EventInfoContainer"          , &container_event     );
-  tree->Branch( "TruthParticleContainer"      , &container_truth     );
-  tree->Branch( "CaloCellContainer"           , &container_cells     );
-  tree->Branch( "CaloDetDescriptorContainer"  , &container_descriptor);
+  tree->Branch( ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
+  tree->Branch( ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
+  tree->Branch( ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
+  tree->Branch( ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
   store->add( tree );
   
   return StatusCode::SUCCESS;
 }
 
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
+
+StatusCode RootStreamESDMaker::execute( EventContext &/*ctx*/, int /*evt*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::post_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode RootStreamESDMaker::fillHistograms( EventContext &ctx ) const
 {
   return serialize(ctx);
 }
 
+//!=====================================================================
 
 template <class T>
 void RootStreamESDMaker::InitBranch(TTree* fChain, std::string branch_name, T* param) const
@@ -132,15 +151,14 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
   MSG_DEBUG( "Link all branches..." );
 
-  InitBranch( tree,  "EventInfoContainer"            , &container_event      );
-  InitBranch( tree,  "TruthParticleContainer"        , &container_truth      );
-  InitBranch( tree,  "CaloCellContainer"             , &container_cells      );
-  InitBranch( tree,  "CaloDetDescriptorContainer"    , &container_descriptor );
-
+  InitBranch( tree, ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
+  InitBranch( tree, ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
+  InitBranch( tree, ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
+  InitBranch( tree, ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
 
   { // serialize EventInfo
     MSG_DEBUG("Serialize EventInfo...");
-    SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
+    SG::ReadHandle<xAOD::EventInfoContainer> event(m_inputEventKey, ctx);
 
     if( !event.isValid() ){
       MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
@@ -158,17 +176,17 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
     MSG_DEBUG("Serialize CaloCells...");
     xAOD::cell_links_t       cell_links;
 
-    SG::ReadHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
+    SG::ReadHandle<xAOD::CaloCellContainer> container(m_inputCellsKey, ctx);
     if( !container.isValid() )
     {
-        MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+        MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_inputCellsKey );
     }
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_truthKey, ctx );
+    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
   
     if( !particles.isValid() )
     {
-      MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_truthKey );
+      MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_inputTruthKey );
     }
 
     int link = 0; // decorate all cells 
@@ -217,11 +235,11 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
   { // Serialize Truth Particle
     MSG_DEBUG("Serialize TruthParticle...");
-    SG::ReadHandle<xAOD::TruthParticleContainer> container( m_truthKey, ctx );
+    SG::ReadHandle<xAOD::TruthParticleContainer> container( m_inputTruthKey, ctx );
   
     if( !container.isValid() )
     {
-      MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_truthKey );
+      MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_inputTruthKey );
     }
 
     for (const auto par : **container.ptr() ){

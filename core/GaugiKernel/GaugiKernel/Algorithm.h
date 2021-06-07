@@ -18,6 +18,14 @@
 #include "GaugiKernel/Property.h"
 #include "GaugiKernel/MsgStream.h"
 
+// check if this class was initialized
+#define CHECK_INIT()\
+if(isInitialized()){\
+  return StatusCode::SUCCESS;\
+}else{\
+  initLock();\
+}\
+
 
 /// Gaugi namespace
 namespace Gaugi{

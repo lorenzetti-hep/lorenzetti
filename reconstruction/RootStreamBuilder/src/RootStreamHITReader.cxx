@@ -19,8 +19,7 @@ using namespace Gaugi;
 
 RootStreamHITReader::RootStreamHITReader( std::string name ) : 
   IMsgService(name),
-  ComponentReader(),
-  m_entries(0)
+  Algorithm()
 {
   declareProperty( "InputFile"          , m_inputFile=""                    );
   declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
@@ -30,55 +29,73 @@ RootStreamHITReader::RootStreamHITReader( std::string name ) :
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
 }
 
-
-
+//!=====================================================================
 
 RootStreamHITReader::~RootStreamHITReader()
-{
-  delete m_file;
-  delete m_tree;
-}
+{}
 
+//!=====================================================================
 
 StatusCode RootStreamHITReader::initialize()
 {
+  CHECK_INIT();
   setMsgLevel(m_outputLevel);
-  m_file = new TFile(m_inputFile.c_str(), "read");
-  m_tree = (TTree*)m_file->Get(m_ntupleName.c_str());
-  m_entries = m_tree->GetEntries();
-  MSG_INFO( "Got " << m_entries << " Events!");
   return StatusCode::SUCCESS;
 }
+
+//!=====================================================================
 
 StatusCode RootStreamHITReader::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
-StatusCode RootStreamHITReader::GeneratePrimaryVertex( int evt, EventContext &ctx ) const
+StatusCode RootStreamHITReader::bookHistograms( EventContext &ctx ) const
+{
+  auto store = ctx.getStoreGateSvc();
+  TFile *file = new TFile(m_inputFile.c_str(), "read");
+  store->decorate( "events", file );
+  return StatusCode::SUCCESS; 
+}
+
+//!=====================================================================
+
+StatusCode RootStreamHITReader::pre_execute( EventContext &/*ctx*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
+
+StatusCode RootStreamHITReader::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
+
+StatusCode RootStreamHITReader::execute( EventContext &ctx, int evt ) const
 {
   return deserialize( evt, ctx );
 }
 
+//!=====================================================================
 
-
-template <class T>
-void RootStreamHITReader::InitBranch(TTree* fChain, std::string branch_name, T* param) const
+StatusCode RootStreamHITReader::post_execute( EventContext &/*ctx*/ ) const
 {
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
+  return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
+StatusCode RootStreamHITReader::fillHistograms( EventContext &ctx ) const
+{
+  return StatusCode::SUCCESS;
+}
+
+//!=====================================================================
 
 
 StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
@@ -88,12 +105,16 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
+  
+  auto store = ctx.getStoreGateSvc();
+  TFile *file = (TFile*)store->decorator("events");
+  TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
-  InitBranch( m_tree,  "EventInfoContainer"            , &collection_event      );
-  InitBranch( m_tree,  "TruthParticleContainer"        , &collection_truth      );
-  InitBranch( m_tree,  "CaloHitContainer"              , &collection_hits       );
+  InitBranch( tree, ("EventInfoContainer_"+m_eventKey).c_str()     , &collection_event     );
+  InitBranch( tree, ("TruthParticleContainer_"+m_truthKey).c_str() , &collection_truth     );
+  InitBranch( tree, ("CaloHitContainer_"+m_hitsKey).c_str()        , &collection_hits      );
 
-  m_tree->GetEntry( evt );
+  tree->GetEntry( evt );
 
 
   { // deserialize EventInfo
@@ -124,8 +145,6 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   }
   
 
-
-
   {
     SG::WriteHandle<xAOD::CaloHitContainer> container(m_hitsKey, ctx);
     container.record( std::unique_ptr<xAOD::CaloHitContainer>(new xAOD::CaloHitContainer()));
@@ -146,8 +165,23 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
  
 }
 
-int RootStreamHITReader::GetEntries() const
+//!=====================================================================
+
+template <class T>
+void RootStreamHITReader::InitBranch(TTree* fChain, std::string branch_name, T* param) const
 {
-  return m_entries;
+  std::string bname = branch_name;
+  if (fChain->GetAlias(bname.c_str()))
+     bname = std::string(fChain->GetAlias(bname.c_str()));
+
+  if (!fChain->FindBranch(bname.c_str()) ) {
+    MSG_WARNING( "unknown branch " << bname );
+    return;
+  }
+  fChain->SetBranchStatus(bname.c_str(), 1.);
+  fChain->SetBranchAddress(bname.c_str(), param);
 }
+
+//!=====================================================================
+
 

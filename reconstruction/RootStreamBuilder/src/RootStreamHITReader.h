@@ -1,16 +1,13 @@
 #ifndef RootStreamHITReader_h
 #define RootStreamHITReader_h
 
-#include "GaugiKernel/ComponentReader.h"
+#include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
-#include "TFile.h"
-#include "TTree.h"
 
 
-
-class RootStreamHITReader : public Gaugi::ComponentReader
+class RootStreamHITReader : public Gaugi::Algorithm
 {
 
   public:
@@ -21,11 +18,21 @@ class RootStreamHITReader : public Gaugi::ComponentReader
     
     virtual StatusCode initialize() override;
 
-    virtual StatusCode GeneratePrimaryVertex( int evt, SG::EventContext &ctx ) const override;
+    virtual StatusCode bookHistograms( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
+    
+    virtual StatusCode execute( SG::EventContext &ctx , int evt ) const override;
+
+    virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     
     virtual StatusCode finalize() override;
 
-    virtual int GetEntries() const override;
+
 
   private:
  
@@ -39,11 +46,7 @@ class RootStreamHITReader : public Gaugi::ComponentReader
     std::string m_truthKey;
     std::string m_inputFile;
     std::string m_ntupleName;
-
     int m_outputLevel;
-    TFile *m_file;
-    TTree *m_tree;
-    int m_entries;
 };
 
 #endif

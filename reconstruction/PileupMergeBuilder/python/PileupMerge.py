@@ -1,17 +1,21 @@
-__all__ = ["EventReader"]
+__all__ = ["PileupMerge"]
 
 from Gaugi import Logger
 from Gaugi.messenger.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class EventReader( Logger ):
+class PileupMerge( Logger ):
 
   __allow_keys = [
-                  "EventKey", 
-                  "TruthKey",
-                  "FileName",
-                  "BunchDuration",
+                  "InputHitsKey",
+                  "OutputHitsKey",
+                  "InputEventKey",
+                  "OutputEventKey",
+                  "OutputLevel", 
+                  "NtupleName",
+                  "InputFile",
+                  "PileupAvg",
                   ]
 
 
@@ -20,18 +24,11 @@ class EventReader( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import generator
-    # Create the algorithm
-    self.__core = generator.EventReader(name)
+    from ROOT import PileupMerge
+    self.__core = PileupMerge(name)
 
     for key, value in kw.items():
       self.setProperty( key,value )
-
-    from ROOT import TFile, TTree
-    f = TFile( self.getProperty("FileName") )
-    t = f.Get("particles")
-    self.__entries = t.GetEntries()
-    f.Close()
 
 
 
@@ -53,10 +50,3 @@ class EventReader( Logger ):
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
-
-  def merge( self, acc ):
-    acc.setGenerator( self )
-  
-
-  def GetEntries(self):
-    return self.__entries

@@ -73,7 +73,7 @@ try:
   deltaEta = deltaPhi = 999.  
   pileup = Pileup( "MinimumBias",
                    File           = minbias,
-                   EtaMax         = 3.2,
+                   EtaMax         = 1.4,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,
                    BunchIdStart   = args.bc_id_start,
@@ -82,6 +82,7 @@ try:
                    Seed           = args.seed,
                    DeltaEta       = 999, # full detector
                    DeltaPhi       = 999, # full detector 
+                   ForcePileupAvg = True,
                    )
   
   

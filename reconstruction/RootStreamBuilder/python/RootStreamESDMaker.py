@@ -8,9 +8,12 @@ from G4Kernel import treatPropertyValue
 class RootStreamESDMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey",
-                  "TruthKey",
-                  "CellsKey",
+                  "InputEventKey",
+                  "InputTruthKey",
+                  "InputCellsKey",
+                  "OutputEventKey",
+                  "OutputTruthKey",
+                  "OutputCellsKey",                 
                   "OutputLevel", 
                   "NtupleName",
                   "EtaWindow",

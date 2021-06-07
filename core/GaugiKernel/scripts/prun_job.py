@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from GaugiKernel import Parallel
+from GaugiKernel import Pool
 from Gaugi import Logger
 
 
@@ -32,7 +32,7 @@ if len(sys.argv)==1:
   sys.exit(1)
 args = parser.parse_args()
 
-prun = Parallel( args.command, args.numberOfJobs, args.numberOfThreads, args.outputFile )
+prun = Pool( args.command, args.numberOfJobs, args.numberOfThreads, args.outputFile )
 prun.run()
 
 

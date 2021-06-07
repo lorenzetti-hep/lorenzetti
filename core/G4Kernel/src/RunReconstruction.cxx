@@ -4,22 +4,28 @@
 #include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
 #include "G4SystemOfUnits.hh"
+#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
+#include <string>
 #include <iostream>
 #include <time.h>
 
 
 
-RunReconstruction::RunReconstruction( std::vector<Gaugi::Algorithm*> acc , std::string output): 
+RunReconstruction::RunReconstruction( int numberOfThreads,
+                                      std::vector<Gaugi::Algorithm*> acc , 
+                                      std::string output ): 
   IMsgService("RunReconstruction"),
   G4Run(), 
-  m_store( output , G4Threading::G4GetThreadId() ),
+  m_store( output + "." + std::to_string(G4Threading::G4GetThreadId()) ),
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
   m_lock(false)
 {
   // Tranfer all rights to the event context
   m_ctx.setStoreGateSvc( &m_store );
-
+  m_ctx.setNumberOfThreads(numberOfThreads);
+  m_ctx.setThreadId(G4Threading::G4GetThreadId());
   bookHistograms();
 
   // Pre execution of all tools in sequence
@@ -33,7 +39,9 @@ RunReconstruction::RunReconstruction( std::vector<Gaugi::Algorithm*> acc , std::
 
 
 RunReconstruction::~RunReconstruction()
-{}
+{
+  m_store.save();
+}
 
 
 void RunReconstruction::BeginOfEvent()

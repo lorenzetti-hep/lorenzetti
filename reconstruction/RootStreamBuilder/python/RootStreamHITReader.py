@@ -24,10 +24,14 @@ class RootStreamHITReader( Logger ):
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RootStreamHITReader
     self.__core = RootStreamHITReader(name)
-
     for key, value in kw.items():
       self.setProperty( key,value )
 
+    from ROOT import TFile, TTree 
+    f = TFile( self.getProperty("InputFile"),"read")
+    t = TTree()
+    f.GetObject( self.getProperty("NtupleName"), t )
+    self.__entries = t.GetEntries()
 
   def core(self):
     return self.__core
@@ -48,5 +52,9 @@ class RootStreamHITReader( Logger ):
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
+  def GetEntries(self):
+    return self.__entries
+
+
   def merge(self, acc):
-    acc.core().setReader(self.core())
+    acc.SetReader(self)

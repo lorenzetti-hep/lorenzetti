@@ -28,7 +28,9 @@ namespace generator{
       float m_nPileupAvg;
       float m_delta_eta;
       float m_delta_phi;
+      bool m_forcePileupAvg;
       std::string m_file;
+
     
   };
 }

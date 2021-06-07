@@ -8,13 +8,14 @@ from G4Kernel import treatPropertyValue
 class RootStreamHITMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey",
-                  "TruthKey",
-                  "HitsKey",
+                  "InputEventKey",
+                  "InputTruthKey",
+                  "InputHitsKey",
+                  "OutputEventKey",
+                  "OutputTruthKey",
+                  "OutputHitsKey",
                   "OutputLevel", 
                   "NtupleName",
-                  #"EtaWindow",
-                  #"PhiWindow",
                   ]
 
 

@@ -32,6 +32,7 @@ CaloHitMerge::~CaloHitMerge()
 
 StatusCode CaloHitMerge::initialize()
 {
+  CHECK_INIT();
   setMsgLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
@@ -58,6 +59,12 @@ StatusCode CaloHitMerge::pre_execute( EventContext &/*ctx*/ ) const
 StatusCode CaloHitMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
+}
+
+// standlone execute
+StatusCode CaloHitMerge::execute( EventContext &ctx, int /*evt*/ ) const
+{
+  return post_execute(ctx);
 }
 
 

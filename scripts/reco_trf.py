@@ -99,13 +99,18 @@ try:
 
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
-                          CellsKey        = recordable("Cells"),
-                          EventKey        = recordable("EventInfo"),
-                          TruthKey        = recordable("Particles"),
-                          RingerKey       = recordable("Rings"),
-                          ClusterKey      = recordable("Clusters"),
-                          DumpCells       = True,
-                          OutputLevel     = outputLevel)
+                            InputCellsKey        = recordable("Cells"),
+                            InputEventKey        = recordable("EventInfo"),
+                            InputTruthKey        = recordable("Particles"),
+                            InputRingerKey       = recordable("Rings"),
+                            InputClusterKey      = recordable("Clusters"),
+                            OutputCellsKey       = recordable("Cells"),
+                            OutputEventKey       = recordable("EventInfo"),
+                            OutputTruthKey       = recordable("Particles"),
+                            OutputRingerKey      = recordable("Rings"),
+                            OutputClusterKey     = recordable("Clusters"),
+                            DumpCells            = False,
+                            OutputLevel          = outputLevel)
       
   # sequence
   acc+= cluster
@@ -114,6 +119,7 @@ try:
 
   acc.run(args.numberOfEvents)
 
+  del acc
   sys.exit(0)
   
 except  Exception as e:

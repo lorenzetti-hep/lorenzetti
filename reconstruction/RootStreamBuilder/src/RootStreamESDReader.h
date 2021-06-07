@@ -1,16 +1,15 @@
 #ifndef RootStreamESDReader_h
 #define RootStreamESDReader_h
 
-#include "GaugiKernel/ComponentReader.h"
+#include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
-#include "TFile.h"
-#include "TTree.h"
 
 
 
-class RootStreamESDReader : public Gaugi::ComponentReader
+
+class RootStreamESDReader : public Gaugi::Algorithm
 {
 
   public:
@@ -18,18 +17,26 @@ class RootStreamESDReader : public Gaugi::ComponentReader
     RootStreamESDReader( std::string );
     
     virtual ~RootStreamESDReader();
-    
+
     virtual StatusCode initialize() override;
 
-    virtual StatusCode GeneratePrimaryVertex( int evt, SG::EventContext &ctx ) const override;
+    virtual StatusCode bookHistograms( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
+    
+    virtual StatusCode execute( SG::EventContext &ctx , int evt ) const override;
+
+    virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
+    
+    virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     
     virtual StatusCode finalize() override;
 
-    virtual int GetEntries() const override;
 
   private:
  
-
     StatusCode deserialize( int evt, SG::EventContext &ctx ) const;
 
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
@@ -41,9 +48,7 @@ class RootStreamESDReader : public Gaugi::ComponentReader
     std::string m_ntupleName;
 
     int m_outputLevel;
-    TFile *m_file;
-    TTree *m_tree;
-    int m_entries;
+
 };
 
 #endif

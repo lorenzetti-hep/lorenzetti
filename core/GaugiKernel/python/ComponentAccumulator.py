@@ -2,57 +2,82 @@
 __all__ = ["ComponentAccumulator"]
 
 from Gaugi import Logger
+import numpy as np
+import os
 
-
+#
+# Componenent 
+#
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = []
 
-  def __init__( self, name , output, **kw):
-
+  def __init__(self, name, output ):
+    
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import Gaugi as GK # GaugiKernel
-    self.__core = GK.ComponentAccumulator( name, output )
-    self.__numberOfEvents = 10000
-    for key, value in kw.items():
-      if key in self.__allow_keys:
-        setattr( self, '__' + key , value )
-        self.__core.setProperty( key, value )
-      else:
-        MSG_FATAL( self, "Property with name %s is not allow for %s object", key , self.__class__.__name__)
+    from ROOT import RunManager
+    from ROOT import Gaugi as GK
+    self.__acc = GK.ComponentAccumulator( name )
 
+    from ROOT import SG
+    self.__ctx = SG.EventContext("EventContext")
+    self.__store = SG.StoreGate(output)
+    self.__ctx.setStoreGateSvc(self.__store)
 
-  def run( self, evt=-1 ):
-    self.__core.initialize()
-    self.__core.run(evt)
-    self.__core.finalize()
+  #
+  # Set the reader as first alg
+  #
+  def SetReader(self, reader):
+    self.__reader = reader
+    self.__acc.push_back(reader.core())
 
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      self.core().setProperty( key, value )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
+  #
+  # Add algorith to the main sequence
+  #
   def __add__( self, algs ):
     if type(algs) is not list:
-      algs =[algs]
+      algs = [algs]
     for alg in algs:
-      self.__core.push_back( alg.core() )
+      self.__acc.push_back(alg.core())
     return self
 
+  #
+  # Get entries
+  #
+  def GetEntries(self):
+    return self.__reader.GetEntries()
+
+  #
+  # Configure
+  #
+  def configure(self):
+
+    self.__acc.initialize()
+    self.__acc.bookHistograms(self.__ctx)
+
+  #
+  # Run events
+  #
+  def run( self , nov=None ):
+
+    self.configure()
+
+    if nov < 0:
+      nov = self.GetEntries()
   
-  def core(self):
-    return self.__core
+    elif nov > self.GetEntries():
+      nov = self.GetEntries()
+  
+    print(nov)
+    for evt in range(nov):
+      self.__acc.run(self.__ctx, evt)
 
 
+    self.__acc.finalize()
+    store = self.__ctx.getStoreGateSvc()
+    store.save()
+
+
+ 
+   

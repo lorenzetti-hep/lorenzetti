@@ -40,6 +40,15 @@ parser.add_argument('--enableMagneticField', action='store_true', dest='enableMa
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
+parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
+                    help = "The pileup average (default is zero).")
+
+parser.add_argument('-p','--pileupFile', action='store', dest='pileupFile', required = False, default=None, 
+                    help = "The event HIT file to be merged (pileup)")
+
+parser.add_argument('-m','--merge', action='store_true', dest='merge', required = False, 
+                    help = "Merge all output files.")
+
 
 
 pi = np.pi
@@ -49,18 +58,6 @@ if len(sys.argv)==1:
   sys.exit(1)
 
 args = parser.parse_args()
-
-
-# Get all output names
-if not '.root' in args.outputFile:
-  args.outputFile+='.root'
-
-# Add index for each thread
-outputFileList = []
-for thread in range( args.numberOfThreads ):
-  outputFileList.append( args.outputFile.replace( '.root', "_%d.root"%thread ) )
-
-
 
 
 outputLevel = 0 if args.debug else args.outputLevel
@@ -81,6 +78,7 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", detector,
                               RunVis=args.visualization,
                               NumberOfThreads = args.numberOfThreads,
+                              MergeOutputFiles = args.merge,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
                               OutputFile = args.outputFile)
   
@@ -101,58 +99,45 @@ try:
   gun.merge(acc)
   calorimeter_hits.merge(acc)
 
-
   
+  OutputHitsKey   = recordable("Hits")
+  OutputEventKey  = recordable("EventInfo")
 
+  if args.pileupFile:
 
+    OutputEventKey += "_Merged"
+    OutputHitsKey  += "_Merged"
 
-  from DetectorATLASModel import CaloCellBuilder
-  calorimeter_cells = CaloCellBuilder("CaloCellBuilder",
-                                       HistogramPath = "Expert/Cells",
-                                       OutputLevel   = outputLevel,
-                                       HitsKey       = recordable("Hits"),
-                                       )
-  calorimeter_cells.merge(acc)
-
-
-
-
-  # build cluster for all seeds
-  from CaloClusterBuilder import CaloClusterMaker
-  cluster = CaloClusterMaker( "CaloClusterMaker",
-                              CellsKey        = recordable("Cells"),
-                              EventKey        = recordable("EventInfo"),
-                              ClusterKey      = recordable("Clusters"),
-                              TruthKey        = recordable("Particles"),
-                              EtaWindow       = 0.4,
-                              PhiWindow       = 0.4,
-                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
-                              HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
-  acc+=cluster
+    from PileupMergeBuilder import PileupMerge
+    pileup = PileupMerge( "PileupMerge", 
+                          InputFile       = args.pileupFile,
+                          InputHitsKey    = recordable("Hits"),
+                          InputEventKey   = recordable("EventInfo"),
+                          OutputHitsKey   = OutputHitsKey,
+                          OutputEventKey  = OutputEventKey,
+                          NtupleName      = "CollectionTree",
+                          PileupAvg       = args.pileupAvg,
+                          OutputLevel     = outputLevel
+                        )
+    acc += pileup
 
 
 
   from RootStreamBuilder import RootStreamHITMaker
+
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
-                             HitsKey         = recordable("Hits"),
-                             EventKey        = recordable("EventInfo"),
-                             TruthKey        = recordable("Particles"),
+                             # input from context
+                             InputHitsKey    = OutputHitsKey,
+                             InputEventKey   = OutputEventKey,
+                             InputTruthKey   = recordable("Particles"),
+                             # output to file
+                             OutputHitsKey   = recordable("Hits"),
+                             OutputEventKey  = recordable("EventInfo"),
+                             OutputTruthKey  = recordable("Particles"),
                              OutputLevel     = outputLevel)
 
   acc += HIT
   acc.run(args.numberOfEvents)
-  
-  
-  command = "hadd -f " + args.outputFile + ' '
-  for fname in outputFileList:
-    command+=fname + ' '
-  print( command )
-  os.system(command)
-  
-  # remove thread files
-  for fname in outputFileList:
-    os.system( 'rm '+ fname )
   
   
   if args.visualization:

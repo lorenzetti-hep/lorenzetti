@@ -20,8 +20,7 @@ namespace SG{
   {
     // Make this as const
     const DataHandle *ptr = dynamic_cast<DataHandle*>(container.get());
-    auto it = m_storable_ptr.find(sgkey);
-    if ( it == m_storable_ptr.end() ){
+    if ( !m_storable_ptr.count(sgkey) ){
       m_storable_ptr.insert( std::make_pair(sgkey, std::unique_ptr<const DataHandle>(ptr) ) );
       container.release(); // release the pointer ownship
     }else{

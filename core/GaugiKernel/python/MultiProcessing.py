@@ -1,12 +1,12 @@
+__all__ = [ "Pool"]
 
-__all__ = ["Parallel"]
 
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi.messenger.macros import *
 import argparse
 
 
-class Parallel( Logger ):
+class Pool( Logger ):
 
   def __init__(self, command, njobs, maxJobs, output ):
     Logger.__init__(self)

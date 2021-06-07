@@ -4,10 +4,11 @@
 #include "GaugiKernel/MsgStream.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/StoreGate.h"
-#include "GaugiKernel/ComponentReader.h"
 #include "GaugiKernel/Timer.h"
 #include <string>
 #include <vector>
+#include <ROOT/TBufferMerger.hxx>
+using namespace ROOT::Experimental;
 
 namespace Gaugi{
 
@@ -17,7 +18,7 @@ namespace Gaugi{
     public:
 
       /** Constructor **/
-      ComponentAccumulator( std::string name, std::string output );
+      ComponentAccumulator( std::string name );
 
       /** Destructor **/
       virtual ~ComponentAccumulator();
@@ -25,37 +26,25 @@ namespace Gaugi{
       /** add tool **/
       void push_back( Gaugi::Algorithm* );
 
-      void setReader( Gaugi::ComponentReader* ); 
-
-      /** run events **/
-      void run( int evt );
 
       void initialize();
+
+      void bookHistograms( SG::EventContext *ctx ) const;
+
+      void run( SG::EventContext *ctx, int evt ) const;
 
       void finalize();
 
     private:
 
-      /** Pre execution used in event action step **/
-      void BeginOfEvent();
-      /** Execute event **/
-      void ExecuteEvent();
-      /** Pos execution used in event action step **/
-      void EndOfEvent();
-      /** book all histograms here **/
-      void bookHistograms();
-
       // monitoring variables
-      Timer m_timer;
-
+      //Timer m_timer;
       // Store gate
-      SG::StoreGate m_store;
+      //SG::StoreGate *m_store;
       // the event context
-      SG::EventContext m_ctx;
+      //SG::EventContext m_ctx;
       // list of alg tools to be executed in loop
       std::vector < Gaugi::Algorithm* > m_toolHandles;
-      // event stream reader
-      Gaugi::ComponentReader *m_reader;
   };
 
 }

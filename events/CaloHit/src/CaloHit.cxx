@@ -11,7 +11,7 @@ CaloHit::CaloHit(     float eta,
                       float deta, 
                       float dphi,
                       // Hash
-                      unsigned int hash,
+                      unsigned long int hash,
                       // cell identification
                       CaloSampling sampling, 
                       Detector detector,
@@ -60,7 +60,6 @@ void CaloHit::Fill( const G4Step* step )
 
   // Get the bin index into the time vector
   int samp = findIndex(t);
-  //std::cout << "FILL " << samp << " E = " << edep << " t = " << t << std::endl;
   if ( samp != -1 ){
     int bcid = m_bcid_start + samp;
     m_edep[bcid]+=(edep/MeV);

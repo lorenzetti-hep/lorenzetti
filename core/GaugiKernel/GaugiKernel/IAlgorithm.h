@@ -46,6 +46,9 @@ namespace Gaugi{
     /*! This step will be executed during the Geant step action */
     virtual StatusCode execute( SG::EventContext &/*ctx*/, const G4Step * ) const=0;
   
+    /*! This step will be executed in standalone mode (no geant) */
+    virtual StatusCode execute( SG::EventContext &/*ctx*/, int /*evt*/ ) const=0;
+  
     /*! This step will be executed after the Geant step action */
     virtual StatusCode post_execute( SG::EventContext & /*ctx*/ ) const=0;
   

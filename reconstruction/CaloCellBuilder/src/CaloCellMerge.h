@@ -21,6 +21,8 @@ class CaloCellMerge : public Gaugi::Algorithm
     virtual StatusCode bookHistograms( SG::EventContext &ctx ) const override;
     /*! Execute in step action step from geant core **/
     virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
+    /*! Execute in ComponentAccumulator **/
+    virtual StatusCode execute( SG::EventContext &ctx , int /*evt*/ ) const override;
     /*! execute before start the step action **/
     virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
     /*! execute after the step action **/ 

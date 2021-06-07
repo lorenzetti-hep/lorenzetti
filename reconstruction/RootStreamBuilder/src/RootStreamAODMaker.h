@@ -31,6 +31,8 @@ class RootStreamAODMaker : public Gaugi::Algorithm
     
     virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
     
+    virtual StatusCode execute( SG::EventContext &ctx , int /*evt*/ ) const override;
+
     virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
     
     virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
@@ -48,11 +50,17 @@ class RootStreamAODMaker : public Gaugi::Algorithm
     
     std::string m_ntupleName;
 
-    std::string m_cellsKey;
-    std::string m_eventKey;
-    std::string m_clusterKey;
-    std::string m_ringerKey;
-    std::string m_truthKey;
+    std::string m_inputCellsKey;
+    std::string m_inputEventKey;
+    std::string m_inputClusterKey;
+    std::string m_inputRingerKey;
+    std::string m_inputTruthKey;
+
+    std::string m_outputCellsKey;
+    std::string m_outputEventKey;
+    std::string m_outputClusterKey;
+    std::string m_outputRingerKey;
+    std::string m_outputTruthKey;
 
     bool m_dumpCells;
     int m_outputLevel;

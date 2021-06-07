@@ -43,6 +43,7 @@ CaloClusterMaker::~CaloClusterMaker()
 
 StatusCode CaloClusterMaker::initialize()
 {
+  CHECK_INIT();
   setMsgLevel(m_outputLevel);
   m_showerShapes = new ShowerShapes( "ShowerShapes" );
   return StatusCode::SUCCESS;
@@ -84,6 +85,11 @@ StatusCode CaloClusterMaker::pre_execute( EventContext &/*ctx*/ ) const
 StatusCode CaloClusterMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
+}
+
+StatusCode CaloClusterMaker::execute( EventContext &ctx, int /*evt*/ ) const
+{
+  return post_execute(ctx);
 }
 
 

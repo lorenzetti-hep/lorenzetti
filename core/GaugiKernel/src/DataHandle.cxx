@@ -9,7 +9,8 @@ using namespace SG;
 
 
 EventContext::EventContext( std::string name ): 
-  IMsgService(name)
+  IMsgService(name),
+  m_threadId(0)
 {;}
 
 

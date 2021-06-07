@@ -2,13 +2,14 @@
 __all__ = ["ComponentAccumulator"]
 
 from Gaugi import Logger
+import os
 
 
 class ComponentAccumulator( Logger ):
 
   __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed"]
 
-  def __init__( self, name , detector, **kw):
+  def __init__( self, name , detector,  MergeOutputFiles=False, **kw):
 
     Logger.__init__(self)
     import ROOT
@@ -16,15 +17,16 @@ class ComponentAccumulator( Logger ):
     from ROOT import RunManager
     self.__core = RunManager(name)
     self.__core.setDetectorConstruction( detector.core() )
-    self.__numberOfEvents = 10000
     for key, value in kw.items():
-      if key in self.__allow_keys:
-        setattr( self, '__' + key , value )
-        self.__core.setProperty( key, value )
-      else:
-        MSG_FATAL( self, "Property with name %s is not allow for %s object", key , self.__class__.__name__)
+      self.setProperty( key, value )
+
+    self.__outputs = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
+    self.__mergeOutputs = MergeOutputFiles
 
 
+  #
+  # Run events
+  #
   def run( self, evt=None ):
     if evt is None:
       evt = self.__numberOfEvents
@@ -32,9 +34,13 @@ class ComponentAccumulator( Logger ):
       evt = self.__numberOfEvents
     self.__core.run(evt)
 
+    if self.__mergeOutputs:
+      self.__merge()
+
 
   def setProperty( self, key, value ):
     if key in self.__allow_keys:
+      setattr( self,  key , value )
       self.core().setProperty( key, value )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
@@ -59,6 +65,24 @@ class ComponentAccumulator( Logger ):
     return self.__core
 
 
-  def setNumberOfEvents( self, evt ):
-    self.__numberOfEvents = evt
+  #
+  # Set generator reader
+  #
+  def setGenerator( self, gen ):
+    self.__numberOfEvents = gen.GetEntries()
+    self.core().setGenerator( gen.core() )
 
+
+  #
+  # Destructor
+  #
+  def __merge(self):
+    command = "hadd -f " + self.OutputFile + ' '
+    for fname in self.__outputs:
+      command+=fname + ' '
+    print( command )
+    os.system(command)
+    # remove thread files
+    for fname in self.__outputs:
+      os.system( 'rm '+ fname )
+  

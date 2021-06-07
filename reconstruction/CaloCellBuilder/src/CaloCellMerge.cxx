@@ -33,6 +33,7 @@ CaloCellMerge::~CaloCellMerge()
 
 StatusCode CaloCellMerge::initialize()
 {
+  CHECK_INIT();
   setMsgLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
@@ -59,6 +60,12 @@ StatusCode CaloCellMerge::pre_execute( EventContext &/*ctx*/ ) const
 StatusCode CaloCellMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
+}
+
+
+StatusCode CaloCellMerge::execute( EventContext &ctx , int /*evt*/ ) const
+{
+  return post_execute(ctx);
 }
 
 

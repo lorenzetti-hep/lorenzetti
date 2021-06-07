@@ -47,11 +47,32 @@ namespace SG{
       StoreGate* getStoreGateSvc(){ return m_store; };
 
 
+      void setThreadId( int id ){ m_threadId = id; };
+      int getThreadId(){return m_threadId;};
+
+      void setNumberOfThreads(int numberOfThreads) { m_numberOfThreads=numberOfThreads;};
+      int getNumberOfThreads(){return m_numberOfThreads;};
+
+
+      /*! Get all keys into the storage */
+      std::vector<std::string> keys() const
+      { 
+        std::vector<std::string> keys;
+        for( auto &it : m_storable_ptr)
+        {
+          keys.push_back(it.first);
+        }
+        return keys;
+      };
+
     private:
 
       std::map< std::string, std::unique_ptr<const DataHandle > > m_storable_ptr;
       
       StoreGate *m_store;
+
+      int m_threadId;
+      int m_numberOfThreads;
   };
 
 

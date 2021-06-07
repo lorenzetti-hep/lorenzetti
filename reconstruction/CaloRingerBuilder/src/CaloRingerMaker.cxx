@@ -37,6 +37,8 @@ CaloRingerMaker::~CaloRingerMaker()
 
 StatusCode CaloRingerMaker::initialize()
 {
+  CHECK_INIT();
+
   setMsgLevel(m_outputLevel);
   m_maxRingsAccumulated = std::accumulate(m_nRings.begin(), m_nRings.end(), 0);
   return StatusCode::SUCCESS;
@@ -87,6 +89,12 @@ StatusCode CaloRingerMaker::execute( EventContext &/*ctx*/, const G4Step * /*ste
 
 //!=====================================================================
 
+StatusCode CaloRingerMaker::execute( EventContext &ctx, int /*evt*/ ) const
+{
+  return post_execute(ctx);
+}
+
+//!=====================================================================
 
 StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
 {

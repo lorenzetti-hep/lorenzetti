@@ -21,7 +21,7 @@ namespace xAOD{
         int bcid_end;
         float bc_duration;
         std::vector<float> edep;
-        unsigned int hash;
+        unsigned long int hash;
     };
 
     class CaloHitConverter{

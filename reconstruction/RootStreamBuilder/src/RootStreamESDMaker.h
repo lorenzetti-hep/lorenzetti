@@ -28,6 +28,8 @@ class RootStreamESDMaker : public Gaugi::Algorithm
     
     virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
     
+    virtual StatusCode execute( SG::EventContext &ctx , int /*evt*/ ) const override;
+
     virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
     
     virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
@@ -44,10 +46,13 @@ class RootStreamESDMaker : public Gaugi::Algorithm
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
     std::string m_ntupleName;
-    std::string m_cellsKey;
-    std::string m_eventKey;
-    std::string m_truthKey;
-
+    std::string m_inputCellsKey;
+    std::string m_inputEventKey;
+    std::string m_inputTruthKey;
+    std::string m_outputCellsKey;
+    std::string m_outputEventKey;
+    std::string m_outputTruthKey;
+    
     float m_etaWindow, m_phiWindow;
 
     int m_outputLevel;

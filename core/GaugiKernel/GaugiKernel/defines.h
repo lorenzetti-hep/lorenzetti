@@ -41,4 +41,4 @@
 #define GAUGI_BOLDWHITE   "\033[1m\033[97m"      /* Bold White */
 
 
-#endif // RINGERCORE_DEFINES_H
+#endif // 

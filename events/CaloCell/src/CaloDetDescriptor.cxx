@@ -15,7 +15,7 @@ CaloDetDescriptor::CaloDetDescriptor(
                   float dphi, 
                   float radius_min, 
                   float radius_max,
-                  unsigned int hash,
+                  unsigned long int hash,
                   CaloSampling sampling, 
                   Detector detector,
                   float bc_duration,

@@ -47,6 +47,8 @@ void CaloCellMaker::push_back( Gaugi::AlgTool* tool )
 
 StatusCode CaloCellMaker::initialize()
 {
+  CHECK_INIT();
+  
   // Set message level
   setMsgLevel( (MSG::Level)m_outputLevel );
   
@@ -160,7 +162,7 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
     if (command=="cell"){
       float  eta, phi, deta, dphi, rmin, rmax, zmin, zmax;
       int detector, sampling; // Calorimeter layer and eta/phi ids
-      unsigned int hash;
+      unsigned long int hash;
       //std::string hash;
       ss >> detector >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
 
@@ -183,6 +185,24 @@ StatusCode CaloCellMaker::execute( EventContext &/*ctx*/ , const G4Step */*step*
 {
   return StatusCode::SUCCESS;
 }
+
+
+StatusCode CaloCellMaker::execute( EventContext &ctx , int /*evt*/ ) const
+{
+  
+  if( pre_execute(ctx).isFailure())
+  {
+    MSG_FATAL("Its not possible to pre_execute. Abort!");
+  }
+
+  if( post_execute(ctx).isFailure())
+  {
+    MSG_FATAL("Its not possible to post_execute. Abort!");
+  }
+
+  return StatusCode::SUCCESS;
+}
+
 
 
 StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
@@ -227,11 +247,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
       {
         // transfer truth energy for each bunch crossing to descriptor
         descriptor->edep( bcid, hit->edep(bcid) ); 
-      }
-
-      if( hit->sampling() == CaloSampling::EMB2 && hit->edep()>100) {
-        MSG_INFO( hit->edep() << " - > " << descriptor->edep());
-      }
+      }  
 
       for ( auto tool : m_toolHandles )
       {

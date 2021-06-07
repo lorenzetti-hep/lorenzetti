@@ -38,6 +38,8 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
 
 StatusCode CaloHitMaker::initialize()
 {
+  CHECK_INIT();
+
   // Set message level
   setMsgLevel( (MSG::Level)m_outputLevel );
   
@@ -136,7 +138,7 @@ StatusCode CaloHitMaker::pre_execute( EventContext &ctx ) const
     if (command=="cell"){
       float  eta, phi, deta, dphi, rmin, rmax, zmin, zmax;
       int detector, sampling; // Calorimeter layer and eta/phi ids
-      unsigned int hash;
+      unsigned long int hash;
       //std::string hash;
       ss >> detector >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
 
@@ -190,6 +192,14 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 
   return StatusCode::SUCCESS;
 }
+
+
+// standlone execute
+StatusCode CaloHitMaker::execute( EventContext &ctx, int /*evt*/ ) const
+{
+  return pre_execute(ctx);
+}
+
 
 
 StatusCode CaloHitMaker::post_execute( EventContext &ctx ) const
