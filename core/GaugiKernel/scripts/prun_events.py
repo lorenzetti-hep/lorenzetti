@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-o','--outputFile', action='store', 
     dest='outputFile', required = True,
-    help = "The input files.")
+    help = "Output file")
 
 parser.add_argument('-c','--command', action='store', 
     dest='command', required = True,
@@ -25,6 +25,10 @@ parser.add_argument('-n','--numberOfJobs', action='store',
     dest='numberOfJobs', required = False, default = 1, type=int,
     help = "The number of jobs")
 
+parser.add_argument('-m','--merge', action='store_true', dest='merge', required = False, 
+                    help = "Merge all output files.")
+
+
 
 import sys,os
 if len(sys.argv)==1:
@@ -32,7 +36,17 @@ if len(sys.argv)==1:
   sys.exit(1)
 args = parser.parse_args()
 
-prun = Pool( args.command, args.numberOfJobs, args.numberOfThreads, args.outputFile )
+
+
+def func(command, _, output):
+    return command + ' -o ' + output
+
+# dummy
+njobs = list(range(args.numberOfJobs))
+
+prun = Pool( func, args.command, args.numberOfThreads, njobs, args.outputFile )
 prun.run()
 
 
+if args.merge:
+    prun.merge()

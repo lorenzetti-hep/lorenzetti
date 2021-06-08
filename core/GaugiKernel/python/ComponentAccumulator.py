@@ -73,11 +73,9 @@ class ComponentAccumulator( Logger ):
     for evt in range(nov):
       self.__acc.run(self.__ctx, evt)
 
-
     self.__acc.finalize()
-    store = self.__ctx.getStoreGateSvc()
-    store.save()
-
-
+    self.__ctx.getStoreGateSvc().save()
  
-   
+ 
+
+    

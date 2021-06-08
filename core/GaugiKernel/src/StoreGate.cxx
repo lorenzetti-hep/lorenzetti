@@ -18,6 +18,7 @@ StoreGate::StoreGate( std::string outputfile):
 }
 
 
+
 void StoreGate::save()
 {
   MSG_INFO("Saving StoreGate...")

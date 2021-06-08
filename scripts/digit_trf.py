@@ -73,20 +73,6 @@ try:
                                 )
   calorimeter.merge(acc)
 
-  from CaloClusterBuilder   import CaloClusterMaker
-  # build cluster for all seeds
-  cluster = CaloClusterMaker( "CaloClusterMaker",
-                              CellsKey        = recordable("Cells"),
-                              EventKey        = recordable("EventInfo"),
-                              ClusterKey      = recordable("Clusters"),
-                              TruthKey        = recordable("Particles"),
-                              EtaWindow       = 0.4,
-                              PhiWindow       = 0.4,
-                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
-                              HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
-
-  #acc+=cluster
 
   from RootStreamBuilder import RootStreamESDMaker
   ESD = RootStreamESDMaker( "RootStreamESDMaker",

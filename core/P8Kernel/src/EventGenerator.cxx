@@ -37,6 +37,7 @@ EventGenerator::~EventGenerator()
   delete m_p_prod_y     ; 
   delete m_p_prod_z     ;  
   delete m_p_prod_t     ;
+
 }
 
 
@@ -159,6 +160,9 @@ StatusCode EventGenerator::finalize()
       MSG_ERROR( "It's not possible to finalize the event algorithm with name " << alg->name() );
     }
   }
+  
+  m_store->save();
+
   // Release the storegate
   delete m_store;
 

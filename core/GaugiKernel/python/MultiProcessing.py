@@ -3,58 +3,100 @@ __all__ = [ "Pool"]
 
 from Gaugi.messenger import LoggingLevel, Logger
 from Gaugi.messenger.macros import *
+from pprint import pprint
 import argparse
+import os, time
+import subprocess
+
+
+class Slot(object):
+
+  def __init__( self ):
+    self.__proc = None
+    self.__lock = False
+
+  def lock(self):
+    self.__lock=True
+  
+  def unlock(self):
+    self.__lock=False
+
+  def update(self):
+    if self.__proc and not self.__proc.poll():
+      self.unlock()
+
+  def run(self, command):
+    pprint(command)
+    self.__proc = subprocess.Popen(command.split(' '))
+    self.lock()
+
+  def isAvailable(self):
+    if self.__proc:
+      if not self.__proc.poll() is None:
+        self.unlock()
+    return not self.__lock
+
+
 
 
 class Pool( Logger ):
 
-  def __init__(self, command, njobs, maxJobs, output ):
+  def __init__(self, func, command, maxJobs, files, output ):
+    
     Logger.__init__(self)
-    self.process_pipe = []
-    self.output_to_merge = []
-    import random
-    import time
-    random.seed(time.time())
-    self._base_id = random.randrange(100000)
-    self._jobList = list(range(njobs))
-    self._maxJobs = maxJobs
-    self._command = command
-    self._output  = output
+    self.__files = files
+    self.__gen = func
+    self.__command = command
+    self.__output  = output
+    self.__slots = [Slot() for _ in range(maxJobs)]
+    self.__outputs = []
+
+
+  def getAvailable(self):
+    for slot in self.__slots:
+      if slot.isAvailable():
+        return slot
+    return None
+
+  
+  def busy(self):
+    for slot in self.__slots:
+      if not slot.isAvailable():
+        return True
+    return False
+
+
+  def generate(self):
+    f = self.__files.pop()
+    idx = len(self.__files)
+    output = self.__output + '.' + str(idx)
+    self.__outputs.append(output)
+    return self.__gen(self.__command, f, output)
+
 
   def run( self ):
-    import os, time
-    import subprocess
-    from pprint import pprint
-    while len(self._jobList) > 0:
-      if len(self.process_pipe) < int(self._maxJobs):
-        time.sleep(2)
-        job_id = len(self._jobList)
-        self._jobList.pop()
-        oname = ('output_%d_%d.root') % (self._base_id, job_id) 
-        self.output_to_merge.append( ('output_%d_%d.root') % (self._base_id, job_id) )
-        command = self._command + (' -o %s') % (self.output_to_merge[-1])
-        MSG_INFO( self,  ('adding process into the stack with id %d')%(job_id) )
-        pprint(command)
-        proc = subprocess.Popen(command.split(' '))
-        self.process_pipe.append( (job_id, proc) )
-      for proc in self.process_pipe:
-        if not proc[1].poll() is None:
-          MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]) )
-          self.process_pipe.remove(proc)
-    
-    # Check pipe process
-    # Protection for the last jobs
-    while len(self.process_pipe)>0:
-      for proc in self.process_pipe:
-        if not proc[1].poll() is None:
-          #MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]), extra={'color':'0;35'})
-          MSG_INFO( self,  ('pop process id (%d) from the stack')%(proc[0]) )
-          self.process_pipe.remove(proc)
 
-    # Merge
-    command = "hadd -f "+self._output
-    for fname in self.output_to_merge:
+    while len(self.__files) > 0:
+      slot = self.getAvailable()
+      if slot:
+        time.sleep(1)
+        command = self.generate()
+        #MSG_INFO( self,  ('adding process into the stack with id %d')%(len(self.__files)) )
+        slot.run( command )
+    
+    while self.busy():
+      continue
+
+
+  def merge(self):
+    command = "hadd -f "+self.__output
+    for fname in self.__outputs:
       command += ' '+fname
     os.system(command)
-    for fname in self.output_to_merge:
+    for fname in self.__outputs:
       os.system( 'rm -rf '+fname)
+
+
+
+
+
