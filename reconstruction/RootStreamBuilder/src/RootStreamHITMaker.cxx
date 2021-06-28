@@ -28,7 +28,9 @@ RootStreamHITMaker::RootStreamHITMaker( std::string name ) :
   declareProperty( "OutputHitsKey"           , m_outputHitsKey="Hits"                  );
   declareProperty( "OutputLevel"             , m_outputLevel=1                         );
   declareProperty( "NtupleName"              , m_ntupleName="CollectionTree"           );
-
+  declareProperty( "OnlyRoI"                 , m_onlyRoI=false                         );
+  declareProperty( "EtaWindow"               , m_etaWindow=0.6                         );
+  declareProperty( "PhiWindow"               , m_phiWindow=0.6                         );
 }
 
 //!=====================================================================
@@ -170,14 +172,33 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
   {
     MSG_INFO("Serialize CaloHits...");
 
+    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
+
     SG::ReadHandle<xAOD::CaloHitContainer> container(m_inputHitsKey, ctx);
     if( !container.isValid() )
     {
         MSG_FATAL("It's not possible to read the xAOD::CaloHitContainer from this Contaxt using this key " << m_inputHitsKey );
     }
+
     float etot=0;
     for (const auto hit : **container.ptr() ){
          
+      if(m_onlyRoI){
+        bool match=false;
+        for (const auto& par : **particles.ptr())
+        {
+          float deltaEta = std::abs( par->eta() - hit->eta() );
+          float deltaPhi = std::abs( CaloPhiRange::diff(par->phi(), hit->phi()) );
+          if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
+          {
+            match=true;
+            break;
+          }
+        }
+
+        if(!match) continue; // skip this hit
+      }
+
       xAOD::CaloHit_t hit_t;
       xAOD::CaloHitConverter hit_cnv;
       hit_cnv.convert(hit, hit_t);
@@ -214,6 +235,10 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
   }
   
   tree->Fill();
+
+  delete container_hits   ;
+  delete container_event  ;
+  delete container_truth  ;
 
   return StatusCode::SUCCESS;
  

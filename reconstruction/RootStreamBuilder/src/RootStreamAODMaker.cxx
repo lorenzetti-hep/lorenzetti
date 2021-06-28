@@ -294,6 +294,16 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   
   tree->Fill();
 
+  if(m_dumpCells){
+    delete container_descriptor;
+    delete container_cells     ;
+  }
+
+  delete container_clus      ;
+  delete container_rings     ;
+  delete container_event     ;
+  delete container_truth     ;
+
   return StatusCode::SUCCESS;
  
 }

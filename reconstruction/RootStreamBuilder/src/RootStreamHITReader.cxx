@@ -100,7 +100,7 @@ StatusCode RootStreamHITReader::fillHistograms( EventContext &ctx ) const
 
 StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
 {
-  std::vector<xAOD::CaloHit_t           > *collection_hits      = nullptr;
+  std::vector<xAOD::CaloHit_t           > *collection_hits       = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
 
@@ -161,6 +161,11 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
     MSG_DEBUG("Container hit size is " << container->size() << " and total energy " << etot << " MeV " );
   }
 
+
+
+  delete collection_hits      ;
+  delete collection_event     ;
+  delete collection_truth     ;
   return StatusCode::SUCCESS;
  
 }

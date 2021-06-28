@@ -55,6 +55,9 @@ class RootStreamHITMaker : public Gaugi::Algorithm
     std::string m_outputEventKey;
     std::string m_outputTruthKey;
     
+    float m_etaWindow;
+    float m_phiWindow;
+    bool m_onlyRoI;
 
     int m_outputLevel;
 };

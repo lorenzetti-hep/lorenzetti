@@ -20,7 +20,6 @@ class Pileup( Logger ):
                 "Sigma_z",
                 "Seed",
                 "OutputLevel",
-                "ForcePileupAvg",
                 ]
 
   def __init__( self, name, **kw ): 

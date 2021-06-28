@@ -172,6 +172,12 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
     }
   }
 
+
+  delete collection_descriptor;
+  delete collection_cells     ;
+  delete collection_event     ;
+  delete collection_truth     ;
+
   return StatusCode::SUCCESS;
  
 }

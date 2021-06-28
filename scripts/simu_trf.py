@@ -40,14 +40,11 @@ parser.add_argument('--enableMagneticField', action='store_true', dest='enableMa
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
-                    help = "The pileup average (default is zero).")
-
-parser.add_argument('-p','--pileupFile', action='store', dest='pileupFile', required = False, default=None, 
-                    help = "The event HIT file to be merged (pileup)")
-
 parser.add_argument('-m','--merge', action='store_true', dest='merge', required = False, 
                     help = "Merge all output files.")
+
+parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
+                    help = "Save all detector hits.")
 
 
 
@@ -103,26 +100,6 @@ try:
   OutputHitsKey   = recordable("Hits")
   OutputEventKey  = recordable("EventInfo")
 
-  if args.pileupFile:
-
-    OutputEventKey += "_Merged"
-    OutputHitsKey  += "_Merged"
-
-    from PileupMergeBuilder import PileupMerge
-    pileup = PileupMerge( "PileupMerge", 
-                          InputFile       = args.pileupFile,
-                          InputHitsKey    = recordable("Hits"),
-                          InputEventKey   = recordable("EventInfo"),
-                          OutputHitsKey   = OutputHitsKey,
-                          OutputEventKey  = OutputEventKey,
-                          NtupleName      = "CollectionTree",
-                          PileupAvg       = args.pileupAvg,
-                          OutputLevel     = outputLevel
-                        )
-    acc += pileup
-
-
-
   from RootStreamBuilder import RootStreamHITMaker
 
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
@@ -134,6 +111,10 @@ try:
                              OutputHitsKey   = recordable("Hits"),
                              OutputEventKey  = recordable("EventInfo"),
                              OutputTruthKey  = recordable("Particles"),
+                             # special parameters
+                             EtaWindow       = 0.6,
+                             PhiWindow       = 0.6,
+                             OnlyRoI         = not args.saveAllHits,
                              OutputLevel     = outputLevel)
 
   acc += HIT

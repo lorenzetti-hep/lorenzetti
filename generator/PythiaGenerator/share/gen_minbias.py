@@ -82,7 +82,6 @@ try:
                    Seed           = args.seed,
                    DeltaEta       = 999, # full detector
                    DeltaPhi       = 999, # full detector 
-                   ForcePileupAvg = True,
                    )
   
   

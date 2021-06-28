@@ -7,10 +7,8 @@
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloHit/CaloHitConverter.h"
+#include "EventInfo/EventInfoConverter.h"
 #include "TRandom3.h"
-
-
-
 
 
 class PileupMerge : public Gaugi::Algorithm
@@ -53,12 +51,10 @@ class PileupMerge : public Gaugi::Algorithm
     std::string m_inputFile;
     std::string m_ntupleName;
 
-    float m_pileupAvg;
     int m_outputLevel;
 
     mutable TRandom3 m_rng;
     float m_seed;
-
 
 };
 

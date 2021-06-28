@@ -86,15 +86,14 @@ try:
   from RootStreamBuilder import RootStreamHITMaker
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              # input from context
-                             InputHitsKey    = recordable("Hits"),
-                             InputEventKey   = recordable("EventInfo"),
+                             InputHitsKey    = recordable("Hits")+"_Merged",
+                             InputEventKey   = recordable("EventInfo")+"_Merged",
                              InputTruthKey   = recordable("Particles"),
                              # output to file
                              OutputHitsKey   = recordable("Hits"),
                              OutputEventKey  = recordable("EventInfo"),
                              OutputTruthKey  = recordable("Particles"),
                              OutputLevel     = outputLevel)
-
   acc += HIT
   acc.run(args.numberOfEvents)
   sys.exit(0)

@@ -173,6 +173,7 @@ class LateralSegmentation(object):
   #
   def dump(self, output, seg_id):
     
+    outputs=[]
     with open( output, 'w' ) as f:
 
       f.write("# sample segmentation eta phi delta_eta delta_phi rmin rmax zmin zmax\n")
@@ -207,6 +208,9 @@ class LateralSegmentation(object):
 
       eta_centers = self.compute_eta_cell_centers()
       phi_centers = self.compute_phi_cell_centers()
+
+      output = []
+
       for  eta_idx , eta in enumerate(eta_centers):
         for phi_idx , phi in enumerate(phi_centers):
         
@@ -228,8 +232,10 @@ class LateralSegmentation(object):
           )
           f.write(s)
 
+          output.append([self.detector_id, self.sampling_id, round(eta,8), round(phi,8), 
+                         round(self.delta_eta,8), round(self.delta_phi,8)] )
 
-
+      return output
 
 
 
@@ -252,12 +258,14 @@ class Layer(object):
   # Dump layer
   #
   def dump(self):
+
+    outputs = []
     for seg_idx, seg in enumerate(self.segmentations):
       output = 'detector_sampling_%d_seg_%d.dat' % (self.sampling_id, seg_idx)
       print(self.layer)
       print(seg.sampling_id)
-
-      seg.dump(output, seg_idx)
+      outputs.extend(seg.dump(output, seg_idx))
+    return outputs
 
 
 
@@ -271,7 +279,7 @@ class SingleSegmentationLayer(object):
     self.layer = Layer( name, sampling_id, detector_id, segmentations = segmentation)
 
   def dump(self):
-    self.layer.dump()
+    return self.layer.dump()
 
 
 
@@ -619,6 +627,13 @@ hec = [hec1, hec2, hec3]
 
 all_calo = [em_barrel, had_barrel, emec, hec]
 
+outputs = []
 for calo in all_calo:
   for layer in calo:
-    layer.dump()
+    outputs.extend(layer.dump())
+
+
+outputs = np.array(outputs)
+print(outputs.shape)
+with open('cells.npy', 'wb') as f:
+  np.save(f, outputs)

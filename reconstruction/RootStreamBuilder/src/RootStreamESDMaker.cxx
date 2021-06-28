@@ -253,6 +253,12 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
   
   tree->Fill();
 
+
+  delete container_descriptor ;
+  delete container_cells      ;
+  delete container_event      ;
+  delete container_truth      ;
+
   return StatusCode::SUCCESS;
  
 }

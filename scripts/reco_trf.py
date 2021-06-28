@@ -109,7 +109,7 @@ try:
                             OutputTruthKey       = recordable("Particles"),
                             OutputRingerKey      = recordable("Rings"),
                             OutputClusterKey     = recordable("Clusters"),
-                            DumpCells            = False,
+                            DumpCells            = True,
                             OutputLevel          = outputLevel)
       
   # sequence

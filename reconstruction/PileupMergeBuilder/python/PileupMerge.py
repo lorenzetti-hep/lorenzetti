@@ -15,7 +15,6 @@ class PileupMerge( Logger ):
                   "OutputLevel", 
                   "NtupleName",
                   "InputFile",
-                  "PileupAvg",
                   ]
 
 

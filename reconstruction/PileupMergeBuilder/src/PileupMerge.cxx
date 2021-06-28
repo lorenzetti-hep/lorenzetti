@@ -1,19 +1,10 @@
 
 
-
 #include "PileupMerge.h"
-#include "TROOT.h"
-#include <map>
-#include <random>
-#include <mutex>
-#include "G4Threading.hh"
-
 
 using namespace SG;
 using namespace Gaugi;
 
-// critical operation 
-std::mutex mtx;
 
 
 PileupMerge::PileupMerge( std::string name ) : 
@@ -28,18 +19,13 @@ PileupMerge::PileupMerge( std::string name ) :
   declareProperty( "OutputEventKey"     , m_outputEventKey="EventInfo_Merged"  );
   declareProperty( "OutputLevel"        , m_outputLevel=1                      );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"        );
-  declareProperty( "PileupAvg"          , m_pileupAvg=0                        );
   declareProperty( "Seed"               , m_seed=0                             );
-
-
 }
 
 //!=====================================================================
 
 PileupMerge::~PileupMerge()
-{
-}
-
+{}
 
 //!=====================================================================
 
@@ -70,14 +56,12 @@ StatusCode PileupMerge::bookHistograms( EventContext &ctx ) const
 
 //!=====================================================================
 
-
 StatusCode PileupMerge::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
 //!=====================================================================
-
 
 StatusCode PileupMerge::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
@@ -92,7 +76,6 @@ StatusCode PileupMerge::execute( EventContext &ctx, int /*evt*/ ) const
 }
 
 //!=====================================================================
-
 
 StatusCode PileupMerge::post_execute( EventContext &ctx ) const
 {
@@ -130,6 +113,7 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
 
     hit_map.insert( std::make_pair(hit->hash(), hit) );
   }
+  
 
   
 
@@ -138,52 +122,29 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
   auto file = (TFile*)store->decorator("minbias");
   auto tree = (TTree*)file->Get(m_ntupleName.c_str());
 
-  std::default_random_engine generator(0);
-  std::uniform_int_distribution<> uniform(0, (int)tree->GetEntries()-1);
-  std::poisson_distribution<int> poisson(m_pileupAvg);
-
-  int nPileup = m_rng.Poisson(m_pileupAvg);
-  //int nPileup = 1;
-  //mtx.lock();
-
   std::vector<xAOD::CaloHit_t> *collection_hits=nullptr;
-  InitBranch( tree,  ("CaloHitContainer_"+m_inputHitsKey).c_str(), &collection_hits       );
+  InitBranch( tree,  ("CaloHitContainer_"+m_inputHitsKey).c_str(), &collection_hits );
+  std::vector<xAOD::EventInfo_t> *collection_events=nullptr;
+  InitBranch( tree,  ("EventInfoContainer_"+m_inputEventKey).c_str(), &collection_events );
 
 
-  MSG_INFO( "Pileup merge... " << nPileup)
 
-  std::vector<int> sorted_events; // to avoid repetition
-  for ( int nevent=0; nevent < nPileup ; ++nevent )
+  MSG_DEBUG( "Sort a new event...");
+  int eventNumber = m_rng.Integer(tree->GetEntries()-1);
+  int status = tree->GetEntry( eventNumber );
+
+  if (status<0){
+    MSG_FATAL("Not possible to read this event. repeat...");
+  }
+
+  float nPileup = collection_events->at(0).avgmu;
+
+  // merge the energy for each hit
+  for (const auto& hit_t : *collection_hits )
   {
-    int evt = m_rng.Integer(tree->GetEntries()-1);
-
-    
-    int status = tree->GetEntry( evt );
-
-
-    MSG_DEBUG( "Get Entry status " << status);
-    if (status<0){
-      MSG_WARNING("Not possible to read this event. repeat...");
-      nevent--;
-      continue;
-    }
-
-    MSG_DEBUG( "Container size is "<< collection_hits->size());
-    for( auto &hit_t : *collection_hits )
-    {
-
-      unsigned long int hash = hit_t.hash;
-
-       //MSG_INFO( "eta = " << hit_t.eta << " phi = " << hit_t.phi << ", sampling = " << hit_t.sampling << ", hash = " << hit_t.hash);
-      if(!hit_map.count(hash))
-      {
-        MSG_WARNING( "Hit with hash code " << hit_t.hash << " does not exist into the Hit original container. Abort!");
-        MSG_FATAL( "eta = " << hit_t.eta << " phi = " << hit_t.phi << ", sampling = " << hit_t.sampling 
-                      << ", hash = " << hit_t.hash << " EVT = " << evt);
-        //continue;
-      }
-
-      auto hit = hit_map[hit_t.hash];
+    if ( hit_map.count(hit_t.hash)){
+      
+      auto hit = hit_map.at(hit_t.hash);
       int pos=0;
       for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid)
       {
@@ -191,12 +152,12 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
         pos++;
       }
     }
-
   }
 
 
-  //mtx.unlock();
 
+  
+  
   
   MSG_INFO( "Writing new container hits...");
 
@@ -216,11 +177,8 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
     if( !event.isValid() ){
       MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
     }
-
     // get the old ones
     auto const_evt = (**event.ptr()).front();
-
-
     SG::WriteHandle<xAOD::EventInfoContainer> output_events(m_outputEventKey, ctx);
     output_events.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()) );
     auto evt = new xAOD::EventInfo();
@@ -230,7 +188,8 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
     output_events->push_back(evt);
   }
   
-
+  delete collection_hits;
+  delete collection_events;
   return StatusCode::SUCCESS;
  
 }
@@ -258,5 +217,6 @@ void PileupMerge::InitBranch(TTree* fChain, std::string branch_name, T* param) c
   fChain->SetBranchStatus(bname.c_str(), 1.);
   fChain->SetBranchAddress(bname.c_str(), param);
 }
+
 
 

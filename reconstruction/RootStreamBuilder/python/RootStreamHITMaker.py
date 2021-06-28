@@ -16,6 +16,9 @@ class RootStreamHITMaker( Logger ):
                   "OutputHitsKey",
                   "OutputLevel", 
                   "NtupleName",
+                  "OnlyRoI",
+                  "EtaWindow",
+                  "PhiWindow",
                   ]
 
 
