@@ -26,10 +26,12 @@ CaloCellMerge::CaloCellMerge( std::string name ) :
   declareProperty( "OutputLevel"      , m_outputLevel=1               );
 }
 
+//!=====================================================================
 
 CaloCellMerge::~CaloCellMerge()
 {;}
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::initialize()
 {
@@ -38,36 +40,42 @@ StatusCode CaloCellMerge::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::bookHistograms( SG::EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
-  
+//!=====================================================================
+
 StatusCode CaloCellMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::execute( EventContext &ctx , int /*evt*/ ) const
 {
   return post_execute(ctx);
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 {
@@ -134,6 +142,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMerge::fillHistograms( EventContext & /*ctx*/ ) const
 {

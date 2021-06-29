@@ -115,8 +115,6 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
   }
   
 
-  
-
   MSG_DEBUG( "Link all branches..." );
   auto store = ctx.getStoreGateSvc();
   auto file = (TFile*)store->decorator("minbias");
@@ -154,11 +152,6 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
     }
   }
 
-
-
-  
-  
-  
   MSG_INFO( "Writing new container hits...");
 
   {

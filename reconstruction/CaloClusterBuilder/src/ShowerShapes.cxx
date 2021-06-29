@@ -15,17 +15,21 @@ ShowerShapes::ShowerShapes( std::string name ) :
   AlgTool()
 {;}
 
+//!=====================================================================
 
 StatusCode ShowerShapes::initialize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
+
 StatusCode ShowerShapes::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
@@ -112,7 +116,7 @@ StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *e
   return StatusCode::SUCCESS;
 }
 
-
+//!=====================================================================
 
 float ShowerShapes::sumEnergyEM( xAOD::CaloCluster *clus, int sampling, unsigned eta_ncell, unsigned phi_ncell ) const
 {
@@ -155,6 +159,7 @@ float ShowerShapes::sumEnergyEM( xAOD::CaloCluster *clus, int sampling, unsigned
   return energy;
 }
 
+//!=====================================================================
 
 float ShowerShapes::sumEnergyHAD( xAOD::CaloCluster *clus, int sampling, unsigned eta_ncell, unsigned phi_ncell ) const
 {
@@ -195,8 +200,7 @@ float ShowerShapes::sumEnergyHAD( xAOD::CaloCluster *clus, int sampling, unsigne
   return energy;
 }
 
-
-
+//!=====================================================================
 
 float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , unsigned eta_ncell, unsigned phi_ncell) const
 {

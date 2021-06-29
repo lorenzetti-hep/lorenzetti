@@ -92,8 +92,6 @@ class CaloRingerMaker : public Gaugi::Algorithm
     int m_outputLevel;
 };
 
-
-
 #endif
 
 

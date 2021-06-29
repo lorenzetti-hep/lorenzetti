@@ -69,7 +69,6 @@ add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
 add_subdirectory( reconstruction/CaloHitBuilder )
-
 add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )

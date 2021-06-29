@@ -19,15 +19,12 @@ using namespace Gaugi;
 using namespace SG;
 
 
-
-
 CaloCellMaker::CaloCellMaker( std::string name ) : 
   IMsgService(name),
   Algorithm()
 {
   declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
   declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      );
-
   declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
   declareProperty( "CaloCellFile"             , m_caloCellFile                        );
   declareProperty( "CollectionKey"            , m_collectionKey="CaloCellCollection"  );
@@ -38,12 +35,14 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
 }
 
+//!=====================================================================
 
 void CaloCellMaker::push_back( Gaugi::AlgTool* tool )
 {
   m_toolHandles.push_back(tool);
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::initialize()
 {
@@ -93,6 +92,7 @@ StatusCode CaloCellMaker::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::finalize()
 {
@@ -106,6 +106,7 @@ StatusCode CaloCellMaker::finalize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 {
@@ -136,6 +137,7 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 {
@@ -180,12 +182,14 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
- 
+//!=====================================================================
+
 StatusCode CaloCellMaker::execute( EventContext &/*ctx*/ , const G4Step */*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::execute( EventContext &ctx , int /*evt*/ ) const
 {
@@ -203,7 +207,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , int /*evt*/ ) const
   return StatusCode::SUCCESS;
 }
 
-
+//!=====================================================================
 
 StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 {
@@ -265,6 +269,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {

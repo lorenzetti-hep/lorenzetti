@@ -37,12 +37,14 @@ RunReconstruction::RunReconstruction( int numberOfThreads,
   }
 }
 
+//!=====================================================================
 
 RunReconstruction::~RunReconstruction()
 {
   m_store.save();
 }
 
+//!=====================================================================
 
 void RunReconstruction::BeginOfEvent()
 {
@@ -72,10 +74,10 @@ void RunReconstruction::BeginOfEvent()
   timer.stop();
   m_store.cd("Event");
   m_store.hist1( "BeginOfEvent" )->Fill( timer.resume() );
-
   m_msgCounter=0;
 }
 
+//!=====================================================================
 
 void RunReconstruction::ExecuteEvent( const G4Step* step )
 {
@@ -87,7 +89,8 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
     m_msgCounter=0;
   }
 
-  if(edep>0){
+  if(edep>0)
+  {
     if(!m_lock){
       for( auto &toolHandle : m_toolHandles){
         if (toolHandle->execute( m_ctx, step ).isFailure() ){
@@ -100,6 +103,7 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   m_msgCounter++;
 }
 
+//!=====================================================================
 
 void RunReconstruction::EndOfEvent()
 {
@@ -140,12 +144,13 @@ void RunReconstruction::EndOfEvent()
   MSG_INFO( "Event loop was completed with " << m_stepCounter << " G4Steps and " << m_timeout.resume() << " seconds." );
 }
 
+//!=====================================================================
 
 void RunReconstruction::bookHistograms(){
 
   m_store.cd();
   m_store.mkdir( "Event" );
-  m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1) ) ;
+  m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1  ) );
   m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10 ) );
   m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 600 , 0 , 600) );
   m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0 ,   3) );
@@ -155,25 +160,31 @@ void RunReconstruction::bookHistograms(){
   
 } 
 
-
-
+//!=====================================================================
 
 SG::EventContext & RunReconstruction::getContext()
 {
   return m_ctx;
 }
 
+//!=====================================================================
+
 bool RunReconstruction::timeout(){
   return m_timeout.resume() > event_timeout ? true : false;
 }
+
+//!=====================================================================
 
 void RunReconstruction::lock(){
   m_lock=true;
 }
 
+//!=====================================================================
+
 void RunReconstruction::unlock(){
   m_lock=false;
 }
 
+//!=====================================================================
 
 

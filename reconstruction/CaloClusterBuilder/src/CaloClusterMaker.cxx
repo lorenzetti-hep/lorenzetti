@@ -33,13 +33,14 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   declareProperty( "OutputLevel"    , m_outputLevel=1                   );
 }
 
-
+//!=====================================================================
 
 CaloClusterMaker::~CaloClusterMaker()
 {
   delete m_showerShapes;  
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::initialize()
 {
@@ -49,6 +50,7 @@ StatusCode CaloClusterMaker::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
 {
@@ -75,29 +77,35 @@ StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
+
 StatusCode CaloClusterMaker::execute( EventContext &ctx, int /*evt*/ ) const
 {
   return post_execute(ctx);
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 {
@@ -124,10 +132,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
   }
 
- 
- 
   MSG_DEBUG( "Associate all truth particles and clusters");
-
 
   // Loop over all truth particles (here, we have seeds)
   for ( const auto part : **particles.ptr() )
@@ -184,15 +189,10 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     }
 
   }
-
-
   return StatusCode::SUCCESS;
 }
 
-
-
-
-
+//!=====================================================================
 
 StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
 {
@@ -214,8 +214,6 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   if( !particles.isValid() ){
     MSG_FATAL( "It's not possible to read the xAOD::TruthParticleContainer from this Context" );
   }
-
-
 
   store->cd(m_histPath);
 
@@ -290,7 +288,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
-
+//!=====================================================================
 
 float CaloClusterMaker::dR( float eta1, float phi1, float eta2, float phi2 ) const
 {
@@ -301,7 +299,7 @@ float CaloClusterMaker::dR( float eta1, float phi1, float eta2, float phi2 ) con
   return dr;
 }
 
-
+//!=====================================================================
 
 void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, std::string key) const
 {

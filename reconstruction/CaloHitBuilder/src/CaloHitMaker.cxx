@@ -35,6 +35,7 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMaker::initialize()
 {
@@ -76,12 +77,14 @@ StatusCode CaloHitMaker::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMaker::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMaker::bookHistograms( SG::EventContext &ctx ) const
 {
@@ -112,6 +115,7 @@ StatusCode CaloHitMaker::bookHistograms( SG::EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMaker::pre_execute( EventContext &ctx ) const
 {
@@ -156,7 +160,8 @@ StatusCode CaloHitMaker::pre_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
- 
+//!=====================================================================
+
 StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
 
@@ -193,6 +198,7 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 // standlone execute
 StatusCode CaloHitMaker::execute( EventContext &ctx, int /*evt*/ ) const
@@ -200,13 +206,14 @@ StatusCode CaloHitMaker::execute( EventContext &ctx, int /*evt*/ ) const
   return pre_execute(ctx);
 }
 
-
+//!=====================================================================
 
 StatusCode CaloHitMaker::post_execute( EventContext &ctx ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMaker::fillHistograms( EventContext &ctx ) const
 {
@@ -233,7 +240,6 @@ StatusCode CaloHitMaker::fillHistograms( EventContext &ctx ) const
 
   }
 
- 
   return StatusCode::SUCCESS;
 }
 

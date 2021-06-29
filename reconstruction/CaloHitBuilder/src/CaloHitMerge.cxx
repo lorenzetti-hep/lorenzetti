@@ -25,10 +25,12 @@ CaloHitMerge::CaloHitMerge( std::string name ) :
   declareProperty( "OutputLevel"      , m_outputLevel=1               );
 }
 
+//!=====================================================================
 
 CaloHitMerge::~CaloHitMerge()
 {;}
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::initialize()
 {
@@ -37,36 +39,42 @@ StatusCode CaloHitMerge::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::bookHistograms( SG::EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
-  
+//!=====================================================================
+ 
 StatusCode CaloHitMerge::execute( EventContext &/*ctx*/ , const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 // standlone execute
 StatusCode CaloHitMerge::execute( EventContext &ctx, int /*evt*/ ) const
 {
   return post_execute(ctx);
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
 {
@@ -126,6 +134,7 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode CaloHitMerge::fillHistograms( EventContext & /*ctx*/ ) const
 {

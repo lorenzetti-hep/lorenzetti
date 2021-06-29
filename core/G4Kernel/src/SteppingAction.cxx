@@ -11,15 +11,15 @@ SteppingAction::SteppingAction()
     G4UserSteppingAction()
 {;}
 
+//!=====================================================================
 
 SteppingAction::~SteppingAction()
 {;}
 
-
+//!=====================================================================
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-
   RunReconstruction* reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun()); 
   reco->ExecuteEvent(step);
   
@@ -30,6 +30,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
     G4Exception("RunReconstruction::UserSteppingAction()", "WatchDog", EventMustBeAborted, msg.c_str());
   }  
 }
+
+//!=====================================================================
 
 
 

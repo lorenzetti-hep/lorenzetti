@@ -26,11 +26,12 @@ PulseGenerator::PulseGenerator( std::string name ) :
   declareProperty( "StartSamplingBC"  , m_startSamplingBC=0     );
 }
 
-
+//!=====================================================================
 
 PulseGenerator::~PulseGenerator()
 {;}
 
+//!=====================================================================
 
 StatusCode PulseGenerator::initialize()
 {
@@ -40,12 +41,14 @@ StatusCode PulseGenerator::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode PulseGenerator::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
@@ -80,8 +83,7 @@ StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM 
   return StatusCode::SUCCESS;
 }
 
-
-
+//!=====================================================================
 
 void PulseGenerator::ReadShaper( std::string filepath )
 {
@@ -106,6 +108,7 @@ void PulseGenerator::ReadShaper( std::string filepath )
   m_shaperResolution = m_shaper.size() > 2 ? m_timeSeries[1] - m_timeSeries[0] : m_timeSeries[0];
 }
 
+//!=====================================================================
 
 void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStd) const
 {
@@ -113,6 +116,7 @@ void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMea
     value += m_rng.Gaus( noiseMean, noiseStd );
 }
 
+//!=====================================================================
 
 void PulseGenerator::GenerateDeterministicPulse(  std::vector<float> &pulse,  float amplitude, float phase, float lag) const
 {

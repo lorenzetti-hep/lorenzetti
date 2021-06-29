@@ -28,12 +28,10 @@ CaloRingerMaker::CaloRingerMaker( std::string name ) :
 
 //!=====================================================================
 
-
 CaloRingerMaker::~CaloRingerMaker()
 {;}
 
 //!=====================================================================
-
 
 StatusCode CaloRingerMaker::initialize()
 {
@@ -46,22 +44,12 @@ StatusCode CaloRingerMaker::initialize()
 
 //!=====================================================================
 
-
-
 StatusCode CaloRingerMaker::finalize()
 {
-  /*
-  for (int r=0; r < m_maxRingsAccumulated; ++r){
-    std::stringstream ss; ss << "rings_" << r;
-    float energy = store->hist1( ss.str() )->GetMean();
-    store->hist2( "ring_profile" )->SetBinContent( r+1, energy );
-  }*/
-  
   return StatusCode::SUCCESS;
 }
 
 //!=====================================================================
-
 
 StatusCode CaloRingerMaker::bookHistograms( EventContext &ctx ) const
 {
@@ -117,8 +105,6 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
     vec_rs.push_back( RingSet( samplings, m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
   }
 
-
-
   // Loop over all CaloClusters
   for( auto* clus : **clusters.ptr())
   {
@@ -161,7 +147,7 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
   return StatusCode::SUCCESS;
 }
 
-
+//!=====================================================================
 
 const xAOD::CaloCell * CaloRingerMaker::maxCell( const xAOD::CaloCluster *clus, RingSet &rs ) const
 {
@@ -180,7 +166,6 @@ const xAOD::CaloCell * CaloRingerMaker::maxCell( const xAOD::CaloCluster *clus, 
 }
 
 //!=====================================================================
-
 
 StatusCode CaloRingerMaker::fillHistograms( EventContext &ctx ) const
 {
@@ -203,7 +188,6 @@ StatusCode CaloRingerMaker::fillHistograms( EventContext &ctx ) const
 
   return StatusCode::SUCCESS;
 }
-
 
 //!=====================================================================
 //!=====================================================================

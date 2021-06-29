@@ -12,11 +12,12 @@ OptimalFilter::OptimalFilter( std::string name ) :
   declareProperty( "OutputLevel", m_outputLevel=1 );
 }
 
-
+//!=====================================================================
 
 OptimalFilter::~OptimalFilter()
 {}
 
+//!=====================================================================
 
 StatusCode OptimalFilter::initialize()
 {
@@ -24,13 +25,14 @@ StatusCode OptimalFilter::initialize()
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
 StatusCode OptimalFilter::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
-
+//!=====================================================================
 
 StatusCode OptimalFilter::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
 {
