@@ -68,7 +68,6 @@ add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
-add_subdirectory( reconstruction/CaloHitBuilder )
 add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
@@ -88,7 +87,6 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:CaloHitBuilder>
   $<TARGET_OBJECTS:CaloCellBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingerBuilder>

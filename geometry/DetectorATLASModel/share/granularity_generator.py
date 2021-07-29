@@ -215,7 +215,6 @@ class LateralSegmentation(object):
         for phi_idx , phi in enumerate(phi_centers):
         
           bin_fix = 1 if (self.eta_min>0.0 and eta>0.0) else 0
-
           hash_id = int(self.detector_id*1e9 + self.sampling_id*1e7 + seg_id*1e6 + ((eta_idx+bin_fix)*(len(phi_bins)-1) + phi_idx ) )
           s = "cell {DETECTOR} {SAMPLING} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {ZMIN} {ZMAX} {CELL_HASH}\n".format( 
             DETECTOR  = self.detector_id,

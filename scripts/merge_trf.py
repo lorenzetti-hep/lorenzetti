@@ -32,9 +32,6 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
-                    help = "The pileup average (default is zero).")
-
 
 pi = np.pi
 
@@ -75,7 +72,6 @@ try:
                         OutputHitsKey   = recordable("Hits") + "_Merged",
                         OutputEventKey  = recordable("EventInfo") + "_Merged",
                         NtupleName      = "CollectionTree",
-                        PileupAvg       = args.pileupAvg,
                         OutputLevel     = outputLevel
                       )
   acc += pileup

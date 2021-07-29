@@ -37,7 +37,7 @@ class CaloHitBuilder( Logger ):
   #
   def configure(self):
 
-    from CaloHitBuilder import CaloHitMaker, CaloHitMerge
+    from CaloCellBuilder import CaloHitMaker, CaloHitMerge
 
     collectionKeys = []
  

@@ -48,7 +48,6 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit )
                            hit_t.bcid_start,
                            hit_t.bcid_end );
 
-  float etot=0;
   int pos=0;
   for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid)
   {

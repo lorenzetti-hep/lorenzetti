@@ -3,7 +3,8 @@
 #include "src/CaloCellMerge.h"
 #include "src/PulseGenerator.h"
 #include "src/OptimalFilter.h"
-
+#include "src/CaloHitMaker.h"
+#include "src/CaloHitMerge.h"
 
 #ifdef __CINT__
 
@@ -16,5 +17,7 @@
 #pragma link C++ class CaloCellMerge+;
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
+#pragma link C++ class CaloHitMaker+;
+#pragma link C++ class CaloHitMerge+;
 
 #endif
