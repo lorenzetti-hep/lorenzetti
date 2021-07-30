@@ -84,7 +84,7 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
-  if ( m_msgCounter>2e6 ){
+  if ( m_msgCounter>9e9 ){
     MSG_INFO( "Running..." );
     m_msgCounter=0;
   }
