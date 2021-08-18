@@ -632,7 +632,7 @@ for calo in all_calo:
     outputs.extend(layer.dump())
 
 
-outputs = np.array(outputs)
-print(outputs.shape)
-with open('cells.npy', 'wb') as f:
-  np.save(f, outputs)
+#outputs = np.array(outputs)
+#print(outputs.shape)
+#with open('cells.npy', 'wb') as f:
+#  np.save(f, outputs)

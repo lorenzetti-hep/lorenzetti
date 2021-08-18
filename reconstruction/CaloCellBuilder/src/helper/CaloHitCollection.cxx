@@ -71,8 +71,7 @@ bool CaloHitCollection::retrieve( TVector3 &pos , xAOD::CaloHit *&hit) const
   
   if (etaBin!=-1 && phiBin!=-1){    
 
-    unsigned int bin_fix = (m_etamin>0&eta>0)?1:0;
-    unsigned long int hash = m_detector*1e9 + m_sampling*1e7 + m_segmentation*1e6 + ( (etaBin+bin_fix)*(m_phi_bins.size()-1) + phiBin );
+    unsigned long int hash = m_detector*1e9 + m_sampling*1e7 + m_segmentation*1e6 + ( (etaBin)*(m_phi_bins.size()-1) + phiBin );
     if (m_collection.count(hash)>0){
       hit = m_collection.at(hash);
       return true;

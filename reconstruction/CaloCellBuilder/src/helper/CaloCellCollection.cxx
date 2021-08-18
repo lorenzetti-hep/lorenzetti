@@ -66,9 +66,8 @@ bool CaloCellCollection::retrieve( const xAOD::CaloHit *hit , xAOD::CaloDetDescr
   int phiBin = findIndex( m_phi_bins, phi );
   
   if (etaBin!=-1 && phiBin!=-1){    
-    unsigned int bin_fix = (m_etamin>0&eta>0)?1:0;
     unsigned long int hash = m_detector*1e9 + m_sampling*1e7 + m_segmentation*1e6 + 
-                              ( (etaBin+bin_fix)*(m_phi_bins.size()-1) + phiBin );
+                              ( (etaBin)*(m_phi_bins.size()-1) + phiBin );
     if (m_collection.count(hash)>0){
       cell = m_collection.at(hash);
       return true;
