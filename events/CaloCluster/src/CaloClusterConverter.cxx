@@ -40,6 +40,7 @@ bool CaloClusterConverter::convert( const CaloCluster *clus, CaloCluster_t &clus
       clus_t.f2          = clus->f2();
       clus_t.f3          = clus->f3();
       clus_t.weta2       = clus->weta2();
+      clus_t.rp_values   = clus->rp_values();
 
       
       for(auto &cell : clus->cells())

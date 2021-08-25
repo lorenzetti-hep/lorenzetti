@@ -88,6 +88,9 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_rhad1, setRhad1, rhad1 );
       /*! Weta2 */
       PRIMITIVE_SETTER_AND_GETTER( float, m_weta2, setWeta2, weta2 );
+      /*! Rp Layer values */
+      PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_rp_values, setRpValues, rp_values );
+
 
 
       /*! Add the calorimeter cell into the RoI collection */
@@ -132,6 +135,7 @@ namespace xAOD{
       float m_phi;
       float m_deta;
       float m_dphi;
+      std::vector<float> m_rp_values;
 
       
       /* All calo cells into the roi window */
