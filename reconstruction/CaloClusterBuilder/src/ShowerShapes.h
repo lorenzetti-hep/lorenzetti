@@ -26,6 +26,7 @@ class ShowerShapes : public Gaugi::AlgTool
     float sumEnergyEM( xAOD::CaloCluster *, int sampling, unsigned eta_ncell=1000, unsigned phi_ncell=1000 ) const;
     float sumEnergyHAD( xAOD::CaloCluster *, int sampling, unsigned eta_ncell=1000, unsigned phi_ncell=1000 ) const;
     float calculateRp1D( xAOD::CaloCluster *, int sampling, float alpha, float beta ) const;
+    bool getHotCell( xAOD::CaloCluster *, int sampling, xAOD::CaloCell &) const;
 
 };
 
