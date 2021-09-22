@@ -8,12 +8,12 @@
 #include "G4ThreeVector.hh"
 #include "G4Region.hh"
 #include "globals.hh"
-#include "FieldSetup.h"
 #include "G4Cache.hh"
 
 
 class G4VPhysicalVolume;
 
+class G4GlobalMagFieldMessenger;
 
 class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService, public Gaugi::PropertyService
 {
@@ -70,11 +70,9 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
     bool m_useBarrel;
     bool m_useExtendedBarrel;
     bool m_useEndCap;
-
     bool m_cutOnPhi;
 
-    //G4Cache<FieldSetup*>  m_fieldSetup;
-    FieldSetup*  m_fieldSetup;
+    static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger;
 };
 
 

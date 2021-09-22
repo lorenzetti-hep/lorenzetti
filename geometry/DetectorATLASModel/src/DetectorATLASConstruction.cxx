@@ -31,6 +31,8 @@ template <typename T> int sign(T val) {
 }
 }
 
+G4ThreadLocal G4GlobalMagFieldMessenger* DetectorATLASConstruction::m_magFieldMessenger = nullptr;
+
 
 DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
  : 
@@ -1184,10 +1186,17 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
   if (m_useMagneticField){
     MSG_INFO("Set magnetic field")
-    m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2*tesla ),17, false );
-    //FieldSetup* m_fieldSetup = new FieldSetup(G4ThreeVector( 0.0 ,0.0, 2.0*tesla ), 745, false );
-    //G4AutoDelete::Register(fieldSetup);
-    //m_fieldSetup.Put(fieldSetup);
+
+    // Create global magnetic field messenger.
+    // Uniform magnetic field is then created automatically if
+    // the field value is not zero.
+    G4ThreeVector fieldValue(0.0 , 0.0, 2*tesla);
+    m_magFieldMessenger = new G4GlobalMagFieldMessenger(fieldValue);
+    m_magFieldMessenger->SetVerboseLevel(1);
+
+    // Register the field messenger for deleting
+    G4AutoDelete::Register(m_magFieldMessenger); 
+
   }
 
 }
