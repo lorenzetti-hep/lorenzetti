@@ -2,6 +2,7 @@
 __all__ = ["ComponentAccumulator"]
 
 from Gaugi import Logger
+from Gaugi.macros import *
 import os
 
 

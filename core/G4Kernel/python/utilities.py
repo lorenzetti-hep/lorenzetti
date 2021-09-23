@@ -2,7 +2,7 @@
 __all__ = ["recordable", "treatPropertyValue"]
 
 
-from Gaugi import list_to_stdvector
+from Gaugi import list2stdvector
 
 
 def recordable( key ):
@@ -43,19 +43,19 @@ def recordable( key ):
 def treatPropertyValue( value ):
 
   if (type(value) is list) and (type(value[0]) is str):
-    return list_to_stdvector('string', value)
+    return list2stdvector('string', value)
   elif (type(value) is list) and (type(value[0]) is int):
-    return list_to_stdvector('int', value)
+    return list2stdvector('int', value)
   elif (type(value) is list) and (type(value[0]) is float):
-    return list_to_stdvector('float', value)
+    return list2stdvector('float', value)
   elif (type(value) is list) and (type(value[0]) is bool):
-    return list_to_stdvector('bool', value)
+    return list2stdvector('bool', value)
   # list of list with ints, should be vector<vector<int>>
   elif (type(value) is list) and (type(value[0]) is list) and (type(value[0][0]) is int) :
     from ROOT.std import vector
     vec = vector("vector<int>")()
     for v in value:
-      vec.push_back( list_to_stdvector('int', v) )
+      vec.push_back( list2stdvector('int', v) )
     return vec
   else:
     return value

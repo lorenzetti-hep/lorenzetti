@@ -10,7 +10,7 @@ ENV TERM screen
 USER root
 SHELL [ "/bin/bash", "-c" ]
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
+RUN ls
 RUN apt-get update --fix-missing
 RUN apt-get install -y python3.7 python3-pip
 RUN apt-get install -y git \
@@ -90,8 +90,16 @@ RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && git clone https://gi
 RUN apt install curl -y
 RUN CPU_N=$(grep -c ^processor /proc/cpuinfo) && cd /opt && curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.3.tar.gz && cd fastjet-3.3.3/ && ./configure && make -j$CPU_N && make install
 
-# Install Gaugi
-RUN pip3 install --upgrade gaugi future
+# Install pip packages
+RUN pip3 install --no-cache-dir \
+    gaugi \
+    setuptools \
+    future \
+    pandas \
+    sklearn \
+    seaborn \
+    jupyterlab \
+    tqdm
 
 # Install Lorenzetti!
 COPY setup_envs.sh /

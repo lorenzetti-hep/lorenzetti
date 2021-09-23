@@ -1,8 +1,8 @@
 __all__ = [ "Pool"]
 
 
-from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi.messenger.macros import *
+from Gaugi import LoggingLevel, Logger
+from Gaugi.macros import *
 from pprint import pprint
 import argparse
 import os, time

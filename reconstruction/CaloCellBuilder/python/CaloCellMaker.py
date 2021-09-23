@@ -4,7 +4,7 @@ __all__ = ["CaloCellMaker", "CaloSamplingMaker"]
 
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 

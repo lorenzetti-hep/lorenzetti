@@ -68,7 +68,8 @@ try:
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   CutOnPhi = False
+                   #UseEndCap = False,
+                   CutOnPhi = False,
                    )
   
 

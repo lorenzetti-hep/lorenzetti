@@ -4,7 +4,7 @@ __all__ = ["CaloHitMaker"]
 
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 
