@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Gaugi.messenger      import LoggingLevel, Logger
+from Gaugi                import LoggingLevel, Logger
 from Gaugi                import GeV
 from P8Kernel             import EventReader
 from G4Kernel             import *
@@ -34,8 +34,8 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
                     help = "Run with Qt interface.")
 
-parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
-                    help = "Enable the magnetic field.")
+#parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
+#                    help = "Enable the magnetic field.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
@@ -67,7 +67,8 @@ try:
   
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
-                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
+                   #UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
+                   UseMagneticField = True,
                    #UseEndCap = False,
                    CutOnPhi = False,
                    )
