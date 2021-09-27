@@ -31,9 +31,6 @@ endif()
 # Setup Geant4 include directories and compile definitions
 include(${Geant4_USE_FILE})
 
-#----------------------------------------------------------------------------
-# Find HepMC (required package)
-find_package(HepMC REQUIRED)
 
 #----------------------------------------------------------------------------
 # Find ROOT (required package)
@@ -99,9 +96,16 @@ add_library(lorenzetti SHARED
 message( STATUS ${FASTJET_LIBRARIES} )
 message( STATUS ${PYTHIA8_LIBRARIES} )
 
-target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} ${Boost_PYTHON_LIBRARIES} ${PYTHON_LIBRARIES} 
-  ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Geant4_LIBRARIES} ${ROOT_LIBRARIES}
-  ${FASTJET_LIBRARIES} ${PYTHIA8_LIBRARIES} ${HEPMC_LIBRARIES} ${HEPMC_FIO_LIBRARIES} )
+target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} 
+                                 ${ROOT_COMPONENT_LIBRARIES} 
+                                 ${Boost_PYTHON_LIBRARIES} 
+                                 ${PYTHON_LIBRARIES} 
+                                 ${Boost_FILESYSTEM_LIBRARY} 
+                                 ${Boost_SYSTEM_LIBRARY} 
+                                 ${Geant4_LIBRARIES} 
+                                 ${ROOT_LIBRARIES}
+                                 ${FASTJET_LIBRARIES} 
+                                 ${PYTHIA8_LIBRARIES} )
 
 
 

@@ -4,7 +4,6 @@
 #include <algorithm>
 #include "Pythia8/Pythia.h"
 #include "Pythia8/HeavyIons.h"
-#include "Pythia8Plugins/HepMC2.h"
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"

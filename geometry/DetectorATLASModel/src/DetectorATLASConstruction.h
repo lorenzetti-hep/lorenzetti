@@ -67,10 +67,16 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_useMagneticField;
-    bool m_useBarrel;
-    bool m_useExtendedBarrel;
-    bool m_useEndCap;
     bool m_cutOnPhi;
+    bool m_useDeadMaterialBeforeECal;
+    bool m_useBarrel                ;
+    bool m_useDeadMaterialBeforeHCal;
+    bool m_useTileCal               ;
+    bool m_useExtendedBarrel        ;
+    bool m_useEndCap                ;
+    bool m_useHadronicEndCap;
+    bool m_useCrack;
+
 
     static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger;
 };

@@ -7,7 +7,6 @@
 #include "GaugiKernel/MsgStream.h"
 #include "Pythia8/Pythia.h"
 #include "Pythia8/HeavyIons.h"
-#include "Pythia8Plugins/HepMC2.h"
 #include "P8Kernel/exceptions.h"
 #include "P8Kernel/Event.h"
 #include "P8Kernel/IAlgorithm.h"

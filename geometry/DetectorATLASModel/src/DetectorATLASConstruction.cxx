@@ -40,11 +40,16 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
-  declareProperty( "UseMagneticField"    , m_useMagneticField=true    );
-  declareProperty( "UseBarrel"           , m_useBarrel=true           );
-  declareProperty( "UseExtendedBarrel"   , m_useExtendedBarrel=true   );
-  declareProperty( "UseEndCap"           , m_useEndCap=true           );
-  declareProperty( "CutOnPhi"            , m_cutOnPhi=false           );
+  declareProperty( "UseMagneticField"           , m_useMagneticField=true           );
+  declareProperty( "UseDeadMaterialBeforeECal"  , m_useDeadMaterialBeforeECal=true  );
+  declareProperty( "UseBarrel"                  , m_useBarrel=true                  );
+  declareProperty( "UseDeadMaterialBeforeHCal"  , m_useDeadMaterialBeforeHCal=true  );
+  declareProperty( "UseTileCal"                 , m_useTileCal=true                 );
+  declareProperty( "UseExtendedBarrel"          , m_useExtendedBarrel=true          );
+  declareProperty( "UseEndCap"                  , m_useEndCap=true                  );
+  declareProperty( "UseHadronicEndCap"          , m_useHadronicEndCap=true          );
+  declareProperty( "UseCrack"                   , m_useCrack=true                   );
+  declareProperty( "CutOnPhi"                   , m_cutOnPhi=false                  );
   
   MSG_INFO( "Using ATLAS-like detector." );
 }
@@ -98,7 +103,7 @@ void DetectorATLASConstruction::DefineMaterials()
   new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,kStateGas, 2.73*kelvin, 3.e-18*pascal);
 
   // Print materials
-  //G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 }
 
 
@@ -109,8 +114,6 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   // Get materials
   G4Material* defaultMaterial  = G4Material::GetMaterial("Galactic");
 
-
- 
 
   //
   // World
@@ -138,420 +141,440 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                  0,                // copy number
                  m_checkOverlaps);  // checking overlaps
 
-
-
-
-  // Create a region
-  G4Region* deadMatBeforeCal = new G4Region("DeadMatBeforeECal");
-  //
-  // Barrel
-  //
-  CreateBarrel( worldLV,
-                "DeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                2, // ATLAS-like
-                7.7*cm, // abso
-                10*cm, // gap
-                110.*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0),
-                deadMatBeforeCal );
+  
 
   G4Region* presample = new G4Region("PS");
-
-  // Create Pre-sampler calorimeter
-  CreateBarrel( worldLV,
-                "PS",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("Galactic"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers
-                0.01*mm, // abso
-                1.1*cm, // gap
-                146.*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0),
-                presample );
-
-  G4Region* em1 = new G4Region("EM1");
-  G4Region* em2 = new G4Region("EM2");
-  G4Region* em3 = new G4Region("EM3");
-  //G4Region* ecal= new G4Region("ECal");
-
-  // Create Eletromagnetic calorimeter
-  CreateBarrel( worldLV,
-                "EM1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                16, // layers
-                1.51*mm, // abso
-                4.49*mm, // gap
-                150.*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0), // center
-                em1);
-
-  CreateBarrel( worldLV,
-                "EM2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                55, // layers
-                1.7*mm, // abso
-                4.3*mm, // gap
-                150.*cm + 9.6*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0), // center
-                em2);
-
-  CreateBarrel( worldLV,
-                "EM3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                9, // layers
-                1.7*mm, // abso
-                4.3*mm, // gap
-                150.*cm + 9.6*cm + 33*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0), // center
-                em3);
-
+  G4Region* em1       = new G4Region("EM1");
+  G4Region* em2       = new G4Region("EM2");
+  G4Region* em3       = new G4Region("EM3");
+  
+  G4Region* deadMaterialBeforeECal = new G4Region("DeadMaterialBeforeECal");
   G4Region* deadMaterialBeforeHCal = new G4Region("DeadMaterialBeforeHCal");
-  CreateBarrel( worldLV,
-                "ECal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                3*mm, // gap
-                198.3*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0), // center
-                deadMaterialBeforeHCal );
 
-  CreateBarrel( worldLV,
-                "Hcal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                3*mm, // gap
-                218*cm, // start radio,
-                6.8*m ,// z
-                G4ThreeVector(0,0,0), // center
-                deadMaterialBeforeHCal );
 
+  if(m_useDeadMaterialBeforeECal ){
+
+
+    // Create a region
+    CreateBarrel( worldLV,
+                  "DeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  2, // ATLAS-like
+                  7.7*cm, // abso
+                  10*cm, // gap
+                  110.*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0),
+                  deadMaterialBeforeECal );
+  }
+
+
+  if(m_useBarrel){
+
+    // Create Pre-sampler calorimeter
+    CreateBarrel( worldLV,
+                  "PS",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("Galactic"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers
+                  0.01*mm, // abso
+                  1.1*cm, // gap
+                  146.*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0),
+                  presample );
+
+    // Create Eletromagnetic calorimeter
+    CreateBarrel( worldLV,
+                  "EM1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  16, // layers
+                  1.51*mm, // abso
+                  4.49*mm, // gap
+                  150.*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0), // center
+                  em1);
+
+    CreateBarrel( worldLV,
+                  "EM2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  55, // layers
+                  1.7*mm, // abso
+                  4.3*mm, // gap
+                  150.*cm + 9.6*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0), // center
+                  em2);
+
+    CreateBarrel( worldLV,
+                  "EM3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  9, // layers
+                  1.7*mm, // abso
+                  4.3*mm, // gap
+                  150.*cm + 9.6*cm + 33*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0), // center
+                  em3);
+  }
+
+
+  if(m_useDeadMaterialBeforeHCal){
+
+    CreateBarrel( worldLV,
+                  "ECal_Boundary",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  1, // layers
+                  10*cm, // abso
+                  3*mm, // gap
+                  198.3*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0), // center
+                  deadMaterialBeforeHCal );
+
+    CreateBarrel( worldLV,
+                  "Hcal_Boundary",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  1, // layers
+                  10*cm, // abso
+                  3*mm, // gap
+                  218*cm, // start radio,
+                  6.8*m ,// z
+                  G4ThreeVector(0,0,0), // center
+                  deadMaterialBeforeHCal );
+  }
+
+  
+
+  //
+  // TileCal
+  //
 
   G4Region* had1 = new G4Region("HAD1");
   G4Region* had2 = new G4Region("HAD2");
   G4Region* had3 = new G4Region("HAD3");
 
+
   double endcap_start = 3704.*mm;
   double gap_between_extended_barrel = 68.*cm;
   double tile_barrel_z = (endcap_start - gap_between_extended_barrel)*2; 
 
-  // Create Hadronic calorimeter
-  CreateBarrel( worldLV,
-                "HAD1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                4, // layers,
-                6.0*cm, // abso
-                4.0*cm, // gap
-                228.3*cm, // start radio,
-                tile_barrel_z, // z
-                G4ThreeVector(0,0,0), // center
-                had1);
-  CreateBarrel( worldLV,
-                "HAD2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                11, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm, // start radio,
-                tile_barrel_z, // z
-                G4ThreeVector(0,0,0), // center
-                had2);
-  CreateBarrel( worldLV,
-                "HAD3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                5, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm + 110*cm, // start radio,
-                tile_barrel_z, // z
-                G4ThreeVector(0,0,0), // center
-                had3);
+  if(m_useTileCal){
+
+    // Create Hadronic calorimeter
+    CreateBarrel( worldLV,
+                  "HAD1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  4, // layers,
+                  6.0*cm, // abso
+                  4.0*cm, // gap
+                  228.3*cm, // start radio,
+                  tile_barrel_z, // z
+                  G4ThreeVector(0,0,0), // center
+                  had1);
+
+    CreateBarrel( worldLV,
+                  "HAD2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  11, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm, // start radio,
+                  tile_barrel_z, // z
+                  G4ThreeVector(0,0,0), // center
+                  had2);
+
+    CreateBarrel( worldLV,
+                  "HAD3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  5, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm + 110*cm, // start radio,
+                  tile_barrel_z, // z
+                  G4ThreeVector(0,0,0), // center
+                  had3);
+  }
+
+
+  const auto extended_barrel_size = 2.83*m;
+  const auto extended_barrel_center_pos = endcap_start+extended_barrel_size/2;
 
 
   if ( m_useExtendedBarrel ){
   
-	const auto extended_barrel_size = 2.83*m;
-  const auto extended_barrel_center_pos = endcap_start+extended_barrel_size/2;
+    // Extended barrel
+    CreateBarrel( worldLV,
+                  "HAD1_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  4, // layers,
+                  6.0*cm, // abso
+                  4.0*cm, // gap
+                  228.3*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,extended_barrel_center_pos), // center
+                  had1 );
 
-  // Extended barrel
-  CreateBarrel( worldLV,
-                "HAD1_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                4, // layers,
-                6.0*cm, // abso
-                4.0*cm, // gap
-                228.3*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,extended_barrel_center_pos), // center
-                had1 );
-  CreateBarrel( worldLV,
-                "HAD2_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                11, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,extended_barrel_center_pos), // center
-                had2 );
-  CreateBarrel( worldLV,
-                "HAD3_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                5, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm + 110*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,extended_barrel_center_pos), // center
-                had3 );
-  CreateBarrel( worldLV,
-                "HAD1_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                4, // layers,
-                6.0*cm, // abso
-                4.0*cm, // gap
-                228.3*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,-extended_barrel_center_pos), // center
-                had1 );
-  CreateBarrel( worldLV,
-                "HAD2_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                11, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,-extended_barrel_center_pos), // center
-                had2 );
-  CreateBarrel( worldLV,
-                "HAD3_Extended",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Fe"), // absorber
-                G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
-                5, // layers,
-                6.2*cm, // abso
-                3.8*cm, // gap
-                228.3*cm + 40*cm + 110*cm, // start radio,
-                extended_barrel_size, // z
-                G4ThreeVector(0,0,-extended_barrel_center_pos), // center
-                had3 );
+    CreateBarrel( worldLV,
+                  "HAD2_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  11, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,extended_barrel_center_pos), // center
+                  had2 );
 
+    CreateBarrel( worldLV,
+                  "HAD3_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  5, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm + 110*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,extended_barrel_center_pos), // center
+                  had3 );
+
+    CreateBarrel( worldLV,
+                  "HAD1_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  4, // layers,
+                  6.0*cm, // abso
+                  4.0*cm, // gap
+                  228.3*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,-extended_barrel_center_pos), // center
+                  had1 );
+    CreateBarrel( worldLV,
+                  "HAD2_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  11, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,-extended_barrel_center_pos), // center
+                  had2 );
+    CreateBarrel( worldLV,
+                  "HAD3_Extended",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Fe"), // absorber
+                  G4Material::GetMaterial("PLASTIC SCINTILLATOR"), // gap
+                  5, // layers,
+                  6.2*cm, // abso
+                  3.8*cm, // gap
+                  228.3*cm + 40*cm + 110*cm, // start radio,
+                  extended_barrel_size, // z
+                  G4ThreeVector(0,0,-extended_barrel_center_pos), // center
+                  had3 );
   }// Extended Barrel
+
+
+
 
   //
   // EndCap
   //
-  //
-  //
-  if( m_useEndCap){
-
-  G4Region* emec1 = new G4Region("EMEC1");
-  G4Region* emec2 = new G4Region("EMEC2");
-  G4Region* emec3 = new G4Region("EMEC3");
-
   double ps_endcap_z = 5.*mm;
   double emec_dead_material_z = 78.*mm - ps_endcap_z;
   double emec_dead_material_center = endcap_start+emec_dead_material_z/2;
-
   double ps_endcap_start = endcap_start+emec_dead_material_z;
   double ps_endcap_center = ps_endcap_start + ps_endcap_z/2;
-
   double emec_start = ps_endcap_start+ps_endcap_z;
-
   double emec1_zsize = 96.*mm;
   double emec2_zsize = 330.*mm;
   double emec3_zsize = 54.*mm;
-
   double emec1_center = emec_start + emec1_zsize/2;
   double emec2_center = emec_start + emec1_zsize + emec2_zsize/2;
   double emec3_center = emec_start + emec1_zsize + emec2_zsize + emec3_zsize/2;
 
-  //
-  // Dead-material
-  //
-  CreateEndcap( worldLV,
-                "DeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                2, // layers,
-                5.*mm,  // abso
-                31.5*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec_dead_material_z,  // z
-                G4ThreeVector(0,0,emec_dead_material_center), // center
-                deadMatBeforeCal );
-  CreateEndcap( worldLV,
-                "DeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                2, // layers,
-                5.*mm,  // abso
-                31.5*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec_dead_material_z,  // z
-                G4ThreeVector(0,0,-emec_dead_material_center), // center
-                deadMatBeforeCal );
+
+  if( m_useEndCap){
+
+    G4Region* emec1 = new G4Region("EMEC1");
+    G4Region* emec2 = new G4Region("EMEC2");
+    G4Region* emec3 = new G4Region("EMEC3");
+    //G4Region* ps = G4RegionStore::GetInstance()->GetRegion();
+
+    if(m_useDeadMaterialBeforeECal){
+      //
+      // Dead-material
+      //
+      CreateEndcap( worldLV,
+                    "DeadMaterial",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    2, // layers,
+                    5.*mm,  // abso
+                    31.5*mm,  // gap
+                    302.*mm,  // start radio,
+                    2032.*mm, // end radio,
+                    emec_dead_material_z,  // z
+                    G4ThreeVector(0,0,emec_dead_material_center), // center
+                    deadMaterialBeforeECal );
+      CreateEndcap( worldLV,
+                    "DeadMaterial",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    2, // layers,
+                    5.*mm,  // abso
+                    31.5*mm,  // gap
+                    302.*mm,  // start radio,
+                    2032.*mm, // end radio,
+                    emec_dead_material_z,  // z
+                    G4ThreeVector(0,0,-emec_dead_material_center), // center
+                    deadMaterialBeforeECal );
+    }
+
+    CreateEndcap( worldLV,
+                  "PS",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("Galactic"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  0.001*mm,  // abso
+                  4.99*mm,  // gap
+                  1232.*mm,  // start radio,
+                  1700.*mm, // end radio,
+                  ps_endcap_z,  // z
+                  G4ThreeVector(0,0,ps_endcap_center), // center
+                  presample );
+    CreateEndcap( worldLV,
+                  "PS",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("Galactic"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  0.001*mm,  // abso
+                  4.99*mm,  // gap
+                  1232.*mm,  // start radio,
+                  1700.*mm, // end radio,
+                  ps_endcap_z,  // z
+                  G4ThreeVector(0,0,-ps_endcap_center), // center
+                  presample );
+
+    // Create EMEC1
+    CreateEndcap( worldLV,
+                  "EMEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  16, // layers,
+                  2.27*mm,  // abso
+                  3.73*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec1_zsize,  // z
+                  G4ThreeVector(0,0,emec1_center), // center
+                  emec1 );
+    CreateEndcap( worldLV,
+                  "EMEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  16, // layers,
+                  2.27*mm,  // abso
+                  3.73*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec1_zsize,  // z
+                  G4ThreeVector(0,0,-emec1_center), // center
+                  emec1 );
+
+    // Create EMEC2
+    CreateEndcap( worldLV,
+                  "EMEC2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  55, // layers,
+                  2.27*mm,  // abso
+                  3.73*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec2_zsize,  // z
+                  G4ThreeVector(0,0,emec2_center), // center
+                  emec2 );
+    CreateEndcap( worldLV,
+                  "EMEC2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  55, // layers,
+                  2.27*mm,  // abso
+                  3.73*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec2_zsize,  // z
+                  G4ThreeVector(0,0,-emec2_center), // center
+                  emec2 );
+    // Create EMEC3
+    CreateEndcap( worldLV,
+                  "EMEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  9, // layers,
+                  2.41*mm,  // abso
+                  3.59*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec3_zsize,  // z
+                  G4ThreeVector(0,0,emec3_center), // center
+                  emec3 );
+    CreateEndcap( worldLV,
+                  "EMEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Pb"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  9, // layers,
+                  2.41*mm,  // abso
+                  3.59*mm,  // gap
+                  302.*mm,  // start radio,
+                  2032.*mm, // end radio,
+                  emec3_zsize,  // z
+                  G4ThreeVector(0,0,-emec3_center), // center
+                  emec3 );
+  }
+
 
   //
-  // Dead-material
-  //
-  CreateEndcap( worldLV,
-                "PS",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("Galactic"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                0.001*mm,  // abso
-                4.99*mm,  // gap
-                1232.*mm,  // start radio,
-                1700.*mm, // end radio,
-                ps_endcap_z,  // z
-                G4ThreeVector(0,0,ps_endcap_center), // center
-                presample );
-  CreateEndcap( worldLV,
-                "PS",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("Galactic"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                0.001*mm,  // abso
-                4.99*mm,  // gap
-                1232.*mm,  // start radio,
-                1700.*mm, // end radio,
-                ps_endcap_z,  // z
-                G4ThreeVector(0,0,-ps_endcap_center), // center
-                presample );
-
-  // Create EMEC1
-  CreateEndcap( worldLV,
-                "EMEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                16, // layers,
-                2.27*mm,  // abso
-                3.73*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec1_zsize,  // z
-                G4ThreeVector(0,0,emec1_center), // center
-                emec1 );
-  CreateEndcap( worldLV,
-                "EMEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                16, // layers,
-                2.27*mm,  // abso
-                3.73*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec1_zsize,  // z
-                G4ThreeVector(0,0,-emec1_center), // center
-                emec1 );
-
-  // Create EMEC2
-  CreateEndcap( worldLV,
-                "EMEC2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                55, // layers,
-                2.27*mm,  // abso
-                3.73*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec2_zsize,  // z
-                G4ThreeVector(0,0,emec2_center), // center
-                emec2 );
-  CreateEndcap( worldLV,
-                "EMEC2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                55, // layers,
-                2.27*mm,  // abso
-                3.73*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec2_zsize,  // z
-                G4ThreeVector(0,0,-emec2_center), // center
-                emec2 );
-
-  // Create EMEC3
-  CreateEndcap( worldLV,
-                "EMEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                9, // layers,
-                2.41*mm,  // abso
-                3.59*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec3_zsize,  // z
-                G4ThreeVector(0,0,emec3_center), // center
-                emec3 );
-  CreateEndcap( worldLV,
-                "EMEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                9, // layers,
-                2.41*mm,  // abso
-                3.59*mm,  // gap
-                302.*mm,  // start radio,
-                2032.*mm, // end radio,
-                emec3_zsize,  // z
-                G4ThreeVector(0,0,-emec3_center), // center
-                emec3 );
-  
   // Hadronic end-cap
-  G4Region* hec1 = new G4Region("HEC1");
-  G4Region* hec2 = new G4Region("HEC2");
-  G4Region* hec3 = new G4Region("HEC3");
+  //
 
   const double hec_start = 4262*mm;
   const double first_hec_gap = 8.5*mm;
@@ -563,324 +586,302 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   const double second_hec_front_plate = 25*mm;
   const double second_hec_plates = 50*mm;
   const double hec3_nplates = 16;
-
   const double first_hec_front_plate_z = first_hec_gap+first_hec_front_plate;
   const double first_hec_front_plate_center = hec_start + first_hec_front_plate_z/2;
-
-
   const double hec1_z = hec1_nplates*(first_hec_gap+first_hec_plates);
   const double hec1_center = first_hec_front_plate_center + first_hec_front_plate_z/2 + hec1_z/2;
-
   const double hec2_z = hec2_nplates*(first_hec_gap+first_hec_plates);
   const double hec2_center = hec1_center + hec1_z/2 + hec2_z/2;
-
   const double gap_between_hecs = 32*mm;
-
   const double second_hec_front_plate_z = second_hec_gap+second_hec_front_plate;
   const double second_hec_front_plate_center = hec2_center + hec2_z/2 + gap_between_hecs + second_hec_front_plate_z/2;
-
   const double hec3_z = hec3_nplates*(second_hec_gap+second_hec_plates);
   const double hec3_center = second_hec_front_plate_center + second_hec_front_plate_z/2 + hec3_z/2;
-
-  //G4cout << "HEC1 first: " << first_hec_front_plate_center << " | " << first_hec_front_plate_z << std::endl;
-  //G4cout << "HEC1 all: " << hec1_center << " | " << hec1_z << std::endl;
-  //G4cout << "HEC2 all: " << hec2_center << " | " << hec2_z << std::endl;
-  //G4cout << "HEC3 second: " << second_hec_front_plate_center << " | " << second_hec_front_plate_z << std::endl;
-  //G4cout << "HEC3 all: " << hec3_center << " | " << hec3_z << std::endl;
-
-  // HEC1 first bar
-  CreateEndcap( worldLV,
-                "HEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                first_hec_front_plate,  // abso
-                first_hec_gap,  // gap
-                372.*mm,  // start radio,
-                2030.*mm, // end radio,
-                first_hec_front_plate_z,  // z
-                G4ThreeVector(0,0,first_hec_front_plate_center), // center
-                hec1 );
-  CreateEndcap( worldLV,
-                "HEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                first_hec_front_plate,  // abso
-                first_hec_gap,  // gap
-                372.*mm,  // start radio,
-                2030.*mm, // end radio,
-                first_hec_front_plate_z,  // z
-                G4ThreeVector(0,0,-first_hec_front_plate_center), // center
-                hec1 );
-  // HEC1
-  CreateEndcap( worldLV,
-                "HEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec1_nplates, // layers,
-                first_hec_plates,  // abso
-                first_hec_gap,  // gap
-                372.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec1_z,  // z
-                G4ThreeVector(0,0,hec1_center), // center
-                hec1 );
-  CreateEndcap( worldLV,
-                "HEC1",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec1_nplates, // layers,
-                first_hec_plates,  // abso
-                first_hec_gap,  // gap
-                372.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec1_z,  // z
-                G4ThreeVector(0,0,-hec1_center), // center
-                hec1 );
-  // HEC2
-  CreateEndcap( worldLV,
-                "HEC2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec2_nplates, // layers,
-                first_hec_plates,  // abso
-                first_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec2_z,  // z
-                G4ThreeVector(0,0,hec2_center), // center
-                hec2 );
-  CreateEndcap( worldLV,
-                "HEC2",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec2_nplates, // layers,
-                first_hec_plates,  // abso
-                first_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec2_z,  // z
-                G4ThreeVector(0,0,-hec2_center), // center
-                hec2 );
-  // HEC3 first bar
-  CreateEndcap( worldLV,
-                "HEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                second_hec_front_plate,  // abso
-                second_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                second_hec_front_plate_z,  // z
-                G4ThreeVector(0,0,second_hec_front_plate_center), // center
-                hec3 );
-  CreateEndcap( worldLV,
-                "HEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                1, // layers,
-                second_hec_front_plate,  // abso
-                second_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                second_hec_front_plate_z,  // z
-                G4ThreeVector(0,0,-second_hec_front_plate_center), // center
-                hec3 );
-  // HEC3
-  CreateEndcap( worldLV,
-                "HEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec3_nplates, // layers,
-                second_hec_plates,  // abso
-                second_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec3_z,  // z
-                G4ThreeVector(0,0,hec3_center), // center
-                hec3 );
-  CreateEndcap( worldLV,
-                "HEC3",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Cu"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                hec3_nplates, // layers,
-                second_hec_plates,  // abso
-                second_hec_gap,  // gap
-                475.*mm,  // start radio,
-                2030.*mm, // end radio,
-                hec3_z,  // z
-                G4ThreeVector(0,0,-hec3_center), // center
-                hec3 );
-
   // Support of end-cap
   const double endcap_end = 6120;
   const double endcap_center = ( endcap_end + endcap_start )/2;
   const double endcap_size = ( endcap_end - endcap_start );
-  CreateBarrel( worldLV,
-                "Hcal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                5*mm, // gap
-                2035.*mm, // start radio,
-                endcap_size ,// z
-                G4ThreeVector(0,0,endcap_center), // center
-                deadMaterialBeforeHCal );
-  CreateBarrel( worldLV,
-                "Hcal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                5*mm, // gap
-                2035.*mm, // start radio,
-                endcap_size ,// z
-                G4ThreeVector(0,0,-endcap_center), // center
-                deadMaterialBeforeHCal );
 
-  CreateBarrel( worldLV,
-                "Hcal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                3*mm, // gap
-                218*cm, // start radio,
-                endcap_size ,// z
-                G4ThreeVector(0,0,endcap_center), // center
-                deadMaterialBeforeHCal );
-  CreateBarrel( worldLV,
-                "Hcal_Boundary",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Pb"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                10*cm, // abso
-                3*mm, // gap
-                218*cm, // start radio,
-                endcap_size ,// z
-                G4ThreeVector(0,0,-endcap_center), // center
-                deadMaterialBeforeHCal );
 
-  G4Region* crackMaterial = new G4Region("CrackDeadMaterial");
-  const double crack_material_center = ( tile_barrel_z/2 + endcap_start )/2;
-  const double crack_material_size = gap_between_extended_barrel;
 
-  CreateBarrel( worldLV,
-                "CrackDeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                200*cm, // abso
-                3*mm, // gap
-                228.3*cm, // start radio,
-                crack_material_size ,// z
-                G4ThreeVector(0,0,crack_material_center), // center
-                crackMaterial );
-  CreateBarrel( worldLV,
-                "CrackDeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                200*cm, // abso
-                3*mm, // gap
-                228.3*cm, // start radio,
-                crack_material_size ,// z
-                G4ThreeVector(0,0,-crack_material_center), // center
-                crackMaterial );
-  CreateBarrel( worldLV,
-                "CrackDeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("Galactic"), // gap
-                1, // layers
-                200*cm, // abso
-                3*mm, // gap
-                228.3*cm, // start radio,
-                crack_material_size ,// z
-                G4ThreeVector(0,0,crack_material_center), // center
-                crackMaterial );
+  if(m_useHadronicEndCap){
 
-  const double crack_em_material_center = ( 6.8*m/2 + endcap_start )/2;
-  const double crack_em_material_size = ( endcap_start - 6.8*m/2  );
+    G4Region* hec1 = new G4Region("HEC1");
+    G4Region* hec2 = new G4Region("HEC2");
+    G4Region* hec3 = new G4Region("HEC3");
 
-  CreateEndcap( worldLV,
-                "CrackDeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                2, // layers,
-                45.*mm, // abso
-                107.*mm, // gap
-                1025*mm, // start radio,
-                2032*mm, // end radio,
-                crack_em_material_size,  // z
-                G4ThreeVector(0,0,crack_em_material_center), // center
-                crackMaterial );
-  CreateEndcap( worldLV,
-                "CrackDeadMaterial",
-                G4Material::GetMaterial("Galactic"), // default
-                G4Material::GetMaterial("G4_Al"), // absorber
-                G4Material::GetMaterial("liquidArgon"), // gap
-                2, // layers,
-                45.*mm, // abso
-                107.*mm, // gap
-                1025*mm, // start radio,
-                2032*mm, // end radio,
-                crack_em_material_size,  // z
-                G4ThreeVector(0,0,-crack_em_material_center), // center
-                crackMaterial );
+    // HEC1 first bar
+    CreateEndcap( worldLV,
+                  "HEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  first_hec_front_plate,  // abso
+                  first_hec_gap,  // gap
+                  372.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  first_hec_front_plate_z,  // z
+                  G4ThreeVector(0,0,first_hec_front_plate_center), // center
+                  hec1 );
+    CreateEndcap( worldLV,
+                  "HEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  first_hec_front_plate,  // abso
+                  first_hec_gap,  // gap
+                  372.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  first_hec_front_plate_z,  // z
+                  G4ThreeVector(0,0,-first_hec_front_plate_center), // center
+                  hec1 );
+    // HEC1
+    CreateEndcap( worldLV,
+                  "HEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec1_nplates, // layers,
+                  first_hec_plates,  // abso
+                  first_hec_gap,  // gap
+                  372.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec1_z,  // z
+                  G4ThreeVector(0,0,hec1_center), // center
+                  hec1 );
+    CreateEndcap( worldLV,
+                  "HEC1",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec1_nplates, // layers,
+                  first_hec_plates,  // abso
+                  first_hec_gap,  // gap
+                  372.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec1_z,  // z
+                  G4ThreeVector(0,0,-hec1_center), // center
+                  hec1 );
+    // HEC2
+    CreateEndcap( worldLV,
+                  "HEC2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec2_nplates, // layers,
+                  first_hec_plates,  // abso
+                  first_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec2_z,  // z
+                  G4ThreeVector(0,0,hec2_center), // center
+                  hec2 );
+    CreateEndcap( worldLV,
+                  "HEC2",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec2_nplates, // layers,
+                  first_hec_plates,  // abso
+                  first_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec2_z,  // z
+                  G4ThreeVector(0,0,-hec2_center), // center
+                  hec2 );
+    // HEC3 first bar
+    CreateEndcap( worldLV,
+                  "HEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  second_hec_front_plate,  // abso
+                  second_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  second_hec_front_plate_z,  // z
+                  G4ThreeVector(0,0,second_hec_front_plate_center), // center
+                  hec3 );
+    CreateEndcap( worldLV,
+                  "HEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  1, // layers,
+                  second_hec_front_plate,  // abso
+                  second_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  second_hec_front_plate_z,  // z
+                  G4ThreeVector(0,0,-second_hec_front_plate_center), // center
+                  hec3 );
+    // HEC3
+    CreateEndcap( worldLV,
+                  "HEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec3_nplates, // layers,
+                  second_hec_plates,  // abso
+                  second_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec3_z,  // z
+                  G4ThreeVector(0,0,hec3_center), // center
+                  hec3 );
+    CreateEndcap( worldLV,
+                  "HEC3",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Cu"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  hec3_nplates, // layers,
+                  second_hec_plates,  // abso
+                  second_hec_gap,  // gap
+                  475.*mm,  // start radio,
+                  2030.*mm, // end radio,
+                  hec3_z,  // z
+                  G4ThreeVector(0,0,-hec3_center), // center
+                  hec3 );
 
-  // TODO Reduce the depth of EMEC1.
-  // TODO Run on single electron instead of minbias...
-  
+    if(m_useDeadMaterialBeforeHCal){
+
+      CreateBarrel( worldLV,
+                    "Hcal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    5*mm, // gap
+                    2035.*mm, // start radio,
+                    endcap_size ,// z
+                    G4ThreeVector(0,0,endcap_center), // center
+                    deadMaterialBeforeHCal );
+      CreateBarrel( worldLV,
+                    "Hcal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    5*mm, // gap
+                    2035.*mm, // start radio,
+                    endcap_size ,// z
+                    G4ThreeVector(0,0,-endcap_center), // center
+                    deadMaterialBeforeHCal );
+
+      CreateBarrel( worldLV,
+                    "Hcal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    3*mm, // gap
+                    218*cm, // start radio,
+                    endcap_size ,// z
+                    G4ThreeVector(0,0,endcap_center), // center
+                    deadMaterialBeforeHCal );
+      CreateBarrel( worldLV,
+                    "Hcal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    3*mm, // gap
+                    218*cm, // start radio,
+                    endcap_size ,// z
+                    G4ThreeVector(0,0,-endcap_center), // center
+                    deadMaterialBeforeHCal );
+    }
   }// EndCap
 
 
-  //SetCuts();
-  return worldPV;
-}
+  //
+  // Crack Region
+  //
 
+  const double crack_material_center = ( tile_barrel_z/2 + endcap_start )/2;
+  const double crack_material_size = gap_between_extended_barrel;
+  const double crack_em_material_center = ( 6.8*m/2 + endcap_start )/2;
+  const double crack_em_material_size = ( endcap_start - 6.8*m/2  );
 
-void DetectorATLASConstruction::SetCuts()
-{
+  if(m_useCrack){
 
-  //std::vector<std::string> barrelNames = {"PS","EM1","EM2","EM3", "EMEC1", "EMEC2", "EMEC3", "HEC1", "HEC2", "HEC3"};
-  std::vector<std::string> barrelNames = {"PS","EM1","EM2","EM3"};
-
-
-
-  for ( auto& regName : barrelNames ){
-    auto region = G4RegionStore::GetInstance()->GetRegion(regName);
-    auto cuts = new G4ProductionCuts;
-    cuts->SetProductionCut(0.01*mm,G4ProductionCuts::GetIndex("gamma"));
-    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("e-"));
-    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("e+"));
-    cuts->SetProductionCut(0.7*mm,G4ProductionCuts::GetIndex("proton"));
-    region->SetProductionCuts(cuts);
+    G4Region* crackMaterial = new G4Region("CrackDeadMaterial");
+    CreateBarrel( worldLV,
+                  "CrackDeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  1, // layers
+                  200*cm, // abso
+                  3*mm, // gap
+                  228.3*cm, // start radio,
+                  crack_material_size ,// z
+                  G4ThreeVector(0,0,crack_material_center), // center
+                  crackMaterial );
+    CreateBarrel( worldLV,
+                  "CrackDeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  1, // layers
+                  200*cm, // abso
+                  3*mm, // gap
+                  228.3*cm, // start radio,
+                  crack_material_size ,// z
+                  G4ThreeVector(0,0,-crack_material_center), // center
+                  crackMaterial );
+    CreateBarrel( worldLV,
+                  "CrackDeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("Galactic"), // gap
+                  1, // layers
+                  200*cm, // abso
+                  3*mm, // gap
+                  228.3*cm, // start radio,
+                  crack_material_size ,// z
+                  G4ThreeVector(0,0,crack_material_center), // center
+                  crackMaterial );
+    CreateEndcap( worldLV,
+                  "CrackDeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  2, // layers,
+                  45.*mm, // abso
+                  107.*mm, // gap
+                  1025*mm, // start radio,
+                  2032*mm, // end radio,
+                  crack_em_material_size,  // z
+                  G4ThreeVector(0,0,crack_em_material_center), // center
+                  crackMaterial );
+    CreateEndcap( worldLV,
+                  "CrackDeadMaterial",
+                  G4Material::GetMaterial("Galactic"), // default
+                  G4Material::GetMaterial("G4_Al"), // absorber
+                  G4Material::GetMaterial("liquidArgon"), // gap
+                  2, // layers,
+                  45.*mm, // abso
+                  107.*mm, // gap
+                  1025*mm, // start radio,
+                  2032*mm, // end radio,
+                  crack_em_material_size,  // z
+                  G4ThreeVector(0,0,-crack_em_material_center), // center
+                  crackMaterial );
   }
 
 
 
+  return worldPV;
 }
+
 
 
 
@@ -1186,7 +1187,6 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
   if (m_useMagneticField){
     MSG_INFO("Set magnetic field")
-
     // Create global magnetic field messenger.
     // Uniform magnetic field is then created automatically if
     // the field value is not zero.
@@ -1196,7 +1196,6 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
     // Register the field messenger for deleting
     G4AutoDelete::Register(m_magFieldMessenger); 
-
   }
 
 }

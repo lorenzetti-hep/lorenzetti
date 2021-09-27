@@ -34,8 +34,8 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
                     help = "Run with Qt interface.")
 
-#parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
-#                    help = "Enable the magnetic field.")
+parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
+                    help = "Enable the magnetic field.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
@@ -67,9 +67,22 @@ try:
   
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
-                   #UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   UseMagneticField = True,
-                   #UseEndCap = False,
+                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
+                   #UseMagneticField = True,
+                   UseDeadMaterialBeforeECal=False, # cause
+                   UseDeadMaterialBeforeHCal=False,
+                   # PS,EM1,EM2,EM3
+                   UseBarrel=True,
+                   # HAD1,2,3
+                   UseTileCal=True,
+                   # HAD1,2,3 ext.
+                   UseExtendedBarrel=True,
+                   # EMECs
+                   UseEndCap = True,
+                   # HECs
+                   UseHadronicEndCap = True, # cause
+                   # crack region
+                   UseCrack = False, # cause
                    CutOnPhi = False,
                    )
   
