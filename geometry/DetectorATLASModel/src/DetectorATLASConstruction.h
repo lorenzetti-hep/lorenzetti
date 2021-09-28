@@ -63,19 +63,21 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
                         G4Region *region
                       );
 
-    void SetCuts();
+    G4Region* GetRegion( std::string name );
+
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_useMagneticField;
     bool m_cutOnPhi;
-    bool m_useDeadMaterialBeforeECal;
-    bool m_useBarrel                ;
-    bool m_useDeadMaterialBeforeHCal;
-    bool m_useTileCal               ;
-    bool m_useExtendedBarrel        ;
-    bool m_useEndCap                ;
-    bool m_useHadronicEndCap;
+
+    bool m_useBarrel;
+    bool m_useTile;
+    bool m_useTileExt;
+    bool m_useEMEC;
+    bool m_useHEC;
+
     bool m_useCrack;
+    bool m_useDeadMaterial;
 
 
     static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger;

@@ -40,16 +40,20 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
-  declareProperty( "UseMagneticField"           , m_useMagneticField=true           );
-  declareProperty( "UseDeadMaterialBeforeECal"  , m_useDeadMaterialBeforeECal=true  );
-  declareProperty( "UseBarrel"                  , m_useBarrel=true                  );
-  declareProperty( "UseDeadMaterialBeforeHCal"  , m_useDeadMaterialBeforeHCal=true  );
-  declareProperty( "UseTileCal"                 , m_useTileCal=true                 );
-  declareProperty( "UseExtendedBarrel"          , m_useExtendedBarrel=true          );
-  declareProperty( "UseEndCap"                  , m_useEndCap=true                  );
-  declareProperty( "UseHadronicEndCap"          , m_useHadronicEndCap=true          );
-  declareProperty( "UseCrack"                   , m_useCrack=true                   );
-  declareProperty( "CutOnPhi"                   , m_cutOnPhi=false                  );
+
+  // magnetic field
+  declareProperty( "UseMagneticField"           , m_useMagneticField=true     );
+  // Samplings
+  declareProperty( "UseBarrel"                  , m_useBarrel=true            );
+  declareProperty( "UseTile"                    , m_useTile=true              );
+  declareProperty( "UseTileExt"                 , m_useTileExt=true           );
+  declareProperty( "UseEMEC"                    , m_useEMEC=true              );
+  declareProperty( "UseHEC"                     , m_useHEC=true               );
+  // Struture 
+  declareProperty( "UseCrack"                   , m_useCrack=true             );
+  declareProperty( "UseDeadMaterial"            , m_useDeadMaterial=true      );
+  // visualization
+  declareProperty( "CutOnPhi"                   , m_cutOnPhi=false            );
   
   MSG_INFO( "Using ATLAS-like detector." );
 }
@@ -110,6 +114,68 @@ void DetectorATLASConstruction::DefineMaterials()
 G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
 {
 
+  //
+  // TileCal
+  //
+  double endcap_start = 3704.*mm;
+  double gap_between_extended_barrel = 68.*cm;
+  double tile_barrel_z = (endcap_start - gap_between_extended_barrel)*2; 
+  //
+  // TileExt
+  //
+  const auto extended_barrel_size = 2.83*m;
+  const auto extended_barrel_center_pos = endcap_start+extended_barrel_size/2;
+  //
+  // EndCap (EMEC)
+  //
+  double ps_endcap_z = 5.*mm;
+  double emec_dead_material_z = 78.*mm - ps_endcap_z;
+  double emec_dead_material_center = endcap_start+emec_dead_material_z/2;
+  double ps_endcap_start = endcap_start+emec_dead_material_z;
+  double ps_endcap_center = ps_endcap_start + ps_endcap_z/2;
+  double emec_start = ps_endcap_start+ps_endcap_z;
+  double emec1_zsize = 96.*mm;
+  double emec2_zsize = 330.*mm;
+  double emec3_zsize = 54.*mm;
+  double emec1_center = emec_start + emec1_zsize/2;
+  double emec2_center = emec_start + emec1_zsize + emec2_zsize/2;
+  double emec3_center = emec_start + emec1_zsize + emec2_zsize + emec3_zsize/2;
+  //
+  // Hadronic end-cap
+  //
+  const double hec_start = 4262*mm;
+  const double first_hec_gap = 8.5*mm;
+  const double first_hec_front_plate = 12.5*mm;
+  const double first_hec_plates = 25*mm;
+  const double hec1_nplates = 8;
+  const double hec2_nplates = 16;
+  const double second_hec_gap = 8.5*mm;
+  const double second_hec_front_plate = 25*mm;
+  const double second_hec_plates = 50*mm;
+  const double hec3_nplates = 16;
+  const double first_hec_front_plate_z = first_hec_gap+first_hec_front_plate;
+  const double first_hec_front_plate_center = hec_start + first_hec_front_plate_z/2;
+  const double hec1_z = hec1_nplates*(first_hec_gap+first_hec_plates);
+  const double hec1_center = first_hec_front_plate_center + first_hec_front_plate_z/2 + hec1_z/2;
+  const double hec2_z = hec2_nplates*(first_hec_gap+first_hec_plates);
+  const double hec2_center = hec1_center + hec1_z/2 + hec2_z/2;
+  const double gap_between_hecs = 32*mm;
+  const double second_hec_front_plate_z = second_hec_gap+second_hec_front_plate;
+  const double second_hec_front_plate_center = hec2_center + hec2_z/2 + gap_between_hecs + second_hec_front_plate_z/2;
+  const double hec3_z = hec3_nplates*(second_hec_gap+second_hec_plates);
+  const double hec3_center = second_hec_front_plate_center + second_hec_front_plate_z/2 + hec3_z/2;
+  // Support of end-cap
+  const double endcap_end = 6120;
+  const double endcap_center = ( endcap_end + endcap_start )/2;
+  const double endcap_size = ( endcap_end - endcap_start );
+  //
+  // Crack Region
+  //
+  const double crack_material_center = ( tile_barrel_z/2 + endcap_start )/2;
+  const double crack_material_size = gap_between_extended_barrel;
+  const double crack_em_material_center = ( 6.8*m/2 + endcap_start )/2;
+  const double crack_em_material_size = ( endcap_start - 6.8*m/2  );
+
 
   // Get materials
   G4Material* defaultMaterial  = G4Material::GetMaterial("Galactic");
@@ -143,36 +209,35 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
 
   
 
-  G4Region* presample = new G4Region("PS");
-  G4Region* em1       = new G4Region("EM1");
-  G4Region* em2       = new G4Region("EM2");
-  G4Region* em3       = new G4Region("EM3");
+
+
+
+
+
+  if(m_useBarrel)
+  {
+    if(m_useDeadMaterial ){
+      auto deadMaterial = GetRegion("DeadMaterial");
+      // Create a region
+      CreateBarrel( worldLV,
+                    "DeadMaterial",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Al"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    2, // ATLAS-like
+                    7.7*cm, // abso
+                    10*cm, // gap
+                    110.*cm, // start radio,
+                    6.8*m ,// z
+                    G4ThreeVector(0,0,0),
+                    deadMaterial );
+    }
+
+    auto presample = GetRegion("PS");
+    auto em1       = GetRegion("EM1");
+    auto em2       = GetRegion("EM2");
+    auto em3       = GetRegion("EM3");
   
-  G4Region* deadMaterialBeforeECal = new G4Region("DeadMaterialBeforeECal");
-  G4Region* deadMaterialBeforeHCal = new G4Region("DeadMaterialBeforeHCal");
-
-
-  if(m_useDeadMaterialBeforeECal ){
-
-
-    // Create a region
-    CreateBarrel( worldLV,
-                  "DeadMaterial",
-                  G4Material::GetMaterial("Galactic"), // default
-                  G4Material::GetMaterial("G4_Al"), // absorber
-                  G4Material::GetMaterial("Galactic"), // gap
-                  2, // ATLAS-like
-                  7.7*cm, // abso
-                  10*cm, // gap
-                  110.*cm, // start radio,
-                  6.8*m ,// z
-                  G4ThreeVector(0,0,0),
-                  deadMaterialBeforeECal );
-  }
-
-
-  if(m_useBarrel){
-
     // Create Pre-sampler calorimeter
     CreateBarrel( worldLV,
                   "PS",
@@ -229,51 +294,14 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   }
 
 
-  if(m_useDeadMaterialBeforeHCal){
-
-    CreateBarrel( worldLV,
-                  "ECal_Boundary",
-                  G4Material::GetMaterial("Galactic"), // default
-                  G4Material::GetMaterial("G4_Pb"), // absorber
-                  G4Material::GetMaterial("Galactic"), // gap
-                  1, // layers
-                  10*cm, // abso
-                  3*mm, // gap
-                  198.3*cm, // start radio,
-                  6.8*m ,// z
-                  G4ThreeVector(0,0,0), // center
-                  deadMaterialBeforeHCal );
-
-    CreateBarrel( worldLV,
-                  "Hcal_Boundary",
-                  G4Material::GetMaterial("Galactic"), // default
-                  G4Material::GetMaterial("G4_Pb"), // absorber
-                  G4Material::GetMaterial("Galactic"), // gap
-                  1, // layers
-                  10*cm, // abso
-                  3*mm, // gap
-                  218*cm, // start radio,
-                  6.8*m ,// z
-                  G4ThreeVector(0,0,0), // center
-                  deadMaterialBeforeHCal );
-  }
 
   
 
-  //
-  // TileCal
-  //
-
-  G4Region* had1 = new G4Region("HAD1");
-  G4Region* had2 = new G4Region("HAD2");
-  G4Region* had3 = new G4Region("HAD3");
-
-
-  double endcap_start = 3704.*mm;
-  double gap_between_extended_barrel = 68.*cm;
-  double tile_barrel_z = (endcap_start - gap_between_extended_barrel)*2; 
-
-  if(m_useTileCal){
+  if(m_useTile)
+  {
+    auto had1 = GetRegion("HAD1");
+    auto had2 = GetRegion("HAD2");
+    auto had3 = GetRegion("HAD3");
 
     // Create Hadronic calorimeter
     CreateBarrel( worldLV,
@@ -314,15 +342,48 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                   tile_barrel_z, // z
                   G4ThreeVector(0,0,0), // center
                   had3);
+
+
+
+    if(m_useDeadMaterial){
+      // Get materials
+      auto deadMaterial = GetRegion("DeadMaterial");
+      CreateBarrel( worldLV,
+                    "ECal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    3*mm, // gap
+                    198.3*cm, // start radio,
+                    6.8*m ,// z
+                    G4ThreeVector(0,0,0), // center
+                    deadMaterial );
+      CreateBarrel( worldLV,
+                    "Hcal_Boundary",
+                    G4Material::GetMaterial("Galactic"), // default
+                    G4Material::GetMaterial("G4_Pb"), // absorber
+                    G4Material::GetMaterial("Galactic"), // gap
+                    1, // layers
+                    10*cm, // abso
+                    3*mm, // gap
+                    218*cm, // start radio,
+                    6.8*m ,// z
+                    G4ThreeVector(0,0,0), // center
+                    deadMaterial );
+    }
   }
 
 
-  const auto extended_barrel_size = 2.83*m;
-  const auto extended_barrel_center_pos = endcap_start+extended_barrel_size/2;
 
 
-  if ( m_useExtendedBarrel ){
-  
+  if ( m_useTileExt ){
+    
+    auto had1 = GetRegion("HAD1");
+    auto had2 = GetRegion("HAD2");
+    auto had3 = GetRegion("HAD3");
+
     // Extended barrel
     CreateBarrel( worldLV,
                   "HAD1_Extended",
@@ -399,36 +460,21 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                   extended_barrel_size, // z
                   G4ThreeVector(0,0,-extended_barrel_center_pos), // center
                   had3 );
+
   }// Extended Barrel
 
 
+  if( m_useEMEC){
+
+    auto emec1 = GetRegion("EMEC1");
+    auto emec2 = GetRegion("EMEC2");
+    auto emec3 = GetRegion("EMEC3");
+    auto presample = GetRegion("PS");
 
 
-  //
-  // EndCap
-  //
-  double ps_endcap_z = 5.*mm;
-  double emec_dead_material_z = 78.*mm - ps_endcap_z;
-  double emec_dead_material_center = endcap_start+emec_dead_material_z/2;
-  double ps_endcap_start = endcap_start+emec_dead_material_z;
-  double ps_endcap_center = ps_endcap_start + ps_endcap_z/2;
-  double emec_start = ps_endcap_start+ps_endcap_z;
-  double emec1_zsize = 96.*mm;
-  double emec2_zsize = 330.*mm;
-  double emec3_zsize = 54.*mm;
-  double emec1_center = emec_start + emec1_zsize/2;
-  double emec2_center = emec_start + emec1_zsize + emec2_zsize/2;
-  double emec3_center = emec_start + emec1_zsize + emec2_zsize + emec3_zsize/2;
-
-
-  if( m_useEndCap){
-
-    G4Region* emec1 = new G4Region("EMEC1");
-    G4Region* emec2 = new G4Region("EMEC2");
-    G4Region* emec3 = new G4Region("EMEC3");
-    //G4Region* ps = G4RegionStore::GetInstance()->GetRegion();
-
-    if(m_useDeadMaterialBeforeECal){
+    if(m_useDeadMaterial)
+    {
+      auto deadMaterial = GetRegion("DeadMaterial");
       //
       // Dead-material
       //
@@ -444,7 +490,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     2032.*mm, // end radio,
                     emec_dead_material_z,  // z
                     G4ThreeVector(0,0,emec_dead_material_center), // center
-                    deadMaterialBeforeECal );
+                    deadMaterial );
       CreateEndcap( worldLV,
                     "DeadMaterial",
                     G4Material::GetMaterial("Galactic"), // default
@@ -457,7 +503,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     2032.*mm, // end radio,
                     emec_dead_material_z,  // z
                     G4ThreeVector(0,0,-emec_dead_material_center), // center
-                    deadMaterialBeforeECal );
+                    deadMaterial );
     }
 
     CreateEndcap( worldLV,
@@ -572,43 +618,13 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
   }
 
 
-  //
-  // Hadronic end-cap
-  //
-
-  const double hec_start = 4262*mm;
-  const double first_hec_gap = 8.5*mm;
-  const double first_hec_front_plate = 12.5*mm;
-  const double first_hec_plates = 25*mm;
-  const double hec1_nplates = 8;
-  const double hec2_nplates = 16;
-  const double second_hec_gap = 8.5*mm;
-  const double second_hec_front_plate = 25*mm;
-  const double second_hec_plates = 50*mm;
-  const double hec3_nplates = 16;
-  const double first_hec_front_plate_z = first_hec_gap+first_hec_front_plate;
-  const double first_hec_front_plate_center = hec_start + first_hec_front_plate_z/2;
-  const double hec1_z = hec1_nplates*(first_hec_gap+first_hec_plates);
-  const double hec1_center = first_hec_front_plate_center + first_hec_front_plate_z/2 + hec1_z/2;
-  const double hec2_z = hec2_nplates*(first_hec_gap+first_hec_plates);
-  const double hec2_center = hec1_center + hec1_z/2 + hec2_z/2;
-  const double gap_between_hecs = 32*mm;
-  const double second_hec_front_plate_z = second_hec_gap+second_hec_front_plate;
-  const double second_hec_front_plate_center = hec2_center + hec2_z/2 + gap_between_hecs + second_hec_front_plate_z/2;
-  const double hec3_z = hec3_nplates*(second_hec_gap+second_hec_plates);
-  const double hec3_center = second_hec_front_plate_center + second_hec_front_plate_z/2 + hec3_z/2;
-  // Support of end-cap
-  const double endcap_end = 6120;
-  const double endcap_center = ( endcap_end + endcap_start )/2;
-  const double endcap_size = ( endcap_end - endcap_start );
 
 
+  if(m_useHEC){
 
-  if(m_useHadronicEndCap){
-
-    G4Region* hec1 = new G4Region("HEC1");
-    G4Region* hec2 = new G4Region("HEC2");
-    G4Region* hec3 = new G4Region("HEC3");
+    auto hec1 = GetRegion("HEC1");
+    auto hec2 = GetRegion("HEC2");
+    auto hec3 = GetRegion("HEC3");
 
     // HEC1 first bar
     CreateEndcap( worldLV,
@@ -746,7 +762,10 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                   G4ThreeVector(0,0,-hec3_center), // center
                   hec3 );
 
-    if(m_useDeadMaterialBeforeHCal){
+
+    if(m_useDeadMaterial)
+    {
+      auto deadMaterial = GetRegion("DeadMaterial");
 
       CreateBarrel( worldLV,
                     "Hcal_Boundary",
@@ -759,7 +778,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     2035.*mm, // start radio,
                     endcap_size ,// z
                     G4ThreeVector(0,0,endcap_center), // center
-                    deadMaterialBeforeHCal );
+                    deadMaterial );
       CreateBarrel( worldLV,
                     "Hcal_Boundary",
                     G4Material::GetMaterial("Galactic"), // default
@@ -771,7 +790,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     2035.*mm, // start radio,
                     endcap_size ,// z
                     G4ThreeVector(0,0,-endcap_center), // center
-                    deadMaterialBeforeHCal );
+                    deadMaterial );
 
       CreateBarrel( worldLV,
                     "Hcal_Boundary",
@@ -784,7 +803,7 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     218*cm, // start radio,
                     endcap_size ,// z
                     G4ThreeVector(0,0,endcap_center), // center
-                    deadMaterialBeforeHCal );
+                    deadMaterial );
       CreateBarrel( worldLV,
                     "Hcal_Boundary",
                     G4Material::GetMaterial("Galactic"), // default
@@ -796,23 +815,15 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                     218*cm, // start radio,
                     endcap_size ,// z
                     G4ThreeVector(0,0,-endcap_center), // center
-                    deadMaterialBeforeHCal );
+                    deadMaterial );
     }
   }// EndCap
 
 
-  //
-  // Crack Region
-  //
-
-  const double crack_material_center = ( tile_barrel_z/2 + endcap_start )/2;
-  const double crack_material_size = gap_between_extended_barrel;
-  const double crack_em_material_center = ( 6.8*m/2 + endcap_start )/2;
-  const double crack_em_material_size = ( endcap_start - 6.8*m/2  );
 
   if(m_useCrack){
 
-    G4Region* crackMaterial = new G4Region("CrackDeadMaterial");
+    auto crackMaterial = GetRegion("CrackDeadMaterial");
     CreateBarrel( worldLV,
                   "CrackDeadMaterial",
                   G4Material::GetMaterial("Galactic"), // default
@@ -1200,3 +1211,9 @@ void DetectorATLASConstruction::ConstructSDandField(){
 
 }
 
+
+
+G4Region* DetectorATLASConstruction::GetRegion( std::string name ){
+  auto reg = G4RegionStore::GetInstance()->GetRegion(name);
+  return reg ? reg : new G4Region(name);
+}

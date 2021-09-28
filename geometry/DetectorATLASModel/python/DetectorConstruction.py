@@ -10,14 +10,13 @@ class DetectorConstruction(Logger):
 
   __allow_keys = [
                   "UseMagneticField",
-                  "UseDeadMaterialBeforeECal",
                   "UseBarrel",
-                  "UseDeadMaterialBeforeHCal",
-                  "UseTileCal",
-                  "UseExtendedBarrel",
-                  "UseEndCap",
-                  "UseHadronicEndCap",
+                  "UseTile",
+                  "UseTileExt",
+                  "UseEMEC",
+                  "UseHEC",
                   "UseCrack",
+                  "UseDeadMaterial",
                   "CutOnPhi",
                   ]
   

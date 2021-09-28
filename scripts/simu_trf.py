@@ -69,18 +69,17 @@ try:
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
                    #UseMagneticField = True,
-                   UseDeadMaterialBeforeECal=False, # cause
-                   UseDeadMaterialBeforeHCal=False,
+                   UseDeadMaterial=False, # cause
                    # PS,EM1,EM2,EM3
                    UseBarrel=True,
                    # HAD1,2,3
-                   UseTileCal=True,
+                   UseTile=True,
                    # HAD1,2,3 ext.
-                   UseExtendedBarrel=True,
+                   UseTileExt=True,
                    # EMECs
-                   UseEndCap = True,
+                   UseEMEC= True,
                    # HECs
-                   UseHadronicEndCap = True, # cause
+                   UseHEC = True, # cause
                    # crack region
                    UseCrack = False, # cause
                    CutOnPhi = False,
