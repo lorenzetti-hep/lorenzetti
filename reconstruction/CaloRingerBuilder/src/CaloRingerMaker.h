@@ -19,7 +19,7 @@ class RingSet{
       /*! Add the cell energy to the correct ring position in this RingSet */
       void push_back( const xAOD::CaloCell *, float eta_center, float phi_center, bool doRp, float rp);
       /*! Get the ringer shaper pattern for this RingSet */
-      float computeRp(const xAOD::CaloCluster *, const xAOD::CaloCell *, float eta_center, float phi_center, float alpha, float beta) ;
+      float computeRp(const xAOD::CaloCluster *, const xAOD::CaloCell *, float eta_center, float phi_center, float alpha, float beta, float scale_factor) ;
       const std::vector<float>& rings() const;
       /*! The number of rings in this RingSet */
       size_t size() const;
@@ -79,6 +79,7 @@ class CaloRingerMaker : public Gaugi::Algorithm
     bool m_doRingerRp;
     float m_alpha;
     float m_beta;
+    float m_scaleFactor;
     const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , RingSet & ) const;
    
     std::string m_histPath;

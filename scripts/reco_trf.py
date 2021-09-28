@@ -115,6 +115,7 @@ try:
                               doRingerRp = True,
                               Alpha = 0.9,
                               Beta = 1.6,
+                              ScaleFactor = 0.2*0.2,
                               OutputLevel   = outputLevel)
  
 

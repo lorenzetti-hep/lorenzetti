@@ -28,6 +28,7 @@ CaloRingerMaker::CaloRingerMaker( std::string name ) :
   declareProperty( "doRingerRp"     , m_doRingerRp = false    );
   declareProperty( "Alpha"          , m_alpha     );
   declareProperty( "Beta"           , m_beta    );
+  declareProperty( "ScaleFactor"    , m_scaleFactor    );
 }
 
 //!=====================================================================
@@ -128,11 +129,11 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
       {
         float rp = 0;
         if (hotCell){
-          rp = rs.computeRp(clus, cell, hotCell->eta(), hotCell->phi(), m_alpha, m_beta);
+          rp = rs.computeRp(clus, cell, hotCell->eta(), hotCell->phi(), m_alpha, m_beta, m_scaleFactor);
           MSG_DEBUG("Do RingerRp? " << m_doRingerRp);
           rs.push_back( cell, hotCell->eta(), hotCell->phi(), m_doRingerRp, rp );
         }else{
-          rp = rs.computeRp(clus, cell, clus->eta(), clus->phi(), m_alpha, m_beta);
+          rp = rs.computeRp(clus, cell, clus->eta(), clus->phi(), m_alpha, m_beta, m_scaleFactor);
           rs.push_back( cell, clus->eta(), clus->phi(), m_doRingerRp, rp );
         }
       }
@@ -227,7 +228,7 @@ void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float ph
   }
 }
 
-float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *cell , float eta_center, float phi_center, float alpha, float beta )
+float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *cell , float eta_center, float phi_center, float alpha, float beta, float scale_factor)
 {
   float den = 0;
   for ( auto* m_cell : clus->cells() ){
@@ -239,7 +240,7 @@ float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *c
     float deta = std::abs( cell->eta() - eta_center) ;
     float dphi = std::abs( CaloPhiRange::diff(cell->phi() , phi_center ));
     float rdist = sqrt(pow(deta,2) + pow(dphi,2));
-    float r_beta = pow(rdist,beta);
+    float r_beta = pow(rdist*(scale_factor/(cell->deta()*cell->dphi()),beta);
     float cell_e = cell->e() < 0 ? 0 : cell->e();
     float e_alpha = pow(cell_e,alpha);
     float num = e_alpha * r_beta;
