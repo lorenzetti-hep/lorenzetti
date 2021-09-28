@@ -69,7 +69,7 @@ try:
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
                    #UseMagneticField = True,
-                   UseDeadMaterial=False, # cause
+                   UseDeadMaterial=True, # cause
                    # PS,EM1,EM2,EM3
                    UseBarrel=True,
                    # HAD1,2,3
@@ -81,7 +81,7 @@ try:
                    # HECs
                    UseHEC = True, # cause
                    # crack region
-                   UseCrack = False, # cause
+                   UseCrack = True, # cause
                    CutOnPhi = False,
                    )
   

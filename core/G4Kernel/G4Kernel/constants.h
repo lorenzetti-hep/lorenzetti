@@ -5,6 +5,6 @@
 const int special_bcid_for_truth_reconstruction = -999;
 
 // 10 minutes 
-const float event_timeout = 3; //s
+const float event_timeout = 3 * 60; //s
 
 #endif

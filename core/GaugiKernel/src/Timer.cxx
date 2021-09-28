@@ -9,6 +9,7 @@ namespace Gaugi{
   }
 
   time_t Timer::resume(){
+    update();
     return (m_end - m_start);
   }
 
