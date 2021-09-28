@@ -240,7 +240,7 @@ float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *c
     float deta = std::abs( cell->eta() - eta_center) ;
     float dphi = std::abs( CaloPhiRange::diff(cell->phi() , phi_center ));
     float rdist = sqrt(pow(deta,2) + pow(dphi,2));
-    float r_beta = pow(rdist*(scale_factor/(cell->deta()*cell->dphi()),beta);
+    float r_beta = pow(rdist*(scale_factor/(cell->deltaEta()*cell->deltaPhi())),beta);
     float cell_e = cell->e() < 0 ? 0 : cell->e();
     float e_alpha = pow(cell_e,alpha);
     float num = e_alpha * r_beta;
