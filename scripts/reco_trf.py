@@ -94,6 +94,27 @@ try:
                                 [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
                               ],
                               HistogramPath = "Expert/Rings",
+                              doRingerRp = False,
+                              OutputLevel   = outputLevel)
+  rpRinger = CaloRingerMaker(   "CaloRpRingerMaker",
+                              RingerKey     = recordable("RpRings"),
+                              ClusterKey    = recordable("Clusters"),
+                              DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                              DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                              NRings        = [8, 64, 8, 8, 4, 4, 4],
+                              LayerRings = [
+                                [CaloSampling.PSB, CaloSampling.PSE],
+                                [CaloSampling.EMB1, CaloSampling.EMEC1],
+                                [CaloSampling.EMB2, CaloSampling.EMEC2],
+                                [CaloSampling.EMB3, CaloSampling.EMEC3],
+                                [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
+                                [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
+                                [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
+                              ],
+                              HistogramPath = "Expert/RpRings",
+                              doRingerRp = True,
+                              Alpha = 0.9,
+                              Beta = 1.6,
                               OutputLevel   = outputLevel)
  
 
@@ -103,11 +124,13 @@ try:
                             InputEventKey        = recordable("EventInfo"),
                             InputTruthKey        = recordable("Particles"),
                             InputRingerKey       = recordable("Rings"),
+                            InputRpRingerKey     = recordable("RpRings"),
                             InputClusterKey      = recordable("Clusters"),
                             OutputCellsKey       = recordable("Cells"),
                             OutputEventKey       = recordable("EventInfo"),
                             OutputTruthKey       = recordable("Particles"),
                             OutputRingerKey      = recordable("Rings"),
+                            OutputRpRingerKey    = recordable("RpRings"),
                             OutputClusterKey     = recordable("Clusters"),
                             DumpCells            = True,
                             OutputLevel          = outputLevel)
@@ -115,6 +138,7 @@ try:
   # sequence
   acc+= cluster
   acc+= ringer
+  acc+= rpRinger
   acc+= AOD
 
   acc.run(args.numberOfEvents)

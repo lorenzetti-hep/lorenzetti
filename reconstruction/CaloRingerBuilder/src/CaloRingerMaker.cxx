@@ -7,10 +7,11 @@
 #include "TH1F.h"
 #include "TH2F.h"
 #include <numeric>
-
+#include <math.h>
+#include <iostream>
 using namespace SG;
 using namespace Gaugi;
-
+using namespace std;
 
 CaloRingerMaker::CaloRingerMaker( std::string name ) : 
   IMsgService(name),
@@ -24,6 +25,9 @@ CaloRingerMaker::CaloRingerMaker( std::string name ) :
   declareProperty( "LayerRings"     , m_layerRings={}         );
   declareProperty( "OutputLevel"    , m_outputLevel=1         );
   declareProperty( "HistogramPath"  , m_histPath=""           );
+  declareProperty( "doRingerRp"     , m_doRingerRp = false    );
+  declareProperty( "Alpha"          , m_alpha     );
+  declareProperty( "Beta"           , m_beta    );
 }
 
 //!=====================================================================
@@ -122,10 +126,14 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
       // Fill all rings using the hottest cell as center
       for ( auto* cell : clus->cells() )
       {
+        float rp = 0;
         if (hotCell){
-          rs.push_back( cell, hotCell->eta(), hotCell->phi() );
+          rp = rs.computeRp(clus, cell, hotCell->eta(), hotCell->phi(), m_alpha, m_beta);
+          MSG_DEBUG("Do RingerRp? " << m_doRingerRp);
+          rs.push_back( cell, hotCell->eta(), hotCell->phi(), m_doRingerRp, rp );
         }else{
-          rs.push_back( cell, clus->eta(), clus->phi() );
+          rp = rs.computeRp(clus, cell, clus->eta(), clus->phi(), m_alpha, m_beta);
+          rs.push_back( cell, clus->eta(), clus->phi(), m_doRingerRp, rp );
         }
       }
       
@@ -204,7 +212,7 @@ RingSet::RingSet( std::vector<CaloSampling> &samplings, unsigned nrings, float d
 
 //!=====================================================================
 
-void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float phi_center )
+void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float phi_center, bool doRp, float rp )
 {
   // This cell does not allow to this RingSet
   if( isValid(cell) ){
@@ -213,11 +221,32 @@ void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float ph
     float deltaGreater = std::max(deta, dphi);
     int i = static_cast<unsigned int>( std::floor(deltaGreater) );
     if( i < (int)m_rings.size() ){
-      m_rings[i] += cell->e()/ std::cosh(std::abs(eta_center));
+      if (doRp && rp >=0) m_rings[i]+=rp;
+      if (!doRp) m_rings[i] += cell->e()/ std::cosh(std::abs(eta_center));
     }
   }
 }
 
+float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *cell , float eta_center, float phi_center, float alpha, float beta )
+{
+  float den = 0;
+  for ( auto* m_cell : clus->cells() ){
+    if (!isValid(m_cell)) continue;
+    float cell_e = m_cell->e() < 0 ? 0 : cell->e();
+    den += pow(cell_e,alpha);
+  }
+  if (isValid(cell)) {
+    float deta = std::abs( cell->eta() - eta_center) ;
+    float dphi = std::abs( CaloPhiRange::diff(cell->phi() , phi_center ));
+    float rdist = sqrt(pow(deta,2) + pow(dphi,2));
+    float r_beta = pow(rdist,beta);
+    float cell_e = cell->e() < 0 ? 0 : cell->e();
+    float e_alpha = pow(cell_e,alpha);
+    float num = e_alpha * r_beta;
+    return num/den;
+  }
+  else return -999;
+}
 //!=====================================================================
 
 size_t RingSet::size() const

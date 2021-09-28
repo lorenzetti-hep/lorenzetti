@@ -17,6 +17,9 @@ class CaloRingerMaker(Logger):
                   "LayerRings",
                   "HistogramPath",
                   "OutputLevel",
+                  "doRingerRp",
+                  "Alpha",
+                  "Beta",
                   ]
   
   def __init__( self, name, **kw ):
