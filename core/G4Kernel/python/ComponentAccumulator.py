@@ -8,7 +8,7 @@ import os
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed"]
+  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed", "Timeout"]
 
   def __init__( self, name , detector,  MergeOutputFiles=False, **kw):
 

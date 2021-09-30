@@ -43,8 +43,8 @@ def func(command, input, output):
 
 
 
-from Gaugi import expandFolders
-files = expandFolders( args.inputFiles )
+from Gaugi import expand_folders
+files = expand_folders( args.inputFiles )
 
 prun = Pool( func, args.command, args.numberOfThreads, files, args.outputFile )
 prun.run()

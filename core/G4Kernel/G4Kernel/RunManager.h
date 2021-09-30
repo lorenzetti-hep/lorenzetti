@@ -40,6 +40,8 @@ class RunManager: public MsgService,
 
     float m_seed;
 
+    int m_timeout;
+
     std::string m_output;
 
     std::vector< Gaugi::Algorithm* > m_acc;

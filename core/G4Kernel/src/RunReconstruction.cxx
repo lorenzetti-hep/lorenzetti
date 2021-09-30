@@ -1,5 +1,4 @@
 
-#include "G4Kernel/constants.h"
 #include "G4Kernel/RunReconstruction.h"
 #include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
@@ -12,7 +11,7 @@
 
 
 
-RunReconstruction::RunReconstruction( int numberOfThreads,
+RunReconstruction::RunReconstruction( int numberOfThreads, int timeout,
                                       std::vector<Gaugi::Algorithm*> acc , 
                                       std::string output ): 
   IMsgService("RunReconstruction"),
@@ -20,7 +19,8 @@ RunReconstruction::RunReconstruction( int numberOfThreads,
   m_store( output + "." + std::to_string(G4Threading::G4GetThreadId()) ),
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
-  m_lock(false)
+  m_lock(false),
+  m_event_timeout(timeout)
 {
   // Tranfer all rights to the event context
   m_ctx.setStoreGateSvc( &m_store );
@@ -84,8 +84,8 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
-  if ( m_msgCounter>1e6 && m_timeout.resume() > event_timeout/2 ){
-    MSG_INFO( "Running... " << m_timeout.resume() << " seconds (timeout: "  << event_timeout << " seconds)" );
+  if ( m_msgCounter>1e6 && m_timeout.resume() > m_event_timeout/2. ){
+    MSG_INFO( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
     m_msgCounter=0;
   }
 
@@ -170,7 +170,7 @@ SG::EventContext & RunReconstruction::getContext()
 //!=====================================================================
 
 bool RunReconstruction::timeout(){
-  return m_timeout.resume() > event_timeout ? true : false;
+  return m_timeout.resume() > m_event_timeout ? true : false;
 }
 
 //!=====================================================================

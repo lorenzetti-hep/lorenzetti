@@ -9,7 +9,7 @@ from CaloCell.CaloDefs    import CaloSampling
 import numpy as np
 import argparse
 import sys,os
-
+MINUTES = 60
 
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -46,6 +46,8 @@ parser.add_argument('-m','--merge', action='store_true', dest='merge', required 
 parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
                     help = "Save all detector hits.")
 
+parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=3,
+                    help = "Event timeout in minutes")
 
 
 pi = np.pi
@@ -91,7 +93,8 @@ try:
                               NumberOfThreads = args.numberOfThreads,
                               MergeOutputFiles = args.merge,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
-                              OutputFile = args.outputFile)
+                              OutputFile = args.outputFile,
+                              Timeout = args.timeout * MINUTES )
   
 
   gun = EventReader( "PythiaGenerator",
