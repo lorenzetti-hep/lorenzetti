@@ -74,7 +74,7 @@ try:
                               TruthKey        = recordable("Particles"),
                               EtaWindow       = 0.4,
                               PhiWindow       = 0.4,
-                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
+                              MinCenterEnergy = 1*GeV, 
                               HistogramPath   = "Expert/Clusters",
                               OutputLevel     = outputLevel )
 

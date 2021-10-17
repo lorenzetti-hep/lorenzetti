@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from Gaugi.messenger    import LoggingLevel, Logger
-from Gaugi              import GeV
+from Gaugi import LoggingLevel, Logger
+from Gaugi import GeV
 import argparse
 import sys,os
 
@@ -20,11 +20,27 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = True, type=int, default=1,
                     help = "The number of events to be generated.")
 
+parser.add_argument('--energy_min', action='store', dest='energy_min', required = False, type=float, default=-1,
+                    help = "Energy min in GeV.")
+
+parser.add_argument('--energy_max', action='store', dest='energy_max', required = False, type=float, default=-1,
+                    help = "Energy max in GeV.")
+
+parser.add_argument('-e', '--energy=', action='store', dest='energy', required = False, type=float, default=-1,
+                    help = "Energy in GeV.")
+
+
+parser.add_argument('--eta', action='store', dest='eta', required = False, type=float, default=0.00,
+                    help = "Eta position.")
+
+parser.add_argument('--phi', action='store', dest='phi', required = False, type=float, default=1.52,
+                    help = "Phi position.")
+
 #
 # Pileup simulation arguments
 #
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
+parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
                     help = "The pileup average (default is zero).")
 
 parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=-21,
@@ -84,11 +100,11 @@ try:
   from PythiaGenerator import ParticleGun, Particle
   # Create the seed
   gun = ParticleGun( "ParticleGun",
-                     Eta          = 0.0,
-                     #Eta          = 0.3,
-                     Phi          = 1.52170894,
-                     EnergyMin    = 15*GeV,
-                     EnergyMax    = 100*GeV,
+                     Eta          = args.eta,
+                     Phi          = args.phi,
+                     EnergyMin    = args.energy_min*GeV,
+                     EnergyMax    = args.energy_max*GeV,
+                     Energy       = args.energy*GeV,
                      Particle     = Particle.Electron )
   
   # Shoot an electron in the fixed direction
