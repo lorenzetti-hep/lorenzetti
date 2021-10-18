@@ -10,22 +10,25 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
 {
 
   if(descriptor){
-    descriptor_t.sampling    = (int)descriptor->sampling();
-    descriptor_t.detector    = (int)descriptor->detector();
-    descriptor_t.eta         = descriptor->eta();
-    descriptor_t.phi         = descriptor->phi();
-    descriptor_t.deta        = descriptor->deltaEta(); 
-    descriptor_t.dphi        = descriptor->deltaPhi();
-    descriptor_t.rmin        = descriptor->rmin(); 
-    descriptor_t.rmax        = descriptor->rmax();
-    descriptor_t.e           = descriptor->e();
-    descriptor_t.edep        = descriptor->edep(); // truth energy into the bunch crossing zero
-    descriptor_t.bcid_start  = descriptor->bcid_start();
-    descriptor_t.bcid_end    = descriptor->bcid_end();
-    descriptor_t.bc_duration = descriptor->bc_duration();
-    descriptor_t.hash        = descriptor->hash();
-    descriptor_t.pulse       = descriptor->pulse();
-    descriptor_t.cell_link   = link; // cross link to cell
+    descriptor_t.sampling               = (int)descriptor->sampling();
+    descriptor_t.detector               = (int)descriptor->detector();
+    descriptor_t.eta                    = descriptor->eta();
+    descriptor_t.phi                    = descriptor->phi();
+    descriptor_t.deta                   = descriptor->deltaEta();
+    descriptor_t.dphi                   = descriptor->deltaPhi();
+    descriptor_t.rmin                   = descriptor->rmin();
+    descriptor_t.rmax                   = descriptor->rmax();
+    descriptor_t.e                      = descriptor->e();
+    descriptor_t.edep                   = descriptor->edep(); // truth energy into the bunch crossing zero
+    descriptor_t.bcid_start             = descriptor->bcid_start();
+    descriptor_t.bcid_end               = descriptor->bcid_end();
+    descriptor_t.bc_duration            = descriptor->bc_duration();
+    descriptor_t.hash                   = descriptor->hash();
+    descriptor_t.pulse_shape            = descriptor->pulseShape();
+    descriptor_t.pulse_shape_origin     = descriptor->pulseShapeOrigin();
+    descriptor_t.pulse_shape_resolution = descriptor->pulseShapeResolution();
+    descriptor_t.pulse                  = descriptor->pulse();
+    descriptor_t.cell_link              = link; // cross link to cell
 
 
     for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
@@ -57,7 +60,13 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             descriptor_t.bcid_start,
                                             descriptor_t.bcid_end );
 
+  // pulse shape from file
+  descriptor->setPulseShape( descriptor_t.pulse_shape,
+                             descriptor_t.pulse_shape_origin,
+                             descriptor_t.pulse_shape_resolution);
+
   descriptor->setE(descriptor_t.e); // estimated energy from OF
+
   descriptor->setPulse( descriptor_t.pulse); // pulse from generator
   
   for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
