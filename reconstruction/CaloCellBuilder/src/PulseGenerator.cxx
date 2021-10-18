@@ -1,5 +1,4 @@
 
-#include "CaloCell/CaloDetDescriptor.h"
 #include "PulseGenerator.h"
 #include "Randomize.hh"
 #include "TRandom.h"
@@ -10,11 +9,8 @@ using namespace Gaugi;
 PulseGenerator::PulseGenerator( std::string name ) : 
   IMsgService(name),
   AlgTool(),
-  m_shaperZeroIndex(0),
-  m_shaperResolution(0),
   m_rng(0)
 {
-  declareProperty( "ShaperFile"       , m_shaperFile=""         );
   declareProperty( "Pedestal"         , m_pedestal = 0          );
   declareProperty( "DeformationMean"  , m_deformationMean=0     );
   declareProperty( "DeformationStd"   , m_deformationStd=0      );
@@ -36,8 +32,7 @@ PulseGenerator::~PulseGenerator()
 StatusCode PulseGenerator::initialize()
 {
   setMsgLevel( (MSG::Level)m_outputLevel );
-  MSG_DEBUG( "Reading shaper values from: " << m_shaperFile << " and " << m_nsamples << " samples.");
-  ReadShaper( m_shaperFile );
+  MSG_DEBUG( "Initializing PulseGenerator with: " << m_nsamples << " samples.");
   return StatusCode::SUCCESS;
 }
 
@@ -63,7 +58,7 @@ StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM 
   {
     // Generate the pulse
     std::vector<float> pulse;
-    GenerateDeterministicPulse( pulse, cell->edep(bcid), 0, bcid*cell->bc_duration() );
+    GenerateDeterministicPulse( cell, pulse, cell->edep(bcid), 0, bcid*cell->bc_duration() );
     // Accumulate into pulse sum (Sum all pulses)
     for ( int samp=0; samp < pulse_size; ++samp ){
       pulse_sum[samp] += pulse[samp];
@@ -85,31 +80,6 @@ StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM 
 
 //!=====================================================================
 
-void PulseGenerator::ReadShaper( std::string filepath )
-{
-  std::ifstream file;
-  m_timeSeries.clear();
-  m_shaper.clear();
-  file.open(filepath);
-  if (file) {
-     int i=0;
-     float a, b;
-     while (file >> a >> b) // loop on the input operation, not eof
-     {
-        m_timeSeries.push_back(a);
-        m_shaper.push_back(b);
-        if (a == 0.0) m_shaperZeroIndex = i;
-        i++;
-     }
-  } else {
-    MSG_FATAL( "Invalid shaper path: " << filepath );
-  }
-  file.close();
-  m_shaperResolution = m_shaper.size() > 2 ? m_timeSeries[1] - m_timeSeries[0] : m_timeSeries[0];
-}
-
-//!=====================================================================
-
 void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStd) const
 {
   for ( auto &value : pulse )
@@ -118,21 +88,24 @@ void PulseGenerator::AddGaussianNoise( std::vector<float> &pulse, float noiseMea
 
 //!=====================================================================
 
-void PulseGenerator::GenerateDeterministicPulse(  std::vector<float> &pulse,  float amplitude, float phase, float lag) const
+void PulseGenerator::GenerateDeterministicPulse( xAOD::CaloDetDescriptor* cell, std::vector<float> &pulse,  float amplitude, float phase, float lag) const
 {
   pulse.resize( m_nsamples );
-  float shr    = m_shaperResolution;  
-  float shzi   = m_shaperZeroIndex; 
+
+  // get pulse shaper information
+  std::vector<std::pair<float,float>> shaper = cell->pulseShape();
+  float shr = cell->pulseShapeResolution();
+  unsigned int sho = cell->pulseShapeOrigin();
 
   for (int i = 0; i < m_nsamples; i++) {
     // random deformation (normal from geant)
     float deformation = m_rng.Gaus(m_deformationMean, m_deformationStd);
-    int shaperIndex = int(shzi) - int(lag / shr) + (i + m_startSamplingBC) * (m_samplingRate / shr) + round(phase / shr);
-    if (shaperIndex < 0 || shaperIndex > (int)m_shaper.size() - 1){
+    int shaperIndex = int(sho) - int(lag / shr) + (i + m_startSamplingBC) * (m_samplingRate / shr) + round(phase / shr);
+    if (shaperIndex < 0 || shaperIndex > (int)shaper.size() - 1){
       pulse[i] = 0;
       continue;
     }
-    pulse[i] += amplitude * m_shaper[shaperIndex] + m_pedestal + deformation;
+    pulse[i] += amplitude * shaper[shaperIndex].second + m_pedestal + deformation;
   }
 }
 

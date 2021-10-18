@@ -10,7 +10,6 @@ class PulseGenerator( Logger ):
 
   __allow_keys = ["OutputLevel", 
                   "NSamples", 
-                  "ShaperFile",
                   "Pedestal",
                   "DeformationMean",
                   "DeformationStd",

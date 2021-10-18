@@ -4,6 +4,7 @@
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/AlgTool.h"
 #include "GaugiKernel/EDM.h"
+#include "CaloCell/CaloDetDescriptor.h"
 #include "TRandom3.h"
 
 
@@ -24,28 +25,20 @@ class PulseGenerator : public Gaugi::AlgTool
 
   private:
 
-    void ReadShaper( std::string );
-    void GenerateDeterministicPulse(  std::vector<float> &pulse,  float amplitude, float phase, float lag) const;
+    void GenerateDeterministicPulse( xAOD::CaloDetDescriptor*, std::vector<float> &pulse,  float amplitude, float phase, float lag) const;
     void AddGaussianNoise( std::vector<float> &pulse, float noiseMean, float noiseStddev) const;
 
 
     /*! Number of samples to be generated */
     int m_nsamples;
     int m_startSamplingBC;
-    int m_shaperZeroIndex;
     float m_pedestal;
     float m_deformationMean;
     float m_deformationStd;
     float m_samplingRate;
-    float m_shaperResolution;
     float m_noiseMean;    
     float m_noiseStd;    
 
-    std::vector<float> m_shaper;
-    std::vector<float> m_timeSeries;
-    
-    /*! The shaper configuration path */
-    std::string m_shaperFile;
     /*! Output level message */
     int m_outputLevel;
     /*! Random generator */

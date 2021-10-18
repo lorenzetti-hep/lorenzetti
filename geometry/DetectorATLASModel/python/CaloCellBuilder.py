@@ -41,7 +41,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CaloPulseShapeMaker, PulseGenerator, OptimalFilter
 
     collectionKeys = []
  
@@ -58,9 +58,13 @@ class CaloCellBuilder( Logger ):
 
           MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", seg.CollectionKey)
 
+          pulse_shape = CaloPulseShapeMaker( "CaloPulseShapeMaker",
+                                             ShaperFile      = seg.ShaperFile,
+                                             OutputLevel     = self.__outputLevel,
+                                           )
+
           pulse = PulseGenerator( "PulseGenerator", 
                                   NSamples        = seg.NSamples, 
-                                  ShaperFile      = seg.ShaperFile,
                                   OutputLevel     = self.__outputLevel,
                                   SamplingRate    = 25.0,
                                   Pedestal        = 0.0,
@@ -70,6 +74,7 @@ class CaloCellBuilder( Logger ):
                                   NoiseStd        = seg.EletronicNoise,
                                   StartSamplingBC = seg.StartSamplingBC, 
                                 )
+
           of = OptimalFilter("OptimalFilter",
                               Weights  = seg.OFWeights,
                               OutputLevel=self.__outputLevel)
@@ -100,7 +105,7 @@ class CaloCellBuilder( Logger ):
                               )
 
 
-          alg.Tools = [pulse, of]
+          alg.Tools = [pulse_shape, pulse, of]
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
 
