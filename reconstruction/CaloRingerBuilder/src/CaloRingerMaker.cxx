@@ -29,6 +29,7 @@ CaloRingerMaker::CaloRingerMaker( std::string name ) :
   declareProperty( "Alpha"          , m_alpha     );
   declareProperty( "Beta"           , m_beta    );
   declareProperty( "ScaleFactor"    , m_scaleFactor    );
+  declareProperty( "RpInit"         , m_rpInit={}   );
 }
 
 //!=====================================================================
@@ -107,7 +108,7 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
     for(auto samp : m_layerRings[rs])  {
       samplings.push_back((CaloSampling)samp);
     }
-    vec_rs.push_back( RingSet( samplings, m_nRings[rs], m_detaRings[rs], m_dphiRings[rs] ) );
+    vec_rs.push_back( RingSet( samplings, m_nRings[rs], m_detaRings[rs], m_dphiRings[rs], m_rpInit[rs] ) );
   }
 
   // Loop over all CaloClusters
@@ -204,11 +205,12 @@ StatusCode CaloRingerMaker::fillHistograms( EventContext &ctx ) const
 //!=====================================================================
 
 
-RingSet::RingSet( std::vector<CaloSampling> &samplings, unsigned nrings, float deta, float dphi ):
+RingSet::RingSet( std::vector<CaloSampling> &samplings, unsigned nrings, float deta, float dphi, int init ):
   m_rings(nrings,0), 
   m_deta(deta), 
   m_dphi(dphi),
-  m_samplings(samplings)
+  m_samplings(samplings),
+  m_init(init)
 {;}
 
 //!=====================================================================
@@ -228,22 +230,26 @@ void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float ph
   }
 }
 
-float RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *cell , float eta_center, float phi_center, float alpha, float beta, float scale_factor)
+double RingSet::computeRp( const xAOD::CaloCluster *clus, const xAOD::CaloCell *cell , float eta_center, float phi_center, float alpha, float beta, float scale_factor)
 {
-  float den = 0;
+  double den = 0;
   for ( auto* m_cell : clus->cells() ){
     if (!isValid(m_cell)) continue;
-    float cell_e = m_cell->e() < 0 ? 0 : cell->e();
+    float cell_e = m_cell->e() > 0 ? m_cell->e(): 0;
     den += pow(cell_e,alpha);
   }
   if (isValid(cell)) {
-    float deta = std::abs( cell->eta() - eta_center) ;
-    float dphi = std::abs( CaloPhiRange::diff(cell->phi() , phi_center ));
-    float rdist = sqrt(pow(deta,2) + pow(dphi,2));
-    float r_beta = pow(rdist*(scale_factor/(cell->deltaEta()*cell->deltaPhi())),beta);
+    float deta = std::abs( eta_center - cell->eta() ) / m_deta;
+    float dphi = std::abs( CaloPhiRange::diff(phi_center , cell->phi()) ) / m_dphi;
+    float deltaGreater = std::max(deta, dphi);
+    int rdist = static_cast<unsigned int>( std::floor(deltaGreater) );
+    // float rdist = sqrt(pow(deta,2) + pow(dphi,2));
+    // float r_beta = pow(rdist*(scale_factor/(cell->deltaEta()*cell->deltaPhi())),beta);
+    float r_beta = pow((rdist+m_init+1),beta);
+    // float r_beta = pow((rdist+1),beta);
     float cell_e = cell->e() < 0 ? 0 : cell->e();
-    float e_alpha = pow(cell_e,alpha);
-    float num = e_alpha * r_beta;
+    double e_alpha = pow(cell_e,alpha);
+    double num = e_alpha * r_beta;
     return num/den;
   }
   else return -999;

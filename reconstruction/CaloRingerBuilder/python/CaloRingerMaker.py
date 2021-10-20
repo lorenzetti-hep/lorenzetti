@@ -20,7 +20,8 @@ class CaloRingerMaker(Logger):
                   "doRingerRp",
                   "Alpha",
                   "Beta",
-                  "ScaleFactor"
+                  "ScaleFactor",
+                  "RpInit",
                   ]
   
   def __init__( self, name, **kw ):

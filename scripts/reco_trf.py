@@ -95,6 +95,7 @@ try:
                               ],
                               HistogramPath = "Expert/Rings",
                               doRingerRp = False,
+                              RpInit = [0, 8, 72, 80, 88, 92, 96],
                               OutputLevel   = outputLevel)
   rpRinger = CaloRingerMaker(   "CaloRpRingerMaker",
                               RingerKey     = recordable("RpRings"),
@@ -113,8 +114,9 @@ try:
                               ],
                               HistogramPath = "Expert/RpRings",
                               doRingerRp = True,
+                              RpInit = [0, 8, 72, 80, 88, 92, 96],
                               Alpha = 0.9,
-                              Beta = 1.6,
+                              Beta = 1.1,
                               ScaleFactor = 0.2*0.2,
                               OutputLevel   = outputLevel)
  
