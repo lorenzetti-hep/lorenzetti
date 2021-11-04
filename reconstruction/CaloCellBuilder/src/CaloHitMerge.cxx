@@ -1,6 +1,6 @@
 
 #include "CaloHit/CaloHitContainer.h"
-#include "helper/CaloHitCollection.h"
+#include "CaloHit/CaloHitCollection.h"
 
 #include "CaloHitMerge.h"
 #include "TVector3.h"
@@ -109,6 +109,8 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
                                     const_hit->phi(),
                                     const_hit->deltaEta(),
                                     const_hit->deltaPhi(),
+                                    const_hit->rMin(),
+                                    const_hit->rMax(),
                                     const_hit->hash(),
                                     const_hit->sampling(),
                                     const_hit->detector(),
@@ -125,7 +127,7 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
       etot+=hit->edep();
 
       container->push_back( hit );
-
+      
     }// Loop over all hits 
   }// Loop over all collections
   

@@ -1,19 +1,20 @@
 
 __all__ = ["create_ATLAS_layers"]
 
+from DetectorATLASModel import CaloSamplingMaker
+import json
+
 
 #
 # ATLAS detector cell configuration
 #
-def create_ATLAS_layers():
+def create_ATLAS_layers( basepath ):
 
-  from CaloCellBuilder import CaloSamplingMaker
+  cells = json.load(open(basepath + '/atlas_granularity.json', 'r'))
 
-  psb = CaloSamplingMaker( "PSB", "Collection_PSB", 
-                    # segmentation
-                    [ "detector_sampling_0_seg_0.dat" ], 
+  psb = CaloSamplingMaker( "PSB", "Collection_PSB", cells["PSB"],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath + "/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -23,11 +24,9 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
 
-  pse = CaloSamplingMaker( "PSE", "Collection_PSE", 
-                    # segmentation
-                    [ "detector_sampling_1_seg_0.dat" ], 
+  pse = CaloSamplingMaker( "PSE", "Collection_PSE", cells['PSE'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -37,11 +36,9 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  emb1 =CaloSamplingMaker( "EMB1", "Collection_EMB1", 
-                    # segmentation
-                    [ "detector_sampling_2_seg_0.dat" ], 
+  emb1 =CaloSamplingMaker( "EMB1", "Collection_EMB1", cells['EMB1'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -51,11 +48,9 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  emb2 =CaloSamplingMaker( "EMB2", "Collection_EMB2", 
-                    # segmentation
-                    [ "detector_sampling_3_seg_0.dat" ], 
+  emb2 =CaloSamplingMaker( "EMB2", "Collection_EMB2", cells['EMB2'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -65,10 +60,8 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  emb3 =CaloSamplingMaker( "EMB3", "Collection_EMB3", 
-                    # segmentation
-                    [ "detector_sampling_4_seg_0.dat" ], 
-                    ShaperFile      = "pulseLar.dat",
+  emb3 =CaloSamplingMaker( "EMB3", "Collection_EMB3", cells['EMB3'],
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -78,10 +71,8 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  tilecal1 = CaloSamplingMaker( "TileCal1", "Collection_TileCal1", 
-                    # segmentation
-                    [ "detector_sampling_5_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecal1 = CaloSamplingMaker( "TileCal1", "Collection_TileCal1", cells['TileCal1'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -91,9 +82,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  tilecal2 = CaloSamplingMaker( "TileCal2", "Collection_TileCal2", 
-                    [ "detector_sampling_6_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecal2 = CaloSamplingMaker( "TileCal2", "Collection_TileCal2", cells['TileCal2'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -103,9 +93,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  tilecal3 = CaloSamplingMaker( "TileCal3", "Collection_TileCal3", 
-                    [ "detector_sampling_7_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecal3 = CaloSamplingMaker( "TileCal3", "Collection_TileCal3", cells['TileCal3'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -115,9 +104,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  tilecalExt1 = CaloSamplingMaker( "TileCalExt1", "Collection_TileCalExt1", 
-                    [ "detector_sampling_8_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecalExt1 = CaloSamplingMaker( "TileExt1", "Collection_TileExt1", cells['TileExt1'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -127,9 +115,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  tilecalExt2 = CaloSamplingMaker( "TileCalExt2", "Collection_TileCalExt2", 
-                    [ "detector_sampling_9_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecalExt2 = CaloSamplingMaker( "TileExt2", "Collection_TileExt2", cells['TileExt2'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -139,9 +126,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  tilecalExt3 = CaloSamplingMaker( "TileCalExt3", "Collection_TileCalExt3", 
-                    [ "detector_sampling_10_seg_0.dat" ], 
-                    ShaperFile      = "pulseTile.dat",
+  tilecalExt3 = CaloSamplingMaker( "TileExt3", "Collection_TileExt3", cells['TileExt3'],
+                    ShaperFile      = basepath+"/pulseTile.dat",
                     BunchIdStart    = -6, # -150ns
                     BunchIdEnd      = 4, # +100ns
                     StartSamplingBC = -3, 
@@ -151,14 +137,8 @@ def create_ATLAS_layers():
                     OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
-  emec1 = CaloSamplingMaker( "EMEC1", "Collection_EMEC1", 
-                    [ 
-                      "detector_sampling_11_seg_0.dat" ,
-                      "detector_sampling_11_seg_1.dat" ,
-                      "detector_sampling_11_seg_2.dat" ,
-                      "detector_sampling_11_seg_3.dat" ,
-                      ], 
-                    ShaperFile      = "pulseLar.dat",
+  emec1 = CaloSamplingMaker( "EMEC1", "Collection_EMEC1", cells['EMEC1'],
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -168,12 +148,8 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  emec2 = CaloSamplingMaker( "EMEC2", "Collection_EMEC2", 
-                    [ 
-                      "detector_sampling_12_seg_0.dat" ,
-                      "detector_sampling_12_seg_1.dat" ,
-                      ], 
-                    ShaperFile      = "pulseLar.dat",
+  emec2 = CaloSamplingMaker( "EMEC2", "Collection_EMEC2", cells['EMEC2'],
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -183,12 +159,8 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  emec3 = CaloSamplingMaker( "EMEC3", "Collection_EMEC3", 
-                    [ 
-                      "detector_sampling_13_seg_0.dat",
-                      "detector_sampling_13_seg_1.dat",
-                      ], 
-                    ShaperFile      = "pulseLar.dat",
+  emec3 = CaloSamplingMaker( "EMEC3", "Collection_EMEC3", cells['EMEC3'],
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -198,13 +170,9 @@ def create_ATLAS_layers():
                     OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
-  hec1 = CaloSamplingMaker( "HEC1", "Collection_HEC1", 
-                    [ 
-                      "detector_sampling_14_seg_0.dat",
-                      "detector_sampling_14_seg_1.dat",
-                      ], 
+  hec1 = CaloSamplingMaker( "HEC1", "Collection_HEC1", cells['HEC1'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -215,13 +183,9 @@ def create_ATLAS_layers():
                     )
  
 
-  hec2 = CaloSamplingMaker( "HEC2", "Collection_HEC2", 
-                    [ 
-                      "detector_sampling_15_seg_0.dat",
-                      "detector_sampling_15_seg_1.dat",
-                      ], 
+  hec2 = CaloSamplingMaker( "HEC2", "Collection_HEC2", cells['HEC2'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -233,13 +197,9 @@ def create_ATLAS_layers():
  
 
 
-  hec3 = CaloSamplingMaker( "HEC3", "Collection_HEC3", 
-                    [ 
-                      "detector_sampling_16_seg_0.dat",
-                      "detector_sampling_16_seg_1.dat",
-                      ], 
+  hec3 = CaloSamplingMaker( "HEC3", "Collection_HEC3", cells['HEC3'],
                     # layer configuration
-                    ShaperFile      = "pulseLar.dat",
+                    ShaperFile      = basepath+"/pulseLar.dat",
                     BunchIdStart    = -21, # -525ns
                     BunchIdEnd      = 3, # +75ns
                     StartSamplingBC = -2, 
@@ -260,6 +220,5 @@ def create_ATLAS_layers():
       [ tilecal2, tilecalExt2, hec2 ], # HAD2=5, HCal=1
       [ tilecal3, tilecalExt3, hec3 ], # HAD3=6, HCal=1
      ] 
-
   return layers
 

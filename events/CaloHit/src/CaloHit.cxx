@@ -10,6 +10,8 @@ CaloHit::CaloHit(     float eta,
                       float phi, 
                       float deta, 
                       float dphi,
+                      float rmin,
+                      float rmax,
                       // Hash
                       unsigned long int hash,
                       // cell identification
@@ -27,6 +29,8 @@ CaloHit::CaloHit(     float eta,
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
+  m_rmin(rmin),
+  m_rmax(rmax),
   m_bcid_start(bcid_start),
   m_bcid_end(bcid_end),
   m_bc_duration(bc_duration),
@@ -48,7 +52,7 @@ void CaloHit::clear()
 }
 
 
-void CaloHit::Fill( const G4Step* step )
+void CaloHit::fill( const G4Step* step )
 {
   // Get total energy deposit
   float edep = (float)step->GetTotalEnergyDeposit();
@@ -59,7 +63,7 @@ void CaloHit::Fill( const G4Step* step )
   float t = (float)point->GetGlobalTime() / ns;
 
   // Get the bin index into the time vector
-  int samp = findIndex(t);
+  int samp = find(t);
   if ( samp != -1 ){
     int bcid = m_bcid_start + samp;
     m_edep[bcid]+=(edep/MeV);
@@ -68,7 +72,7 @@ void CaloHit::Fill( const G4Step* step )
 
 
 
-int CaloHit::findIndex( float value) const 
+int CaloHit::find( float value) const 
 {
   auto binIterator = std::adjacent_find( m_time.begin(), m_time.end(), [=](float left, float right){ return left < value and value <= right; }  );
   if ( binIterator == m_time.end() ) return -1;

@@ -1,18 +1,20 @@
 
-#include "helper/CaloHitCollection.h"
-#include "G4Kernel/CaloPhiRange.h"
+
 #include "CaloHit/CaloHit.h"
+#include "CaloHit/CaloHitCollection.h"
 #include "EventInfo/EventInfoContainer.h"
-#include "G4Kernel/constants.h"
 #include "CaloHitMaker.h"
+
+#include "G4Kernel/CaloPhiRange.h"
+#include "G4Kernel/constants.h"
 #include "TVector3.h"
-#include <cstdlib>
 #include "G4SystemOfUnits.hh"
 
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH2Poly.h"
 #include "TGraph.h"
+#include <cstdlib>
 
 using namespace Gaugi;
 using namespace SG;
@@ -24,15 +26,24 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
-  declareProperty( "HistogramPath"            , m_histPath="/CaloHitMaker"            );
-  declareProperty( "CaloHitFile"              , m_caloHitFile                         );
-  declareProperty( "CollectionKey"            , m_collectionKey="CaloHitCollection"   );
+  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
+  declareProperty( "CollectionKey"            , m_collectionKey="CaloHitCollection"   ); // output
+  declareProperty( "EtaBins"                  , m_etaBins                             );
+  declareProperty( "PhiBins"                  , m_phiBins                             );
+  declareProperty( "RMin"                     , m_rMin                                );
+  declareProperty( "RMax"                     , m_rMax                                );
+  declareProperty( "Sampling"                 , m_sampling                            );
+  declareProperty( "Segment"                  , m_segment                             );
+  declareProperty( "Detector"                 , m_detector                            );
   declareProperty( "BunchIdStart"             , m_bcid_start=-7                       );
   declareProperty( "BunchIdEnd"               , m_bcid_end=8                          );
   declareProperty( "BunchDuration"            , m_bc_duration=25                      );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
+  declareProperty( "HistogramPath"            , m_histPath="/CaloHitMaker"            );
+
+
+
 }
 
 //!=====================================================================
@@ -41,38 +52,11 @@ StatusCode CaloHitMaker::initialize()
 {
   CHECK_INIT();
 
+  m_nEtaBins = m_etaBins.size() - 1;
+  m_nPhiBins = m_phiBins.size() - 1;
+
   // Set message level
   setMsgLevel( (MSG::Level)m_outputLevel );
-  
-  // Read the file
-  std::ifstream file(m_caloHitFile);
-
-  std::string line;
-  while (std::getline(file, line))
-  {
-    std::stringstream ss(line);
-    std::string command;
-    // Get the command
-    ss >> command;
-    // Layer configuration
-    if (command=="config"){
-      ss >> m_detector >> m_sampling >> m_segmentation >> m_eta_min >> m_eta_max >> m_rmin >> m_rmax;
-    }else if(command=="eta_bins"){
-      float value;
-      while(ss>>value)
-        m_eta_bins.push_back(value);
-    }else if(command=="phi_bins"){
-      float value;
-      while(ss>>value)
-        m_phi_bins.push_back(value);
-    }else if(command=="#"){
-      continue;
-    }else{
-      break;
-    }
-  }
-
-  file.close();
 
   return StatusCode::SUCCESS;
 }
@@ -91,27 +75,10 @@ StatusCode CaloHitMaker::bookHistograms( SG::EventContext &ctx ) const
   auto store = ctx.getStoreGateSvc();
 
   store->mkdir(m_histPath);
-  int nEtabins = m_eta_bins.size() -1;
-  int nPhibins = m_phi_bins.size() -1;
 
- 
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( "hits_edep", "Hit Energy (Truth); #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  store->add(new TH2F( "hits_edep", "Hit Energy (Truth); #eta; #phi; Energy [MeV]", m_nEtaBins, m_etaBins.data(), m_nPhiBins, m_phiBins.data() ) );
   
-
-  if (m_detailedHistograms){
-
-    int nbunchs = m_bcid_end - m_bcid_start + 1;
-    //store->add(new TH2F( "edep_per_bunch", "", nbunchs, m_bcid_start, m_bcid_end+1, 100, 0, 3.5) );
-    store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*50, (m_bcid_start - 0.5)*m_bc_duration, (m_bcid_end + 0.5)*m_bc_duration) );
-
-    store->add(new TH1F( "main_event_timesteps", "Step time main event; time[ns]; Count", 50, -0.5*m_bc_duration, m_bc_duration*0.5 ) );
-
-    store->add(new TH2F( "timesteps_per_energy", "Step time per bunch; time [ns]; Energy [MeV];", 
-          nbunchs, (m_bcid_start-0.5)*m_bc_duration, (m_bcid_end+0.5)*m_bc_duration, 100, 0, 30) );     
-
-  }
-
   return StatusCode::SUCCESS;
 }
 
@@ -119,44 +86,45 @@ StatusCode CaloHitMaker::bookHistograms( SG::EventContext &ctx ) const
 
 StatusCode CaloHitMaker::pre_execute( EventContext &ctx ) const
 {
+  MSG_DEBUG("Pre_execute...");
   // Build the CaloHitCollection and attach into the EventContext
-  // Create the cell collection into the event context
+  // Create the hit collection into the event context
   SG::WriteHandle<xAOD::CaloHitCollection> collection( m_collectionKey, ctx );
-  
-  collection.record( std::unique_ptr<xAOD::CaloHitCollection>(new xAOD::CaloHitCollection( m_eta_min,m_eta_max,m_eta_bins, m_phi_bins,
-                                                                                             m_rmin,m_rmax,
-                                                                                             (Detector)m_detector,
-                                                                                             (CaloSampling)m_sampling, 
-                                                                                             m_segmentation)));
-  // Read the file:
-  std::ifstream file( m_caloHitFile );
+  collection.record( std::unique_ptr<xAOD::CaloHitCollection>(new xAOD::CaloHitCollection()) );
 
-  std::string line;
-  while (std::getline(file, line))
-  {
-    std::stringstream ss(line);
-    std::string command;
-    // Get the command
-    ss >> command;
-    // Get only cell config 
-    if (command=="cell"){
-      float  eta, phi, deta, dphi, rmin, rmax, zmin, zmax;
-      int detector, sampling; // Calorimeter layer and eta/phi ids
-      unsigned long int hash;
-      //std::string hash;
-      ss >> detector >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
+  float deltaEta = std::abs(m_etaBins[1] - m_etaBins[0]);
+  float deltaPhi = std::abs(m_phiBins[1] - m_phiBins[0]);
 
-      // Create the calorimeter cell
-      auto *hit = new xAOD::CaloHit( eta, phi, deta, dphi, hash, 
-                                     (CaloSampling)sampling,
-                                     (Detector)detector,
-                                     m_bc_duration, m_bcid_start, m_bcid_end );
+  //
+  // Prepare all sensitive objects like a two dimensional histogram
+  //
+  for ( unsigned etaBin = 0; etaBin < m_nEtaBins; ++etaBin){ // Rows
+
+    if (std::abs(m_etaBins[etaBin]) == std::abs(m_etaBins[etaBin+1]))
+      continue;
+
+    for ( unsigned phiBin = 0; phiBin < m_nPhiBins; ++phiBin){ // Cols
+
+      float etaCenter = m_etaBins[etaBin] + deltaEta / 2;
+      float phiCenter = m_phiBins[phiBin] + deltaPhi / 2;
+     
+      // local hash
+      unsigned bin = m_nPhiBins * etaBin + phiBin;
       
-      // Add the CaloHit into the collection
-      collection->push_back( hit );
-    } 
-  }
-  file.close();
+      // Create the calorimeter cell
+      auto *hit = new xAOD::CaloHit( etaCenter, phiCenter, deltaEta, deltaPhi, m_rMin, m_rMax, hash(bin), 
+                                     (CaloSampling)m_sampling,
+                                     (Detector)m_detector,
+                                     m_bc_duration, m_bcid_start, m_bcid_end );
+      if( !collection->insert( hit->hash(), hit) )
+      {
+        MSG_FATAL( "It is not possible to include hit hash ("<< hit->hash() << ") into the collection. hash already exist.");
+      }
+
+    } // Loop over phi bins
+  }// Loop over eta bins
+
+  MSG_DEBUG("Pre_execute done.");
   return StatusCode::SUCCESS;
 }
 
@@ -164,7 +132,6 @@ StatusCode CaloHitMaker::pre_execute( EventContext &ctx ) const
 
 StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 {
-
   SG::ReadHandle<xAOD::CaloHitCollection> collection( m_collectionKey, ctx );
 
   if( !collection.isValid() ){
@@ -176,24 +143,38 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());
+  float eta = vpos.PseudoRapidity();
+  float phi = vpos.Phi();
+  float radius = vpos.Perp();
 
-  // This object can not be const since we will change the intenal value
+  // In plan xy
+  if( !(radius > m_rMin && radius <= m_rMax) )
+    return StatusCode::SUCCESS;
+
+
+  int etaBin = find(m_etaBins, eta);
+
+  if(etaBin < 0) 
+    return StatusCode::SUCCESS;
+
+  if (std::abs(m_etaBins[etaBin]) == std::abs(m_etaBins[etaBin+1]))
+    return StatusCode::SUCCESS;
+
+  int phiBin = find(m_phiBins, phi);
+
+  if(phiBin < 0)
+    return StatusCode::SUCCESS;
+
+  int bin = m_nPhiBins * etaBin + phiBin;
+
   xAOD::CaloHit *hit=nullptr;
-  collection->retrieve( vpos, hit );
 
-  if(hit) hit->Fill( step );
-
-  if (m_detailedHistograms ){
-    // Fill time steps
-    G4StepPoint* point = step->GetPreStepPoint();
-    float t = (float)point->GetGlobalTime() / ns;
-    auto store = ctx.getStoreGateSvc();
-    store->cd(m_histPath);
-    store->hist1("main_event_timesteps")->Fill(t);
-    store->hist1("timesteps")->Fill(t);
-    float edep = (float)step->GetTotalEnergyDeposit();
-    store->hist1("timesteps_per_energy")->Fill(t,edep/MeV);
+  if(collection->retrieve(hash(bin), hit)){
+    hit->fill( step );
+  }else{
+    MSG_FATAL( "Its not possible to retrieve the hit. Bin ("<< bin << ") not exist");
   }
+  
 
   return StatusCode::SUCCESS;
 }
@@ -203,12 +184,13 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 // standlone execute
 StatusCode CaloHitMaker::execute( EventContext &ctx, int /*evt*/ ) const
 {
-  return pre_execute(ctx);
+  MSG_ERROR("This method can not be execute in standalone mode.");
+  return StatusCode::FAILURE;
 }
 
 //!=====================================================================
 
-StatusCode CaloHitMaker::post_execute( EventContext &ctx ) const
+StatusCode CaloHitMaker::post_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
@@ -226,6 +208,7 @@ StatusCode CaloHitMaker::fillHistograms( EventContext &ctx ) const
 
   store->cd(m_histPath);
 
+  
   for ( const auto& p : **collection.ptr() ){ 
 
     const auto *hit = p.second;
@@ -237,11 +220,23 @@ StatusCode CaloHitMaker::fillHistograms( EventContext &ctx ) const
       float energy = store->hist2("hits_edep")->GetBinContent( bin );
       store->hist2("hits_edep")->SetBinContent( bin, (energy + hit->edep()) );
     }
-
   }
 
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
+int CaloHitMaker::find( const std::vector<float> &vec, float value) const 
+{
+  auto binIterator = std::adjacent_find( vec.begin(), vec.end(), [=](float left, float right){ return left < value and value <= right; }  );
+  if ( binIterator == vec.end() ) return -1;
+  return  binIterator - vec.begin();
+}
 
+//!=====================================================================
+
+unsigned long int CaloHitMaker::hash(unsigned bin) const
+{
+  return (m_sampling * 1e8 + m_segment * 1e6 + bin);
+}

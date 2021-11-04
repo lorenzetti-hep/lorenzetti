@@ -8,7 +8,7 @@ from math import *
 from pprint import pprint
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 
 from CaloCell.CaloDefs import CaloSampling, Detector
 
@@ -127,14 +127,14 @@ class LateralSegmentation(object):
   @property
   def eta_bins(self):
     eta_bins = np.arange( self.eta_min, self.eta_max  + eps, step = self.delta_eta ) 
-    return np.unique( np.round( np.concatenate ( [np.flip(-eta_bins), eta_bins] ), 8 ) )
+    return np.unique( np.round( np.concatenate ( [np.flip(-eta_bins), eta_bins] ), 4 ) )
  
   #
   # Get the phi bins for all segmentations
   #
   @property
   def phi_bins(self):
-    return np.round( np.arange( self.phi_min, self.phi_max  + eps, step = self.delta_phi ), 8 ) 
+    return np.round( np.arange( self.phi_min, self.phi_max  + eps, step = self.delta_phi ), 4 ) 
 
 
   #
@@ -167,74 +167,28 @@ class LateralSegmentation(object):
     return self.__class__.__name__ + str(self)
 
 
-
   #
   # Dump
   #
-  def dump(self, output, seg_id):
+  def to_raw(self):
     
-    outputs=[]
-    with open( output, 'w' ) as f:
+    eta_max = max(abs(self.eta_bins))
+    eta_min = min(abs(self.eta_bins))
+    return {
+              'EtaBins'  : self.eta_bins.tolist(),
+              'PhiBins'  : self.phi_bins.tolist(),
+              'Detector' : self.detector_id,
+              'Sampling' : self.sampling_id,
+              'EtaMin'   : round(eta_min, 4),
+              'EtaMax'   : round(eta_max, 4),
+              'RMin'     : round(self.rMin,4),
+              'RMax'     : round(self.rMax,4),
+              'ZMin'     : round(self.zMin,4),
+              'ZMax'     : round(self.zMax,4),
+    }
 
-      f.write("# sample segmentation eta phi delta_eta delta_phi rmin rmax zmin zmax\n")
-      eta_bins = self.eta_bins
-      phi_bins = self.phi_bins
-        
-      # dump layer information
-      s = "config {DETECTOR} {SAMPLING} {SEGMENTATION} {ETA_MIN} {ETA_MAX} {RMIN} {RMAX} {ZMIN} {ZMAX}\n".format( 
-        DETECTOR      = self.detector_id,
-        SAMPLING      = self.sampling_id,
-        SEGMENTATION  = seg_id,
-        ETA_MIN       = round(self.eta_min,8),
-        ETA_MAX       = round(self.eta_max,8),
-        RMIN          = round(self.rMin,8),
-        RMAX          = round(self.rMax,8),
-        ZMIN          = round(self.zMin,8),
-        ZMAX          = round(self.zMax,8),
-      )
-      f.write(s)
 
-      # dump eta bins
-      s = "eta_bins"
-      for value in eta_bins:  s+=' '+str(round(value,4))
-      s+='\n'
-      f.write(s)
-
-      # Dump phi bins
-      s = "phi_bins"
-      for value in phi_bins:  s+=' '+str(round(value,4))
-      s+='\n'
-      f.write(s)
-
-      eta_centers = self.compute_eta_cell_centers()
-      phi_centers = self.compute_phi_cell_centers()
-
-      output = []
-
-      for  eta_idx , eta in enumerate(eta_centers):
-        for phi_idx , phi in enumerate(phi_centers):
-        
-          bin_fix = 1 if (self.eta_min>0.0 and eta>0.0) else 0
-          hash_id = int(self.detector_id*1e9 + self.sampling_id*1e7 + seg_id*1e6 + ((eta_idx+bin_fix)*(len(phi_bins)-1) + phi_idx ) )
-          s = "cell {DETECTOR} {SAMPLING} {ETA} {PHI} {DETA} {DPHI} {RMIN} {RMAX} {ZMIN} {ZMAX} {CELL_HASH}\n".format( 
-            DETECTOR  = self.detector_id,
-            SAMPLING  = self.sampling_id,
-            ETA       = round(eta,8),
-            PHI       = round(phi,8),
-            DETA      = round(self.delta_eta,8),
-            DPHI      = round(self.delta_phi,8),
-            RMIN      = round(self.rMin,8),
-            RMAX      = round(self.rMax,8),
-            ZMIN      = round(self.zMin,8),
-            ZMAX      = round(self.zMax,8),
-            CELL_HASH = hash_id,
-          )
-          f.write(s)
-
-          output.append([self.detector_id, self.sampling_id, round(eta,8), round(phi,8), 
-                         round(self.delta_eta,8), round(self.delta_phi,8)] )
-
-      return output
+          
 
 
 
@@ -256,15 +210,17 @@ class Layer(object):
   #
   # Dump layer
   #
-  def dump(self):
+  def to_raw(self):
 
-    outputs = []
-    for seg_idx, seg in enumerate(self.segmentations):
-      output = 'detector_sampling_%d_seg_%d.dat' % (self.sampling_id, seg_idx)
+    raw = { self.layer : [] }
+    for idx, seg in enumerate(self.segmentations):
       print(self.layer)
       print(seg.sampling_id)
-      outputs.extend(seg.dump(output, seg_idx))
-    return outputs
+      configs = seg.to_raw()
+      configs['Segment'] = idx
+      raw[self.layer].append(configs)
+
+    return raw
 
 
 
@@ -277,8 +233,8 @@ class SingleSegmentationLayer(object):
     segmentation = LateralSegmentation(sampling_id = sampling_id, detector_id=detector_id, **kw)
     self.layer = Layer( name, sampling_id, detector_id, segmentations = segmentation)
 
-  def dump(self):
-    return self.layer.dump()
+  def to_raw(self):
+    return self.layer.to_raw()
 
 
 
@@ -626,13 +582,13 @@ hec = [hec1, hec2, hec3]
 
 all_calo = [em_barrel, had_barrel, emec, hec]
 
-outputs = []
+raw = {}
 for calo in all_calo:
   for layer in calo:
-    outputs.extend(layer.dump())
+    raw.update(layer.to_raw())
 
 
-#outputs = np.array(outputs)
-#print(outputs.shape)
-#with open('cells.npy', 'wb') as f:
-#  np.save(f, outputs)
+import json
+with open('atlas_granularity.json', 'w') as handle:
+    json.dump(raw, handle,indent=4)
+

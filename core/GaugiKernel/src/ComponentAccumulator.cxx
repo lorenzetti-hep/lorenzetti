@@ -111,12 +111,12 @@ void ComponentAccumulator::run(SG::EventContext *ctx , int evt) const
 
   for( auto &toolHandle : m_toolHandles){
     
-    MSG_INFO( "Launching execute step for " << toolHandle->name() );
+    //MSG_INFO( "Launching execute step for " << toolHandle->name() );
     if (toolHandle->execute( *ctx , evt ).isFailure() ){
       MSG_FATAL("It's not possible to execute for " << toolHandle->name());
     }
     
-    MSG_INFO( "Launching booking step for " << toolHandle->name() );
+    //MSG_INFO( "Launching booking step for " << toolHandle->name() );
     if (toolHandle->fillHistograms( *ctx ).isFailure() ){
       MSG_FATAL("It's not possible to fill histograms for " << toolHandle->name());
     }

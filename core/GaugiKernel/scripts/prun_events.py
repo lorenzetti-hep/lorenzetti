@@ -39,14 +39,14 @@ args = parser.parse_args()
 
 # we will always create
 def func(command, _, output):
-    return command + ' -o ' + output + ' --evt 100'
+    return command + ' -o ' + output + ' --evt 10'
 
 if( args.nov % 100 > 0):
     print( 'number of event should be multiple of 100: 100, 200, 1000, 10000...')
     sys.exit(1)
 
 
-njobs = int(args.nov/100)
+njobs = int(args.nov/10)
 flist = list(range(njobs))
 
 prun = Pool( func, args.command, args.numberOfThreads, flist, args.outputFile )

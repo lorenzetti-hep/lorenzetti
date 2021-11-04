@@ -24,9 +24,11 @@ namespace xAOD{
                float phi, 
                float deta, 
                float dphi,
+               float rmin,
+               float rmax,
                // Hash
                unsigned long int hash,
-               // cell identification
+               // Hit identification
                CaloSampling sampling, 
                Detector detector,
                // bunch crossing information
@@ -38,29 +40,33 @@ namespace xAOD{
       /** Destructor **/
       ~CaloHit()=default;
       
-      /*! Fill the deposit energy into the cell */
-      void Fill( const G4Step * );
+      /*! Fill the deposit energy into the Hit */
+      void fill( const G4Step * );
       /** Zeroize the pulse/sample vectors **/
       void clear();
 
 
       /*
-       * Cell identification
+       * Hit identification
        */
 
-      /*! Cell eta center */
+      /*! Hit eta center */
       PRIMITIVE_SETTER_AND_GETTER( float, m_eta, setEta, eta );
-      /*! Cell phi center */
+      /*! Hit phi center */
       PRIMITIVE_SETTER_AND_GETTER( float, m_phi, setPhi, phi );
-      /*! Cell delta eta */
+      /*! Hit delta eta */
       PRIMITIVE_SETTER_AND_GETTER( float, m_deta, setDeltaEta , deltaEta);
-      /*! Cell delta phi */
+      /*! Hit delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
-      /*! Cell hash */
+      /*! Hit r min */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_rmin, setRMin, rMin );
+      /*! Hit r max */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_rmax, setRMax, rMax );
+      /*! Hit hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
-      /*! Cell sampling id */
+      /*! Hit sampling id */
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
-      /*! Cell layer id */
+      /*! Hit layer id */
       PRIMITIVE_SETTER_AND_GETTER( Detector  , m_detector  , setDetector    , detector   );
      
 
@@ -97,7 +103,7 @@ namespace xAOD{
 
     private:
  
-      int findIndex( float value) const ;
+      int find( float value) const ;
        
 
       /*! id sample */
@@ -114,8 +120,10 @@ namespace xAOD{
       float m_deta;
       /*! delta phi */
       float m_dphi;
-
-
+      /*! radius min */
+      float m_rmin;
+      /*! radius max */
+      float m_rmax;
       /*! bunch crossing start id */
       int m_bcid_start;
       /*! bunch crossing end id */

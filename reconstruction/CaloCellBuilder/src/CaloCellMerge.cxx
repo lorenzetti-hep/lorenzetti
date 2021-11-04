@@ -1,6 +1,6 @@
 
 #include "CaloCell/CaloCellContainer.h"
-#include "helper/CaloCellCollection.h"
+#include "CaloCell/CaloDetDescriptorCollection.h"
 
 #include "CaloCellMerge.h"
 #include "TVector3.h"
@@ -92,11 +92,12 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
   truthContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
 
 
+  //unsigned long int hash = 0;
 
   for ( auto key : m_collectionKeys ){
 
     MSG_DEBUG( "Reading all cells from collection with key " << key );
-    SG::ReadHandle<xAOD::CaloCellCollection> collection( key, ctx );
+    SG::ReadHandle<xAOD::CaloDetDescriptorCollection> collection( key, ctx );
     
     if( !collection.isValid() ){
       MSG_WARNING( "It's not possible to read the xAOD::CaloCellCollection from this Context using this key: " << key );
@@ -118,7 +119,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setDeltaPhi( descriptor->deltaPhi() );
       truth_cell->setE( descriptor->edep() ); // The truth will be the energy deposity
       truth_cell->setEt( truth_cell->e() / std::cosh( truth_cell->eta() ) );
-
+      
       truth_cell->setDescriptor( descriptor );
       truthContainer->push_back( truth_cell );
 

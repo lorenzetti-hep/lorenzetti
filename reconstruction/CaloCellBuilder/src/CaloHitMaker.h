@@ -4,10 +4,15 @@
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/AlgTool.h"
+#include "CaloHit/CaloHit.h"
+
 
 
 class CaloHitMaker : public Gaugi::Algorithm
 {
+
+  typedef std::map<unsigned long int, xAOD::CaloHit* > collection_map_t;
+
   public:
   
     /** Contructor **/
@@ -31,22 +36,27 @@ class CaloHitMaker : public Gaugi::Algorithm
     virtual StatusCode fillHistograms( SG::EventContext &ctx ) const override;
     /*! finalize the algorithm **/ 
     virtual StatusCode finalize() override;
-    
 
   private:
    
+    int find( const std::vector<float> &vec, float value) const;
+    unsigned long int hash(unsigned bin) const;
+
     /*! collection key */
-    std::string m_collectionKey;
+    std::string m_collectionKey; // output
     /*! event key */
-    std::string m_eventKey;
-    /*! Base histogram path */
-    std::string m_histPath;
-    /*! The path to the hit configuration file */
-    std::string m_caloHitFile;
-    /*! Segment index for this sample calorimeter */
-    int m_segmentation;
+    std::string m_eventKey; // input
+
+
+    std::vector<float> m_etaBins; 
+    std::vector<float> m_phiBins; 
+    float m_rMin;
+    float m_rMax; 
+
     /*! Sampling id for this reconstruction */
     int m_sampling;
+    /*! Sampling id segment */
+    int m_segment;
     /*! Detector id for this sampling*/
     int m_detector;
     /*! The start bunch crossing id for energy estimation */
@@ -55,19 +65,14 @@ class CaloHitMaker : public Gaugi::Algorithm
     int m_bcid_end;
     /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
-
-
-    float m_eta_min;
-    float m_eta_max; 
-    float m_rmin;
-    float m_rmax;  
-    
-    std::vector<float> m_eta_bins; 
-    std::vector<float> m_phi_bins; 
-
+    /*! Base histogram path */
+    std::string m_histPath;
+    /*! detailed histogram flags */
     bool m_detailedHistograms;
-};
 
+    unsigned int m_nEtaBins;
+    unsigned int m_nPhiBins;
+};
 
 
 #endif
