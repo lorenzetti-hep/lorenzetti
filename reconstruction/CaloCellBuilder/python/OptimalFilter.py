@@ -8,9 +8,15 @@ from G4Kernel import treatPropertyValue
 
 class OptimalFilter(Logger):
 
-  __allow_keys = ["OutputLevel",
-                  "Weights",
-                  ]
+  __allow_keys = [
+    "UseDoubleRestriction",
+    "SamplingRate",
+    "StartSamplingBC",
+    "EnableCalibration",
+    "CalibrationDatasetFile",
+    "StaticWeights",
+    "OutputLevel",
+  ]
   
   def __init__( self, name, **kw ):
 

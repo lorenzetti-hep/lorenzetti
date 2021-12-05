@@ -17,15 +17,17 @@ CaloPulseShapeMaker::CaloPulseShapeMaker( std::string name ) :
 //!=====================================================================
 
 CaloPulseShapeMaker::~CaloPulseShapeMaker()
-{;}
+{}
 
 //!=====================================================================
 
 StatusCode CaloPulseShapeMaker::initialize()
 {
   setMsgLevel( (MSG::Level)m_outputLevel );
+  MSG_DEBUG( "Initializing CaloPulseShapeMaker");
   MSG_DEBUG( "Reading shaper values from: " << m_shaperFile);
   ReadShaper( m_shaperFile );
+  MSG_DEBUG( "Shaper read successfully");
   return StatusCode::SUCCESS;
 }
 

@@ -85,6 +85,8 @@ class LateralSegmentation( Logger ):
                   "StartSamplingBC",
                   "NSamples",        
                   "EletronicNoise",  
+                  "UseOF2",
+                  "OFCalibrationFile",
                   "OFWeights", 
                   "Detector",      
                   ]
