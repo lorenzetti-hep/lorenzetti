@@ -9,6 +9,7 @@ class EventGenerator( Logger ):
 
   __allow_keys = [
                         "NumberOfEvents" ,
+                        "EventNumbers"   ,
                         "OutputFile"     , 
                         "OutputLevel"    ,
                       ]
@@ -32,7 +33,13 @@ class EventGenerator( Logger ):
 
   def run( self, evt ):
 
-    self.core().setProperty( "NumberOfEvents",  evt )
+    if type(evt) is list:
+      self.setProperty( "EventNumbers",  evt )
+    elif type(evt) is int:
+      self.setProperty( "NumberOfEvents", evt )
+    else:
+      MSG_FATAL(self, "input arg type not supported. Should be int of a list of event numbers")
+
     self.core().initialize()
     self.core().execute()
     self.core().finalize()

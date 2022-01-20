@@ -46,7 +46,7 @@ parser.add_argument('-m','--merge', action='store_true', dest='merge', required 
 parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
                     help = "Save all detector hits.")
 
-parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=3,
+parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=5,
                     help = "Event timeout in minutes")
 
 
@@ -113,7 +113,6 @@ try:
   gun.merge(acc)
   calorimeter_hits.merge(acc)
 
-  
   OutputHitsKey   = recordable("Hits")
   OutputEventKey  = recordable("EventInfo")
 
@@ -135,6 +134,7 @@ try:
                              OutputLevel     = outputLevel)
 
   acc += HIT
+  
   acc.run(args.numberOfEvents)
   
   

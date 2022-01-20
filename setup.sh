@@ -40,6 +40,7 @@ export PATH=`pwd`/lib:$PATH:$PWD
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
 cd ..
 export PATH=$PATH:$PWD/core/GaugiKernel/scripts
+export PATH=$PATH:$PWD/core/P8Kernel/scripts
 export PATH=$PATH:$PWD/generator/PythiaGenerator/share
 export PATH=$PATH:$PWD/scripts
 
