@@ -8,6 +8,7 @@
 #include <iostream>
 
 ActionInitialization::ActionInitialization( int numberOfThreads,
+                                            int timeout,
                                             PrimaryGenerator *gen,
                                             std::vector<Gaugi::Algorithm*> acc , 
                                             std::string output)
@@ -17,7 +18,8 @@ ActionInitialization::ActionInitialization( int numberOfThreads,
   m_acc(acc),
   m_generator(gen),
   m_output(output),
-  m_numberOfThreads(numberOfThreads)
+  m_numberOfThreads(numberOfThreads),
+  m_timeout(timeout)
 {
 
   for ( auto toolHandle : m_acc )
@@ -55,7 +57,7 @@ void ActionInitialization::Build() const
 {
   MSG_INFO( "Build()" );
   SetUserAction(new PrimaryGeneratorAction(m_generator));
-  SetUserAction(new RunAction(m_numberOfThreads, m_acc, m_output));
+  SetUserAction(new RunAction(m_numberOfThreads, m_timeout, m_acc, m_output));
   SetUserAction(new EventAction());
   SetUserAction(new SteppingAction());
 }  

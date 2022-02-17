@@ -1,15 +1,16 @@
 
-#include "helper/CaloCellCollection.h"
 #include "G4Kernel/CaloPhiRange.h"
 #include "CaloCell/CaloDetDescriptor.h"
+#include "CaloCell/CaloDetDescriptorCollection.h"
 #include "CaloHit/CaloHitContainer.h"
+#include "CaloHit/CaloHitCollection.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "G4Kernel/constants.h"
 #include "CaloCellMaker.h"
+
 #include "TVector3.h"
 #include <cstdlib>
 #include "G4SystemOfUnits.hh"
-
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TH2Poly.h"
@@ -23,16 +24,24 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                );
-  declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      );
-  declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
-  declareProperty( "CaloCellFile"             , m_caloCellFile                        );
-  declareProperty( "CollectionKey"            , m_collectionKey="CaloCellCollection"  );
+  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
+  declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      ); // input
+  declareProperty( "CollectionKey"            , m_collectionKey="CaloDetDescriptorCollection"  ); // output
+  declareProperty( "EtaBins"                  , m_etaBins                             );
+  declareProperty( "PhiBins"                  , m_phiBins                             );
+  declareProperty( "RMin"                     , m_rMin                                );
+  declareProperty( "RMax"                     , m_rMax                                );
+  declareProperty( "Sampling"                 , m_sampling                            );
+  declareProperty( "Segment"                  , m_segment                             );
+  declareProperty( "Detector"                 , m_detector                            );
   declareProperty( "BunchIdStart"             , m_bcid_start=-7                       );
   declareProperty( "BunchIdEnd"               , m_bcid_end=8                          );
   declareProperty( "BunchDuration"            , m_bc_duration=25                      );
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
+  declareProperty( "HistogramPath"            , m_histPath="/CaloCellMaker"           );
+
+
 }
 
 //!=====================================================================
@@ -47,40 +56,13 @@ void CaloCellMaker::push_back( Gaugi::AlgTool* tool )
 StatusCode CaloCellMaker::initialize()
 {
   CHECK_INIT();
-  
+
+  m_nEtaBins = m_etaBins.size() - 1;
+  m_nPhiBins = m_phiBins.size() - 1;
+
   // Set message level
   setMsgLevel( (MSG::Level)m_outputLevel );
-  
-  // Read the file
-  std::ifstream file(m_caloCellFile);
-
-  std::string line;
-  while (std::getline(file, line))
-  {
-    std::stringstream ss(line);
-    std::string command;
-    // Get the command
-    ss >> command;
-    // Layer configuration
-    if (command=="config"){
-      ss >> m_detector >> m_sampling >> m_segmentation >> m_eta_min >> m_eta_max >> m_rmin >> m_rmax;
-    }else if(command=="eta_bins"){
-      float value;
-      while(ss>>value)
-        m_eta_bins.push_back(value);
-    }else if(command=="phi_bins"){
-      float value;
-      while(ss>>value)
-        m_phi_bins.push_back(value);
-    }else if(command=="#"){
-      continue;
-    }else{
-      break;
-    }
-  }
-
-  file.close();
-
+ 
   for ( auto tool : m_toolHandles )
   {
     if (tool->initialize().isFailure() )
@@ -113,20 +95,14 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
   auto store = ctx.getStoreGateSvc();
 
   store->mkdir(m_histPath);
-  int nEtabins = m_eta_bins.size() -1;
-  int nPhibins = m_phi_bins.size() -1;
-
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( "cells_e", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  store->add(new TH2F( "cells_e", "Estimated Cells Energy; #eta; #phi; Energy [MeV]", m_nEtaBins, m_etaBins.data(), m_nPhiBins, m_phiBins.data() ) );
   // Create the 2D histogram for monitoring purpose
-  store->add(new TH2F( "cells_edep", "Truth Cells Energy; #eta; #phi; Energy [MeV]", nEtabins, m_eta_bins.data(), nPhibins, m_phi_bins.data() ) );
+  store->add(new TH2F( "cells_edep", "Truth Cells Energy; #eta; #phi; Energy [MeV]", m_nEtaBins, m_etaBins.data(), m_nPhiBins, m_phiBins.data() ) );
   // Create the 2D histogram for monitoring purpose
   store->add(new TH1F( "res_cells", "(E_{estimated}-E_{dep}); res_{E} [MeV]; Count",  100, -2*GeV, 2*GeV ) );
 
-
-
   if (m_detailedHistograms){
-
     int nbunchs = m_bcid_end - m_bcid_start + 1;
     store->add(new TH1F( "timesteps", "Step time per bunch; time[ns]; Count", nbunchs*50, (m_bcid_start - 0.5)*m_bc_duration, (m_bcid_end + 0.5)*m_bc_duration) );
     store->add(new TH1F( "main_event_timesteps", "Step time main event; time[ns]; Count", 50, -0.5*m_bc_duration, m_bc_duration*0.5 ) );
@@ -141,44 +117,44 @@ StatusCode CaloCellMaker::bookHistograms( SG::EventContext &ctx ) const
 
 StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 {
-  // Build the CaloCellCollection and attach into the EventContext
-  // Create the cell collection into the event context
-  SG::WriteHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
-  
-  collection.record( std::unique_ptr<xAOD::CaloCellCollection>(new xAOD::CaloCellCollection( m_eta_min,m_eta_max,m_eta_bins, m_phi_bins,
-                                                                                             m_rmin,m_rmax,
-                                                                                             (Detector)m_detector,
-                                                                                             (CaloSampling)m_sampling, 
-                                                                                             m_segmentation)));
-  // Read the file:
-  std::ifstream file( m_caloCellFile );
+  // Build the CaloHitCollection and attach into the EventContext
+  // Create the hit collection into the event context
+  SG::WriteHandle<xAOD::CaloDetDescriptorCollection> collection( m_collectionKey, ctx );
 
-  std::string line;
-  while (std::getline(file, line))
-  {
-    std::stringstream ss(line);
-    std::string command;
-    // Get the command
-    ss >> command;
-    // Get only cell config 
-    if (command=="cell"){
-      float  eta, phi, deta, dphi, rmin, rmax, zmin, zmax;
-      int detector, sampling; // Calorimeter layer and eta/phi ids
-      unsigned long int hash;
-      //std::string hash;
-      ss >> detector >> sampling >> eta >> phi >> deta >> dphi >> rmin >> rmax >> zmin >> zmax >> hash;
+  collection.record( std::unique_ptr<xAOD::CaloDetDescriptorCollection>(new xAOD::CaloDetDescriptorCollection()) );
+
+  float deltaEta = std::abs(m_etaBins[1] - m_etaBins[0]);
+  float deltaPhi = std::abs(m_phiBins[1] - m_phiBins[0]);
+
+  //
+  // Prepare all sensitive objects like a two dimensional histogram
+  //
+  for ( unsigned etaBin = 0; etaBin < m_nEtaBins; ++etaBin){
+
+    if (std::abs(m_etaBins[etaBin]) == std::abs(m_etaBins[etaBin+1]))
+      continue;
+
+    for ( unsigned phiBin = 0; phiBin < m_nPhiBins; ++phiBin){
+
+      float etaCenter = m_etaBins[etaBin] + deltaEta / 2;
+      float phiCenter = m_phiBins[phiBin] + deltaPhi / 2;
+
+      unsigned bin = m_nPhiBins * etaBin + phiBin;
 
       // Create the calorimeter cell
-      auto *descriptor = new xAOD::CaloDetDescriptor( eta, phi, deta, dphi, rmin, rmax, hash, 
-                                                      (CaloSampling)sampling,
-                                                      (Detector)detector,
+      auto *descriptor = new xAOD::CaloDetDescriptor( etaCenter, phiCenter, deltaEta, deltaPhi, 
+                                                      m_rMin, m_rMax, hash(bin), 
+                                                      (CaloSampling)m_sampling,
+                                                      (Detector)m_detector,
                                                       m_bc_duration, m_bcid_start, m_bcid_end );
-      
-      // Add the CaloCell into the collection
-      collection->push_back( descriptor );
-    } 
-  }
-  file.close();
+
+      if ( !collection->insert( descriptor->hash(), descriptor ) ){
+        MSG_FATAL( "It is not possible to include cell hash ("<< descriptor->hash() << ") into the collection. hash already exist.");
+      }
+
+    } // Loop over phi bins
+  }// Loop over eta bins
+
   return StatusCode::SUCCESS;
 }
 
@@ -209,7 +185,7 @@ StatusCode CaloCellMaker::execute( EventContext &ctx , int /*evt*/ ) const
 
 //!=====================================================================
 
-StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
+StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const 
 {
 
   SG::ReadHandle<xAOD::CaloHitContainer> hits( m_hitsKey, ctx );
@@ -225,12 +201,12 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
   }
 
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+  SG::ReadHandle<xAOD::CaloDetDescriptorCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
+    MSG_FATAL("It's not possible to retrieve the CaloDetDescriptorCollection using this key: " << m_collectionKey);
   }
-
+  
   auto evt = (**event.ptr()).front();
 
   for ( const auto& hit : **hits.ptr() )
@@ -238,14 +214,11 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     xAOD::CaloDetDescriptor *descriptor=nullptr;
 
     // Check if the current hit allow to this cells collection
-    collection->retrieve( hit, descriptor );
-    if(descriptor){
-
+    if(collection->retrieve( hit->hash(), descriptor ))
+    {
       if (descriptor->hash() != hit->hash()){
         MSG_FATAL( "Descriptor hash code is different than hit hash code. Abort!");
       }
-
-   
 
       for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
       {
@@ -273,13 +246,12 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
 
 StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
 {
-  
 
   auto store = ctx.getStoreGateSvc();
-  SG::ReadHandle<xAOD::CaloCellCollection> collection( m_collectionKey, ctx );
+  SG::ReadHandle<xAOD::CaloDetDescriptorCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
-    MSG_FATAL("It's not possible to retrieve the CaloCellCollection using this key: " << m_collectionKey);
+    MSG_FATAL("It's not possible to retrieve the CaloDetDescriptorCollection using this key: " << m_collectionKey);
   }
 
   store->cd(m_histPath);
@@ -325,8 +297,23 @@ StatusCode CaloCellMaker::fillHistograms( EventContext &ctx ) const
       store->add(graph);
       graph->Write();
   }
+
+
   return StatusCode::SUCCESS;
 }
 
+//!=====================================================================
 
+int CaloCellMaker::find( const std::vector<float> &vec, float value) const 
+{
+  auto binIterator = std::adjacent_find( vec.begin(), vec.end(), [=](float left, float right){ return left < value and value <= right; }  );
+  if ( binIterator == vec.end() ) return -1;
+  return  binIterator - vec.begin();
+}
 
+//!=====================================================================
+
+unsigned long int CaloCellMaker::hash(unsigned bin) const
+{
+  return (m_sampling * 1e8 + m_segment * 1e6 + bin);
+}

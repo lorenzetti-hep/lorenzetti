@@ -38,13 +38,13 @@ do
 done
 
 
-cd $current_path
-echo "compile lorenzetti"
-git clone https://github.com/lorenzetti-hep/lorenzetti.git
-cd lorenzetti
-source $PWD/setup_module.sh
-source $PWD/setup_module.sh --head
-mkdir build && cd build && cmake .. && make -j$CPU_N && cd .. && source $PWD/setup.sh
-echo "back to the base dir..."
+#cd $current_path
+#echo "compile lorenzetti"
+#git clone https://github.com/lorenzetti-hep/lorenzetti.git
+#cd lorenzetti
+#source $PWD/setup_module.sh
+#source $PWD/setup_module.sh --head
+#mkdir build && cd build && cmake .. && make -j$CPU_N && cd .. && source $PWD/setup.sh
+#echo "back to the base dir..."
 cd $current_path
 

@@ -1,5 +1,4 @@
 
-#include "G4Kernel/constants.h"
 #include "G4Kernel/RunReconstruction.h"
 #include "GaugiKernel/Timer.h"
 #include "G4Threading.hh"
@@ -12,7 +11,7 @@
 
 
 
-RunReconstruction::RunReconstruction( int numberOfThreads,
+RunReconstruction::RunReconstruction( int numberOfThreads, int timeout,
                                       std::vector<Gaugi::Algorithm*> acc , 
                                       std::string output ): 
   IMsgService("RunReconstruction"),
@@ -20,7 +19,8 @@ RunReconstruction::RunReconstruction( int numberOfThreads,
   m_store( output + "." + std::to_string(G4Threading::G4GetThreadId()) ),
   m_ctx( "EventContext" ),
   m_toolHandles(acc),
-  m_lock(false)
+  m_lock(false),
+  m_event_timeout(timeout)
 {
   // Tranfer all rights to the event context
   m_ctx.setStoreGateSvc( &m_store );
@@ -41,6 +41,19 @@ RunReconstruction::RunReconstruction( int numberOfThreads,
 
 RunReconstruction::~RunReconstruction()
 {
+  m_store.cd("Event");
+  /*
+  float mean_tot_time = m_store.histI("EventCounter")->GetMean();
+  float std_tot_time = m_store.histI("EventCounter")->GetStdDev();
+  int tot = m_store.histI("EventCounter")->GetBinContent(1);
+  int timeout = m_store.histI("EventCounter")->GetBinContent(2);
+  MSG_INFO("=========================================================");
+  MSG_INFO("Number of events processed: " << tot)
+  MSG_INFO("Number of events skipped  : " << timeout);
+  //MSG_INFO("We lost " << (tot-timeout)/tot << "% of events");
+  MSG_INFO( "Mean total time: " << mean_tot_time << " +- " << std_tot_time << " [s]");
+  MSG_INFO("=========================================================");
+  */
   m_store.save();
 }
 
@@ -84,8 +97,8 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   m_stepCounter++;
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
-  if ( m_msgCounter>9e9 ){
-    MSG_INFO( "Running..." );
+  if ( m_msgCounter>1e6 && m_timeout.resume() > m_event_timeout*0.8 ){
+    MSG_INFO( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
     m_msgCounter=0;
   }
 
@@ -152,7 +165,7 @@ void RunReconstruction::bookHistograms(){
   m_store.mkdir( "Event" );
   m_store.add( new TH1F("BeginOfEvent" , ";time[s];Count;"   , 100 , 0 , 1  ) );
   m_store.add( new TH1F("EndOfEvent"   , ";time[s];Count;"   , 100 , 0 , 10 ) );
-  m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 600 , 0 , 600) );
+  m_store.add( new TH1F("Event"        , ";time[s];Count;"   , 14400 , 0 , 14400) );
   m_store.add( new TH1I("EventCounter" , ";;Count;"           , 3  , 0 ,   3) );
   
   std::vector<std::string> labels{"Event", "Completed", "Timeout"};
@@ -170,7 +183,7 @@ SG::EventContext & RunReconstruction::getContext()
 //!=====================================================================
 
 bool RunReconstruction::timeout(){
-  return m_timeout.resume() > event_timeout ? true : false;
+  return m_timeout.resume() > m_event_timeout ? true : false;
 }
 
 //!=====================================================================

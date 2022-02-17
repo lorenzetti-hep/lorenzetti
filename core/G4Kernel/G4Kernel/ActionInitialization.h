@@ -10,7 +10,7 @@
 class ActionInitialization : public G4VUserActionInitialization, public MsgService
 {
   public:
-    ActionInitialization( int numberOfThreads, PrimaryGenerator *gen, std::vector<Gaugi::Algorithm*> acc, std::string output );
+    ActionInitialization( int numberOfThreads, int timeout, PrimaryGenerator *gen, std::vector<Gaugi::Algorithm*> acc, std::string output );
     virtual ~ActionInitialization();
 
     virtual void BuildForMaster() const;
@@ -23,6 +23,7 @@ class ActionInitialization : public G4VUserActionInitialization, public MsgServi
     PrimaryGenerator *m_generator;
     std::string m_output;
     int m_numberOfThreads;
+    int m_timeout;
 };
 
 #endif

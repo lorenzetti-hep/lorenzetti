@@ -4,22 +4,29 @@ __all__ = ["CaloHitMaker"]
 
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 
 
 class CaloHitMaker( Logger ):
 
-  __allow_keys = ["CollectionKey", 
-                  "EventKey",
-                  "OutputLevel", 
-                  "CaloHitFile", 
-                  "BunchIdStart",
-                  "BunchIdEnd",
-                  "BunchDuration",
-                  "HistogramPath",
+  __allow_keys = [
+                  "EventKey"          ,
+                  "CollectionKey"     ,
+                  "EtaBins"           ,
+                  "PhiBins"           ,
+                  "RMin"              ,
+                  "RMax"              ,
+                  "Sampling"          ,
+                  "Segment"           ,
+                  "Detector"          ,
+                  "BunchIdStart"      ,
+                  "BunchIdEnd"        ,
+                  "BunchDuration"     ,
+                  "OutputLevel"       ,
                   "DetailedHistograms",
+                  "HistogramPath"     ,
                   ]
 
   def __init__( self, name, **kw ): 

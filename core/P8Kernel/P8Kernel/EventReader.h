@@ -55,6 +55,7 @@ namespace generator{
       TTree *m_ttree;
   
       float m_avgmu;
+      int m_eventNumber;
       float m_bc_duration;
       std::vector<int>    *m_p_isMain		  ;
       std::vector<int>    *m_p_pdg_id	    ;

@@ -40,12 +40,13 @@ RunManager::RunManager( std::string name ):
   declareProperty( "OutputFile"     , m_output="Example.root"   );
   declareProperty( "RunVis"         , m_runVis=false            );
   declareProperty( "Seed"           , m_seed=0                  );
+  declareProperty( "Timeout"        , m_timeout = 3*60          ); // 3 minutes as default
 
   MSG_INFO( "Run manager was created." );
 
 }
 
-RunManager::~RunManager()
+RunManager::~RunManager() 
 {;}
 
 
@@ -113,7 +114,7 @@ void RunManager::run( int evt )
 
   MSG_INFO( "Creating the action initalizer..." );
   MSG_INFO( m_output );
-  ActionInitialization* actionInitialization = new ActionInitialization(m_nThreads, m_generator, m_acc, m_output);
+  ActionInitialization* actionInitialization = new ActionInitialization(m_nThreads, m_timeout, m_generator, m_acc, m_output);
   runManager->SetUserInitialization(actionInitialization);
 
   MSG_INFO( "Creating the vis executive...");

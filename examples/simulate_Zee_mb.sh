@@ -16,3 +16,4 @@ cd ../AOD
 prun_jobs.py -c "reco_trf.py" -i ../ESD -o Zee_mb.AOD.root -mt 40 -m
 
 
+cd ../..

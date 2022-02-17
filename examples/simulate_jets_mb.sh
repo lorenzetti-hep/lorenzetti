@@ -15,4 +15,5 @@ prun_jobs.py -c "digit_trf.py" -i ../HIT/ -o JF17_mb.ESD.root -mt 40
 cd ../AOD
 prun_jobs.py -c "reco_trf.py" -i ../ESD -o JF17_mb.AOD.root -mt 40 -m
 
+cd ../..
 

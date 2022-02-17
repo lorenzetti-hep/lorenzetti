@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Gaugi.messenger      import LoggingLevel, Logger
+from Gaugi      import LoggingLevel, Logger
 from Gaugi                import GeV
 from CaloClusterBuilder   import CaloClusterMaker
 from CaloRingerBuilder    import CaloRingerMaker
@@ -74,7 +74,7 @@ try:
                               TruthKey        = recordable("Particles"),
                               EtaWindow       = 0.4,
                               PhiWindow       = 0.4,
-                              MinCenterEnergy = 0.1*GeV, # 15GeV in the EM core 
+                              MinCenterEnergy = 1*GeV, 
                               HistogramPath   = "Expert/Clusters",
                               OutputLevel     = outputLevel )
 

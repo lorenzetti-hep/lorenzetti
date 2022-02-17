@@ -1,7 +1,7 @@
 __all__ = ["RootStreamESDMaker"]
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 
