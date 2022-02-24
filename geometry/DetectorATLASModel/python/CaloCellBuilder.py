@@ -41,7 +41,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CaloPulseShapeMaker, PulseGenerator, OptimalFilter
 
     collectionKeys = []
  
@@ -58,21 +58,35 @@ class CaloCellBuilder( Logger ):
 
           MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", seg.CollectionKey)
 
-          pulse = PulseGenerator( "PulseGenerator", 
-                                  NSamples        = seg.NSamples, 
-                                  ShaperFile      = seg.ShaperFile,
-                                  OutputLevel     = self.__outputLevel,
-                                  SamplingRate    = 25.0,
-                                  Pedestal        = 0.0,
-                                  DeformationMean = 0.0, 
-                                  DeformationStd  = 0.0,
-                                  NoiseMean       = 0.0,
-                                  NoiseStd        = seg.EletronicNoise,
-                                  StartSamplingBC = seg.StartSamplingBC, 
-                                )
-          of = OptimalFilter("OptimalFilter",
-                              Weights  = seg.OFWeights,
-                              OutputLevel=self.__outputLevel)
+          pulse_shape = CaloPulseShapeMaker("CaloPulseShapeMaker",
+                                            ShaperFile  = seg.ShaperFile,
+                                            OutputLevel = self.__outputLevel,
+                                            )
+
+          pulse = PulseGenerator("PulseGenerator",
+                                 OutputLevel     = self.__outputLevel,
+                                 NSamples        = seg.NSamples,
+                                 SamplingRate    = 25.0,
+                                 Pedestal        = 0.0,
+                                 DeformationMean = 0.0,
+                                 DeformationStd  = 0.0,
+                                 NoiseMean       = 0.0,
+                                 NoiseStd        = seg.EletronicNoise,
+                                 StartSamplingBC = seg.StartSamplingBC,
+                                 )
+
+          of2 = OptimalFilter("OptimalFilter",
+                              OutputLevel            = self.__outputLevel,
+                              SamplingRate           = 25.0,
+                              StartSamplingBC        = seg.StartSamplingBC,
+                              # OF1 or OF2
+                              UseDoubleRestriction   = seg.UseOF2,
+                              # Calibration with minimub bias datasets
+                              EnableCalibration      = hasattr(seg, "OFCalibrationFile"),
+                              CalibrationDatasetFile = getattr(seg, "OFCalibrationFile", ""),
+                              ## Skip weights calculation and use static weights
+                              #StaticWeights         = seg.OFWeights
+                              )
 
 
           alg = CaloCellMaker("CaloCellMaker", 
@@ -100,7 +114,7 @@ class CaloCellBuilder( Logger ):
                               )
 
 
-          alg.Tools = [pulse, of]
+          alg.Tools = [pulse_shape, pulse, of2]
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
 

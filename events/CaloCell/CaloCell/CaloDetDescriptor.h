@@ -98,7 +98,6 @@ namespace xAOD{
       /*! Time (in ns) for each bunch crossing */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_time , setTime , time   );
 
-
       /*
        * Eletronic pulse information
        */
@@ -116,6 +115,31 @@ namespace xAOD{
         m_pulsePerBunch[bc_id] = pulse;
       };
 
+
+      /*! get eletronic pulse shape */
+      std::vector<std::pair<float,float>> pulseShape() const {
+          return m_pulse_shape;
+      }
+
+      /*! get eletronic pulse shape time-origin index */
+      unsigned int pulseShapeOrigin() const {
+          return m_pulse_shape_origin;
+      }
+
+      /*! get eletronic pulse shape resolution in ns */
+      float pulseShapeResolution() const {
+          return m_pulse_shape_resolution;
+      }
+
+      /*! set eletronic pulse shape */
+      void setPulseShape(
+              std::vector<std::pair<float,float>> pulseShape,
+              unsigned int origin,
+              float resolution ) {
+          m_pulse_shape = pulseShape;
+          m_pulse_shape_origin = origin;
+          m_pulse_shape_resolution = resolution;
+      }
 
 
     private:
@@ -141,6 +165,10 @@ namespace xAOD{
       /*! In plane xy */
       float m_radius_max;
 
+      /*! Eletronic pulse shape: time in ns X sample value */
+      std::vector<std::pair<float,float>> m_pulse_shape;
+      unsigned int m_pulse_shape_origin;
+      float m_pulse_shape_resolution;
 
       /*! The estimated energy from OF in bcid=0 */
       float m_e;

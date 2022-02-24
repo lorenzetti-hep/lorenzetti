@@ -24,6 +24,9 @@ namespace xAOD{
         int bcid_start;
         int bcid_end;
         float bc_duration;
+        std::vector<std::pair<float,float>> pulse_shape;
+        unsigned int pulse_shape_origin;
+        float pulse_shape_resolution;
         std::vector<float> pulse;
         std::vector<float> edep_per_bunch;
         unsigned long int hash;

@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import CaloPulseShapeMaker
+__all__.extend(CaloPulseShapeMaker.__all__)
+from .CaloPulseShapeMaker import *
+
 from . import PulseGenerator
 __all__.extend(PulseGenerator.__all__)
 from .PulseGenerator import *

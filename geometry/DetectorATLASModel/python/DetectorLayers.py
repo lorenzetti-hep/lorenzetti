@@ -20,8 +20,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 90, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
 
   pse = CaloSamplingMaker( "PSE", "Collection_PSE", cells['PSE'],
@@ -32,8 +33,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 90, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   emb1 =CaloSamplingMaker( "EMB1", "Collection_EMB1", cells['EMB1'],
@@ -44,8 +46,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 26, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   emb2 =CaloSamplingMaker( "EMB2", "Collection_EMB2", cells['EMB2'],
@@ -56,8 +59,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 60, # MeV
-                    #OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   emb3 =CaloSamplingMaker( "EMB3", "Collection_EMB3", cells['EMB3'],
@@ -67,8 +71,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 40, # MeV
-                    #OFWeights       = [ -0.0125, 0.2379, 0.6097, 0.3863, 0.1183],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   tilecal1 = CaloSamplingMaker( "TileCal1", "Collection_TileCal1", cells['TileCal1'],
@@ -78,8 +83,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3683, -0.3389, 0.1549, 0.8386, 0.2539, -0.2149, -0.3253],
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   tilecal2 = CaloSamplingMaker( "TileCal2", "Collection_TileCal2", cells['TileCal2'],
@@ -89,8 +95,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3808, -0.3594, 0.1807, 0.8108, 0.2796, -0.1997, -0.3311],
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   tilecal3 = CaloSamplingMaker( "TileCal3", "Collection_TileCal3", cells['TileCal3'],
@@ -100,8 +107,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   tilecalExt1 = CaloSamplingMaker( "TileExt1", "Collection_TileExt1", cells['TileExt1'],
@@ -111,8 +119,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   tilecalExt2 = CaloSamplingMaker( "TileExt2", "Collection_TileExt2", cells['TileExt2'],
@@ -122,8 +131,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   tilecalExt3 = CaloSamplingMaker( "TileExt3", "Collection_TileExt3", cells['TileExt3'],
@@ -133,8 +143,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -3, 
                     NSamples        = 7,
                     EletronicNoise  = 20, # MeV
-                    #OFWeights       = [ -0.3892, -0.3554, 0.1847, 0.8053, 0.2893, -0.2156,-0.3191] ,
-                    OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
+                    UseOF2          = True,
+                    #OFCalibrationFile = basepath+"/noise-dataset-tile.dat",
+                    #OFWeights       =  [-0.3781,   -0.3572,    0.1808,    0.8125,   0.2767,    -0.2056,    -0.3292]
                     )
   
   emec1 = CaloSamplingMaker( "EMEC1", "Collection_EMEC1", cells['EMEC1'],
@@ -144,8 +155,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 26, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   emec2 = CaloSamplingMaker( "EMEC2", "Collection_EMEC2", cells['EMEC2'],
@@ -155,8 +167,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 60, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   emec3 = CaloSamplingMaker( "EMEC3", "Collection_EMEC3", cells['EMEC3'],
@@ -166,8 +179,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 40, # MeV
-                    #OFWeights       = [ -0.0720, 0.2191, 0.6351, 0.3738, 0.0762],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   
   hec1 = CaloSamplingMaker( "HEC1", "Collection_HEC1", cells['HEC1'],
@@ -178,8 +192,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 250, # MeV
-                    #OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
  
 
@@ -191,8 +206,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 400, # MeV
-                    #OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
  
 
@@ -205,8 +221,9 @@ def create_ATLAS_layers( basepath ):
                     StartSamplingBC = -2, 
                     NSamples        = 5,
                     EletronicNoise  = 750, # MeV
-                    #OFWeights       = [ -0.1108, 0.2146, 0.6378, 0.3856, 0.0360],
-                    OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
+                    UseOF2          = False,
+                    #OFCalibrationFile = basepath+"/noise-dataset-lar.dat",
+                    #OFWeights       = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353],
                     )
   #
   # ATLAS layer map
