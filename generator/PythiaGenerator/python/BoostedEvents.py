@@ -1,7 +1,7 @@
 __all__ = ["BoostedEvents"]
 
 from Gaugi import Logger, EnumStringification
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 

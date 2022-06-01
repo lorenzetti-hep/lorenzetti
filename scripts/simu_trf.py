@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Gaugi.messenger      import LoggingLevel, Logger
+from Gaugi                import LoggingLevel, Logger
 from Gaugi                import GeV
 from P8Kernel             import EventReader
 from G4Kernel             import *
@@ -9,7 +9,7 @@ from CaloCell.CaloDefs    import CaloSampling
 import numpy as np
 import argparse
 import sys,os
-
+MINUTES = 60
 
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -46,6 +46,8 @@ parser.add_argument('-m','--merge', action='store_true', dest='merge', required 
 parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
                     help = "Save all detector hits.")
 
+parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=5,
+                    help = "Event timeout in minutes")
 
 
 pi = np.pi
@@ -68,7 +70,21 @@ try:
   # Build the ATLAS detector
   detector = ATLAS("GenericATLASDetector", 
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   CutOnPhi = False
+                   #UseMagneticField = True,
+                   UseDeadMaterial=True, # cause
+                   # PS,EM1,EM2,EM3
+                   UseBarrel=True,
+                   # HAD1,2,3
+                   UseTile=True,
+                   # HAD1,2,3 ext.
+                   UseTileExt=True,
+                   # EMECs
+                   UseEMEC= True,
+                   # HECs
+                   UseHEC = True, # cause
+                   # crack region
+                   UseCrack = True, # cause
+                   CutOnPhi = False,
                    )
   
 
@@ -77,7 +93,8 @@ try:
                               NumberOfThreads = args.numberOfThreads,
                               MergeOutputFiles = args.merge,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
-                              OutputFile = args.outputFile)
+                              OutputFile = args.outputFile,
+                              Timeout = args.timeout * MINUTES )
   
 
   gun = EventReader( "PythiaGenerator",
@@ -96,7 +113,6 @@ try:
   gun.merge(acc)
   calorimeter_hits.merge(acc)
 
-  
   OutputHitsKey   = recordable("Hits")
   OutputEventKey  = recordable("EventInfo")
 
@@ -118,6 +134,7 @@ try:
                              OutputLevel     = outputLevel)
 
   acc += HIT
+  
   acc.run(args.numberOfEvents)
   
   

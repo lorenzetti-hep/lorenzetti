@@ -4,24 +4,31 @@ __all__ = ["CaloCellMaker", "CaloSamplingMaker"]
 
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 
 
 class CaloCellMaker( Logger ):
 
-  __allow_keys = ["CollectionKey", 
-                  "EventKey",
-                  "HitsKey",
-                  "OutputLevel", 
-                  "CaloCellFile", 
-                  "BunchIdStart",
-                  "BunchIdEnd",
-                  "BunchDuration",
-                  "HistogramPath",
-                  "DetailedHistograms",
-                  ]
+  __allow_keys = [
+                    "EventKey"          ,
+                    "HitsKey"           ,
+                    "CollectionKey"     ,
+                    "EtaBins"           ,
+                    "PhiBins"           ,
+                    "RMin"              ,
+                    "RMax"              ,
+                    "Sampling"          ,
+                    "Segment"           ,
+                    "Detector"          ,
+                    "BunchIdStart"      ,
+                    "BunchIdEnd"        ,
+                    "BunchDuration"     ,
+                    "OutputLevel"       ,
+                    "DetailedHistograms",
+                    "HistogramPath"     ,
+                ]
 
   def __init__( self, name, **kw ): 
 
@@ -107,3 +114,4 @@ class CaloSamplingMaker( Logger ):
 
   def segments(self):
     return self.__segments
+

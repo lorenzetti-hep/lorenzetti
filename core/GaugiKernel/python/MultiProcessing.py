@@ -1,13 +1,17 @@
-__all__ = [ "Pool"]
+__all__ = [ "Pool","Slot", "chunks"]
 
 
-from Gaugi.messenger import LoggingLevel, Logger
-from Gaugi.messenger.macros import *
+from Gaugi import LoggingLevel, Logger
+from Gaugi.macros import *
 from pprint import pprint
 import argparse
 import os, time
 import subprocess
 
+def chunks(lst, n):
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 class Slot(object):
 

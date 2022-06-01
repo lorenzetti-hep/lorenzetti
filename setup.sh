@@ -10,8 +10,8 @@ rm -rf lib
 mkdir lib
 for file in "`pwd`"/*/*/*.pcm
 do
-  echo "ln -sf $file lib"
-  ln -sf $file lib
+  echo "ln -sf $file"
+  ln -sf $file
 done
 
 
@@ -36,10 +36,11 @@ fi
 
 
 export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
-export PATH=`pwd`/lib:$PATH
+export PATH=`pwd`/lib:$PATH:$PWD
 export PYTHONPATH=`pwd`/python:$PYTHONPATH
 cd ..
 export PATH=$PATH:$PWD/core/GaugiKernel/scripts
+export PATH=$PATH:$PWD/core/P8Kernel/scripts
 export PATH=$PATH:$PWD/generator/PythiaGenerator/share
 export PATH=$PATH:$PWD/scripts
 

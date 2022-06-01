@@ -8,12 +8,12 @@
 #include "G4ThreeVector.hh"
 #include "G4Region.hh"
 #include "globals.hh"
-#include "FieldSetup.h"
 #include "G4Cache.hh"
 
 
 class G4VPhysicalVolume;
 
+class G4GlobalMagFieldMessenger;
 
 class DetectorATLASConstruction : public G4VUserDetectorConstruction, public MsgService, public Gaugi::PropertyService
 {
@@ -63,18 +63,24 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
                         G4Region *region
                       );
 
-    void SetCuts();
+    G4Region* GetRegion( std::string name );
+
 
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_useMagneticField;
-    bool m_useBarrel;
-    bool m_useExtendedBarrel;
-    bool m_useEndCap;
-
     bool m_cutOnPhi;
 
-    //G4Cache<FieldSetup*>  m_fieldSetup;
-    FieldSetup*  m_fieldSetup;
+    bool m_useBarrel;
+    bool m_useTile;
+    bool m_useTileExt;
+    bool m_useEMEC;
+    bool m_useHEC;
+
+    bool m_useCrack;
+    bool m_useDeadMaterial;
+
+
+    static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger;
 };
 
 

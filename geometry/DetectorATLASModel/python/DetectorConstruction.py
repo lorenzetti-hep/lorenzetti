@@ -2,7 +2,7 @@ __all__ = ["DetectorConstruction"]
 
 
 from Gaugi import Logger
-from Gaugi.messenger.macros import *
+from Gaugi.macros import *
 from G4Kernel import treatPropertyValue
 
 
@@ -11,8 +11,12 @@ class DetectorConstruction(Logger):
   __allow_keys = [
                   "UseMagneticField",
                   "UseBarrel",
-                  "UseExtendedBarrel",
-                  "UseEndCap",
+                  "UseTile",
+                  "UseTileExt",
+                  "UseEMEC",
+                  "UseHEC",
+                  "UseCrack",
+                  "UseDeadMaterial",
                   "CutOnPhi",
                   ]
   

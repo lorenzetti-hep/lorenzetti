@@ -37,20 +37,21 @@ class CaloCellMaker : public Gaugi::Algorithm
 
   private:
    
-    /*! collection key */
+    int find( const std::vector<float> &vec, float value) const;
+    unsigned long int hash(unsigned bin) const;
+
+    /*! output collection key */
     std::string m_collectionKey;
-    /*! event key */
+    /*! input event key */
     std::string m_eventKey;
-    /*! hits key */
+    /*! input hits key */
     std::string m_hitsKey;
     /*! Base histogram path */
     std::string m_histPath;
-    /*! The path to the cell configuration file */
-    std::string m_caloCellFile;
-    /*! Segment index for this sample calorimeter */
-    int m_segmentation;
     /*! Sampling id for this reconstruction */
     int m_sampling;
+    /*! Segment index for this sample calorimeter */
+    int m_segment;
     /*! Detector id for this sampling*/
     int m_detector;
     /*! The start bunch crossing id for energy estimation */
@@ -64,17 +65,15 @@ class CaloCellMaker : public Gaugi::Algorithm
     /*! The tool list that will be executed into the post execute step */
     std::vector< Gaugi::AlgTool* > m_toolHandles;
 
-
-    float m_eta_min;
-    float m_eta_max; 
-    float m_rmin;
-    float m_rmax;  
-    
-    std::vector<float> m_eta_bins; 
-    std::vector<float> m_phi_bins; 
+    std::vector<float> m_etaBins; 
+    std::vector<float> m_phiBins; 
+    float m_rMin;
+    float m_rMax; 
 
     bool m_detailedHistograms;
 
+    unsigned int m_nEtaBins;
+    unsigned int m_nPhiBins;
 
 };
 

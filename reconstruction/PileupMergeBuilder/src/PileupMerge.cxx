@@ -98,6 +98,8 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
                                   const_hit->phi(),
                                   const_hit->deltaEta(),
                                   const_hit->deltaPhi(),
+                                  const_hit->rMin(),
+                                  const_hit->rMax(),
                                   const_hit->hash(),
                                   const_hit->sampling(),
                                   const_hit->detector(),

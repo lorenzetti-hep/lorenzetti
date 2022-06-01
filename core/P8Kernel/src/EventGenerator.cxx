@@ -18,6 +18,7 @@ EventGenerator::EventGenerator(): IMsgService("EventGenerator"),
   declareProperty( "NumberOfEvents" , m_nEvent=1                );
   declareProperty( "OutputFile"     , m_outputFile="particles"  );
   declareProperty( "OutputLevel"    , m_outputLevel=1           );
+  declareProperty( "EventNumbers"   , m_eventNumbers = {}       );
 }
 
 
@@ -50,6 +51,8 @@ StatusCode EventGenerator::initialize()
 {
   MSG_INFO( "Initialize pythia..." );
  
+  m_nEvent = m_eventNumbers.empty() ?  m_nEvent : m_eventNumbers.size();
+
   setMsgLevel( m_outputLevel );
 
   m_store = new SG::StoreGate(m_outputFile);
@@ -74,6 +77,7 @@ StatusCode EventGenerator::initialize()
  
   // Initialize output file
   m_tree = new TTree("particles","Pythia particles event tree");
+  m_tree->Branch("EventNumber" , &m_eventNumber , "eventNumber/I" );
   m_tree->Branch("avg_mu"      , &m_avg_mu, "avg_mu/F");
   m_tree->Branch("p_isMain"    , &m_p_isMain     );
   m_tree->Branch("p_pdg_id"    , &m_p_pdg_id     ); 
@@ -119,8 +123,11 @@ StatusCode EventGenerator::execute()
 
   for (int iEvent = 0; iEvent < m_nEvent; ++iEvent) {
     
-    MSG_INFO( "Running event " << iEvent );
-    
+    m_eventNumber = m_eventNumbers.empty() ? iEvent : m_eventNumbers[iEvent]; // Store the eventNumber into the ntuple
+
+    MSG_INFO( "Running event " << iEvent << " with EventNumber " << m_eventNumber );
+
+
     clear();
     
     try {  
@@ -195,6 +202,7 @@ void EventGenerator::dump( Event &event )
 {
 
   m_avg_mu = event.avgmu();
+
   m_store->hist1("avgmu")->Fill( m_avg_mu  );
 
   // Fill the seed

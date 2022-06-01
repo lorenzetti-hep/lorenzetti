@@ -15,12 +15,13 @@
 
 #include <iostream>
 
-RunAction::RunAction( int numberOfThreads, std::vector<Gaugi::Algorithm*> acc, std::string output )
+RunAction::RunAction( int numberOfThreads, int timeout, std::vector<Gaugi::Algorithm*> acc, std::string output )
  : IMsgService("RunAction"),
    G4UserRunAction(),
    m_acc(acc),
    m_output(output),
-   m_numberOfThreads(numberOfThreads)
+   m_numberOfThreads(numberOfThreads),
+   m_timeout(timeout)
 {;}
 
 
@@ -34,7 +35,7 @@ RunAction::~RunAction()
 G4Run* RunAction::GenerateRun()
 {
   MSG_INFO("Creating the RunReconstruction...");
-  return new RunReconstruction(m_numberOfThreads, m_acc, m_output);
+  return new RunReconstruction(m_numberOfThreads, m_timeout, m_acc, m_output);
 }
 
 

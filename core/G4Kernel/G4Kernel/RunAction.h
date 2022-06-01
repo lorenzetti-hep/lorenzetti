@@ -13,7 +13,7 @@ class G4Run;
 class RunAction : public G4UserRunAction, public MsgService
 {
   public:
-    RunAction( int numberOfThreads, std::vector<Gaugi::Algorithm*>, std::string output);
+    RunAction( int numberOfThreads, int timeout, std::vector<Gaugi::Algorithm*>, std::string output);
     virtual ~RunAction();
     virtual G4Run* GenerateRun();
     virtual void BeginOfRunAction(const G4Run*);
@@ -25,6 +25,7 @@ class RunAction : public G4UserRunAction, public MsgService
     std::vector<Gaugi::Algorithm*> m_acc;
     std::string m_output;
     int m_numberOfThreads;
+    int m_timeout;
 };
 #endif
 

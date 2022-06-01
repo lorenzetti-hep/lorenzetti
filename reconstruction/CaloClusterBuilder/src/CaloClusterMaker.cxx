@@ -57,7 +57,8 @@ StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
   auto store = ctx.getStoreGateSvc();
 
   store->mkdir( m_histPath );  
-  store->add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 100 ) );
+  store->add( new TH1F("cl_e"   , ";Count;E_{T};"       , 100, 0.0  , 200 ) );
+  store->add( new TH1F("cl_et"   , ";Count;E_{T};"       , 100, 0.0  , 200 ) );
   store->add( new TH1F("cl_eta"  , ";Count;#eta;"        , 100, -1.5 , 1.5 ) );
   store->add( new TH1F("cl_phi"  , ";Count;#phi;"        , 100, -3.2 , 3.2 ) );
   store->add( new TH1F("cl_f1"   , ";Count;f_{1};"       , 100, -0.02, 0.7 ) );
@@ -250,7 +251,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
       MSG_DEBUG( "Phi      : " << particle->phi() );
     }
 
-   
+    store->hist1("cl_e")->Fill( clus->e() / GeV);
     store->hist1("cl_et")->Fill( clus->et() / GeV);
     store->hist1("cl_eta")->Fill( clus->eta() );
     store->hist1("cl_phi")->Fill( clus->phi() );

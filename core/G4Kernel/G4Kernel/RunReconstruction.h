@@ -17,7 +17,7 @@ class RunReconstruction : public G4Run, public MsgService
   public:
 
     /** Constructor **/
-    RunReconstruction( int numberOfThreads, std::vector<Gaugi::Algorithm*>, std::string output );
+    RunReconstruction( int numberOfThreads, int timeout, std::vector<Gaugi::Algorithm*>, std::string output );
     
     /** Destructor **/
     virtual ~RunReconstruction();
@@ -60,6 +60,8 @@ class RunReconstruction : public G4Run, public MsgService
     Gaugi::Timer m_timeout;
 
     unsigned m_stepCounter, m_msgCounter;
+
+    int m_event_timeout;
 };
 
   

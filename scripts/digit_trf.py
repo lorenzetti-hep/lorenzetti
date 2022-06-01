@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from Gaugi.messenger      import LoggingLevel, Logger
+from Gaugi     import LoggingLevel, Logger
 from Gaugi                import GeV
 from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel.utilities   import *

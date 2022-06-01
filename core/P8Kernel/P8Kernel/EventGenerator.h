@@ -45,9 +45,12 @@ namespace generator{
       std::string m_outputFile;
       int m_outputLevel;
       float m_nEvent;
+
+      std::vector<int> m_eventNumbers;
     
   
       /*! Ntuple output */
+      int m_eventNumber;
       float m_avg_mu;
       std::vector<int>   *m_p_isMain    ;
       //std::vector<int>   *m_bc_id_nhits ;
