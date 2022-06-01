@@ -13,12 +13,13 @@ class RingSet{
   
     public:
       /*! Contructor */
-      RingSet( std::vector<CaloSampling> &samplings , unsigned nrings, float deta, float dphi );
+      RingSet( std::vector<CaloSampling> &samplings , unsigned nrings, float deta, float dphi, int init );
       /*! Destructor */
       RingSet()=default;
       /*! Add the cell energy to the correct ring position in this RingSet */
-      void push_back( const xAOD::CaloCell *, float eta_center, float phi_center );
+      void push_back( const xAOD::CaloCell *, float eta_center, float phi_center, bool doRp, float rp);
       /*! Get the ringer shaper pattern for this RingSet */
+      double computeRp(const xAOD::CaloCluster *, const xAOD::CaloCell *, float eta_center, float phi_center, float alpha, float beta, float scale_factor) ;
       const std::vector<float>& rings() const;
       /*! The number of rings in this RingSet */
       size_t size() const;
@@ -37,6 +38,8 @@ class RingSet{
       float m_dphi;
       /*! Sampling layer */
       std::vector<CaloSampling> m_samplings;
+
+      int m_init;
   };
 
 
@@ -75,7 +78,10 @@ class CaloRingerMaker : public Gaugi::Algorithm
  
     int m_maxRingSets;    
     int m_maxRingsAccumulated;
-
+    bool m_doRingerRp;
+    float m_alpha;
+    float m_beta;
+    float m_scaleFactor;
     const xAOD::CaloCell* maxCell( const xAOD::CaloCluster*   , RingSet & ) const;
    
     std::string m_histPath;
@@ -88,6 +94,7 @@ class CaloRingerMaker : public Gaugi::Algorithm
     std::vector<int>    m_nRings;
 
     std::vector<std::vector<int>>    m_layerRings;
+    std::vector<int> m_rpInit;
 
     int m_outputLevel;
 };

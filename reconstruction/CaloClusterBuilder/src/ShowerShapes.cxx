@@ -4,6 +4,7 @@
 #include "ShowerShapes.h"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
+#include <math.h>
 
 using namespace std;
 using namespace SG;
@@ -113,6 +114,14 @@ StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *e
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
   clus->setE(e0+e1+e2+e3);
+  float alpha = 1;
+  float beta = 1;
+  std::vector<float> rp_layers;
+  for (int i=0;i<7;i++){
+    rp_layers.push_back(calculateRp1D(clus,i,alpha,beta));
+  }
+  clus->setRpValues(rp_layers);
+  
   return StatusCode::SUCCESS;
 }
 
@@ -228,4 +237,131 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , unsigned eta_ncell
   return std::sqrt( (En2/E) - std::pow( (En/E),2 ) );
 }
 
+float ShowerShapes::calculateRp1D( xAOD::CaloCluster *clus, int sampling, float alpha, float beta) const
+{
+  float num=0;
+  float den=0;
+  // std::vector<float> cells_energy;
 
+  // for ( auto& cell : clus->cells() ){
+  //   cells_energy.push_back(cell->e());
+  // }
+  // auto maxElementIndex = std::max_element(cells_energy.begin(),cells_energy.end()) - cells_energy.begin();
+  // auto hotCell = clus->cells().at(maxElementIndex);
+
+  // auto hotCell = getHotCell(clus, sampling);
+
+  xAOD::CaloCell hotCell;
+  if (sampling > 3) getHotCell(clus, 2, hotCell);  // If HAD1,HAD2,HAD3 then uses EM2 hot cell
+  else getHotCell(clus,sampling, hotCell);         // If not (PS, EM1...3) the uses the it own hot cell 
+  
+  float hot_eta = hotCell.eta();
+  float hot_phi = hotCell.phi();
+  
+  for ( auto& cell : clus->cells() ){
+    const xAOD::CaloDetDescriptor* det = cell->descriptor();
+
+    if(sampling==0 && (
+      det->sampling()!=CaloSampling::PSB &&
+      det->sampling()!=CaloSampling::PSE )  ) continue;
+
+    // if EM1, this cell must be EMB1 or EMEC1
+    if(sampling==1 && (
+      det->sampling()!=CaloSampling::EMB1 &&
+      det->sampling()!=CaloSampling::EMEC1 )  ) continue;
+
+    // if EM2, this cell must be EMB2 or EMEC2
+    if(sampling==2 && (
+      det->sampling()!=CaloSampling::EMB2 &&
+      det->sampling()!=CaloSampling::EMEC2 )  ) continue;
+
+    // if EM3, this cell must be EMB3 or EMEC3
+    if(sampling==3 && (
+      det->sampling()!=CaloSampling::EMB3 &&
+      det->sampling()!=CaloSampling::EMEC3 )  ) continue;
+    
+    if(sampling==4 && 
+    ( (det->sampling()!=CaloSampling::HEC1) &&
+      (det->sampling()!=CaloSampling::TileCal1) &&
+      (det->sampling()!=CaloSampling::TileExt1) ) ) continue;
+
+    // HAD 2
+    if(sampling==5 && 
+    ( (det->sampling()!=CaloSampling::HEC2) &&
+      (det->sampling()!=CaloSampling::TileCal2) &&
+      (det->sampling()!=CaloSampling::TileExt2) ) ) continue;
+
+    // HAD 3
+    if(sampling==6 && 
+    ( (det->sampling()!=CaloSampling::HEC3) &&
+      (det->sampling()!=CaloSampling::TileCal3) &&
+      (det->sampling()!=CaloSampling::TileExt3) ) ) continue;
+
+    float deta = cell->eta() - hot_eta;
+    double dphi = fabs(cell->phi() - hot_phi) < M_PI ? fabs(cell->phi() - hot_phi) : 2*M_PI - fabs(cell->phi() - hot_phi);
+    float rdist = sqrt(pow(deta,2) + pow(dphi,2));
+    float r_beta = pow(rdist,beta);
+    float cell_e = cell->e() < 0 ? 0 : cell->e();
+    float e_alpha = pow(cell_e,alpha);
+    num += e_alpha * r_beta;
+    den += pow(cell_e,alpha);
+  }
+  return num/den;
+}
+
+bool ShowerShapes::getHotCell( xAOD::CaloCluster *clus, int sampling, xAOD::CaloCell &hotCell ) const {
+
+    std::vector<float> cells_energy;
+
+  for ( auto& cell : clus->cells() ){
+    cells_energy.push_back(cell->e());
+    }
+   
+   for ( auto& cell : clus->cells() ){
+    const xAOD::CaloDetDescriptor* det = cell->descriptor();
+
+    if(sampling==0 && (
+      det->sampling()!=CaloSampling::PSB &&
+      det->sampling()!=CaloSampling::PSE )  ) continue;
+
+    // if EM1, this cell must be EMB1 or EMEC1
+    if(sampling==1 && (
+      det->sampling()!=CaloSampling::EMB1 &&
+      det->sampling()!=CaloSampling::EMEC1 )  ) continue;
+
+    // if EM2, this cell must be EMB2 or EMEC2
+    if(sampling==2 && (
+      det->sampling()!=CaloSampling::EMB2 &&
+      det->sampling()!=CaloSampling::EMEC2 )  ) continue;
+
+    // if EM3, this cell must be EMB3 or EMEC3
+    if(sampling==3 && (
+      det->sampling()!=CaloSampling::EMB3 &&
+      det->sampling()!=CaloSampling::EMEC3 )  ) continue;
+    
+    if(sampling==4 && 
+    ( (det->sampling()!=CaloSampling::HEC1) &&
+      (det->sampling()!=CaloSampling::TileCal1) &&
+      (det->sampling()!=CaloSampling::TileExt1) ) ) continue;
+
+    // HAD 2
+    if(sampling==5 && 
+    ( (det->sampling()!=CaloSampling::HEC2) &&
+      (det->sampling()!=CaloSampling::TileCal2) &&
+      (det->sampling()!=CaloSampling::TileExt2) ) ) continue;
+
+    // HAD 3
+    if(sampling==6 && 
+    ( (det->sampling()!=CaloSampling::HEC3) &&
+      (det->sampling()!=CaloSampling::TileCal3) &&
+      (det->sampling()!=CaloSampling::TileExt3) ) ) continue;
+
+    
+    auto maxElementIndex = std::max_element(cells_energy.begin(),cells_energy.end()) - cells_energy.begin();
+    auto hotCellTemp = clus->cells().at(maxElementIndex);
+    hotCell = *hotCellTemp;
+
+    
+   }
+   return true;
+}

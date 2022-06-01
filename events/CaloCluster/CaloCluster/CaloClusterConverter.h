@@ -41,6 +41,7 @@ namespace xAOD{
         float f2;
         float f3;
         float weta2;
+        std::vector<float> rp_values;
         std::vector<int> cell_links;
     };
 
