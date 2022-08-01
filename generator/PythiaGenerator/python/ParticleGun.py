@@ -8,6 +8,7 @@ from G4Kernel import treatPropertyValue
 
 class Particle(EnumStringification):
   Electron = 11
+  Photon = 22
   Pion = 211
 
 
