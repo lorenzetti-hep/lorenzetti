@@ -28,6 +28,9 @@ class ParticleGun( Logger ):
                 "AtRest",
                 "Seed",
                 "OutputLevel",
+                "DoRangedEta",
+                "EtaMin",
+                "EtaMax",
                 ]
 
   def __init__( self, name, **kw ): 
