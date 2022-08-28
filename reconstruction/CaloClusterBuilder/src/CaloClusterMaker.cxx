@@ -182,7 +182,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
         MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
         xAOD::CaloCluster *clus = new xAOD::CaloCluster( hotcell->e(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
         fillCluster( ctx, clus, m_cellsKey );
-        m_showerShapes->execute( nullptr, clus );
+        m_showerShapes->execute( ctx, clus );
         clusters->push_back( clus );
       }
     }else{

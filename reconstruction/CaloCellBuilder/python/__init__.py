@@ -5,6 +5,10 @@ from . import PulseGenerator
 __all__.extend(PulseGenerator.__all__)
 from .PulseGenerator import *
 
+from . import CrossTalk
+__all__.extend(CrossTalk.__all__)
+from .CrossTalk import *
+
 from . import OptimalFilter
 __all__.extend(OptimalFilter.__all__)
 from .OptimalFilter import *

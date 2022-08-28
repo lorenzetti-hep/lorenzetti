@@ -2,7 +2,7 @@
 
 import argparse
 from GaugiKernel import Slot, chunks
-from Gaugi import Logger
+from GaugiKernel import Logger
 import time
 
 mainLogger = Logger.getModuleLogger("prun.job")

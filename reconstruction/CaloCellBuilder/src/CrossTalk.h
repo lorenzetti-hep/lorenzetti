@@ -1,18 +1,18 @@
-#ifndef OptimalFilter_h
-#define OptimalFilter_h
+#ifndef CrossTalk_h
+#define CrossTalk_h
 
 #include "GaugiKernel/AlgTool.h"
 #include "GaugiKernel/EDM.h"
 
 
 
-class OptimalFilter : public Gaugi::AlgTool
+class CrossTalk : public Gaugi::AlgTool
 {
 
   public:
     /** Constructor **/
-    OptimalFilter( std::string name );
-    virtual ~OptimalFilter();
+    CrossTalk( std::string name );
+    virtual ~CrossTalk();
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
 
@@ -20,12 +20,10 @@ class OptimalFilter : public Gaugi::AlgTool
 
   private:
 
-    /*! optimal filter weights */
-    std::vector<float> m_ofweights; 
+    float m_minEnergy;
+    std::string m_collectionKey;
+
 };
 
 #endif
-
-
-
 

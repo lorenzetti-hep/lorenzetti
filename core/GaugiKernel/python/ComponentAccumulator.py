@@ -1,7 +1,7 @@
 
 __all__ = ["ComponentAccumulator"]
 
-from Gaugi import Logger
+from GaugiKernel import Logger
 import numpy as np
 import os
 

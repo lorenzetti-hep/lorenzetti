@@ -1,8 +1,8 @@
 __all__ = ["OptimalFilter"]
 
 
-from Gaugi import Logger
-from Gaugi.macros import *
+from GaugiKernel import Logger
+from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 

@@ -1,8 +1,8 @@
 __all__ = [ "Pool","Slot", "chunks"]
 
 
-from Gaugi import LoggingLevel, Logger
-from Gaugi.macros import *
+from GaugiKernel import LoggingLevel, Logger
+from GaugiKernel.macros import *
 from pprint import pprint
 import argparse
 import os, time

@@ -50,7 +50,7 @@ StatusCode PulseGenerator::finalize()
 
 //!=====================================================================
 
-StatusCode PulseGenerator::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
+StatusCode PulseGenerator::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
 {
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);
 

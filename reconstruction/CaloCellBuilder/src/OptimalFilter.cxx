@@ -34,7 +34,7 @@ StatusCode OptimalFilter::finalize()
 
 //!=====================================================================
 
-StatusCode OptimalFilter::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
+StatusCode OptimalFilter::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
 {
 
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);

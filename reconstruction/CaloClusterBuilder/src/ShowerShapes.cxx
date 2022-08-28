@@ -31,7 +31,7 @@ StatusCode ShowerShapes::finalize()
 
 //!=====================================================================
 
-StatusCode ShowerShapes::execute( const xAOD::EventInfo * /*evt*/, Gaugi::EDM *edm ) const
+StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
 {
   MSG_DEBUG("Calculate shower shapes for this cluster." );
   
@@ -152,7 +152,7 @@ float ShowerShapes::sumEnergyEM( xAOD::CaloCluster *clus, int sampling, unsigned
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     
-    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+    if( deltaEta < eta_ncell*(cell->deltaEta()/2) && deltaPhi < phi_ncell*(cell->deltaPhi()/2) ){
       energy+= cell->e();
     }
   }
@@ -193,7 +193,7 @@ float ShowerShapes::sumEnergyHAD( xAOD::CaloCluster *clus, int sampling, unsigne
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::fix( clus->phi() - cell->phi() ) );
     
-    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+    if( deltaEta < eta_ncell*(cell->deltaEta()/2) && deltaPhi < phi_ncell*(cell->deltaPhi()/2) ){
       energy+= cell->e();
     }
   }
@@ -218,7 +218,7 @@ float ShowerShapes::calculateWeta2( xAOD::CaloCluster *clus , unsigned eta_ncell
     float deltaEta = std::abs( clus->eta() - cell->eta() );
     float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ) );
  
-    if( deltaEta < eta_ncell*cell->deltaEta() && deltaPhi < phi_ncell*cell->deltaPhi() ){
+    if( deltaEta < eta_ncell*(cell->deltaEta()/2) && deltaPhi < phi_ncell*(cell->deltaPhi()/2) ){
       En2 += cell->e() * std::pow(cell->eta(),2);
       En += cell->e() * cell->eta();
       E += cell->e();

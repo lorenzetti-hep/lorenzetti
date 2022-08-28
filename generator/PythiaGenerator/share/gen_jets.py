@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from Gaugi   import LoggingLevel, Logger
-from Gaugi   import GeV
+from GaugiKernel   import LoggingLevel, Logger
+from GaugiKernel   import GeV
 import argparse
 import sys,os
 

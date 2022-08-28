@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from Gaugi                import LoggingLevel, Logger
-from Gaugi                import GeV
+from GaugiKernel          import LoggingLevel, Logger
+from GaugiKernel          import GeV
 from P8Kernel             import EventReader
 from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling

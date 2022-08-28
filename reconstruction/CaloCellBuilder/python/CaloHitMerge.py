@@ -1,7 +1,7 @@
 __all__ = ["CaloHitMerge"]
 
-from Gaugi import Logger
-from Gaugi.macros import *
+from GaugiKernel import Logger
+from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 
@@ -34,7 +34,7 @@ class CaloHitMerge( Logger ):
   def setProperty( self, key, value ):
     if key in self.__allow_keys:
       setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
+      self.__core.setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 

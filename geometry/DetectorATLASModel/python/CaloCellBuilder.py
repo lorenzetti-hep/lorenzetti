@@ -1,9 +1,10 @@
 
 __all__ = ["CaloCellBuilder"]
 
-from Gaugi import Logger
-from Gaugi.macros import *
-from G4Kernel import treatPropertyValue, recordable
+from GaugiKernel        import Logger
+from GaugiKernel.macros import *
+from GaugiKernel        import GeV
+from G4Kernel     import treatPropertyValue, recordable
 import os
 
 
@@ -41,7 +42,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
 
     collectionKeys = []
  
@@ -57,7 +58,6 @@ class CaloCellBuilder( Logger ):
         for seg in sampling.segments:
 
           MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", seg.CollectionKey)
-
           pulse = PulseGenerator( "PulseGenerator", 
                                   NSamples        = seg.NSamples, 
                                   ShaperFile      = seg.ShaperFile,
@@ -70,12 +70,18 @@ class CaloCellBuilder( Logger ):
                                   NoiseStd        = seg.EletronicNoise,
                                   StartSamplingBC = seg.StartSamplingBC, 
                                 )
+
+          cx = CrossTalk("CrossTalk",
+                          MinEnergy       = -10*GeV,
+                          # input key
+                          CollectionKey   = seg.CollectionKey, 
+                          )
+
           of = OptimalFilter("OptimalFilter",
                               Weights  = seg.OFWeights,
                               OutputLevel=self.__outputLevel)
 
-
-          alg = CaloCellMaker("CaloCellMaker", 
+          alg = CaloCellMaker("CaloCellMaker_" +seg.CollectionKey, 
                               # input key
                               EventKey                = recordable( "EventInfo" ), 
                               HitsKey                 = recordable( self.__hitsKey ),
@@ -98,9 +104,10 @@ class CaloCellBuilder( Logger ):
                               OutputLevel             = self.__outputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
+  
+          alg.PulseGenerator = pulse # for all cell
+          alg.Tools = [cx, of] # for each cell
 
-
-          alg.Tools = [pulse, of]
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
 

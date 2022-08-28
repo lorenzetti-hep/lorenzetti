@@ -7,8 +7,8 @@ import numpy as np
 from math import *
 from pprint import pprint
 
-from Gaugi import Logger
-from Gaugi.macros import *
+from GaugiKernel import Logger
+from GaugiKernel.macros import *
 
 from CaloCell.CaloDefs import CaloSampling, Detector
 

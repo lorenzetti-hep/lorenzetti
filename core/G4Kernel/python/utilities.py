@@ -2,7 +2,7 @@
 __all__ = ["recordable", "treatPropertyValue"]
 
 
-from Gaugi import list2stdvector
+from GaugiKernel import list2stdvector
 
 
 def recordable( key ):

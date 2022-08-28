@@ -1,8 +1,8 @@
 
 __all__ = ["ComponentAccumulator"]
 
-from Gaugi import Logger
-from Gaugi.macros import *
+from GaugiKernel import Logger
+from GaugiKernel.macros import *
 import os
 
 

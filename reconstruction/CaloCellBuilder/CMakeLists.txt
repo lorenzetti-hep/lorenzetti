@@ -1,6 +1,6 @@
 
-file(GLOB SOURCES src/*.cxx src/helper/*.cxx )
-file(GLOB_RECURSE HEADERS src/C*.h src/OptimalFilter.h src/ShoweShapes.h src/helper/*.h)
+file(GLOB SOURCES src/*.cxx )
+file(GLOB_RECURSE HEADERS src/C*.h src/OptimalFilter.h src/ShoweShapes.h src/CrossTalk.h)
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../events/CaloCluster)

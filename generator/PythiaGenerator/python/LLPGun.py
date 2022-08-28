@@ -1,7 +1,7 @@
 __all__ = ["LLPGun"]
 
-from Gaugi import Logger, EnumStringification
-from Gaugi.macros import *
+from GaugiKernel import Logger, EnumStringification
+from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 class LLPGun( Logger ):

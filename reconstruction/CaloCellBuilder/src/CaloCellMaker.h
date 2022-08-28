@@ -34,6 +34,8 @@ class CaloCellMaker : public Gaugi::Algorithm
     
     /*! Add tools to be executed into the post execute step. The order is matter here */
     void push_back( Gaugi::AlgTool *);
+    /*! Set pulse generator */
+    void setPulseGenerator(Gaugi::AlgTool *);
 
   private:
    
@@ -62,8 +64,6 @@ class CaloCellMaker : public Gaugi::Algorithm
     int m_bc_nsamples;
     /*! The time space (in ns) between two bunch crossings */
     float m_bc_duration;
-    /*! The tool list that will be executed into the post execute step */
-    std::vector< Gaugi::AlgTool* > m_toolHandles;
 
     std::vector<float> m_etaBins; 
     std::vector<float> m_phiBins; 
@@ -74,6 +74,11 @@ class CaloCellMaker : public Gaugi::Algorithm
 
     unsigned int m_nEtaBins;
     unsigned int m_nPhiBins;
+
+    /*! Pulse generator */
+    Gaugi::AlgTool *m_pulseGenerator;
+    /*! The tool list that will be executed into the post execute step */
+    std::vector< Gaugi::AlgTool* > m_toolHandles;
 
 };
 

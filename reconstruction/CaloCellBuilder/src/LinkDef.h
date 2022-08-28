@@ -3,6 +3,7 @@
 #include "src/CaloCellMerge.h"
 #include "src/PulseGenerator.h"
 #include "src/OptimalFilter.h"
+#include "src/CrossTalk.h"
 #include "src/CaloHitMaker.h"
 #include "src/CaloHitMerge.h"
 
@@ -12,11 +13,11 @@
 #pragma link off all classes;
 #pragma link off all functions;
 #pragma link C++ nestedclass;
-
 #pragma link C++ class CaloCellMaker+;
 #pragma link C++ class CaloCellMerge+;
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
+#pragma link C++ class CrossTalk+;
 #pragma link C++ class CaloHitMaker+;
 #pragma link C++ class CaloHitMerge+;
 

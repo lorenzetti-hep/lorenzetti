@@ -24,9 +24,9 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
+  declareProperty( "CollectionKey"            , m_collectionKey="Cells"               ); // input
   declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
   declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      ); // input
-  declareProperty( "CollectionKey"            , m_collectionKey="CaloDetDescriptorCollection"  ); // output
   declareProperty( "EtaBins"                  , m_etaBins                             );
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "RMin"                     , m_rMin                                );
@@ -50,6 +50,12 @@ void CaloCellMaker::push_back( Gaugi::AlgTool* tool )
 {
   m_toolHandles.push_back(tool);
 }
+
+void CaloCellMaker::setPulseGenerator(Gaugi::AlgTool* tool)
+{
+  m_pulseGenerator=tool;
+}
+
 
 //!=====================================================================
 
@@ -194,21 +200,20 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL("It's not possible to retrieve the CaloHitContainer using this key: " << m_hitsKey);
   }
 
-  // Event info
-  SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-  
-  if( !event.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
-  }
-
   SG::ReadHandle<xAOD::CaloDetDescriptorCollection> collection( m_collectionKey, ctx );
  
   if( !collection.isValid() ){
     MSG_FATAL("It's not possible to retrieve the CaloDetDescriptorCollection using this key: " << m_collectionKey);
   }
   
-  auto evt = (**event.ptr()).front();
 
+  //
+  // Digitalization
+  //
+
+  //
+  // (step 1) Generate the pulse for all cells
+  //
   for ( const auto& hit : **hits.ptr() )
   {
     xAOD::CaloDetDescriptor *descriptor=nullptr;
@@ -226,18 +231,39 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
         descriptor->edep( bcid, hit->edep(bcid) ); 
       }  
 
+      if( m_pulseGenerator->execute(ctx, descriptor).isFailure() ){
+          MSG_ERROR( "It's not possible to execute Pulse generator." );
+          return StatusCode::FAILURE;
+      }
+    }
+
+  }// loop over all hits
+ 
+
+  for ( const auto& hit : **hits.ptr() )
+  {
+    xAOD::CaloDetDescriptor *descriptor=nullptr;
+
+    // Check if the current hit allow to this cells collection
+    if(collection->retrieve( hit->hash(), descriptor ))
+    {
+      if (descriptor->hash() != hit->hash()){
+        MSG_FATAL( "Descriptor hash code is different than hit hash code. Abort!");
+      }
+
       for ( auto tool : m_toolHandles )
       {
         // digitalization
-        if( tool->execute( evt, descriptor ).isFailure() ){
+        if( tool->execute( ctx, descriptor ).isFailure() ){
           MSG_ERROR( "It's not possible to execute the tool with name " << tool->name() );
           return StatusCode::FAILURE;
         }
       }
     }
-    
+  
   }// loop over all hits
  
+
 
   return StatusCode::SUCCESS;
 }
