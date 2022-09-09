@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from GaugiKernel import LoggingLevel, Logger
-from GaugiKernel import GeV
+from Gaugi import LoggingLevel, Logger
+from Gaugi import GeV
 import argparse
 import sys,os
 
@@ -38,6 +38,7 @@ parser.add_argument('--eta', action='store', dest='eta', required = False, type=
 
 parser.add_argument('--phi', action='store', dest='phi', required = False, type=float, default=1.52,
                     help = "Phi position.")
+
 parser.add_argument('--doEtaRanged', action='store', dest='doEtaRanged', required = False, type=bool, default=False,
                     help = "Enable eta range.")
 
@@ -46,7 +47,6 @@ parser.add_argument('--eta_min', action='store', dest='eta_min', required = Fals
 
 parser.add_argument('--eta_max', action='store', dest='eta_max', required = False, type=float, default=2.5,
                     help = "Maximum Eta.")
-
 #
 # Pileup simulation arguments
 #
@@ -119,7 +119,7 @@ try:
                      EnergyMin    = args.energy_min*GeV,
                      EnergyMax    = args.energy_max*GeV,
                      Energy       = args.energy*GeV,
-                     Particle     = Particle.Electron, 
+                     Particle     = Particle.Photon,
                      DoRangedEta  = args.doEtaRanged,
                      EtaMin = args.eta_min,
                      EtaMax = args.eta_max )

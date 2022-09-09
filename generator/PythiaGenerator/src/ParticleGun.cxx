@@ -19,6 +19,10 @@ ParticleGun::ParticleGun():
   declareProperty( "Particle"         , m_pdgid=11                  );
   declareProperty( "HasLifetime"      , m_hasLifetime=false         );
   declareProperty( "AtRest"           , m_atRest=false              );
+  declareProperty( "DoRangedEta"      , m_doRangedEta=false         );
+  declareProperty( "EtaMin"           , m_etaMin=-2.5                  );
+  declareProperty( "EtaMax"           , m_etaMax=2.5                   );
+  
 
 }
 
@@ -60,10 +64,11 @@ StatusCode ParticleGun::execute( generator::Event &event )
 
   // Fix energy or flat distribution between min->max 
   float energy = m_energy>0.0 ? m_energy : ( m_energyMin + (m_energyMax-m_energyMin)*m_generator.rndm.flat());
+  float eta = m_doRangedEta? ( m_etaMin + (m_etaMax-m_etaMin)*m_generator.rndm.flat()) : m_eta;
 
 
   clearParticles();
-  fillParticle( m_pdgid, energy/1e3, m_eta, m_phi, m_atRest, m_hasLifetime);
+  fillParticle( m_pdgid, energy/1e3, eta, m_phi, m_atRest, m_hasLifetime);
   
   
   MSG_INFO("Generate particles...");

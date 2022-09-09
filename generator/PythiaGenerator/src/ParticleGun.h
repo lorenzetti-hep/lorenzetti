@@ -32,6 +32,9 @@ namespace generator{
       bool m_hasLifetime;
       bool m_atRest;
       int m_pdgid;
+      bool m_doRangedEta;
+      float m_etaMin;
+      float m_etaMax;
      
   };
 }
