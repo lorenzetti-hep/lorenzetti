@@ -62,7 +62,9 @@ void CaloCellMaker::setPulseGenerator(Gaugi::AlgTool* tool)
 StatusCode CaloCellMaker::initialize()
 {
   CHECK_INIT();
-
+  if (m_pulseGenerator->initialize().isFailure()) {
+      MSG_FATAL( "It's not possible to iniatialize Pulse Generator tool." );
+   }
   m_nEtaBins = m_etaBins.size() - 1;
   m_nPhiBins = m_phiBins.size() - 1;
 
