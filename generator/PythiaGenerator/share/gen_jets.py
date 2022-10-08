@@ -51,6 +51,8 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "The pythia seed (zero is the clock system)")
 
+parser.add_argument('--maxEta', action='store', dest='maxEta', required = False, type=float, default=3.2,
+                    help = "Maximum eta coordinate")
 
 
 
@@ -78,7 +80,7 @@ try:
   
   pileup = Pileup( "MinimumBias",
                    File           = minbias_file,
-                   EtaMax         = 3.2,
+                   EtaMax         = args.maxEta,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,
                    BunchIdStart   = args.bc_id_start,
@@ -96,7 +98,7 @@ try:
   
   jets = JF17( "JF17",
                File        = main_file,
-               EtaMax      = 3.2,
+               EtaMax      = args.maxEta,
                MinPt       = 17*GeV,
                Select      = 2,
                EtaWindow   = 0.4,
