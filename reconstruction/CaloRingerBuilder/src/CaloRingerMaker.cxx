@@ -211,7 +211,7 @@ void RingSet::push_back( const xAOD::CaloCell *cell , float eta_center, float ph
     float deta = std::abs( eta_center - cell->eta() ) / m_deta;
     float dphi = std::abs( CaloPhiRange::diff(phi_center , cell->phi()) ) / m_dphi;
     float deltaGreater = std::max(deta, dphi);
-    int i = static_cast<unsigned int>( std::floor(deltaGreater) );
+    int i = static_cast<unsigned int>( std::round(deltaGreater) );
     if( i < (int)m_rings.size() ){
       m_rings[i] += cell->e()/ std::cosh(std::abs(eta_center));
     }
