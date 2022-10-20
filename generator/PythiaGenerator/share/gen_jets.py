@@ -54,6 +54,8 @@ parser.add_argument('-s','--seed', action='store', dest='seed', required = False
 parser.add_argument('--maxEta', action='store', dest='maxEta', required = False, type=float, default=3.2,
                     help = "Maximum eta coordinate")
 
+parser.add_argument('--energy_min', action='store', dest='energy_min', required = False, type=float, default=17,
+                    help = "Maximum eta coordinate")
 
 
 if len(sys.argv)==1:
@@ -99,7 +101,7 @@ try:
   jets = JF17( "JF17",
                File        = main_file,
                EtaMax      = args.maxEta,
-               MinPt       = 17*GeV,
+               MinPt       = args.energy_min*GeV,
                Select      = 2,
                EtaWindow   = 0.4,
                PhiWindow   = 0.4,
