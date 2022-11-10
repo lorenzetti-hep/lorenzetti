@@ -32,6 +32,8 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
+parser.add_argument('--estimationMethod', action='store', dest='estimationMethod', required = False, type=str, default='OF',
+                    help = "The energy estimation method (OF or COF).")
 
 
 pi = np.pi
@@ -40,8 +42,13 @@ if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
 
+allowed_methods = ['OF','COF']
+
 args = parser.parse_args()
 
+if args.estimationMethod not in allowed_methods:
+  print('Invalid Energy Estimation method selected. Allowed methods: ' + str(allowed_methods))
+  sys.exit(1)
 
 outputLevel = 0 if args.debug else args.outputLevel
 
@@ -70,6 +77,7 @@ try:
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 HitsKey       = recordable("Hits"),
+                                EstimationMethod  = args.estimationMethod
                                 )
   calorimeter.merge(acc)
 
