@@ -1,10 +1,10 @@
-#include "OptimalFilter.h"
+#include "ConstrainedOptimalFilter.h"
 #include "CaloCell/CaloDetDescriptor.h"
 
 using namespace Gaugi;
 
 
-OptimalFilter::OptimalFilter( std::string name ) : 
+ConstrainedOptimalFilter::ConstrainedOptimalFilter( std::string name ) : 
   IMsgService(name),
   AlgTool()
 {
@@ -14,12 +14,12 @@ OptimalFilter::OptimalFilter( std::string name ) :
 
 //!=====================================================================
 
-OptimalFilter::~OptimalFilter()
+ConstrainedOptimalFilter::~ConstrainedOptimalFilter()
 {}
 
 //!=====================================================================
 
-StatusCode OptimalFilter::initialize()
+StatusCode ConstrainedOptimalFilter::initialize()
 {
   setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
@@ -27,20 +27,20 @@ StatusCode OptimalFilter::initialize()
 
 //!=====================================================================
 
-StatusCode OptimalFilter::finalize()
+StatusCode ConstrainedOptimalFilter::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
 //!=====================================================================
 
-StatusCode OptimalFilter::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
+StatusCode ConstrainedOptimalFilter::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
 {
 
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);
   auto pulse = cell->pulse();
   float energy=0.0;
-  MSG_DEBUG("Runing Optimal Filter");
+  MSG_DEBUG("Runing Constrained Optimal Filter");
   if( m_ofweights.size() != pulse.size() ){
     MSG_ERROR( "The ofweights size its different than the pulse size." );
     return StatusCode::FAILURE;

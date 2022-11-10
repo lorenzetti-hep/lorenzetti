@@ -6,6 +6,7 @@
 #include "src/CrossTalk.h"
 #include "src/CaloHitMaker.h"
 #include "src/CaloHitMerge.h"
+#include "src/ConstrainedOptimalFilter.h"
 
 #ifdef __CINT__
 
@@ -20,5 +21,6 @@
 #pragma link C++ class CrossTalk+;
 #pragma link C++ class CaloHitMaker+;
 #pragma link C++ class CaloHitMerge+;
+#pragma link C++ class ConstrainedOptimalFilter
 
 #endif

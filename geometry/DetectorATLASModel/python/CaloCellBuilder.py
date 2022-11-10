@@ -22,6 +22,7 @@ class CaloCellBuilder( Logger ):
                       HistogramPath  = "Expert", 
                       HitsKey = "Hits",
                       OutputLevel    = 1,
+                      EstimationMethod = 'OF'
                       ):
 
     Logger.__init__(self)
@@ -29,6 +30,7 @@ class CaloCellBuilder( Logger ):
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
     self.__hitsKey = HitsKey
+    self.__estimationMethod = EstimationMethod
     
     # configure
     self.configure()
@@ -42,7 +44,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk, ConstrainedOptimalFilter
 
     collectionKeys = []
  
@@ -76,11 +78,16 @@ class CaloCellBuilder( Logger ):
                           # input key
                           CollectionKey   = seg.CollectionKey, 
                           )
-
-          of = OptimalFilter("OptimalFilter",
+          method = []
+          if self.__estimationMethod == 'OF':
+            method = OptimalFilter("OptimalFilter",
                               Weights  = seg.OFWeights,
                               OutputLevel=self.__outputLevel)
-
+          elif self.__estimationMethod == 'COF':
+            method = ConstrainedOptimalFilter("ConstrainedOptimalFilter",
+                              Weights  = seg.OFWeights,
+                              OutputLevel=self.__outputLevel)          
+          
           alg = CaloCellMaker("CaloCellMaker_" +seg.CollectionKey, 
                               # input key
                               EventKey                = recordable( "EventInfo" ), 
@@ -106,7 +113,7 @@ class CaloCellBuilder( Logger ):
                               )
   
           alg.PulseGenerator = pulse # for all cell
-          alg.Tools = [cx, of] # for each cell
+          alg.Tools = [cx, method] # for each cell
 
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
