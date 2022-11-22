@@ -21,6 +21,6 @@
 #pragma link C++ class CrossTalk+;
 #pragma link C++ class CaloHitMaker+;
 #pragma link C++ class CaloHitMerge+;
-#pragma link C++ class ConstrainedOptimalFilter
+#pragma link C++ class ConstrainedOptimalFilter++;
 
 #endif
