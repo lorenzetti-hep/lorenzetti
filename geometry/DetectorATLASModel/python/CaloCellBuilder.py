@@ -85,7 +85,6 @@ class CaloCellBuilder( Logger ):
                               OutputLevel=self.__outputLevel)
           elif self.__estimationMethod == 'COF':
             method = ConstrainedOptimalFilter("ConstrainedOptimalFilter",
-                              Weights  = seg.OFWeights,
                               OutputLevel=self.__outputLevel,
                               PulsePath = seg.ShaperFile,
                               Threshold = 3*(seg.EletronicNoise*seg.EletronicNoise),

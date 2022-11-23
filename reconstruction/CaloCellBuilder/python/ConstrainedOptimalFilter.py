@@ -9,7 +9,6 @@ from G4Kernel import treatPropertyValue
 class ConstrainedOptimalFilter(Logger):
 
   __allow_keys = ["OutputLevel",
-                  "Weights",
                   "PulsePath",
                   "Threshold",
                   "NSamples",

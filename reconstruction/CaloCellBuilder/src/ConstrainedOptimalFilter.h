@@ -25,7 +25,6 @@ class ConstrainedOptimalFilter : public Gaugi::AlgTool
   private:
 
     /*! optimal filter weights */
-    std::vector<float> m_ofweights;
     int m_startSamplingBC;
     std::string m_pulsepath;
     std::vector<float> m_shaper;

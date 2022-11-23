@@ -9,7 +9,6 @@ ConstrainedOptimalFilter::ConstrainedOptimalFilter( std::string name ) :
   AlgTool()
 {
   declareProperty( "PulsePath"        , m_pulsepath       );
-  declareProperty( "Weights"          , m_ofweights={}    );
   declareProperty( "Threshold"        , m_threshold=0.0   );
   declareProperty( "NSamples"         , m_nsamples=0      );
   declareProperty( "StartSamplingBC"  , m_startSamplingBC );
