@@ -117,16 +117,6 @@ StatusCode ConstrainedOptimalFilter::execute( SG::EventContext &/*ctx*/, Gaugi::
     }
   }
   auto a_hat_hat = ((saveG*G.T()).Invert())*saveG*tpulse;
-  // float energy=0.0;
-  // MSG_DEBUG("Runing Constrained Optimal Filter");
-  // if( m_ofweights.size() != pulse.size() ){
-  //   MSG_ERROR( "The ofweights size its different than the pulse size." );
-  //   return StatusCode::FAILURE;
-  // }else{
-  //   for( unsigned sample=0; sample < pulse.size(); ++sample) 
-  //     energy += pulse[sample]*m_ofweights[sample];
-  // }
-
   cell->setE(a_hat_hat[newCentralSample]);
   return StatusCode::SUCCESS;
 }
