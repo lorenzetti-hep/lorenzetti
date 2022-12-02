@@ -22,7 +22,8 @@ class CaloCellBuilder( Logger ):
                       HistogramPath  = "Expert", 
                       HitsKey = "Hits",
                       OutputLevel    = 1,
-                      EstimationMethod = 'OF'
+                      EstimationMethodECAL = 'OF',
+                      EstimationMethodHAD = 'COF',
                       ):
 
     Logger.__init__(self)
@@ -30,7 +31,8 @@ class CaloCellBuilder( Logger ):
     self.__histpath = HistogramPath
     self.__outputLevel = OutputLevel
     self.__hitsKey = HitsKey
-    self.__estimationMethod = EstimationMethod
+    self.__estimationMethodECAL = EstimationMethodECAL
+    self.__estimationMethodHAD = EstimationMethodHAD
     
     # configure
     self.configure()
@@ -58,7 +60,6 @@ class CaloCellBuilder( Logger ):
       for sampling in layer:
 
         for seg in sampling.segments:
-
           MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", seg.CollectionKey)
           pulse = PulseGenerator( "PulseGenerator", 
                                   NSamples        = seg.NSamples, 
@@ -79,18 +80,32 @@ class CaloCellBuilder( Logger ):
                           CollectionKey   = seg.CollectionKey, 
                           )
           method = []
-          if self.__estimationMethod == 'OF':
-            method = OptimalFilter("OptimalFilter",
+          if seg.isEMLayer:
+            if self.__estimationMethodECAL == 'OF':
+              method = OptimalFilter("OptimalFilter",
                               Weights  = seg.OFWeights,
                               OutputLevel=self.__outputLevel)
-          elif self.__estimationMethod == 'COF':
-            method = ConstrainedOptimalFilter("ConstrainedOptimalFilter",
+            elif self.__estimationMethodECAL == 'COF':
+              method = ConstrainedOptimalFilter("ConstrainedOptimalFilter",
                               OutputLevel=self.__outputLevel,
                               PulsePath = seg.ShaperFile,
                               Threshold = 3*(seg.EletronicNoise*seg.EletronicNoise),
                               NSamples = seg.NSamples,
                               StartSamplingBC = seg.StartSamplingBC,
-                              SamplingRate    = 25.0)          
+                              SamplingRate    = 25.0)
+          else:
+              if self.__estimationMethodHAD == 'OF':
+                method = OptimalFilter("OptimalFilter",
+                                Weights  = seg.OFWeights,
+                                OutputLevel=self.__outputLevel)
+              elif self.__estimationMethodHAD == 'COF':
+                method = ConstrainedOptimalFilter("ConstrainedOptimalFilter",
+                                OutputLevel=self.__outputLevel,
+                                PulsePath = seg.ShaperFile,
+                                Threshold = 3*(seg.EletronicNoise*seg.EletronicNoise),
+                                NSamples = seg.NSamples,
+                                StartSamplingBC = seg.StartSamplingBC,
+                                SamplingRate    = 25.0)
           
           alg = CaloCellMaker("CaloCellMaker_" +seg.CollectionKey, 
                               # input key

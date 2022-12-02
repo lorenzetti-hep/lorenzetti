@@ -32,7 +32,10 @@ parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
                     help = "The output level messenger.")
 
-parser.add_argument('--estimationMethod', action='store', dest='estimationMethod', required = False, type=str, default='OF',
+parser.add_argument('--estimationMethodECAL', action='store', dest='estimationMethodECAL', required = False, type=str, default='OF',
+                    help = "The energy estimation method (OF or COF).")
+
+parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, type=str, default='COF',
                     help = "The energy estimation method (OF or COF).")
 
 
@@ -46,8 +49,12 @@ allowed_methods = ['OF','COF']
 
 args = parser.parse_args()
 
-if args.estimationMethod not in allowed_methods:
-  print('Invalid Energy Estimation method selected. Allowed methods: ' + str(allowed_methods))
+if args.estimationMethodECAL not in allowed_methods:
+  print('Invalid ECAL Energy Estimation method selected. Allowed methods: ' + str(allowed_methods))
+  sys.exit(1)
+
+if args.estimationMethodHAD not in allowed_methods:
+  print('Invalid HAD Energy Estimation method selected. Allowed methods: ' + str(allowed_methods))
   sys.exit(1)
 
 outputLevel = 0 if args.debug else args.outputLevel
@@ -77,7 +84,8 @@ try:
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 HitsKey       = recordable("Hits"),
-                                EstimationMethod  = args.estimationMethod
+                                EstimationMethodECAL  = args.estimationMethodECAL,
+                                EstimationMethodHAD  = args.estimationMethodHAD,
                                 )
   calorimeter.merge(acc)
 
