@@ -35,7 +35,7 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 parser.add_argument('--estimationMethodECAL', action='store', dest='estimationMethodECAL', required = False, type=str, default='OF',
                     help = "The energy estimation method (OF or COF).")
 
-parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, type=str, default='COF',
+parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, type=str, default='OF',
                     help = "The energy estimation method (OF or COF).")
 
 
