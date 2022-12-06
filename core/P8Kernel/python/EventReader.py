@@ -12,6 +12,7 @@ class EventReader( Logger ):
                   "TruthKey",
                   "FileName",
                   "BunchDuration",
+                  "isFromHepMC",
                   ]
 
 
