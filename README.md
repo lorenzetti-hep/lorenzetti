@@ -72,7 +72,7 @@ prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
 ### Shower Propagation
 THis is an examplete how to propagate the particles through the Geant4 module (considering the file produced on the first example step):
 ```
-simut_trf.py -i Zee.EVT.root -o Zee.HIT.root --enableMagneticField
+simu_trf.py -i Zee.EVT.root -o Zee.HIT.root --enableMagneticField
 ```
 
 ###  Digitalization
