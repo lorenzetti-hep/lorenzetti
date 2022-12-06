@@ -50,6 +50,7 @@ namespace generator{
       std::string            m_filename;
       std::string            m_eventKey;
       std::string            m_truthKey;
+      bool                   m_isFromHepMC;
 
       TFile *m_f;
       TTree *m_ttree;
