@@ -69,10 +69,15 @@ A set of pythia wrappers is provided on `generator/PythiaGenerator/share/`. Usag
 ```
 prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
 ```
+### Shower Propagation
+THis is an examplete how to propagate the particles through the Geant4 module (considering the file produced on the first example step):
+```
+simut_trf.py -i Zee.EVT.root -o Zee.HIT.root --enableMagneticField
+```
 
-### Shower Propagation and Digitalization
+###  Digitalization
 
-Use first step output to feed `digit_trf` script. For instance: 
+Use third step output to feed `digit_trf` script. For instance: 
 
 ```
 digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
