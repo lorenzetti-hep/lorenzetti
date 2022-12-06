@@ -85,7 +85,7 @@ digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
 
 ### Event Reconstruction
 
-Use the second step output to feed `reco_trf` script. For instance:
+Use the third step output to feed `reco_trf` script. For instance:
 
 ```
 reco_trf.py -i Zee.ESD.root -o Zee.AOD.root
