@@ -47,7 +47,17 @@ After singularity instance is created, do:
 ```
 source /setup_envs.sh
 ```
+And then, is needed to download the Lorenzetti repository and compile it. For that:
+```
+git clone https://github.com/lorenzetti-hep/lorenzetti.git
+cd lorenzetti
+mkdir build
+source $PWD/setup.sh
+source $PWD/setup.sh --head
+cd build && cmake .. && make  && cd .. && source $PWD/setup.sh && cd ..
 
+
+```
 This will setup everything you need for running Lorenzetti.
 
 ### LNCC (cluster) usage
