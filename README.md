@@ -98,6 +98,8 @@ Use the third step output to feed `reco_trf` script. For instance:
 ```
 reco_trf.py -i Zee.ESD.root -o Zee.AOD.root
 ```
+
+A set of examples files for each step can be found at the ```examples/datadaset``` folder. These small examples are for single electrons.
 ### Customizing the generation and full reconstruction chain
 
 There is several options on Lorenzetti framework. For this customization, there are flags to be used within each command step.
