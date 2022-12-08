@@ -55,8 +55,6 @@ mkdir build
 source $PWD/setup.sh
 source $PWD/setup.sh --head
 cd build && cmake .. && make  && cd .. && source $PWD/setup.sh && cd ..
-
-
 ```
 This will setup everything you need for running Lorenzetti.
 
