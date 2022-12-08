@@ -47,7 +47,19 @@ After singularity instance is created, do:
 ```
 source /setup_envs.sh
 ```
-And then, is needed to download the Lorenzetti repository and compile it. For that:
+
+## Local Installation
+
+Lorenzetti has the following dependencies:
+
+- Geant4 (opengl or qt4 is required);
+- ROOT;
+- Pythia8;
+- HEPMC;
+- FastJet;
+- Gaugi (pip3 install gaugi).
+
+To install the package, the following commands are needed to download the Lorenzetti repository and compile it:
 ```
 git clone https://github.com/lorenzetti-hep/lorenzetti.git
 cd lorenzetti
@@ -77,6 +89,8 @@ A set of pythia wrappers is provided on `generator/PythiaGenerator/share/`. Usag
 ```
 prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
 ```
+It is also possible to use different simulators to generate the inputs for the Lorenzetti framework. For this, it is required to produce HepMC-compatible files after the simulation. These files may be used as inputs for the event propagation stage. See details below on the Customizing section.
+
 ### Shower Propagation
 THis is an examplete how to propagate the particles through the Geant4 module (considering the file produced on the first example step):
 ```
@@ -85,7 +99,7 @@ simu_trf.py -i Zee.EVT.root -o Zee.HIT.root --enableMagneticField
 
 ###  Digitalization
 
-Use third step output to feed `digit_trf` script. For instance: 
+The digitalization process may be configured to use different energy estimation methods such as Optimal Filter (OF) and Constrained Optimal Filter (COF). It is also possible to simulate the crosstalk effect between adjacent calorimeter cells. More details on how to use such features, check the Customization section. In the digitalization step, it is used second step output to feed `digit_trf` script. For instance: 
 
 ```
 digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
@@ -132,18 +146,6 @@ An example for full customized digitalization step:
 
 ```digit_trf.py -i HIT.root -o ESD.root --simulateCrossTalk --estimationMethodHAD COF```
 
-
-
-## Local Installation
-
-Lorenzetti has the following dependencies:
-
-- Geant4 (opengl or qt4 is required);
-- ROOT;
-- Pythia8;
-- HEPMC;
-- FastJet;
-- Gaugi (pip3 install gaugi).
 
 ## Framework status:
 
