@@ -38,6 +38,9 @@ parser.add_argument('--estimationMethodECAL', action='store', dest='estimationMe
 parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, type=str, default='OF',
                     help = "The energy estimation method (OF or COF).")
 
+parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
+                    help = "If used, enable cross talk cell propagation.")
+
 
 pi = np.pi
 
@@ -86,6 +89,7 @@ try:
                                 HitsKey       = recordable("Hits"),
                                 EstimationMethodECAL  = args.estimationMethodECAL,
                                 EstimationMethodHAD  = args.estimationMethodHAD,
+                                DoCrosstalk   = args.simulateCrossTalk,
                                 )
   calorimeter.merge(acc)
 
