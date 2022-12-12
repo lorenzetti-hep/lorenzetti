@@ -24,6 +24,7 @@ class CaloCellBuilder( Logger ):
                       OutputLevel    = 1,
                       EstimationMethodECAL = 'OF',
                       EstimationMethodHAD = 'COF',
+                      DoCrosstalk = True,
                       ):
 
     Logger.__init__(self)
@@ -33,6 +34,7 @@ class CaloCellBuilder( Logger ):
     self.__hitsKey = HitsKey
     self.__estimationMethodECAL = EstimationMethodECAL
     self.__estimationMethodHAD = EstimationMethodHAD
+    self.__doCrosstalk = DoCrosstalk
     
     # configure
     self.configure()
@@ -75,7 +77,7 @@ class CaloCellBuilder( Logger ):
                                 )
 
           cx = CrossTalk("CrossTalk",
-                          MinEnergy       = -10*GeV,
+                          MinEnergy       =1*GeV,
                           # input key
                           CollectionKey   = seg.CollectionKey, 
                           )
@@ -132,7 +134,17 @@ class CaloCellBuilder( Logger ):
                               )
   
           alg.PulseGenerator = pulse # for all cell
-          alg.Tools = [cx, method] # for each cell
+
+          if self.__doCrosstalk:
+            # print(seg.name)
+            if seg.name == 'EMB2_0' or seg.name == 'EMEC2_0' or seg.name == 'EMEC2_1':
+              # print(seg.name)
+              MSG_INFO(self, "Applying CrossTalk effect into %s sampling.",seg.name)
+              alg.Tools = [cx, method] # for each cell
+            else:
+              alg.Tools = [ method] # for each cell
+          else:
+            alg.Tools = [ method] # for each cell
 
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
