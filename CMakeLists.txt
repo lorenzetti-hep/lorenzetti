@@ -52,32 +52,45 @@ find_package( Boost COMPONENTS python system filesystem)
 include_directories( ${Boost_INCLUDE_DIR} )
 link_directories( ${Boost_LIBRARY_DIR} )
 
+# include simulation tools
+include_directories( ${FASTJET_INCLUDE_DIRS} )
+include_directories( ${PYTHIA8_INCLUDE_DIRS} )
+include_directories( ${HEPMC_INCLUDE_DIRS} )
 
 
-
-
+# core
 add_subdirectory( core/GaugiKernel )
 add_subdirectory( core/G4Kernel )
-add_subdirectory( core/P8Kernel )
+add_subdirectory( core/GenKernel)
+
+# event packages
 add_subdirectory( events/CaloHit )
 add_subdirectory( events/CaloCell )
 add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
+
+# reconstruction package
 add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
 add_subdirectory( reconstruction/CaloRingerBuilder )
 add_subdirectory( reconstruction/RootStreamBuilder )
 add_subdirectory( reconstruction/PileupMergeBuilder )
-add_subdirectory( generator/PythiaGenerator )
 add_subdirectory( geometry/DetectorATLASModel )
+
+# generator package
+add_subdirectory( generator/filters )
+add_subdirectory( generator/guns )
+
+
+
+
 
 
 add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
-  $<TARGET_OBJECTS:P8Kernel>
   $<TARGET_OBJECTS:CaloHit>
   $<TARGET_OBJECTS:CaloCell>
   $<TARGET_OBJECTS:CaloCluster>
@@ -89,12 +102,15 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloRingerBuilder>
   $<TARGET_OBJECTS:RootStreamBuilder>
   $<TARGET_OBJECTS:PileupMergeBuilder>
-  $<TARGET_OBJECTS:PythiaGenerator>
   $<TARGET_OBJECTS:DetectorATLASModel>
+  $<TARGET_OBJECTS:GenKernel>
+  $<TARGET_OBJECTS:filters>
+  $<TARGET_OBJECTS:guns>
 )
 
 message( STATUS ${FASTJET_LIBRARIES} )
 message( STATUS ${PYTHIA8_LIBRARIES} )
+message( STATUS ${HEPMC_LIBRARIES} )
 
 target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} 
                                  ${ROOT_COMPONENT_LIBRARIES} 
@@ -103,8 +119,8 @@ target_link_Libraries(lorenzetti ${ROOT_LIBRARIES}
                                  ${Boost_FILESYSTEM_LIBRARY} 
                                  ${Boost_SYSTEM_LIBRARY} 
                                  ${Geant4_LIBRARIES} 
-                                 ${ROOT_LIBRARIES}
                                  ${FASTJET_LIBRARIES} 
+                                 ${HEPMC_LIBRARIES}
                                  ${PYTHIA8_LIBRARIES} )
 
 

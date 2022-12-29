@@ -61,12 +61,9 @@ RUN git clone https://github.com/lorenzetti-hep/geant4.git && cd geant4 && mkdir
  -DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON -DGEANT4_USE_QT=OFF -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON .. && make -j$CPU_N && \
 cp ../scripts/geant4_10.5.1.sh geant4.sh && source geant4.sh
 
-# Install HEPMC
-RUN git clone https://github.com/lorenzetti-hep/hepmc.git && cd hepmc && ./configure --with-momentum=MEV --with-length=CM && make -j$CPU_N && make install
-
 
 # Install Pythia8
-RUN git clone https://github.com/lorenzetti-hep/pythia8.git && cd pythia8 && ./configure && make -j$CPU_N
+RUN git clone https://github.com/lorenzetti-hep/pythia8.git && cd pythia8 && ./configure --with-python-config=python3-config && make -j$CPU_N
 
 # Install FastJet
 RUN curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.3.tar.gz && cd fastjet-3.3.3/ && ./configure && make -j$CPU_N && make install
@@ -74,6 +71,9 @@ RUN curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.
 # Install pip packages
 RUN pip install --no-cache-dir setuptools pandas sklearn seaborn jupyterlab tqdm \
 atlas-mpl-style twine pyhepmc colorama
+
+# Install HEPMC
+RUN git clone https://github.com/lorenzetti-hep/hepmc3.git && cd hepmc3 && git checkout 3.2.5 && mkdir build && cd build && cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON .. && make -j$CPU_N && make install
 
 #
 # setup all environments before start bash terminal

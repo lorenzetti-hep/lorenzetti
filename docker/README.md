@@ -1,6 +1,27 @@
-# Base Docker image
+# Docker image
 
-* Build script: `./build.sh`
-* Run script: `./run.sh`
+To compile and push:
 
-Always remember to do `source setup_envs.sh` on docker start.
+```
+make
+make push
+```
+
+To `pull` using singularity engine (recommended):
+
+```
+singularity pull docker://lorenzetti/lorenzetti:latest
+```
+
+To `run` using singularity engine:
+
+```
+singularity run lorenzetti_latest.sif
+```
+
+After `run` the container, you must execute this script to
+setup all simulation dependences:
+
+```
+source /setup_envs.sh
+```

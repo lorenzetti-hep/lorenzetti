@@ -26,3 +26,6 @@ build
 
 # configs cells
 ./lorenzet/share/json_files/
+
+executables
+*.exe

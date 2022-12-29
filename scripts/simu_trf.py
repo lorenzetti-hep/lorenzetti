@@ -2,7 +2,6 @@
 
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
-from P8Kernel             import EventReader
 from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling
 
@@ -49,8 +48,7 @@ parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', re
 parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=5,
                     help = "Event timeout in minutes")
 
-parser.add_argument('--isFromHepMC', action='store_true', dest='isFromHepMC', required = False, default = False,
-                    help = "In debug mode.")
+
 
 pi = np.pi
 
@@ -104,7 +102,6 @@ try:
                      TruthKey   = recordable("Particles"),
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
-                     isFromHepMC = args.isFromHepMC,
                      )
 
 

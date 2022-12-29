@@ -17,6 +17,7 @@ source /apt/geant4/buildthis/geant4.sh
 echo "setup pythia..."
 export PYTHIA8_INCLUDE=/apt/pythia8/include
 export PYTHIA8_LIBRARIES=/apt/pythia8/lib
+export PYTHONPATH=$PYTHONPATH:/apt/pythia8/lib
 
 #fastjet
 echo "setup fastjet..."
@@ -25,9 +26,10 @@ export FASTJET_LIBRARIES=/usr/local/lib
 
 #hepmc
 echo "setup hepmc..."
+export HEPMC_INCLUDE=/apt/hepmc3/include/
 export HEPMC_LIBRARIES=/usr/local/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HEPMC_LIBRARIES
-
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HEPMC_LIBRARIES
+export PYTHONPATH=$PYTHONPATH:/apt/hepmc3/build/python/3.8.10
 
 # preload libs (fix)
 export LD_PRELOAD=''
@@ -38,13 +40,5 @@ do
 done
 
 
-#cd $current_path
-#echo "compile lorenzetti"
-#git clone https://github.com/lorenzetti-hep/lorenzetti.git
-#cd lorenzetti
-#source $PWD/setup_module.sh
-#source $PWD/setup_module.sh --head
-#mkdir build && cd build && cmake .. && make -j$CPU_N && cd .. && source $PWD/setup.sh
-#echo "back to the base dir..."
 cd $current_path
 

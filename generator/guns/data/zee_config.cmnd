@@ -1,0 +1,43 @@
+
+! 1) Settings used in the main program.
+Main:numberOfEvents = 100          ! number of events to generate
+Main:timesAllowErrors = 3          ! how many aborts before run stops
+
+! 2) Settings related to output in init(), next() and stat().
+Init:showChangedSettings = on      ! list changed settings
+Init:showChangedParticleData = on  ! list changed particle data
+Next:numberCount = 10              ! print message every n events
+Next:numberShowInfo = 1            ! print event information n times
+Next:numberShowProcess = 0         ! print process record n times
+Next:numberShowEvent = 0           ! print event record n times
+
+! 3) Beam parameter settings. Values below agree with default ones.
+Beams:idA = 2212                   ! first beam, p = 2212, pbar = -2212
+Beams:idB = 2212                   ! second beam, p = 2212, pbar = -2212
+Beams:eCM = 14000.                 ! CM energy of collision
+
+
+! 4) Settings for the hard-process generation.
+! Example 1: QCD + prompt photon production; must set pTmin.
+WeakBosonAndParton:qg2gmZq = on    !
+WeakBosonAndParton:qqbar2gmZg = on !
+WeakZ0:gmZmode = 2                 ! (default = 0; minimum = 0; maximum = 2)
+23:onMode = off                    ! Turn off Z decays
+23:onIfMatch = -11 11              ! Turn on decays into Zee
+PhaseSpace:mHatMin = 75.           ! Z window
+PhaseSpace:mHatMax = 120           ! Z window
+! PhaseSpace:pTHatMin = 50.        ! minimal pT scale in process
+!23:oneChannel = 1 1 meMode product1 product2
+
+
+! 5) Switch on/off the key event generation steps.
+!PartonLevel:MPI = on              ! no multiparton interactions
+!PartonLevel:ISR = on              ! no initial-state radiation
+!PartonLevel:FSR = on              ! no final-state radiation
+!HadronLevel:Hadronize = on        ! no hadronization
+!HadronLevel:Decay = on            ! no decays
+
+! 6) Other settings. Can be expanded as desired.
+!Tune:pp = 6                        ! use Tune 4Cx
+!ParticleDecays:limitTau0 = on      ! set long-lived particle stable ...
+!ParticleDecays:tau0Max = 10        ! ... if c*tau0 > 10 mm
