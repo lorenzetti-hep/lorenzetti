@@ -20,10 +20,6 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=1,
                     help = "The number of events to be generated.")
 
-parser.add_argument('--event_number', action='store', dest='event_number', 
-                    required = False, default=[], type=int,
-                    help = "The list of numbers per event.")
-
 #
 # Pileup simulation arguments
 #
@@ -67,49 +63,34 @@ args = parser.parse_args()
 
 try:
 
-
   minbias_file = os.environ['LZT_PATH']+'/generator/guns/data/minbias_config.cmnd'
-  main_file    = os.environ['LZT_PATH']+'/generator/guns/data/jet_config.cmnd'
   
-  from guns import P8Gun
+  from guns import PythiaGun
   from GenKernel import EventTape
-  from filters import JF17
+  from filters import FixedRegion
 
   tape = EventTape( "EventTape", OutputFile = args.outputFile)
   
+  # dummy seed to store all pileup particles
+  seed = FixedRegion("Seed", Eta=0, Phi=0 )
+  tape+=seed
   
-  # To collect using this cell position
-  jets = JF17( "JF17",
-               #SherpaGun("Generator", File=main_file, Seed=args.seed)
-               PythiaGun("MainGenerator", File=main_file, Seed=args.seed, EventNumber = args.event_number),
-               EtaMax      = args.maxEta,
-               MinPt       = args.energy_min*GeV,
-               Select      = 2,
-               EtaWindow   = 0.4,
-               PhiWindow   = 0.4,
-               OutputLevel = args.outputLevel,
-              )
-  
-  # generate jets
-  tape+=jets
-
-  if args.pileupAvg > 0:
-
-    from filters import Pileup
-    
-    pileup = Pileup( "MinimumBias",
-                   PythiaGun("MBGenerator", File=minbias_file, Seed=args.seed),
-                   EtaMax         = args.maxEta,
-                   Select         = 2,
-                   PileupAvg      = args.pileupAvg,
-                   BunchIdStart   = args.bc_id_start,
-                   BunchIdEnd     = args.bc_id_end,
-                   OutputLevel    = args.outputLevel,
-                   DeltaEta       = 0.22,
-                   DeltaPhi       = 0.22,
-                   )
-    # Add pileup
-    tape+=pileup
+ 
+  # pileup generator
+  from filters import Pileup
+  pileup = Pileup( "MinimumBias",
+                 PythiaGun("MBGenerator", File=minbias_file, Seed=args.seed),
+                 EtaMax         = args.maxEta,
+                 Select         = 2,
+                 PileupAvg      = args.pileupAvg,
+                 BunchIdStart   = args.bc_id_start,
+                 BunchIdEnd     = args.bc_id_end,
+                 OutputLevel    = args.outputLevel,
+                 DeltaEta       = 0.22,
+                 DeltaPhi       = 0.22,
+                 )
+  # Add pileup
+  tape+=pileup
 
 
   # Run!

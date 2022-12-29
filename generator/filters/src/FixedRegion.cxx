@@ -21,7 +21,7 @@ StatusCode FixedRegion::initialize()
 
 StatusCode FixedRegion::execute( generator::Event& event )
 {
-  
+  event.setEventNumber(-1);
   auto seed = generator::Seed(m_eta,m_phi);
   event.push_back(seed);
   return StatusCode::SUCCESS;
