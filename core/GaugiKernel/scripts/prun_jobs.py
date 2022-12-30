@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from GaugiKernel import Slot, chunks
+from GaugiKernel import Slot, chunks, expand_folders
 from GaugiKernel import Logger
 import time, os
 
@@ -45,7 +45,7 @@ parser.add_argument('-i', '--inputs', action='store',
 #
 
 parser.add_argument('--nov','--numberOfEvents', action='store', 
-    dest='nov', required = True, default = 100, type=int,
+    dest='nov', required = False, default = 100, type=int,
     help = "The number of events. Use %%NOV and %%OFFSET to replace in command")
 
 parser.add_argument('--novPerJob', action='store', 

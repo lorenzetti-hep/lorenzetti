@@ -96,7 +96,7 @@ StatusCode Zee::execute( generator::Event &ctx )
                        vtx->position().t() + main_event_t, 
                        e->momentum().e(), 
                        e->momentum().pt() ); 
-
+    MSG_INFO("Add particle with PDGID " << e->pid() << " into the context.");
     ctx.push_back( seed );
   }
   

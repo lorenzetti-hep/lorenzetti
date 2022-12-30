@@ -25,7 +25,7 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('-d', '--debug', action='store_true', dest='debug', required = False,
                     help = "In debug mode.")
 
-parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
+parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,

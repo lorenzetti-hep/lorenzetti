@@ -122,10 +122,9 @@ StatusCode EventTape::execute()
     MSG_INFO( "Running event " << iEvent << "..." );
     clear();
     
+    generator::Event event;
+
     try {  
-
-      generator::Event event;
-
       // Loop over all physcis tools
       for (auto& alg : m_algs ){
         if ( alg->execute(event).isFailure() )
@@ -134,7 +133,6 @@ StatusCode EventTape::execute()
         }
       }
 
-      dump( event );
     } catch ( NotInterestingEvent ){
       MSG_WARNING("Ignoring non interesting event, regenerating...");
       --iEvent;
@@ -146,6 +144,9 @@ StatusCode EventTape::execute()
       MSG_INFO("End of generator file");
       break;
     }
+
+    dump( event );
+
   }// Loop over events
 
   return StatusCode::SUCCESS;

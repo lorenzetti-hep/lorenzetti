@@ -54,6 +54,7 @@ StatusCode RootStreamHITReader::finalize()
 
 StatusCode RootStreamHITReader::bookHistograms( EventContext &ctx ) const
 {
+  MSG_INFO("Reading file " << m_inputFile);
   auto store = ctx.getStoreGateSvc();
   TFile *file = new TFile(m_inputFile.c_str(), "read");
   store->decorate( "events", file );

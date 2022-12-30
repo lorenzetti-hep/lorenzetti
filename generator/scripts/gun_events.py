@@ -25,10 +25,10 @@ parser.add_argument('-c', '--config' , action='store', dest='config', required =
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "Seed number.")
 
-parser.add_argument('--event_number', action='store', dest='event_number', required = True, type=int,
+parser.add_argument('--eventNumber', action='store', dest='eventNumber', required = True, type=int,
                     help = "The event number offset.")
 
-parser.add_argument('-e', '--executable', action='store', dest='executable', required = False, default='p8gun.exe',
+parser.add_argument('-e', '--executable', action='store', dest='executable', required = False, default='gun.exe',
                     help = "The executable program.")
 
 if len(sys.argv)==1:
@@ -36,6 +36,6 @@ if len(sys.argv)==1:
   sys.exit(1)
 
 args = parser.parse_args()
-command = f"{args.executable} {args.nov} {args.event_number} {args.seed} {args.config} {args.output}"
+command = f"{args.executable} {args.nov} {args.eventNumber} {args.seed} {args.config} {args.output}"
 print(command)
 os.system(command)

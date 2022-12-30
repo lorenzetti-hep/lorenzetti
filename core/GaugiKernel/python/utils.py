@@ -60,7 +60,7 @@ def expand_folders( pathList, filters = None):
   if not( type( filters ) in (list,tuple,) ):
     filters = [ filters ]
   retList = [[] for idx in range(len(filters))]
-  from Gaugi.utils import progressbar, traverse
+  from GaugiKernel.utils import progressbar, traverse
   pathList = list(traverse([glob(path) if '*' in path else path for path in traverse(pathList,simple_ret=True)],simple_ret=True))
   for path in progressbar( pathList , prefix = 'Expanding folders: ', mute = True):
     path = expand_path( path )

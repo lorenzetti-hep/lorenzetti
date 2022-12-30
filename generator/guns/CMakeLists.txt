@@ -26,9 +26,9 @@ gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python guns)
 
 
 
-
-add_executable( p8gun.exe ${CMAKE_CURRENT_SOURCE_DIR}/share/p8gun.cxx)
-target_link_libraries(p8gun.exe ${PYTHIA8_LIBRARIES} 
+# Add executables from share folder
+add_executable( gun.exe ${CMAKE_CURRENT_SOURCE_DIR}/share/gun.cxx)
+target_link_libraries(gun.exe ${PYTHIA8_LIBRARIES} 
                                             ${CMAKE_DL_LIBS} 
                                             ${HEPMC_LIBRARIES} 
                                             ${FASTJET_LIBRARIES}

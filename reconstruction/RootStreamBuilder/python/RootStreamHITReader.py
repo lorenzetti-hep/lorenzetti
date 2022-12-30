@@ -29,8 +29,7 @@ class RootStreamHITReader( Logger ):
 
     from ROOT import TFile, TTree 
     f = TFile( self.getProperty("InputFile"),"read")
-    t = TTree()
-    f.GetObject( self.getProperty("NtupleName"), t )
+    t = f.Get( self.getProperty("NtupleName"))
     self.__entries = t.GetEntries()
 
   def core(self):

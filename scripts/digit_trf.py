@@ -8,9 +8,9 @@ import numpy as np
 import argparse
 import sys,os
 
-import ROOT
-ROOT.gSystem.Load('liblorenzetti')
-from ROOT import RunManager
+#import ROOT
+#ROOT.gSystem.Load('liblorenzetti')
+#from ROOT import RunManager
 
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -26,7 +26,7 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('-d', '--debug', action='store_true', dest='debug', required = False,
                     help = "In debug mode.")
 
-parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
+parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
 
 parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
@@ -67,7 +67,6 @@ try:
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
-
   # the reader must be first in sequence
   from RootStreamBuilder import RootStreamHITReader
   reader = RootStreamHITReader("HITReader", 
@@ -76,6 +75,7 @@ try:
                                 EventKey        = recordable("EventInfo"),
                                 TruthKey        = recordable("Particles"),
                                 NtupleName      = "CollectionTree",
+                                OutputLevel     = outputLevel,
                               )
 
 

@@ -104,7 +104,10 @@ namespace generator{
   
     public:
       /*! Constructor */
-      Event()=default;
+      Event():
+        m_avgmu(0),
+        m_eventNumber(-1)
+      {;};
       
       /*! Destructor */
       ~Event()=default;

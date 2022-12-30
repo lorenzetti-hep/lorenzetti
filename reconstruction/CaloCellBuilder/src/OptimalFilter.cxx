@@ -40,7 +40,6 @@ StatusCode OptimalFilter::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) 
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);
   auto pulse = cell->pulse();
   float energy=0.0;
-  MSG_DEBUG("Runing Optimal Filter");
   if( m_ofweights.size() != pulse.size() ){
     MSG_ERROR( "The ofweights size its different than the pulse size." );
     return StatusCode::FAILURE;
