@@ -9,7 +9,7 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
-        - ${{env.working-directory }}/volume:/volume
+        - /volume:/volume
       env: 
         VOLUME: /volume
     steps:
@@ -29,13 +29,12 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
-        - ${{env.working-directory }}/volume:/volume
+        - /volume:/volume
       env: 
         VOLUME: /volume
     steps:
       - name: Compile
         shell: bash
-        working-directory: ${VOLUME}/lorenzetti
         run: |
           cd $VOLUME
           ls -lisah
