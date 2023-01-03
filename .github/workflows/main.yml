@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Workdir
         shell: bash
-        working-directory: $VOLUME
+        working-directory: ${VOLUME}
         run: |
           rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Compile
         shell: bash
-        working-directory: $VOLUME/lorenzetti
+        working-directory: ${VOLUME}/lorenzetti
         run: |
           ls -lisah
           source /setup_envs.sh
