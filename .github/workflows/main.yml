@@ -15,13 +15,13 @@ jobs:
     steps:
       - name: Workdir
         shell: bash
+        working-directory: $VOLUME
         run: |
-          cd /volume && rm -rf *
+          rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           source lorenzetti/tests/workdir.sh
           ls -lisah
-          cd $VOLUME
-          ls -lisah
+          pwd
 
   build:
     runs-on: self-hosted
@@ -35,12 +35,12 @@ jobs:
     steps:
       - name: Compile
         shell: bash
+        working-directory: $VOLUME/lorenzetti
         run: |
-          ls $VOLUME
-          source /setup_envs.sh && cd /volume 
-          cd lorenzetti && mkdir build && cd build
-          cmake .. && make -j8
-          cd .. && source setup.sh
+          ls -lisah
+          source /setup_envs.sh
+          mkdir build && cd build && cmake .. && make -j8
+          source setup.sh
 
 
 
