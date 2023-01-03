@@ -1,0 +1,15 @@
+name: tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: self-runner
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+
+    steps:
+      - name: Compile
+        run: |
+              source /setup_envs.sh
+              
