@@ -8,9 +8,10 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
-        - volume:/voume
+        - volume:/volume
 
     steps:
       - name: Compile
-        run: ls /
+        shell: bash
+        run: cd /volume && 
               
