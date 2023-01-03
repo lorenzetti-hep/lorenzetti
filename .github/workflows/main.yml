@@ -9,7 +9,7 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
-        - ${{ env.working-directory }}/volume:/volume
+        - ${{env.working-directory }}/volume:/volume
       env: 
         VOLUME: /volume
     steps:
@@ -29,7 +29,7 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
-        - ${{ env.working-directory }}/volume:/volume
+        - ${{env.working-directory }}/volume:/volume
       env: 
         VOLUME: /volume
     steps:
