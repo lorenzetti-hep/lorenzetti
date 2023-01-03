@@ -15,7 +15,7 @@ jobs:
       - name: Workdir
         shell: bash
         run: |
-          cd /volume && cd -rf *
+          cd /volume && rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           source lorenzetti/tests/workdir.sh
 
