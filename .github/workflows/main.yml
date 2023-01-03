@@ -10,7 +10,6 @@ jobs:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
         - volume:/volume
-
     steps:
       - name: Workdir
         shell: bash
@@ -35,15 +34,15 @@ jobs:
           cmake .. && make -j8
           cd .. && source setup.sh
           
-  generation:
+  main_generation:
     runs-on: self-hosted
-    needs: build
+    needs: [build,workdir]
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
         - volume:/volume
     steps:
-      - name: Generation
+      - name: main generation
         shell: bash
         run: |
           source /setup_envs.sh && cd /volume/lorenzetti && source setup.sh
