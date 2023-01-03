@@ -13,5 +13,5 @@ jobs:
     steps:
       - name: Compile
         shell: bash
-        run: source /setup_envs.sh && cd /volume && cd git clone https://github.com/lorenzetti-hep/lorenzetti.git s
+        run: source /setup_envs.sh && cd /volume && git clone https://github.com/lorenzetti-hep/lorenzetti.git
               
