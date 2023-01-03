@@ -19,6 +19,9 @@ jobs:
           cd /volume && rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           source lorenzetti/tests/workdir.sh
+          ls -lisah
+          cd $VOLUME
+          ls -lisah
 
   build:
     runs-on: self-hosted
@@ -40,18 +43,5 @@ jobs:
           cd .. && source setup.sh
 
 
-  main_generation:
-    runs-on: self-hosted
-    needs: workdir
-    container:
-      image: docker://lorenzetti/lorenzetti:latest
-      volumes: 
-        - volume:/volume
-      env: 
-        VOLUME: /volume
-    steps:
-      - name: Compile
-        shell: bash
-        run: |
-          ls $VOLUME
+
               
