@@ -21,5 +21,19 @@ jobs:
           cmake .. && make -j8
           cd .. && source setup.sh
           
-      
+  Generation:
+    runs-on: self-hosted
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+      volumes: 
+        - volume:/volume
+
+    steps:
+      - name: Generation
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd /volume/lorenzetti
+          cd .. && source setup.sh
+        
+          
               
