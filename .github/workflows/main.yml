@@ -3,7 +3,8 @@ name: tests
 on: [push]
 
 jobs:
-  build:
+
+  workdir:
     runs-on: self-hosted
     container:
       image: docker://lorenzetti/lorenzetti:latest
@@ -11,12 +12,25 @@ jobs:
         - volume:/volume
 
     steps:
+      - name: Workdir
+        shell: bash
+        run: |
+          cd /volume && cd -rf *
+          git clone https://github.com/lorenzetti-hep/lorenzetti.git
+          source lorenzetti/tests/workdir.sh
+
+  build:
+    runs-on: self-hosted
+    needs: workdir
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+      volumes: 
+        - volume:/volume
+    steps:
       - name: Compile
         shell: bash
         run: |
           source /setup_envs.sh && cd /volume 
-          rm -rf lorenzetti
-          git clone https://github.com/lorenzetti-hep/lorenzetti.git
           cd lorenzetti && mkdir build && cd build
           cmake .. && make -j8
           cd .. && source setup.sh
@@ -28,14 +42,12 @@ jobs:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
         - volume:/volume
-    
-
     steps:
       - name: Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd /volume/lorenzetti
-          cd .. && source setup.sh
+          source /setup_envs.sh && cd /volume/lorenzetti && source setup.sh
+          source tests/gen_main.sh
         
           
               
