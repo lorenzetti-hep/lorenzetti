@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build:
-    runs-on: self-runner
+    runs-on: self-hosted
     container:
       image: docker://lorenzetti/lorenzetti:latest
 
