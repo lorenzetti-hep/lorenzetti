@@ -21,12 +21,14 @@ jobs:
           cmake .. && make -j8
           cd .. && source setup.sh
           
-  Generation:
+  generation:
     runs-on: self-hosted
+    needs: build
     container:
       image: docker://lorenzetti/lorenzetti:latest
       volumes: 
         - volume:/volume
+    
 
     steps:
       - name: Generation
