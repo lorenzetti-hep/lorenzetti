@@ -42,9 +42,7 @@ jobs:
       - name: Generation
         shell: bash
         run: |
-          pwd
-          export GIT_RUNNER_BASEPATH=$pwd
-          export REPO_TESTS=$GIT_RUNNER_BASEPATH/lorenzetti/tests
+          export REPO_TESTS=$pwd/lorenzetti/tests
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           echo $REPO_TESTS
           cd $REPO_TESTS
