@@ -12,6 +12,7 @@ jobs:
       - name: Workdir
         shell: bash
         run: |
+          export GIT_RUNNER_BASEPATH=$pwd
           rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
 
@@ -24,8 +25,12 @@ jobs:
       - name: Compile
         shell: bash
         run: |
+          export GIT_RUNNER_BASEPATH=$pwd
+          export CPU_N=$(grep -c ^processor /proc/cpuinfo)
           source /setup_envs.sh
-          source lorenzetti/tests/test_build.sh
+          cd lorenzetti && mkdir build && cd build && cmake .. && make -j$CPU_N && cd ..
+          source setup.sh
+          
 
           
   main_generation:
@@ -37,8 +42,11 @@ jobs:
       - name: Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh && cd
-          source lorenzetti/tests/test_main_generation.sh
+          export GIT_RUNNER_BASEPATH=$pwd
+          export REPO_TESTS=$GIT_RUNNER_BASEPATH/lorenzetti/tests
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd $REPO_TESTS
+          source test_main_generation.sh
 
 
 
