@@ -6,8 +6,8 @@ nov=10
 seed=512
 
 # main event generation command
-prun_jobs.py -c "gen_zee.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 1 --seed $seed --nov $nov -o Zee.EVT.root -m
+gen_zee.py --pileupAvg 0 --nov $nov -o Zee.EVT.root -s $seed
 
 # minimum bias event generation command
-prun_jobs.py -c "gen_minbias.py --pileupAvg 10 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 1 --seed $seed --nov $nov -o mb.EVT.root -m
+gen_minbias.py --pileupAvg 10 --nov $nov -o mb.EVT.root -s $seed
 
