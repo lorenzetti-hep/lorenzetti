@@ -4,26 +4,16 @@ on: [push]
 
 jobs:
 
-  workdir:
-    runs-on: self-hosted
-    container:
-      image: docker://lorenzetti/lorenzetti:latest
-    steps:
-      - name: Workdir
-        shell: bash
-        run: |
-          rm -rf *
-          git clone https://github.com/lorenzetti-hep/lorenzetti.git
-
   build:
     runs-on: self-hosted
-    needs: workdir
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
       - name: Compile
         shell: bash
         run: |
+          rm -rf *
+          git clone https://github.com/lorenzetti-hep/lorenzetti.git
           export CPU_N=$(grep -c ^processor /proc/cpuinfo)
           source /setup_envs.sh
           cd lorenzetti && mkdir build && cd build && cmake .. && make -j$CPU_N && cd ..
@@ -31,7 +21,7 @@ jobs:
           
 
           
-  generation_q101:
+  generation:
     runs-on: self-hosted
     needs: build
     container:
@@ -42,12 +32,12 @@ jobs:
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
-          source test_g101.sh
+          source test_generation.sh
           
 
-  generation_g102:
+  simulation:
     runs-on: self-hosted
-    needs: build
+    needs: generation
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
@@ -56,7 +46,7 @@ jobs:
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
-          source test_g102.sh
+          source test_simulation.sh
 
 
               
