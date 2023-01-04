@@ -24,7 +24,6 @@ jobs:
       - name: Compile
         shell: bash
         run: |
-          ls -lisah
           source /setup_envs.sh
           cd lorenzetti && mkdir build && cd build && cmake .. && make -j4 && cd ..
           source setup.sh
@@ -35,13 +34,11 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
-      - name: Compile
+      - name: Generation
         shell: bash
         run: |
-          ls -lisah
-          source /setup_envs.sh
-          mkdir main_generation && cd main_generation
-          prun_jobs.py -c "gen_zee.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 1 --nov 10 --novPerJob 100 -o main.EVT.root -m
+          source /setup_envs.sh && cd lorenzetti && source setup.sh && cd
+          source lorenzetti/tests/test_main_generation.sh
 
 
 
