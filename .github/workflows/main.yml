@@ -14,8 +14,6 @@ jobs:
         run: |
           rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
-          source lorenzetti/tests/workdir.sh
-          ls -lisah
 
   build:
     runs-on: self-hosted
@@ -27,7 +25,8 @@ jobs:
         shell: bash
         run: |
           ls -lisah
-          touch y.sh
+          cd lorenzetti && mkdir build && cd build && cmake .. && make -j4 && cd ..
+          source setup.sh
 
 
 
