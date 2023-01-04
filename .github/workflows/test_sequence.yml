@@ -27,7 +27,7 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
-      - name: Main Event Generation
+      - name: Event Generation
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
@@ -41,12 +41,25 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
-      - name: Main Event Generation
+      - name: Event Simulation
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
           source test_simulation.sh
+
+  merge:
+    runs-on: self-hosted
+    needs: simulation
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Merge Events
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_merge.sh
 
 
               
