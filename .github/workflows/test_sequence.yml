@@ -46,7 +46,7 @@ jobs:
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
-          source test_simulation.sh
+          source test_simu_trf.sh
 
   merge:
     runs-on: self-hosted
@@ -59,7 +59,30 @@ jobs:
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
-          source test_merge.sh
+          source test_merge_trf.sh
 
-
+  digitalization:
+    runs-on: self-hosted
+    needs: simulation
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Digit Events
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_digit_trf.sh
               
+  reconstruction:
+    runs-on: self-hosted
+    needs: digitalization
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Reco Events
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_reco_trf.sh
