@@ -12,7 +12,6 @@ jobs:
       - name: Workdir
         shell: bash
         run: |
-          export GIT_RUNNER_BASEPATH=$pwd
           rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
 
@@ -25,7 +24,6 @@ jobs:
       - name: Compile
         shell: bash
         run: |
-          export GIT_RUNNER_BASEPATH=$pwd
           export CPU_N=$(grep -c ^processor /proc/cpuinfo)
           source /setup_envs.sh
           cd lorenzetti && mkdir build && cd build && cmake .. && make -j$CPU_N && cd ..
@@ -39,13 +37,11 @@ jobs:
     container:
       image: docker://lorenzetti/lorenzetti:latest
     steps:
-      - name: Generation
+      - name: Main Event Generation
         shell: bash
         run: |
-          export REPO_TESTS=$pwd/lorenzetti/tests
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          echo $REPO_TESTS
-          cd $REPO_TESTS
+          cd tests
           source test_main_generation.sh
 
 
