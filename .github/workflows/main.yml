@@ -12,14 +12,10 @@ jobs:
       - name: Workdir
         shell: bash
         run: |
-          pwd
-          ls -lisah
           rm -rf *
-          touch x.sh
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           source lorenzetti/tests/workdir.sh
           ls -lisah
-          pwd
 
   build:
     runs-on: self-hosted
