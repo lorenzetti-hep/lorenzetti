@@ -8,15 +8,12 @@ jobs:
     runs-on: self-hosted
     container:
       image: docker://lorenzetti/lorenzetti:latest
-      volumes: 
-        - /volume:/volume
-      env: 
-        VOLUME: /volume
     steps:
       - name: Workdir
         shell: bash
         run: |
-          cd $VOLUME
+          pwd
+          ls -lisah
           rm -rf *
           touch x.sh
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
@@ -29,23 +26,13 @@ jobs:
     needs: workdir
     container:
       image: docker://lorenzetti/lorenzetti:latest
-      volumes: 
-        - /volume:/volume
-      env: 
-        VOLUME: /volume
     steps:
       - name: Compile
         shell: bash
         run: |
-          cd $VOLUME
           ls -lisah
           touch y.sh
-          cd lorenzetti
-          source /setup_envs.sh
-          mkdir build && cd build && cmake .. && make -j8 && cd .. && pwd
-          pwd
-          source setup.sh
-          ls -lisah
+
 
 
 
