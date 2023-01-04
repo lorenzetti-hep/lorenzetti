@@ -74,7 +74,7 @@ def expand_folders( pathList, filters = None):
       folders = [ os.path.join(path,f) for f in os.listdir( path ) if os.path.isdir( os.path.join(path,f) ) ]
       if folders:
         recList = expand_folders( folders, filters )
-        if len(filters) is 1:
+        if len(filters) == 1:
           recList = [recList]
         for l in recList:
           retList[idx].extend(l)
