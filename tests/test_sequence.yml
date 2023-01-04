@@ -1,4 +1,4 @@
-name: sequence
+name: test
 
 on: [push]
 
