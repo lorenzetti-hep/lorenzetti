@@ -31,7 +31,7 @@ jobs:
           
 
           
-  main_generation:
+  generation_q101:
     runs-on: self-hosted
     needs: build
     container:
@@ -42,9 +42,21 @@ jobs:
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
-          source test_main_generation.sh
+          source test_g101.sh
+          
 
-
+  generation_g102:
+    runs-on: self-hosted
+    needs: build
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Main Event Generation
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_g102.sh
 
 
               
