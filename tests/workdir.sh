@@ -1,9 +1,9 @@
 
 
-mkdir -p volume/data/main/EVT
-mkdir -p volume/data/main/HIT
-mkdir -p volume/data/main/ESD
-mkdir -p volume/data/main/AOD
-mkdir -p volume/data/minbias/EVT
-mkdir -p volume/data/minbias/HIT 
+mkdir -p data/main/EVT
+mkdir -p data/main/HIT
+mkdir -p data/main/ESD
+mkdir -p data/main/AOD
+mkdir -p data/minbias/EVT
+mkdir -p data/minbias/HIT 
 
