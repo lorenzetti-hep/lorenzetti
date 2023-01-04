@@ -154,12 +154,6 @@ An example for full customized digitalization step:
 ```digit_trf.py -i HIT.root -o ESD.root --simulateCrossTalk --estimationMethodHAD COF```
 
 
-## Framework status:
-
-|  Branch    | Build Status |
-| ---------- | ------------ |
-|   Master   |[![Build Status](https://travis-ci.org/jodafons/lorenzetti.svg?branch=master)](https://travisci.org/jodafons/lorenzetti)  |
-
 ## Software considerations:
 
 

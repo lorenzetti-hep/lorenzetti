@@ -1,8 +1,0 @@
-language: python
-sudo: required
-
-services:
-  - docker
-
-script:
-  - docker run -v $PWD:/output lorenzetti/lorenzetti:cluster -f PythiaGenerator/gen_zee.py -e 1 -j 0 -o first_test.root --bc_id_start -8 --bc_id_end 7 --volume /output -s 0
