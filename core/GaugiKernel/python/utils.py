@@ -82,7 +82,7 @@ def expand_folders( pathList, filters = None):
       for idx, filt in enumerate(filters):
         if path in glob( os.path.join( os.path.dirname( path ) , filt ) ):
           retList[idx].append( path )
-  if len(filters) is 1:
+  if len(filters) == 1:
     retList = retList[0]
 
   # put evrything in order

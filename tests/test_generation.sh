@@ -6,8 +6,8 @@ nov=10
 seed=512
 
 # main event generation command
-gen_zee.py --pileupAvg 0 --nov $nov -o Zee.EVT.root -s $seed
+gen_zee.py --pileupAvg 0 --nov $nov -o Zee.EVT.root
 
 # minimum bias event generation command
-gen_minbias.py --pileupAvg 10 --nov $nov -o mb.EVT.root -s $seed
+gen_minbias.py --pileupAvg 10 --nov $nov -o mb.EVT.root
 
