@@ -18,6 +18,7 @@ jobs:
         run: |
           cd $VOLUME
           rm -rf *
+          touch x.sh
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           source lorenzetti/tests/workdir.sh
           ls -lisah
@@ -38,9 +39,13 @@ jobs:
         run: |
           cd $VOLUME
           ls -lisah
+          touch y.sh
+          cd lorenzetti
           source /setup_envs.sh
-          mkdir build && cd build && cmake .. && make -j8
+          mkdir build && cd build && cmake .. && make -j8 && cd .. && pwd
+          pwd
           source setup.sh
+          ls -lisah
 
 
 
