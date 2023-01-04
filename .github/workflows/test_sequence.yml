@@ -1,1 +1,52 @@
-../../tests/test_sequence.yml
+name: test
+
+on: [push]
+
+jobs:
+
+  build:
+    runs-on: self-hosted
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Compile
+        shell: bash
+        run: |
+          rm -rf *
+          git clone https://github.com/lorenzetti-hep/lorenzetti.git
+          export CPU_N=$(grep -c ^processor /proc/cpuinfo)
+          source /setup_envs.sh
+          cd lorenzetti && mkdir build && cd build && cmake .. && make -j$CPU_N && cd ..
+          source setup.sh
+          
+
+          
+  generation:
+    runs-on: self-hosted
+    needs: build
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Main Event Generation
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_generation.sh
+          
+
+  simulation:
+    runs-on: self-hosted
+    needs: generation
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Main Event Generation
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_simulation.sh
+
+
+              
