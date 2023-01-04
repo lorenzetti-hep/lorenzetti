@@ -25,8 +25,8 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh
-          cd lorenzetti && mkdir build && cd build && cmake .. && make -j4 && cd ..
-          source setup.sh
+          source lorenzetti/tests/test_build.sh
+
           
   main_generation:
     runs-on: self-hosted
