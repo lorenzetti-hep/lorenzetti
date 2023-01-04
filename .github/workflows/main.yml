@@ -45,6 +45,7 @@ jobs:
           export GIT_RUNNER_BASEPATH=$pwd
           export REPO_TESTS=$GIT_RUNNER_BASEPATH/lorenzetti/tests
           source /setup_envs.sh && cd lorenzetti && source setup.sh
+          echo $REPO_TESTS
           cd $REPO_TESTS
           source test_main_generation.sh
 
