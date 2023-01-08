@@ -81,7 +81,7 @@ add_subdirectory( geometry/DetectorATLASModel )
 
 # generator package
 add_subdirectory( generator/filters )
-add_subdirectory( generator/guns )
+add_subdirectory( generator/evtgen )
 
 
 
@@ -105,7 +105,7 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:DetectorATLASModel>
   $<TARGET_OBJECTS:GenKernel>
   $<TARGET_OBJECTS:filters>
-  $<TARGET_OBJECTS:guns>
+  $<TARGET_OBJECTS:evtgen>
 )
 
 message( STATUS ${FASTJET_LIBRARIES} )

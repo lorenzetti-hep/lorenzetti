@@ -6,7 +6,7 @@ namespace generator{
 
   namespace ParticleHelper{
 
-      bool isVisible(const HepMC3::GenParticle *particle)
+      bool isVisible(HepMC3::GenParticle *particle)
       {
         // Take from: https://github.com/lorenzetti-hep/pythia8/blob/main/src/ParticleData.cc
         // A particle is invisible if it has neither strong nor electric charge,
@@ -45,36 +45,41 @@ namespace generator{
       bool isCharged(const HepMC3::GenParticle *particle){
         return true;
       }
+
+
+      void ParticleFilter::filter(HepMC3::GenEvent &event) {
+      
+        // Reset arrays in preparation for new event.
+        //m_keptIndx.resize(0);
+        m_keptPtrs.resize(0);
+        // Loop over all particles in the event record.
+        for (const auto p : event.particles()){
+          // Skip if particle kind selection criteria not fulfilled.
+          if (!ParticleHelper::isFinal(p.get())) continue;
+          if (m_select == 2 && !ParticleHelper::isVisible(p.get())) continue;
+          bool isCharged = ParticleHelper::isCharged(p.get());
+          if (m_select == 3 && !isCharged) continue;
+          // Skip if too large pseudorapidity.
+          float eta = p->momentum().eta();
+          if (abs(eta) > m_etaMax) continue;
+          // Skip if too small pT.
+          float pT = p->momentum().pt();
+          if       (isCharged && pT < m_pTminCharged) continue;
+          else if (!isCharged && pT < m_pTminNeutral) continue;
+          // Add particle to vectors of indices and pointers.
+          //m_keptIndx.push_back( i );
+          m_keptPtrs.push_back( p.get() );
+        // End of particle loop. Done.
+        }
+      }
+
+
+
   }
 
 
 
   
-  void ParticleFilter::filter(HepMC3::GenEvent &event) {
-
-    // Reset arrays in preparation for new event.
-    //m_keptIndx.resize(0);
-    m_keptPtrs.resize(0);
-    // Loop over all particles in the event record.
-    for (const auto p : event.particles()){
-      // Skip if particle kind selection criteria not fulfilled.
-      if (!ParticleHelper::isFinal(p.get())) continue;
-      if (m_select == 2 && !ParticleHelper::isVisible(p.get())) continue;
-      bool isCharged = ParticleHelper::isCharged(p.get());
-      if (m_select == 3 && !isCharged) continue;
-      // Skip if too large pseudorapidity.
-      float eta = p->momentum().eta();
-      if (abs(eta) > m_etaMax) continue;
-      // Skip if too small pT.
-      float pT = p->momentum().pt();
-      if       (isCharged && pT < m_pTminCharged) continue;
-      else if (!isCharged && pT < m_pTminNeutral) continue;
-      // Add particle to vectors of indices and pointers.
-      //m_keptIndx.push_back( i );
-      m_keptPtrs.push_back( p.get() );
-    // End of particle loop. Done.
-    }
-  }
 
 
 }

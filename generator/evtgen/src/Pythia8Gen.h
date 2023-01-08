@@ -1,7 +1,7 @@
 
 
-#ifndef guns_PythiaGun_h
-#define guns_PythiaGun_h
+#ifndef guns_Pythia8Gen_h
+#define guns_Pythia8Gen_h
 
 #include "GenKernel/exceptions.h"
 #include "GenKernel/IGenerator.h"
@@ -11,13 +11,13 @@
 
 namespace generator{
 
-  class PythiaGun  : public IGenerator
+  class Pythia8Gen  : public IGenerator
   {
     public:
       /*! Constructor */
-      PythiaGun();
+      Pythia8Gen();
       /*! Destructor */
-      virtual ~PythiaGun() = default;
+      virtual ~Pythia8Gen() = default;
 
       virtual StatusCode initialize() override;
       virtual StatusCode execute( HepMC3::GenEvent&) override;
@@ -26,6 +26,9 @@ namespace generator{
 
       virtual float random_flat() override;
       virtual float random_gauss() override;
+
+      virtual void clear() override;
+      virtual void fill(int id, float energy, float etaIn, float phiIn, bool atRest, bool hasLifetime) override;
 
     protected:
 

@@ -40,7 +40,7 @@ StatusCode Pileup::initialize()
 StatusCode Pileup::execute(  generator::Event &ctx )
 {
 
-  ParticleFilter det_acc_filter( m_select, m_etaMax + .05, 0.7, 0.05 );
+  ParticleHelper::ParticleFilter det_acc_filter( m_select, m_etaMax + .05, 0.7, 0.05 );
   const int nWin = m_bc_id_end - m_bc_id_start + 1;
   double nPileUpMean(0);
   

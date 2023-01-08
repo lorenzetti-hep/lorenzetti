@@ -1,11 +1,11 @@
-__all__ = ["PythiaGun"]
+__all__ = ["Pythia8"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class PythiaGun( Logger ):
+class Pythia8( Logger ):
 
   __allow_keys = [
                 "File",
@@ -21,7 +21,7 @@ class PythiaGun( Logger ):
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import generator
     # Create the algorithm
-    self.__core = generator.PythiaGun()
+    self.__core = generator.Pythia8Gen()
     for key, value in kw.items():
       self.setProperty( key,value )
 

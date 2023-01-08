@@ -1,7 +1,7 @@
 
 
-#ifndef guns_RootReaderGun_h
-#define guns_RootReaderGun_h
+#ifndef evtgen_hepmc3_RootReader_h
+#define evtgen_hepmc3_RootReader_h
 
 #include "GenKernel/exceptions.h"
 #include "GenKernel/IGenerator.h"
@@ -13,13 +13,13 @@
 
 namespace generator{
 
-  class RootReaderGun  : public IGenerator
+  class RootReader  : public IGenerator
   {
     public:
       /*! Constructor */
-      RootReaderGun();
+      RootReader();
       /*! Destructor */
-      virtual ~RootReaderGun();
+      virtual ~RootReader();
 
       virtual StatusCode initialize() override;
       virtual StatusCode execute( HepMC3::GenEvent&) override;

@@ -1,9 +1,10 @@
-#include "RootReaderGun.h"
+#include "RootReader.h"
 
 using namespace generator;
 
-RootReaderGun::RootReaderGun(): 
-  IGenerator("RootReaderGun"),
+RootReader::RootReader(): 
+  IMsgService("RootReader"),
+  IGenerator(),
   m_rng(0),
   m_flat(0,1),
   m_gauss(0,1)
@@ -13,13 +14,13 @@ RootReaderGun::RootReaderGun():
 }
 
 
-RootReaderGun::~RootReaderGun(){
+RootReader::~RootReader(){
   if(m_data){
     delete m_data;
   }
 }
 
-StatusCode RootReaderGun::initialize()
+StatusCode RootReader::initialize()
 {
   m_data = new HepMC3::ReaderRootTree(m_file);
   if (m_data->failed()){
@@ -32,7 +33,7 @@ StatusCode RootReaderGun::initialize()
 }
 
 
-StatusCode RootReaderGun::execute(HepMC3::GenEvent &evt){
+StatusCode RootReader::execute(HepMC3::GenEvent &evt){
 
   if (m_data->failed()){
     MSG_INFO("End of file. Stop the execution.");
@@ -44,7 +45,7 @@ StatusCode RootReaderGun::execute(HepMC3::GenEvent &evt){
 
 
 
-StatusCode RootReaderGun::finalize()
+StatusCode RootReader::finalize()
 {
   m_data->close();
   return StatusCode::SUCCESS;
@@ -52,10 +53,10 @@ StatusCode RootReaderGun::finalize()
 
 
 
-float RootReaderGun::random_flat(){
+float RootReader::random_flat(){
   return m_flat(m_rng);
 }
 
-float RootReaderGun::random_gauss(){
+float RootReader::random_gauss(){
   return m_gauss(m_rng);
 }

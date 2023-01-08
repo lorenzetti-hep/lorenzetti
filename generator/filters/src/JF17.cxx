@@ -56,7 +56,7 @@ StatusCode JF17::execute( generator::Event &ctx )
 
  
 
-  ParticleFilter filter( m_select, m_etaMax + .05, 0.7, 0.05 );
+  ParticleHelper::ParticleFilter filter( m_select, m_etaMax + .05, 0.7, 0.05 );
   filter.filter(evt);
 
 

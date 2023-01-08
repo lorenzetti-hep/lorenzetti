@@ -63,9 +63,9 @@ args = parser.parse_args()
 
 try:
 
-  minbias_file = os.environ['LZT_PATH']+'/generator/guns/data/minbias_config.cmnd'
+  minbias_file = os.environ['LZT_PATH']+'/generator/evtgen/data/minbias_config.cmnd'
   
-  from guns import PythiaGun
+  from evtgen import Pythia8
   from GenKernel import EventTape
   from filters import FixedRegion
 
@@ -79,7 +79,7 @@ try:
   # pileup generator
   from filters import Pileup
   pileup = Pileup( "MinimumBias",
-                 PythiaGun("MBGenerator", File=minbias_file, Seed=args.seed),
+                 Pythia8("Generator", File=minbias_file, Seed=args.seed),
                  EtaMax         = args.maxEta,
                  Select         = 2,
                  PileupAvg      = args.pileupAvg,

@@ -17,8 +17,7 @@ namespace generator{
   {
     public:
       /*! Constructor */
-      IGenerator(std::string name):
-        IMsgService(name),
+      IGenerator():
         PropertyService()
       {;}
       
@@ -29,9 +28,17 @@ namespace generator{
       virtual StatusCode execute( HepMC3::GenEvent &)=0;
       virtual StatusCode finalize()=0;
 
-      const std::string& name() const;
       virtual float random_flat()=0;
       virtual float random_gauss()=0;
+
+
+      virtual void clear()=0;
+
+      virtual void fill(int id, float energy, float etaIn, float phiIn, bool atRest, bool hasLifetime)=0;
+
+
+
+      const std::string& name() const;
 
   };
 

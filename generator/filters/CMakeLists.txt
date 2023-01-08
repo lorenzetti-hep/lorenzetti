@@ -4,7 +4,9 @@ file(GLOB_RECURSE HEADERS
                         src/Zee.h
                         src/JF17.h
                         src/Pileup.h
-
+                        src/FixedRegion.h
+                        src/SingleParticle.h
+                        src/BoostedEvents.h
                           )
 
 

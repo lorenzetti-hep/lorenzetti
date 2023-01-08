@@ -11,11 +11,11 @@ from .JF17 import *
 from . import FixedRegion
 __all__.extend(FixedRegion.__all__)
 from .FixedRegion import *
-#
-#from . import ParticleGun
-#__all__.extend(ParticleGun.__all__)
-#from .ParticleGun import *
-#
+
+from . import SingleParticle
+__all__.extend(SingleParticle.__all__)
+from .SingleParticle import *
+
 #from . import LLPGun
 #__all__.extend(LLPGun.__all__)
 #from .LLPGun import *
@@ -23,8 +23,8 @@ from .FixedRegion import *
 from . import Pileup
 __all__.extend(Pileup.__all__)
 from .Pileup import *
-#
-#from . import BoostedEvents
-#__all__.extend(BoostedEvents.__all__)
-#from .BoostedEvents import *
-#
+
+from . import BoostedEvents
+__all__.extend(BoostedEvents.__all__)
+from .BoostedEvents import *
+

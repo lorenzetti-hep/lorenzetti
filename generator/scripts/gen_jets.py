@@ -21,7 +21,7 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
                     help = "The number of events to be generated.")
 
 parser.add_argument('--eventNumber', action='store', dest='eventNumber', 
-                    required = False, default=[], type=int,
+                    required = False, default=0, type=int,
                     help = "The list of numbers per event.")
 
 #
@@ -68,10 +68,10 @@ args = parser.parse_args()
 try:
 
 
-  minbias_file = os.environ['LZT_PATH']+'/generator/guns/data/minbias_config.cmnd'
-  main_file    = os.environ['LZT_PATH']+'/generator/guns/data/jet_config.cmnd'
+  minbias_file = os.environ['LZT_PATH']+'/generator/evtgen/data/minbias_config.cmnd'
+  main_file    = os.environ['LZT_PATH']+'/generator/evtgen/data/jet_config.cmnd'
   
-  from guns import PythiaGun
+  from evtgen import Pythia8
   from GenKernel import EventTape
   from filters import JF17
 
@@ -81,7 +81,7 @@ try:
   # To collect using this cell position
   jets = JF17( "JF17",
                #SherpaGun("Generator", File=main_file, Seed=args.seed)
-               PythiaGun("MainGenerator", File=main_file, Seed=args.seed, EventNumber = args.eventNumber),
+               Pythia8("Generator", File=main_file, Seed=args.seed, EventNumber = args.eventNumber),
                EtaMax      = args.maxEta,
                MinPt       = args.energy_min*GeV,
                Select      = 2,
@@ -98,7 +98,7 @@ try:
     from filters import Pileup
     
     pileup = Pileup( "MinimumBias",
-                   PythiaGun("MBGenerator", File=minbias_file, Seed=args.seed),
+                   Pythia8("Generator", File=minbias_file, Seed=args.seed),
                    EtaMax         = args.maxEta,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,

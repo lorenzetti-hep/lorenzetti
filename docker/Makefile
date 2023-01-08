@@ -11,4 +11,6 @@ run:
 	docker run --network host -v ${PWD}:${HOME} -it lorenzetti/lorenzetti:base
 clean:
 	docker system prune -a
+pull:
+	singularity pull docker://lorenzetti/lorenzetti:latest
 	
