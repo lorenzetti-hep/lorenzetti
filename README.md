@@ -56,65 +56,66 @@ Lorenzetti has the following dependencies:
 - Geant4 (opengl or qt4 is required);
 - ROOT;
 - Pythia8;
-- HEPMC;
+- HEPMC3;
 - FastJet;
-- Gaugi (pip3 install gaugi).
 
 To install the package, the following commands are needed to download the Lorenzetti repository and compile it:
 ```
 git clone https://github.com/lorenzetti-hep/lorenzetti.git
 cd lorenzetti
-mkdir build
-source $PWD/setup.sh
-source $PWD/setup.sh --head
-cd build && cmake .. && make  && cd .. && source $PWD/setup.sh && cd ..
+mkdir build && cd build
+cmake .. && make -j4 && cd ..
+source setup.sh
 ```
-This will setup everything you need for running Lorenzetti.
-
-### LNCC (cluster) usage
-
-More details [here](https://github.com/jodafons/lorenzetti/tree/master/docker/cluster).
+This will setup everything you need for running the Lorenzetti framework.
 
 ## Running Lorenzetti
 
-The pipeline has three steps:
+The pipeline has four main steps:
 
-1. Event generation with `pythia` wrappers;
-2. Shower propagation with `geant` and digitalization;
-3. Event reconstruction.
+1. Event generation.
+2. Shower propagation with `Geant`.
+3. Digitalization.
+4. Event reconstruction.
 
 ### Generation
 
-A set of pythia wrappers is provided on `generator/PythiaGenerator/share/`. Usage example:
+A set of `event filters` is provided on `generator/filters/scripts`. Usage example:
 
 ```
-prun_job.py -c "gen_zee.py --evt 25 --pileupAvg 0" -mt 10 -n 10 -o Zee.EVT.root
+prun_job.py -c "gen_zee.py --pileupAvg 0 --eventNumber %OFFSET --nov %NOV -o %OUT" -nt 10 --nov 500 -o Zee.EVT.root
 ```
-It is also possible to use different simulators to generate the inputs for the Lorenzetti framework. For this, it is required to produce HepMC-compatible files after the simulation. These files may be used as inputs for the event propagation stage. See details below on the Customizing section.
+
+It is also possible to use different simulators (`guns`) to generate the inputs for the Lorenzetti framework. For this, it is required to produce HepMC-compatible files after the simulation. These files may be used as inputs for the `event filters` stage. See details below on the [generator/scripts/hepmc](hepmc examples).
+
 
 ### Shower Propagation
-THis is an examplete how to propagate the particles through the Geant4 module (considering the file produced on the first example step):
+
+THis is an examplete how to propagate the particles through the `Geant4` module (considering the file produced on the first example step):
+
 ```
 simu_trf.py -i Zee.EVT.root -o Zee.HIT.root --enableMagneticField
 ```
 
 ###  Digitalization
 
-The digitalization process may be configured to use different energy estimation methods such as Optimal Filter (OF) and Constrained Optimal Filter (COF). It is also possible to simulate the crosstalk effect between adjacent calorimeter cells. More details on how to use such features, check the Customization section. In the digitalization step, it is used second step output to feed `digit_trf` script. For instance: 
+The digitalization process may be configured to use different energy estimation methods such as Optimal Filter (OF) and Constrained Optimal Filter (COF). It is also possible to simulate the crosstalk effect between adjacent calorimeter cells. More details on how to use such features, check the Customization section. In the digitalization step, it is used second step output to feed `digit_trf.py` script. For instance: 
 
 ```
-digit_trf.py -i Zee.EVT.root -o Zee.ESD.root -nt 1
+digit_trf.py -i Zee.EVT.root -o Zee.ESD.root
 ```
 
 ### Event Reconstruction
 
-Use the third step output to feed `reco_trf` script. For instance:
+Use the third step output to feed `reco_trf.py` script. For instance:
 
 ```
 reco_trf.py -i Zee.ESD.root -o Zee.AOD.root
 ```
 
-A set of examples files for each step can be found at the ```examples/datadaset``` folder. These small examples are for single electrons.
+A set of examples files for each step can be found at the ```project drive``` folder [here](https://drive.google.com/drive/folders/1z3h6kP0VTVNml4sIQ8sB6eZtwXnrAdtG?usp=share_link). These small examples are for `Zee` decay.
+
+
 ### Customizing the generation and full reconstruction chain
 
 There is several options on Lorenzetti framework. For this customization, there are flags to be used within each command step.
