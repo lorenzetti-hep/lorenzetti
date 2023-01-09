@@ -47,11 +47,6 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "The pythia seed (zero is the clock system)")
 
-parser.add_argument('--maxEta', action='store', dest='maxEta', required = False, type=float, default=3.2,
-                    help = "Maximum eta coordinate")
-
-parser.add_argument('--energy_min', action='store', dest='energy_min', required = False, type=float, default=17,
-                    help = "Maximum eta coordinate")
 
 
 if len(sys.argv)==1:
@@ -80,14 +75,14 @@ try:
   from filters import Pileup
   pileup = Pileup( "MinimumBias",
                  Pythia8("Generator", File=minbias_file, Seed=args.seed),
-                 EtaMax         = args.maxEta,
+                 EtaMax         = 1.4,
                  Select         = 2,
                  PileupAvg      = args.pileupAvg,
                  BunchIdStart   = args.bc_id_start,
                  BunchIdEnd     = args.bc_id_end,
                  OutputLevel    = args.outputLevel,
-                 DeltaEta       = 0.22,
-                 DeltaPhi       = 0.22,
+                 DeltaEta       = 999,
+                 DeltaPhi       = 999,
                  )
   # Add pileup
   tape+=pileup

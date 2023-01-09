@@ -118,3 +118,16 @@ jobs:
           source /setup_envs.sh && cd lorenzetti && source setup.sh
           cd tests
           source test_gen_jets.sh
+
+  gen_minbias:
+    runs-on: self-hosted
+    needs: build
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Event MB Generation
+        shell: bash
+        run: |
+          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          cd tests
+          source test_gen_minbias.sh

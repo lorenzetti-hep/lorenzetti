@@ -94,6 +94,9 @@ StatusCode Pileup::execute(  generator::Event &ctx )
                        part->momentum().e(), 
                        part->momentum().pt() ); 
 
+            //MSG_INFO( "Eta =" << part->momentum().eta() << " Phi = " << part->momentum().phi() 
+            //          << " Pid = " << part->pid() );
+
           }// Is inside of the minimum bias windows?
         }// Loop over all clusters
       }// Loop over all generated minimum bias particles
