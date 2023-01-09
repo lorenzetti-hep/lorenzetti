@@ -68,7 +68,6 @@ try:
 
   tape = EventTape( "EventTape", OutputFile = args.outputFile)
   
-  main_file = os.environ['LZT_PATH']+'/generator/guns/data/zee_config.cmnd'
 
   zee = Zee( "Zee", 
             PythiaGun("MainGenerator", 

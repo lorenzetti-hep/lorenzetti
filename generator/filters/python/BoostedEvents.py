@@ -19,14 +19,15 @@ class BoostedEvents( Logger ):
                 "OutputLevel",
                 ]
 
-  def __init__( self, name, **kw ): 
+  def __init__( self, name, gen, **kw ): 
     
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import generator
     # Create the algorithm
-    self.__core = generator.BoostedEvents()
+    self.__gun = gen
+    self.__core = generator.BoostedEvents(name, gen)
     for key, value in kw.items():
       self.setProperty( key,value )
 
@@ -50,4 +51,5 @@ class BoostedEvents( Logger ):
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
-
+  def gun(self):
+    return self.__gun
