@@ -1,6 +1,7 @@
 
 
-NOV=10000
+NOV=50000
+seed=512
 
 mkdir -p JF17/EVT
 mkdir -p JF17/HIT
@@ -9,12 +10,12 @@ mkdir -p JF17/AOD
 
 # generate 10k JF17 events with pythia
 cd JF17/EVT
-prun_jobs.py -c "gen_jets.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 40 --nov $NOV --novPerJob 200 -o JF17.EVT.root -m
+prun_jobs.py -c "gen_jets.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 40 --nov $NOV --seed $seed --novPerJob 200 -o JF17.EVT.root -m
 cd ..
 
 # generate hits around the truth particle seed
-cd HIT
-simu_trf.py -i ../EVT/JF17.EVT.root -o JF17.HIT.root -nt 40
+cd HIT 
+simu_trf.py -i ../EVT/JF17.EVT.root -o JF17.HIT.root -nt 40 --enableMagneticField
 cd ..
 
 # digitalization
