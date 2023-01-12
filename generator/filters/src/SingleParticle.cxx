@@ -1,6 +1,6 @@
 
 #include "SingleParticle.h"
-#include "GenKernel/helper.h"
+#include "helper.h"
 #include <cmath>
 
 using namespace generator;

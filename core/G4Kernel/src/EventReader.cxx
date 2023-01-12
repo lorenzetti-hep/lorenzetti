@@ -180,9 +180,8 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   RunReconstruction *reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
   if ( m_evt <  m_ttree->GetEntries() ){
-
-    MSG_INFO( "Get event (EventReader) with number " << m_evt << " and EventNumber " << m_eventNumber);
     m_ttree->GetEntry(m_evt);
+    MSG_INFO( "Get event (EventReader) with number " << m_evt << " and EventNumber " << m_eventNumber);
 
     {
       SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, reco->getContext());

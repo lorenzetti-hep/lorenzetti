@@ -1,7 +1,7 @@
 
 #include "Pileup.h"
 #include "G4Kernel/CaloPhiRange.h"
-#include "GenKernel/helper.h"
+#include "helper.h"
 
 
 using namespace SG;
@@ -41,6 +41,7 @@ StatusCode Pileup::execute(  generator::Event &ctx )
 {
 
   ParticleHelper::ParticleFilter det_acc_filter( m_select, m_etaMax + .05, 0.7, 0.05 );
+
   const int nWin = m_bc_id_end - m_bc_id_start + 1;
   double nPileUpMean(0);
   
@@ -62,12 +63,12 @@ StatusCode Pileup::execute(  generator::Event &ctx )
         continue;
       }
 
+
       const auto mb_event_t = sample_t();
       const auto mb_event_z = sample_z();
 
       // Find final charged particles with |eta| < etaMax
       det_acc_filter.filter( evt );
-
       for ( const auto part : det_acc_filter.getParticlesRef() ){
 
         for ( auto &seed : *ctx ) {

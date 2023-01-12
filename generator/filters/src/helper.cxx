@@ -1,11 +1,14 @@
 
-#include "GenKernel/helper.h"
+#include "helper.h"
 #include <math.h>
 
 namespace generator{
 
   namespace ParticleHelper{
 
+
+      // particles with strong or electric charge, or composed of ones having it, which thereby 
+      // should be considered visible in a normal detector.
       bool isVisible(HepMC3::GenParticle *particle)
       {
         // Take from: https://github.com/lorenzetti-hep/pythia8/blob/main/src/ParticleData.cc
@@ -27,13 +30,26 @@ namespace generator{
         };
         // A particle is invisible if in current table of such.
         bool isVisibleSave = true;
+        int idSave = particle->pid();
         for (int i = 0; i < INVISIBLENUMBER; ++i) 
-            if (particle->pid() == INVISIBLETABLE[i]) isVisibleSave = false;
+            if (idSave == INVISIBLETABLE[i]) isVisibleSave = false;
+
+        // Additionally all particles purely in Hidden Sector are invisible.
+        if (idSave > 4900100 && idSave < 4909000) isVisibleSave = false;
         return isVisibleSave;
       }
 
+
+      //
+      // From: https://pythia.org/latest-manual/ParticleProperties.html
+      // true for a remaining particle, i.e. one with positive status code, else false. 
+      // Thus, after an event has been fully generated, it separates the final-state particles 
+      // from intermediate-stage ones. (If used earlier in the generation process, a particle then 
+      // considered final may well decay later.)
+      //
+      // HepMC has a different code table: https://github.com/lorenzetti-hep/pythia8/blob/main/src/Event.cc#L381
       bool isFinal(const HepMC3::GenParticle *particle){
-        return particle->status() > 0;
+        return particle->status() == 1 ? true : false;
       }
 
       float et(const HepMC3::GenParticle *particle){
@@ -43,7 +59,7 @@ namespace generator{
       }
 
       bool isCharged(const HepMC3::GenParticle *particle){
-        return true;
+        return particle->pid() > 0? false : true;
       }
 
 

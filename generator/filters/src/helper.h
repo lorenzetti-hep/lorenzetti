@@ -9,12 +9,31 @@
 
 namespace generator{
 
+  //
+  // Helpers
+  //
   namespace ParticleHelper{
 
+    //
+    // particles with strong or electric charge, or composed of ones having it, which thereby 
+    // should be considered visible in a normal detector.
+    //
     bool isVisible(const HepMC3::GenParticle* );
-    bool isFinal(  const HepMC3::GenParticle* );
+
+    //
+    // From: https://pythia.org/latest-manual/ParticleProperties.html
+    // true for a remaining particle, i.e. one with positive status code, else false. 
+    // Thus, after an event has been fully generated, it separates the final-state particles 
+    // from intermediate-stage ones. (If used earlier in the generation process, a particle then 
+    // considered final may well decay later.)
+    //
+    // HepMC has a different code table: https://github.com/lorenzetti-hep/pythia8/blob/main/src/Event.cc#L381
+    //
+    bool isFinal( const HepMC3::GenParticle* );
+
     bool isCharged(const HepMC3::GenParticle* );
-    float et(      const HepMC3::GenParticle* );
+
+    float et( const HepMC3::GenParticle* );
 
   
     class ParticleFilter {
@@ -35,14 +54,10 @@ namespace generator{
 
         // Return size of array, and index of a particle.
         int size()       const {return m_keptPtrs.size();}
-        //int index(int i) const {return m_keptIndx[i];}
 
         // Return pointer or reference to a particle.
         const HepMC3::GenParticle* particlePtr(int i) {return  m_keptPtrs[i];}
         const HepMC3::GenParticle& particleRef(int i) {return *m_keptPtrs[i];}
-
-        // List kept particles only.
-        //void list(std::ostream& os = std::cout);
 
         std::vector<const HepMC3::GenParticle*>& getParticlesRef() { return m_keptPtrs; }
 
@@ -53,8 +68,7 @@ namespace generator{
         float m_etaMax;
         float m_pTminCharged;
         float m_pTminNeutral;
-        // Kept particle indices and pointers, referring to original event.
-        //std::vector<int>       m_keptIndx;
+        // Kept particle pointers, referring to original event.
         std::vector<const HepMC3::GenParticle*> m_keptPtrs;
 
     };

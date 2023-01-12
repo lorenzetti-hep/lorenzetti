@@ -72,7 +72,6 @@ StatusCode Pythia8Gen::execute(HepMC3::GenEvent &evt){
   HepMC3::Pythia8ToHepMC3 converter;
 
   MSG_DEBUG("Pythia8 to HepMC3");
-  //converter.fill_next_event(m_gun.event, &evt, -1, &m_gun.info);
   converter.fill_next_event(m_gun.event, &evt);
 
   evt.set_event_number(m_eventNumber + m_nEvent);

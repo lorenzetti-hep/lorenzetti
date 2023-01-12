@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include "Zee.h"
-#include "GenKernel/helper.h"
+#include "helper.h"
 
 using namespace generator;
 

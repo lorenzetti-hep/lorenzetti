@@ -95,7 +95,7 @@ try:
                               OutputFile = args.outputFile,
                               Timeout = args.timeout * MINUTES )
 
-  gun = EventReader( "PythiaGenerator",
+  gun = EventReader( "EventReader",
                      EventKey   = recordable("EventInfo"),
                      TruthKey   = recordable("Particles"),
                      FileName   = args.inputFile,

@@ -5,7 +5,7 @@
 #include "fastjet/PseudoJet.hh"
 #include "fastjet/JetDefinition.hh"
 #include "fastjet/ClusterSequence.hh"
-#include "GenKernel/helper.h"
+#include "helper.h"
 
 
 using namespace generator;
