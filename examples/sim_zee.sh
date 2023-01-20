@@ -15,7 +15,10 @@ cd ..
 
 # generate hits around the truth particle seed
 cd HIT
-simu_trf.py -i ../EVT/Zee.EVT.root -o Zee.HIT.root -nt 40 --enableMagneticField
+prun_jobs.py -c "simu_trf.py -i %IN -o %OUT -nt 40 --enableMagneticField -m" -nt 1 -i ../EVT -o Zee.HIT.root
+
+
+
 cd ..
 
 # digitalization

@@ -69,7 +69,6 @@ class ComponentAccumulator( Logger ):
     elif nov > self.GetEntries():
       nov = self.GetEntries()
   
-    print(nov)
     for evt in range(nov):
       self.__acc.run(self.__ctx, evt)
 
