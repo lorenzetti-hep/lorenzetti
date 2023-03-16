@@ -68,7 +68,7 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
   # the reader must be first in sequence
-  from RootStreamBuilder import RootStreamHITReader
+  from RootStreamBuilder import RootStreamHITReader, recordable
   reader = RootStreamHITReader("HITReader", 
                                 InputFile       = args.inputFile,
                                 HitsKey         = recordable("Hits"),

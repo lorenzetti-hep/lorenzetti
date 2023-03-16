@@ -4,6 +4,7 @@ from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
 from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling
+from RootStreamBuilder    import recordable
 
 import numpy as np
 import argparse
@@ -103,18 +104,18 @@ try:
                      )
 
 
-  calorimeter_hits = CaloHitBuilder("CaloHitBuilder",
-                                     HistogramPath = "Expert/Hits",
-                                     OutputLevel   = outputLevel,
-                                     )
+  calorimeter = CaloHitBuilder("CaloHitBuilder",
+                                HistogramPath = "Expert/Hits",
+                                OutputLevel   = outputLevel,
+                                )
 
   gun.merge(acc)
-  calorimeter_hits.merge(acc)
+  calorimeter.merge(acc)
 
   OutputHitsKey   = recordable("Hits")
   OutputEventKey  = recordable("EventInfo")
 
-  from RootStreamBuilder import RootStreamHITMaker
+  from RootStreamBuilder import RootStreamHITMaker, recordable
 
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              # input from context

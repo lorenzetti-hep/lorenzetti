@@ -3,7 +3,9 @@ __all__ = ["CaloHitBuilder"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue, recordable
+from G4Kernel import treatPropertyValue
+from RootStreamBuilder  import recordable
+
 import os
 
 

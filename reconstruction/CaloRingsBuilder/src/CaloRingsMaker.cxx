@@ -1,6 +1,6 @@
 
 
-#include "CaloRingerMaker.h"
+#include "CaloRingsMaker.h"
 #include "CaloCell/CaloCell.h"
 #include "CaloCluster/CaloCluster.h"
 #include "G4Kernel/CaloPhiRange.h"
@@ -12,7 +12,7 @@ using namespace SG;
 using namespace Gaugi;
 
 
-CaloRingerMaker::CaloRingerMaker( std::string name ) : 
+CaloRingsMaker::CaloRingsMaker( std::string name ) : 
   IMsgService(name),
   Algorithm()
 {
@@ -28,12 +28,12 @@ CaloRingerMaker::CaloRingerMaker( std::string name ) :
 
 //!=====================================================================
 
-CaloRingerMaker::~CaloRingerMaker()
+CaloRingsMaker::~CaloRingsMaker()
 {;}
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::initialize()
+StatusCode CaloRingsMaker::initialize()
 {
   CHECK_INIT();
 
@@ -44,14 +44,14 @@ StatusCode CaloRingerMaker::initialize()
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::finalize()
+StatusCode CaloRingsMaker::finalize()
 {
   return StatusCode::SUCCESS;
 }
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::bookHistograms( EventContext &ctx ) const
+StatusCode CaloRingsMaker::bookHistograms( EventContext &ctx ) const
 {
   auto store = ctx.getStoreGateSvc();
   store->mkdir( m_histPath );
@@ -62,7 +62,7 @@ StatusCode CaloRingerMaker::bookHistograms( EventContext &ctx ) const
 //!=====================================================================
 
 
-StatusCode CaloRingerMaker::pre_execute( EventContext &/*ctx*/ ) const
+StatusCode CaloRingsMaker::pre_execute( EventContext &/*ctx*/ ) const
 {
   return StatusCode::SUCCESS;
 }
@@ -70,21 +70,21 @@ StatusCode CaloRingerMaker::pre_execute( EventContext &/*ctx*/ ) const
 //!=====================================================================
 
 
-StatusCode CaloRingerMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
+StatusCode CaloRingsMaker::execute( EventContext &/*ctx*/, const G4Step * /*step*/ ) const
 {
   return StatusCode::SUCCESS;
 }
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::execute( EventContext &ctx, int /*evt*/ ) const
+StatusCode CaloRingsMaker::execute( EventContext &ctx, int /*evt*/ ) const
 {
   return post_execute(ctx);
 }
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
+StatusCode CaloRingsMaker::post_execute( EventContext &ctx ) const
 {
 
   
@@ -149,7 +149,7 @@ StatusCode CaloRingerMaker::post_execute( EventContext &ctx ) const
 
 //!=====================================================================
 
-const xAOD::CaloCell * CaloRingerMaker::maxCell( const xAOD::CaloCluster *clus, RingSet &rs ) const
+const xAOD::CaloCell * CaloRingsMaker::maxCell( const xAOD::CaloCluster *clus, RingSet &rs ) const
 {
   const xAOD::CaloCell *maxCell=nullptr;
 
@@ -167,7 +167,7 @@ const xAOD::CaloCell * CaloRingerMaker::maxCell( const xAOD::CaloCluster *clus, 
 
 //!=====================================================================
 
-StatusCode CaloRingerMaker::fillHistograms( EventContext &ctx ) const
+StatusCode CaloRingsMaker::fillHistograms( EventContext &ctx ) const
 {
   auto store = ctx.getStoreGateSvc();
   SG::ReadHandle<xAOD::CaloRingsContainer> ringer( m_ringerKey, ctx );

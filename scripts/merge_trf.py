@@ -52,7 +52,7 @@ try:
 
 
   # the reader must be first in sequence
-  from RootStreamBuilder import RootStreamHITReader
+  from RootStreamBuilder import RootStreamHITReader, recordable
   reader = RootStreamHITReader("HITReader", 
                                 InputFile       = args.inputFile,
                                 HitsKey         = recordable("Hits"),
@@ -64,7 +64,7 @@ try:
 
 
 
-  from PileupMergeBuilder import PileupMerge
+  from CaloCellBuilder import PileupMerge
   pileup = PileupMerge( "PileupMerge", 
                         InputFile       = args.pileupFile,
                         InputHitsKey    = recordable("Hits"),

@@ -4,7 +4,8 @@ __all__ = ["CaloCellBuilder"]
 from GaugiKernel        import Logger
 from GaugiKernel.macros import *
 from GaugiKernel        import GeV
-from G4Kernel     import treatPropertyValue, recordable
+from G4Kernel           import treatPropertyValue
+from RootStreamBuilder  import recordable
 import os
 
 

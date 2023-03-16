@@ -131,9 +131,8 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
 
   MSG_DEBUG( "Sort a new event...");
   int eventNumber = m_rng.Integer(tree->GetEntries()-1);
-  int status = tree->GetEntry( eventNumber );
 
-  if (status<0){
+  if (tree->GetEntry( eventNumber ) < 0){
     MSG_FATAL("Not possible to read this event. repeat...");
   }
 

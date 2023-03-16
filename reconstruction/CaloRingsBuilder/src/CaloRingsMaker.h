@@ -1,5 +1,5 @@
-#ifndef CaloRingerMaker_h
-#define CaloRingerMaker_h
+#ifndef CaloRingsMaker_h
+#define CaloRingsMaker_h
 
 #include "CaloCell/enumeration.h"
 #include "GaugiKernel/StatusCode.h"
@@ -43,15 +43,15 @@ class RingSet{
 
 
 
-class CaloRingerMaker : public Gaugi::Algorithm
+class CaloRingsMaker : public Gaugi::Algorithm
 {
   public:
 
 
     /** Constructor **/
-    CaloRingerMaker( std::string );
+    CaloRingsMaker( std::string );
     
-    virtual ~CaloRingerMaker();
+    virtual ~CaloRingsMaker();
     
     virtual StatusCode initialize() override;
 

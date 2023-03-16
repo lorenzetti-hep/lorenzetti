@@ -3,7 +3,7 @@
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
 from CaloClusterBuilder   import CaloClusterMaker
-from CaloRingerBuilder    import CaloRingerMaker
+from CaloRingsBuilder     import CaloRingsMaker
 from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
 import numpy as np
@@ -55,7 +55,7 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
 
-  from RootStreamBuilder import RootStreamESDReader
+  from RootStreamBuilder import RootStreamESDReader, recordable
   ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
                             CellsKey        = recordable("Cells"),
@@ -78,7 +78,7 @@ try:
                               HistogramPath   = "Expert/Clusters",
                               OutputLevel     = outputLevel )
 
-  ringer = CaloRingerMaker(   "CaloRingerMaker",
+  rings   = CaloRingerMaker(   "CaloRingerMaker",
                               RingerKey     = recordable("Rings"),
                               ClusterKey    = recordable("Clusters"),
                               DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
@@ -114,7 +114,7 @@ try:
       
   # sequence
   acc+= cluster
-  acc+= ringer
+  acc+= rings
   acc+= AOD
 
   acc.run(args.numberOfEvents)

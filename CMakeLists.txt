@@ -74,9 +74,8 @@ add_subdirectory( events/CaloRings )
 # reconstruction package
 add_subdirectory( reconstruction/CaloCellBuilder )
 add_subdirectory( reconstruction/CaloClusterBuilder )
-add_subdirectory( reconstruction/CaloRingerBuilder )
+add_subdirectory( reconstruction/CaloRingsBuilder )
 add_subdirectory( reconstruction/RootStreamBuilder )
-add_subdirectory( reconstruction/PileupMergeBuilder )
 add_subdirectory( geometry/DetectorATLASModel )
 
 # generator package
@@ -99,9 +98,8 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloRings>
   $<TARGET_OBJECTS:CaloCellBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>
-  $<TARGET_OBJECTS:CaloRingerBuilder>
+  $<TARGET_OBJECTS:CaloRingsBuilder>
   $<TARGET_OBJECTS:RootStreamBuilder>
-  $<TARGET_OBJECTS:PileupMergeBuilder>
   $<TARGET_OBJECTS:DetectorATLASModel>
   $<TARGET_OBJECTS:GenKernel>
   $<TARGET_OBJECTS:filters>

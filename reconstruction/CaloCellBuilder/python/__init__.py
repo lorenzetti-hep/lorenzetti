@@ -33,6 +33,11 @@ from . import CaloHitMerge
 __all__.extend(CaloHitMerge.__all__)
 from .CaloHitMerge import *
 
+from . import PileupMerge
+__all__.extend(PileupMerge.__all__)
+from .PileupMerge import *
+
+
 
 
 

@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import RootStreamKeys
+__all__.extend(RootStreamKeys.__all__)
+from .RootStreamKeys import *
+
 from . import RootStreamHITMaker
 __all__.extend(RootStreamHITMaker.__all__)
 from .RootStreamHITMaker import *
@@ -20,6 +24,4 @@ from .RootStreamHITReader import *
 from . import RootStreamESDReader
 __all__.extend(RootStreamESDReader.__all__)
 from .RootStreamESDReader import *
-
-
 
