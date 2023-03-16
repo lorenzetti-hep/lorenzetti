@@ -67,12 +67,12 @@ namespace MSG
  **/
 enum Level {
   NIL = 0,
-  VERBOSE = 1,
-  DEBUG   = 2,
-  INFO    = 3,
-  WARNING = 4,
-  ERROR   = 5,
-  FATAL   = 6
+  VERBOSE = 9,
+  DEBUG   = 10,
+  INFO    = 20,
+  WARNING = 30,
+  ERROR   = 40,
+  FATAL   = 50
 };
 
 } // namespace MSG

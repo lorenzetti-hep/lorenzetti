@@ -5,6 +5,7 @@ from GaugiKernel          import GeV
 from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling
 from RootStreamBuilder    import recordable
+pi = np.pi
 
 import numpy as np
 import argparse
@@ -37,21 +38,19 @@ parser.add_argument('--visualization', action='store_true', dest='visualization'
 parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
                     help = "Enable the magnetic field.")
 
-parser.add_argument('--outputLevel', action='store', dest='outputLevel', required = False, type=int, default=3,
-                    help = "The output level messenger.")
-
 parser.add_argument('-m','--merge', action='store_true', dest='merge', required = False, 
                     help = "Merge all output files.")
 
 parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
                     help = "Save all detector hits.")
 
-parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=5,
+parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=120,
                     help = "Event timeout in minutes")
 
+parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
+                    help = "The output level messenger.")
 
 
-pi = np.pi
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -59,8 +58,7 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-
-outputLevel = 0 if args.debug else args.outputLevel
+outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
