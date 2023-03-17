@@ -8,9 +8,6 @@ import numpy as np
 import argparse
 import sys,os
 
-#import ROOT
-#ROOT.gSystem.Load('liblorenzetti')
-#from ROOT import RunManager
 
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -44,8 +41,6 @@ pi = np.pi
 if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
-
-allowed_methods = ['OF','COF']
 
 args = parser.parse_args()
 outputLevel = LoggingLevel.fromstring(args.outputLevel)
@@ -96,8 +91,6 @@ try:
   
 
   acc.run(args.numberOfEvents)
-
-  
   sys.exit(0)
   
 except Exception as e:

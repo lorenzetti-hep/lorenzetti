@@ -5,11 +5,11 @@ from GaugiKernel          import GeV
 from G4Kernel             import *
 from CaloCell.CaloDefs    import CaloSampling
 from RootStreamBuilder    import recordable
-pi = np.pi
-
 import numpy as np
 import argparse
 import sys,os
+
+pi = np.pi
 MINUTES = 60
 
 mainLogger = Logger.getModuleLogger("job")
