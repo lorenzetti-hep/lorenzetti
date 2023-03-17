@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from GaugiKernel import Slot, chunks, expand_folders
+from GaugiKernel import Slot, Pool, chunks, expand_folders
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 
@@ -83,7 +83,7 @@ if args.inputs:
 
   func = func_command
 
-else:
+else: # We dont have inputs (only for event generator step)
   #
   # Examples:
   # prun_events.py -c "gen_zee.py -c data.cmnd -s %SEED --nov %NOV --event_number %OFFSET -o %OUT" 
@@ -104,90 +104,7 @@ else:
     
 
 
-class Pool( Logger ):
-
-  def __init__(self, func, inputs,maxJobs, output):
-    
-    Logger.__init__(self)
-    self.__inputs = inputs
-    self.__func = func
-    self.__slots = [Slot() for _ in range(maxJobs)]
-    self.__output = output
-    self.__outputs = []
-
-
-  def getAvailable(self):
-    for slot in self.__slots:
-      if slot.isAvailable():
-        return slot
-    return None
-
-  
-  def busy(self):
-    for slot in self.__slots:
-      if not slot.isAvailable():
-        return True
-    return False
-
-
-  def generate(self):
-    # prepare the command job
-    inputs = self.__inputs.pop()
-    idx = len(self.__inputs) # output label number
-    output = self.__output + '.' + str(idx)
-    command = self.__func(inputs, output)
-    self.__outputs.append(output)
-    print(command)
-    return command, output
-
-
-  #
-  # Run jobs
-  #
-  def run( self ):
-
-    while len(self.__inputs) > 0:
-      slot = self.getAvailable()
-      if slot:
-        command, output = self.generate()
-        if self.exist(output):
-          MSG_WARNING(self, f"File {output} exist. Skip.")
-          continue
-        slot.run( command )
-    
-    while self.busy():
-      continue
-
-  def merge(self):
-    command = "hadd -f "+self.__output
-    for fname in self.__outputs:
-      command += ' '+fname
-    os.system(command)
-    for fname in self.__outputs:
-      os.system( 'rm -rf '+fname)
-
-  #
-  # Check if file exist or his consistencels
-  #
-  def exist(self, f):
-    if not os.path.exists(f):
-      return False
-    try:
-      f = ROOT.TFile(f, 'read')
-      is_open = f.IsOpen()
-      f.Close()
-      return is_open
-    except:
-      return False
-
-
-
-
-
-
-
-
-prun = Pool( func, inputs, args.numberOfThreads, args.output)
+prun = Pool( func, inputs, args.numberOfThreads, os.path.abspath(args.output) )
 prun.run()
 if args.merge:
   prun.merge()

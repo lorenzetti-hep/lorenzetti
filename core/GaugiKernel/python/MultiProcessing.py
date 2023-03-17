@@ -13,6 +13,8 @@ def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
+
+
 class Slot(object):
 
   def __init__( self ):
@@ -31,7 +33,8 @@ class Slot(object):
 
   def run(self, command):
     pprint(command)
-    self.__proc = subprocess.Popen(command.split(' '))
+    time.sleep(2)
+    self.__proc = subprocess.Popen(command, shell=True, env=os.environ)
     self.lock()
 
   def isAvailable(self):
@@ -43,16 +46,16 @@ class Slot(object):
 
 
 
+
 class Pool( Logger ):
 
-  def __init__(self, func, command, maxJobs, files, output ):
+  def __init__(self, func, inputs,maxJobs, output):
     
     Logger.__init__(self)
-    self.__files = files
-    self.__gen = func
-    self.__command = command
-    self.__output  = output
+    self.__inputs = inputs
+    self.__func = func
     self.__slots = [Slot() for _ in range(maxJobs)]
+    self.__output = output
     self.__outputs = []
 
 
@@ -71,26 +74,34 @@ class Pool( Logger ):
 
 
   def generate(self):
-    f = self.__files.pop()
-    idx = len(self.__files)
+    # prepare the command job
+    inputs = self.__inputs.pop()
+    idx = len(self.__inputs) # output label number
     output = self.__output + '.' + str(idx)
+    command = self.__func(inputs, output + '.tmp')
+    # remove tmp name when complete the job
+    command += f' && mv {output}.tmp {output}'
     self.__outputs.append(output)
-    return self.__gen(self.__command, f, output)
+    print(command)
+    return command, output
 
 
+  #
+  # Run jobs
+  #
   def run( self ):
 
-    while len(self.__files) > 0:
+    while len(self.__inputs) > 0:
       slot = self.getAvailable()
       if slot:
-        time.sleep(1)
-        command = self.generate()
-        #MSG_INFO( self,  ('adding process into the stack with id %d')%(len(self.__files)) )
+        command, output = self.generate()
+        if os.path.exists(output):
+          MSG_WARNING(self, f"File {output} exist. Skip.")
+          continue
         slot.run( command )
     
     while self.busy():
       continue
-
 
   def merge(self):
     command = "hadd -f "+self.__output
@@ -99,7 +110,6 @@ class Pool( Logger ):
     os.system(command)
     for fname in self.__outputs:
       os.system( 'rm -rf '+fname)
-
 
 
 
