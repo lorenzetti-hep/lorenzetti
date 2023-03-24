@@ -70,7 +70,7 @@ try:
                               HistogramPath   = "Expert/Clusters",
                               OutputLevel     = outputLevel )
 
-  rings   = CaloRingerMaker(   "CaloRingerMaker",
+  rings   = CaloRingsMaker(   "CaloRingsMaker",
                               RingerKey     = recordable("Rings"),
                               ClusterKey    = recordable("Clusters"),
                               DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],

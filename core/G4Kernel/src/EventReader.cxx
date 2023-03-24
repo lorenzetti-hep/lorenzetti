@@ -94,6 +94,7 @@ void EventReader::InitBranch(TTree* fChain, std::string branch_name, T* param, b
 void EventReader::link(TTree *t)
 {  
   InitBranch( t, "EventNumber",&m_eventNumber );
+  InitBranch( t, "EventNumber",&m_runNumber );
   InitBranch( t, "avg_mu"     ,&m_avgmu       );
   InitBranch( t, "p_isMain"   ,&m_p_isMain    );
   InitBranch( t, "p_pdg_id"   ,&m_p_pdg_id    );
@@ -187,13 +188,14 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
       SG::WriteHandle<xAOD::EventInfoContainer>  event(m_eventKey, reco->getContext());
       event.record( std::unique_ptr<xAOD::EventInfoContainer>( new xAOD::EventInfoContainer() ) );
       xAOD::EventInfo *evt = new xAOD::EventInfo();
+      evt->setRunNumber( m_runNumber );
       evt->setEventNumber( m_eventNumber );
       evt->setAvgmu( m_avgmu );
       event->push_back(evt);
     }
 
     int num_of_seeds = Load( anEvent );
-
+    MSG_INFO( "RunNumber        : " << m_runNumber  );
     MSG_INFO( "EventNumber      : " << m_eventNumber);
     MSG_INFO( "Avgmu            : " << m_avgmu      );
     MSG_INFO( "Number of seeds  : " << num_of_seeds );

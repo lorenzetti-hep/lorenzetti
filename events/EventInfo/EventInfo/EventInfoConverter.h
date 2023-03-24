@@ -7,6 +7,7 @@
 namespace xAOD{
 
     struct EventInfo_t{
+        float runNumber;
         float eventNumber;
         float avgmu;
     };

@@ -13,6 +13,7 @@ Pileup::Pileup(const std::string name, IGenerator *gen):
   IAlgorithm(gen)
 {
   declareProperty( "PileupAvg"      , m_nPileupAvg=0     );
+  declareProperty( "PileupSigma"    , m_nPileupSigma=0   );
   declareProperty( "BunchIdStart"   , m_bc_id_start=-8   );
   declareProperty( "BunchIdEnd"     , m_bc_id_end=7      );
   declareProperty( "EtaMax"         , m_etaMax=1.4       );
@@ -43,13 +44,18 @@ StatusCode Pileup::execute(  generator::Event &ctx )
   ParticleHelper::ParticleFilter det_acc_filter( m_select, m_etaMax + .05, 0.7, 0.05 );
 
   const int nWin = m_bc_id_end - m_bc_id_start + 1;
-  double nPileUpMean(0);
+  float nPileUpMean(0);
+
+  // Generate the new average for pileup from a gaussian distribution
+  int evtPileupAvg = m_nPileupAvg + generator()->random_gauss()*m_nPileupSigma;
+  evtPileupAvg = evtPileupAvg<0 ? 0: evtPileupAvg; // negative pileup should be overwrite to zero
   
-  MSG_INFO("Filling minbias event into the context... ");
+
+  MSG_INFO("Filling minbias event into the context with Pileup average: " << evtPileupAvg << "...");
   for ( int bc_id = m_bc_id_start; bc_id <= m_bc_id_end; ++bc_id )
   {
     // Select the number of pileup events to generate.
-    int nPileup = poisson(m_nPileupAvg);
+    int nPileup = poisson(evtPileupAvg);
     nPileUpMean += nPileup;
 
     // Generate a number of pileup events.
@@ -73,8 +79,8 @@ StatusCode Pileup::execute(  generator::Event &ctx )
 
         for ( auto &seed : *ctx ) {
 
-          const double deta = abs( part->momentum().eta() - seed.eta() );
-          const double dphi = abs( CaloPhiRange::diff( part->momentum().phi(), seed.phi() ) );
+          const float deta = abs( part->momentum().eta() - seed.eta() );
+          const float dphi = abs( CaloPhiRange::diff( part->momentum().phi(), seed.phi() ) );
           
           if ( ( deta < m_delta_eta ) && ( dphi < m_delta_phi ) ) 
           {

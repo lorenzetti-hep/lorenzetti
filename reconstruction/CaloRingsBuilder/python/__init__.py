@@ -1,9 +1,9 @@
 
 __all__ = []
 
-from . import CaloRingnsMaker
-__all__.extend(CaloRingnsMaker.__all__)
-from .CaloRingnsMaker import *
+from . import CaloRingsMaker
+__all__.extend(CaloRingsMaker.__all__)
+from .CaloRingsMaker import *
 
 
 

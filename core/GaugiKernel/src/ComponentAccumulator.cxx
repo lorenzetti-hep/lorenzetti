@@ -101,7 +101,7 @@ void ComponentAccumulator::finalize()
 
 void ComponentAccumulator::run(SG::EventContext *ctx , int evt) const
 {
-  MSG_INFO("======================= Event "<< evt << "=========================");
+  MSG_INFO("======================= Event "<< evt << " =========================");
   Timer timer;
 
   timer.start();
@@ -127,7 +127,6 @@ void ComponentAccumulator::run(SG::EventContext *ctx , int evt) const
   store->cd("Event");
   store->hist1( "Event" )->Fill( timer.resume() );
 
-  MSG_INFO("===================================================================");
 }
 
 

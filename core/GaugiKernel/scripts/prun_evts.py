@@ -28,10 +28,17 @@ parser.add_argument('-nt', '--numberOfThreads', action='store',
     dest='numberOfThreads', required = False, default = 1, type=int,
     help = "The number of threads.")
 
-parser.add_argument('-i', '--inputs', action='store', 
-    dest='inputs', required = False, default = None, 
-    help = "The input files. Use %%IN to replace in command")
+parser.add_argument('--seed', action='store', 
+    dest='seed', required = False, default = 512, type=int,
+    help = "The number of events per job. Use %%SEED to replace in command")
 
+parser.add_argument('--nov','--numberOfEvents', action='store', 
+    dest='nov', required = False, default = 100, type=int,
+    help = "The number of events. Use %%NOV and %%OFFSET to replace in command")
+
+parser.add_argument('--novPerJob', action='store', 
+    dest='novPerJob', required = False, default = 100, type=int,
+    help = "The number of events per job.")
 
 parser.add_argument('--dry_run', action='store_true', dest='dry_run', 
                     required = False, 
@@ -45,15 +52,23 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-inputs = expand_folders(args.inputs)
 
-def func(inputfile, outputfile):
+inputs = list(range(args.nov))
+inputs = list(chunks(inputs, args.novPerJob))
+
+def func(event_numbers, outputfile):
+  seed = str(args.seed+event_numbers[0])
+  nov = str(len(event_numbers))
+  offset =  str(event_numbers[0])
   command = args.command
-  command = command.replace('%IN'  , inputfile      )
-  command = command.replace('%OUT' , outputfile     )
+  command = command.replace('%OFFSET' , offset)
+  command+= f' -s {seed} -o {outputfile} --nov {nov}'
+  command = command.replace('  ', ' ') # remove double spaces
   return command
+    
 
-prun = Pool( func, inputs, args.numberOfThreads, os.path.abspath(args.output) , args.dry_run)
+
+prun = Pool( func, inputs, args.numberOfThreads, os.path.abspath(args.output), args.dry_run )
 prun.run()
 if args.merge:
   prun.merge()

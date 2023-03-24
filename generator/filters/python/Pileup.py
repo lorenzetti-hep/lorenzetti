@@ -10,6 +10,7 @@ class Pileup( Logger ):
   __allow_keys = [
                 "EtaMax",
                 "PileupAvg",
+                "PileupSigma",
                 "BunchIdStart",
                 "BunchIdEnd",
                 "Select",

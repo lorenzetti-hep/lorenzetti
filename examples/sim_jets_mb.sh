@@ -6,14 +6,14 @@ mkdir -p JF17_mb/AOD
 
 cd JF17_mb/HIT
 
-prun_jobs.py -c "merge_trf.py -p ../../mb/HIT/mb.HIT.root" -i ../../JF17/HIT -o JF17_mb.HIT.root -mt 40
+prun_jobs.py -c "merge_trf.py -p ../../mb/HIT/mb.HIT.root -i %IN -o %OUT" -i ../../JF17/HIT -o JF17_mb.HIT.root -nt 40
 
 cd ../ESD
-prun_jobs.py -c "digit_trf.py" -i ../HIT/ -o JF17_mb.ESD.root -mt 40
+prun_jobs.py -c "digit_trf.py -i %IN -o %OUT" -i ../HIT/ -o JF17_mb.ESD.root -nt 40
 
-# reconstruction
 cd ../AOD
-prun_jobs.py -c "reco_trf.py" -i ../ESD -o JF17_mb.AOD.root -mt 40 -m
+prun_jobs.py -c "reco_trf.py -i %IN -o %OUT" -i ../ESD -o JF17_mb.AOD.root -nt 40 -m
+
 
 cd ../..
 

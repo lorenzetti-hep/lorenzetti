@@ -31,11 +31,12 @@ class Slot(object):
     if self.__proc and not self.__proc.poll():
       self.unlock()
 
-  def run(self, command):
+  def run(self, command, dry_run=False):
     pprint(command)
     time.sleep(2)
-    self.__proc = subprocess.Popen(command, shell=True, env=os.environ)
-    self.lock()
+    if not dry_run:
+      self.__proc = subprocess.Popen(command, shell=True, env=os.environ)
+      self.lock()
 
   def isAvailable(self):
     if self.__proc:
@@ -49,7 +50,7 @@ class Slot(object):
 
 class Pool( Logger ):
 
-  def __init__(self, func, inputs,maxJobs, output):
+  def __init__(self, func, inputs,maxJobs, output, dry_run):
     
     Logger.__init__(self)
     self.__inputs = inputs
@@ -57,7 +58,7 @@ class Pool( Logger ):
     self.__slots = [Slot() for _ in range(maxJobs)]
     self.__output = output
     self.__outputs = []
-
+    self.dry_run = dry_run
 
   def getAvailable(self):
     for slot in self.__slots:
@@ -98,7 +99,7 @@ class Pool( Logger ):
         if os.path.exists(output):
           MSG_WARNING(self, f"File {output} exist. Skip.")
           continue
-        slot.run( command )
+        slot.run( command , self.dry_run)
     
     while self.busy():
       continue

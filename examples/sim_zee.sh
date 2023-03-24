@@ -1,6 +1,6 @@
 
 
-NOV=50000
+NOV=10000
 seed=512
 
 mkdir -p Zee/EVT
@@ -10,15 +10,12 @@ mkdir -p Zee/AOD
 
 # generate 10k Zee events with pythia
 cd Zee/EVT
-prun_jobs.py -c "gen_zee.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 40 --nov $NOV --seed $seed --novPerJob 200 -o Zee.EVT.root -m
+prun_jobs.py -c "gen_zee.py --pileupAvg 0 --nov %NOV --eventNumber %OFFSET -o %OUT -s %SEED" -nt 40 --nov $NOV --seed $seed --novPerJob 200 -o Zee.EVT.root
 cd ..
 
 # generate hits around the truth particle seed
 cd HIT
-prun_jobs.py -c "simu_trf.py -i %IN -o %OUT -nt 40 --enableMagneticField -m" -nt 1 -i ../EVT -o Zee.HIT.root
-
-
-
+prun_jobs.py -c "simu_trf.py -i %IN -o %OUT -nt 20 --enableMagneticField -t 10" -nt 1 -i ../EVT -o Zee.HIT.root
 cd ..
 
 # digitalization

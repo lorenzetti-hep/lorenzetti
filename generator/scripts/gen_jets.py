@@ -24,12 +24,20 @@ parser.add_argument('--eventNumber', action='store', dest='eventNumber',
                     required = False, default=0, type=int,
                     help = "The list of numbers per event.")
 
+parser.add_argument('--runNumber', action='store', dest='runNumber', 
+                    required = False, type=int, default = 0,
+                    help = "The run number.")
+
+
 #
 # Pileup simulation arguments
 #
 
 parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
                     help = "The pileup average (default is zero).")
+
+parser.add_argument('--pileupSigma', action='store', dest='pileupSigma', required = False, type=int, default=0,
+                    help = "The pileup sigma (default is zero).")
 
 parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=-21,
                     help = "The bunch crossing id start.")
@@ -75,7 +83,7 @@ try:
   from GenKernel import EventTape
   from filters import JF17
 
-  tape = EventTape( "EventTape", OutputFile = args.outputFile)
+  tape = EventTape( "EventTape", OutputFile = args.outputFile, RunNumber=args.runNumber )
   
   
   # To collect using this cell position
@@ -102,6 +110,7 @@ try:
                    EtaMax         = args.maxEta,
                    Select         = 2,
                    PileupAvg      = args.pileupAvg,
+                   PileupSigma    = args.pileupSigma,
                    BunchIdStart   = args.bc_id_start,
                    BunchIdEnd     = args.bc_id_end,
                    OutputLevel    = args.outputLevel,

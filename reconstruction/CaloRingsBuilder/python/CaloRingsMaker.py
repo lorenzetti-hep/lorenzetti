@@ -1,4 +1,4 @@
-__all__ = ["CaloRingerMaker"]
+__all__ = ["CaloRingsMaker"]
 
 
 from GaugiKernel import Logger
@@ -6,7 +6,7 @@ from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class CaloRingerMaker(Logger):
+class CaloRingsMaker(Logger):
 
   __allow_keys = [
                   "RingerKey",
@@ -24,8 +24,8 @@ class CaloRingerMaker(Logger):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, CaloRingerMaker
-    self.__core = CaloRingerMaker(name)
+    from ROOT import RunManager, CaloRingsMaker
+    self.__core = CaloRingsMaker(name)
     for key, value in kw.items():
       self.setProperty( key, value )
 

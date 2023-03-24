@@ -20,12 +20,19 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=1,
                     help = "The number of events to be generated.")
 
+parser.add_argument('--runNumber', action='store', dest='runNumber', 
+                    required = False, type=int, default = 0,
+                    help = "The run number.")
+
 #
 # Pileup simulation arguments
 #
 
-parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=40,
+parser.add_argument('--pileupAvg', action='store', dest='pileupAvg', required = False, type=int, default=0,
                     help = "The pileup average (default is zero).")
+
+parser.add_argument('--pileupSigma', action='store', dest='pileupSigma', required = False, type=int, default=0,
+                    help = "The pileup sigma (default is zero).")
 
 parser.add_argument('--bc_id_start', action='store', dest='bc_id_start', required = False, type=int, default=-21,
                     help = "The bunch crossing id start.")
@@ -64,7 +71,7 @@ try:
   from GenKernel import EventTape
   from filters import FixedRegion
 
-  tape = EventTape( "EventTape", OutputFile = args.outputFile)
+  tape = EventTape( "EventTape", OutputFile = args.outputFile, RunNumber=args.runNumber)
   
   # dummy seed to store all pileup particles
   seed = FixedRegion("Seed", Eta=0, Phi=0 )
@@ -78,6 +85,7 @@ try:
                  EtaMax         = 1.4,
                  Select         = 2,
                  PileupAvg      = args.pileupAvg,
+                 PileupSigma    = args.pileupSigma,
                  BunchIdStart   = args.bc_id_start,
                  BunchIdEnd     = args.bc_id_end,
                  OutputLevel    = args.outputLevel,

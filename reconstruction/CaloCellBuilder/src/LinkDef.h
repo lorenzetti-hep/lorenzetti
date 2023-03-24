@@ -6,6 +6,7 @@
 #include "src/CrossTalk.h"
 #include "src/CaloHitMaker.h"
 #include "src/CaloHitMerge.h"
+#include "src/PileupMerge.h"
 #include "src/ConstrainedOptimalFilter.h"
 
 #ifdef __CINT__

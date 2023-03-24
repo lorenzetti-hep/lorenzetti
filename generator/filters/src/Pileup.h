@@ -24,6 +24,7 @@ namespace generator{
       int m_bc_id_end;
       float m_etaMax;
       float m_nPileupAvg;
+      float m_nPileupSigma;
       float m_delta_eta;
       float m_delta_phi;
 

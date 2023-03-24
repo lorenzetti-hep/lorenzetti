@@ -15,6 +15,7 @@ EventTape::EventTape():
   PropertyService(),
   m_store(nullptr)
 {
+  declareProperty( "RunNumber"          , m_runNumber=0             );
   declareProperty( "NumberOfEvents"     , m_nEvent=1                );
   declareProperty( "OutputFile"         , m_outputFile="particles"  );
   declareProperty( "OutputLevel"        , m_outputLevel=1           );
@@ -75,6 +76,7 @@ StatusCode EventTape::initialize()
  
   // Initialize output file
   m_tree = new TTree("particles","Pythia particles event tree");
+  m_tree->Branch("RunNumber"   , &m_runNumber   , "runNumber/I" );
   m_tree->Branch("EventNumber" , &m_eventNumber , "eventNumber/I" );
   m_tree->Branch("avg_mu"      , &m_avg_mu, "avg_mu/F");
   m_tree->Branch("p_isMain"    , &m_p_isMain     );
@@ -197,7 +199,7 @@ void EventTape::clear()
 void EventTape::dump( Event &event )
 {
 
-  m_avg_mu = event.avgmu();
+  m_avg_mu      = event.avgmu();
   m_eventNumber = event.eventNumber();
 
   m_store->hist1("avgmu")->Fill( m_avg_mu  );

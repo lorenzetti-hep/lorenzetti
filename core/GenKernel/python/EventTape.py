@@ -8,6 +8,7 @@ from G4Kernel import treatPropertyValue
 class EventTape( Logger ):
 
   __allow_keys = [
+                        "RunNumber"         ,
                         "NumberOfEvents"    ,
                         "OutputFile"        , 
                         "OutputLevel"       ,
