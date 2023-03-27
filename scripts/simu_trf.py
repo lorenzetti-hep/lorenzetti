@@ -7,7 +7,7 @@ from CaloCell.CaloDefs    import CaloSampling
 from RootStreamBuilder    import recordable
 import numpy as np
 import argparse
-import sys,os
+import sys,os,gc
 
 pi = np.pi
 MINUTES = 60
@@ -83,10 +83,11 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", detector,
                               RunVis=args.visualization,
                               NumberOfThreads = args.numberOfThreads,
-                              MergeOutputFiles = True,
                               Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
                               OutputFile = args.outputFile,
                               Timeout = args.timeout * MINUTES )
+  
+
 
   gun = EventReader( "EventReader",
                      EventKey   = recordable("EventInfo"),
@@ -130,6 +131,10 @@ try:
   
   if args.visualization:
       input("Press Enter to quit...")
+
+  
+  #del acc # remove all instances
+  #gc.collect() # make sure everything was removed
   sys.exit(0)
   
 except  Exception as e:

@@ -3,14 +3,14 @@ __all__ = ["ComponentAccumulator"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
-import os
+import os, time, gc
 
 
 class ComponentAccumulator( Logger ):
 
   __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed", "Timeout"]
 
-  def __init__( self, name , detector,  MergeOutputFiles=False, **kw):
+  def __init__( self, name , detector, **kw):
 
     Logger.__init__(self)
     import ROOT
@@ -21,9 +21,14 @@ class ComponentAccumulator( Logger ):
     for key, value in kw.items():
       self.setProperty( key, value )
 
-    self.__outputs = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
-    self.__mergeOutputs = MergeOutputFiles
+    self.outputFiles = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
 
+
+  def __del__(self):
+    del self.__core
+    gc.collect()
+    time.sleep(2)
+    self.merge()
 
   #
   # Run events
@@ -34,9 +39,6 @@ class ComponentAccumulator( Logger ):
     elif evt > self.__numberOfEvents:
       evt = self.__numberOfEvents
     self.__core.run(evt)
-
-    if self.__mergeOutputs:
-      self.__merge()
 
 
   def setProperty( self, key, value ):
@@ -77,13 +79,12 @@ class ComponentAccumulator( Logger ):
   #
   # Destructor
   #
-  def __merge(self):
-    command = "hadd -f " + self.OutputFile + ' '
-    for fname in self.__outputs:
-      command+=fname + ' '
+  def merge(self):
+    files = ' '.join(self.outputFiles)
+    command = f"hadd -f {self.OutputFile} {files}"
     print( command )
     os.system(command)
     # remove thread files
-    for fname in self.__outputs:
+    for fname in self.outputFiles:
       os.system( 'rm '+ fname )
   

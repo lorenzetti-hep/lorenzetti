@@ -93,8 +93,8 @@ void EventReader::InitBranch(TTree* fChain, std::string branch_name, T* param, b
 
 void EventReader::link(TTree *t)
 {  
+  InitBranch( t, "RunNumber"  ,&m_runNumber   );
   InitBranch( t, "EventNumber",&m_eventNumber );
-  InitBranch( t, "EventNumber",&m_runNumber );
   InitBranch( t, "avg_mu"     ,&m_avgmu       );
   InitBranch( t, "p_isMain"   ,&m_p_isMain    );
   InitBranch( t, "p_pdg_id"   ,&m_p_pdg_id    );
