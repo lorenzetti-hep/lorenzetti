@@ -3,6 +3,8 @@
 
 #include "GaugiKernel/AlgTool.h"
 #include "GaugiKernel/EDM.h"
+#include "CaloCell/CaloDetDescriptor.h"
+#include "CaloCell/CaloDetDescriptorCollection.h"
 #include "TF1.h"
 
 
@@ -26,6 +28,8 @@ class CrossTalk : public Gaugi::AlgTool
     // void    BuildSampCluster(vector<double> BaseAmpXTc, vector<double> BaseAmpXTl,  vector<double> BaseAmpXTr, vector<double> delayPerCell, vector<double> &XTcSamples, vector<double> &XTlSamples, vector<double> &XTrSamples, vector<double> &CellSigSamples, vector<double> &SampClusNoise, uint m_Nsamples, double m_tau_0 ) const;
 
   private:
+
+    // std::vector<xAOD::CaloDetDescriptor*> copiedROI = nullptr;
 
     float m_minEnergy;
     std::string m_collectionKey;

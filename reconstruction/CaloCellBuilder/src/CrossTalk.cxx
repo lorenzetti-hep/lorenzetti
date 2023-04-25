@@ -1,6 +1,6 @@
 #include "CrossTalk.h"
-#include "CaloCell/CaloDetDescriptor.h"
-#include "CaloCell/CaloDetDescriptorCollection.h"
+// #include "CaloCell/CaloDetDescriptor.h"
+// #include "CaloCell/CaloDetDescriptorCollection.h"
 #include "G4Kernel/CaloPhiRange.h"
 #include "G4Kernel/constants.h"
 #include "G4SystemOfUnits.hh"
@@ -46,7 +46,8 @@ StatusCode CrossTalk::finalize()
 StatusCode CrossTalk::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) const
 {
   // MSG_INFO("Executing CrossTalk module...");
-  auto *cellExt = static_cast<xAOD::CaloDetDescriptor*>(edm); // central cell of ROI
+  // It is just a cell from ROI. The execute loops over one cell per event.
+  auto *cellExt = static_cast<xAOD::CaloDetDescriptor*>(edm);
 
 
   // Step 1: check if we need to apply cx methos. Only for cells higher than
@@ -95,13 +96,16 @@ StatusCode CrossTalk::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) const
     auto *cell = pair.second; // cell
 
     if (cell == cellExt){ // central_cell must not belong to cells_around
-      return StatusCode::SUCCESS;
+      // return StatusCode::SUCCESS;
+      continue;
     }
     if ( cell->sampling() != cellExt->sampling() ){ // cells_around must belong to the same sampling of central_cell
-      return StatusCode::SUCCESS;
+      // return StatusCode::SUCCESS;
+      continue;
     }
     if ( cell->pulse().size() == 0){ // protection: if there is no pulseShape, skip that cell. 
-      return StatusCode::SUCCESS;
+      // return StatusCode::SUCCESS;
+      continue;
     }
     
     // build a 3x3 window around the central cell
@@ -159,6 +163,12 @@ StatusCode CrossTalk::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) const
     centralCellPulse[i] = centralCellPulse[i] + final_pulse[i]; 
     samples_signal_xtalk.push_back(centralCellPulse[i]); // add to fillHistograms
   }
+
+  // add modified centralCell to copiedROI container
+  // auto copiedCentralCell = cellExt;
+  // copiedCentralCell->setPulse(centralCellPulse);
+  // copiedROI.push_back(copiedCell);
+
   cellExt->setPulse(centralCellPulse);
 
   // fillHistograms( ctx, samples_xtalk_ind, samples_xtalk_cap, samples_signal, samples_signal_xtalk );
