@@ -1,9 +1,5 @@
-#FROM ubuntu:22.10
-FROM tensorflow/tensorflow:2.11.0-gpu
-USER root
 
-
-
+FROM ubuntu:20.04
 LABEL maintainer "Joao Victor Pinto <jodafons@cern.ch>"
 
 ENV LC_ALL C.UTF-8
@@ -12,71 +8,103 @@ ENV LANGUAGE en_US:en
 ENV TERM screen
 ENV TZ=America/New_York
 ENV DEBIAN_FRONTEND=noninteractive
-#ENV CPU_N=$(grep -c ^processor /proc/cpuinfo)
-ENV CPU_N=40
+ENV CPU_N=$(grep -c ^processor /proc/cpuinfo)
 
-# update all packages
+# update all palsckages
 RUN apt-get update -y --fix-missing
+RUN apt-get update
 
-# others
-RUN apt-get install -y wget git dpkg-dev \
-g++ gcc binutils libx11-dev libxpm-dev \
-libxft-dev libxext-dev libglew1.5-dev \
-python-dev libboost-all-dev librange-v3-dev \
-libboost-python-dev libxerces-c-dev curl
+# Install all dependencies 
+RUN apt-get install -y wget 
+RUN apt-get install -y build-essential 
+RUN apt-get install -y dpkg-dev 
+RUN apt-get install -y cmake 
+RUN apt-get install -y git 
+RUN apt-get install -y curl 
+RUN apt-get install -y dpkg-dev 
+RUN apt-get install -y g++ 
+RUN apt-get install -y gcc 
+RUN apt-get install -y binutils 
+RUN apt-get install -y libx11-dev 
+RUN apt-get install -y libxpm-dev 
+RUN apt-get install -y libxft-dev 
+RUN apt-get install -y libxext-dev 
+RUN apt-get install -y python3 
+RUN apt-get install -y python-dev-is-python3 
+RUN apt-get install -y python3-pip 
+RUN apt-get install -y librange-v3-dev 
+RUN apt-get install -y libboost-python-dev 
+RUN apt-get install -y libxft-dev 
+RUN apt-get install -y libxext-dev  
+RUN apt-get install -y libssl-dev 
+RUN apt-get install -y gfortran 
+RUN apt-get install -y libpcre3-dev
+RUN apt-get install -y libglu1-mesa-dev 
+RUN apt-get install -y libglew-dev 
+RUN apt-get install -y libftgl-dev 
+RUN apt-get install -y libxerces-c-dev
+RUN apt-get install -y libmysqlclient-dev 
+RUN apt-get install -y libfftw3-dev 
+RUN apt-get install -y libcfitsio-dev
+RUN apt-get install -y libgraphviz-dev 
+RUN apt-get install -y libavahi-compat-libdnssd-dev
+RUN apt-get install -y libldap2-dev 
+RUN apt-get install -y libxml2-dev 
+RUN apt-get install -y libkrb5-dev 
+RUN apt-get install -y libgsl-dev 
+RUN apt-get install -y rsync
 
-# root dependencies
-RUN apt-get install -y dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev \
-libxft-dev libxext-dev python3 libssl-dev gfortran libpcre3-dev \
-xlibmesa-glu-dev libglew-dev libftgl-dev \
-libmysqlclient-dev libfftw3-dev libcfitsio-dev \
-graphviz-dev libavahi-compat-libdnssd-dev \
-libldap2-dev libxml2-dev libkrb5-dev \
-libgsl0-dev qtwebengine5-dev
 
+# Install QT5
+RUN apt-get install -y  mesa-common-dev qtcreator qt5-default
 
+WORKDIR /physics/root
 
-# Installing cmake3
-WORKDIR /usr
-RUN wget --progress=dot:giga https://cmake.org/files/v3.19/cmake-3.19.7-Linux-x86_64.sh -P /usr/
-RUN chmod 755 cmake-3.19.7-Linux-x86_64.sh
-RUN ./cmake-3.19.7-Linux-x86_64.sh --skip-license
-
-
-
-
-WORKDIR /apt
 # install ROOT
-RUN git clone https://github.com/root-project/root.git
-RUN cd root && git checkout v6-26-10
-RUN cd root && mkdir buildthis && cd buildthis && cmake  -Dpython_version=3 -Dxrootd=OFF -Dbuiltin_xrootd=OFF .. && make -j$CPU_N
-ENV ROOTSYS "/apt/root/buildthis/"
+RUN git clone https://github.com/root-project/root.git && cd root && git checkout v6-28-02
+RUN mkdir build && cd build && cmake  -Dpython_version=3 -Dxrootd=OFF -Dbuiltin_xrootd=OFF ../root && make -j$CPU_N
+ENV ROOTSYS "/physics/root/build/"
 ENV PATH "$ROOTSYS/bin:$PATH"
 ENV LD_LIBRARY_PATH "$ROOTSYS/lib:$LD_LIBRARY_PATH"
-ENV PYTHONPATH "/apt/root/buildthis/lib:$PYTHONPATH"
+ENV PYTHONPATH "/physics/root/build/lib:$PYTHONPATH"
 
 
 # Install Geant4
-RUN git clone https://github.com/lorenzetti-hep/geant4.git && cd geant4 && mkdir buildthis && cd buildthis && cmake -DGEANT4_INSTALL_DATA=ON \
- -DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON -DGEANT4_USE_QT=OFF -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON .. && make -j$CPU_N && \
-cp ../scripts/geant4_10.5.1.sh geant4.sh && source geant4.sh
+WORKDIR /physics/geant
+RUN git clone https://github.com/lorenzetti-hep/geant4.git
+RUN mkdir build && cd build && cmake -DGEANT4_INSTALL_DATA=ON \
+-DGEANT4_BUILD_MULTITHREADED=ON -DGEANT4_USE_SYSTEM_ZLIB=ON DGEANT4_USE_OPENGL_X11=ON \
+-DGEANT4_USE_QT=ON -DGEANT4_USE_GDML=ON -DGEANT4_BUILD_MUONIC_ATOMS_IN_USE=ON ../geant4 && make -j$CPU_N
+RUN cd build && cp ../geant4/scripts/geant4_10.5.1.sh geant4.sh
 
 
 # Install Pythia8
+RUN apt-get install -u 
+WORKDIR /physics
 RUN git clone https://github.com/lorenzetti-hep/pythia8.git && cd pythia8 && ./configure --with-python-config=python3-config && make -j$CPU_N
 
 # Install FastJet
 RUN curl -O http://fastjet.fr/repo/fastjet-3.3.3.tar.gz && tar zxvf fastjet-3.3.3.tar.gz && cd fastjet-3.3.3/ && ./configure && make -j$CPU_N && make install
 
-# Install pip packages
-RUN pip install --no-cache-dir setuptools pandas sklearn seaborn jupyterlab tqdm \
-atlas-mpl-style twine pyhepmc colorama
 
 # Install HEPMC
-RUN git clone https://github.com/lorenzetti-hep/hepmc3.git && cd hepmc3 && git checkout 3.2.5 && mkdir build && cd build && cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON .. && make -j$CPU_N && make install
+WORKDIR /physics/hepmc
+RUN git clone https://github.com/lorenzetti-hep/hepmc3.git && cd hepmc3 && git checkout 3.2.5 
+RUN mkdir build && cd build && cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON ../hepmc3 && make -j$CPU_N && make install
+
+
+# Install pip packages
+RUN pip install --no-cache-dir setuptools pandas sklearn seaborn jupyterlab tqdm atlas-mpl-style twine pyhepmc colorama
+
 
 #
 # setup all environments before start bash terminal
 #
 COPY setup_envs.sh /
 RUN chmod 774 /setup_envs.sh
+WORKDIR /physics
+RUN git clone https://github.com/lorenzetti-hep/lorenzetti 
+
+WORKDIR /physics/lorenzetti
+#RUN . /setup_envs.sh
+#RUN mkdir build && cd build && cmake .. && make -jCPU_N
