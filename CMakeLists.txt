@@ -48,9 +48,9 @@ gaugi_initialize()
 #set( Python_ADDITIONAL_VERSIONS 3.0)
 find_package( PythonInterp REQUIRED)
 find_package( PythonLibs REQUIRED)
-find_package( Boost COMPONENTS python system filesystem)
-include_directories( ${Boost_INCLUDE_DIR} )
-link_directories( ${Boost_LIBRARY_DIR} )
+#find_package( Boost COMPONENTS python system filesystem)
+#include_directories( ${Boost_INCLUDE_DIR} )
+#link_directories( ${Boost_LIBRARY_DIR} )
 
 # include simulation tools
 include_directories( ${FASTJET_INCLUDE_DIRS} )
@@ -112,10 +112,10 @@ message( STATUS ${HEPMC_LIBRARIES} )
 
 target_link_Libraries(lorenzetti ${ROOT_LIBRARIES} 
                                  ${ROOT_COMPONENT_LIBRARIES} 
-                                 ${Boost_PYTHON_LIBRARIES} 
+                                 #${Boost_PYTHON_LIBRARIES} 
                                  ${PYTHON_LIBRARIES} 
-                                 ${Boost_FILESYSTEM_LIBRARY} 
-                                 ${Boost_SYSTEM_LIBRARY} 
+                                 #${Boost_FILESYSTEM_LIBRARY} 
+                                 #${Boost_SYSTEM_LIBRARY} 
                                  ${Geant4_LIBRARIES} 
                                  ${FASTJET_LIBRARIES} 
                                  ${HEPMC_LIBRARIES}

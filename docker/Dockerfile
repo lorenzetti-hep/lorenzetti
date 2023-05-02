@@ -52,6 +52,7 @@ RUN apt-get install -y libxml2-dev
 RUN apt-get install -y libkrb5-dev 
 RUN apt-get install -y libgsl-dev 
 RUN apt-get install -y rsync
+RUN apt-get install -y libboost-all-dev
 
 
 # Install QT5
