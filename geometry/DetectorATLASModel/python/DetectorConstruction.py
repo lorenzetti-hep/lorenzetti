@@ -15,6 +15,7 @@ class DetectorConstruction(Logger):
                   "UseTileExt",
                   "UseEMEC",
                   "UseHEC",
+                  "UseTrack",
                   "UseCrack",
                   "UseDeadMaterial",
                   "CutOnPhi",

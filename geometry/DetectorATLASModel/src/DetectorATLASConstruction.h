@@ -75,6 +75,7 @@ class DetectorATLASConstruction : public G4VUserDetectorConstruction, public Msg
     bool m_useTileExt;
     bool m_useEMEC;
     bool m_useHEC;
+    bool m_useTrack;
 
     bool m_useCrack;
     bool m_useDeadMaterial;

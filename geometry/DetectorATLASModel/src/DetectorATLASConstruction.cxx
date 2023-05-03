@@ -49,6 +49,8 @@ DetectorATLASConstruction::DetectorATLASConstruction(std::string name)
   declareProperty( "UseTileExt"                 , m_useTileExt=true           );
   declareProperty( "UseEMEC"                    , m_useEMEC=true              );
   declareProperty( "UseHEC"                     , m_useHEC=true               );
+  declareProperty( "UseTrack"                   , m_useTrack=true             );
+
   // Struture 
   declareProperty( "UseCrack"                   , m_useCrack=true             );
   declareProperty( "UseDeadMaterial"            , m_useDeadMaterial=true      );
@@ -886,6 +888,12 @@ G4VPhysicalVolume* DetectorATLASConstruction::DefineVolumes()
                   crack_em_material_size,  // z
                   G4ThreeVector(0,0,-crack_em_material_center), // center
                   crackMaterial );
+  }
+
+
+
+  if(m_useTrack){
+
   }
 
 

@@ -54,22 +54,25 @@ EventReader::~EventReader()
 
 
 StatusCode EventReader::initialize()
-{
-  MSG_INFO( "Open the root file: " << m_filename );
-  m_f = new TFile( m_filename.c_str() , "read" );
-
-  m_ttree = (TTree*)m_f->Get("particles");
+{    
   m_evt=0;
-  link( m_ttree );
-  allocate();
+  if(m_filename != ""){
+    MSG_INFO( "Open the root file: " << m_filename );
+    m_f = new TFile( m_filename.c_str() , "read" );
+    m_ttree = (TTree*)m_f->Get("particles");
+    link( m_ttree );
+    allocate();
+  }
   return StatusCode::SUCCESS;
 }
 
 
 StatusCode EventReader::finalize()
 {
-  release();
-  m_f->Close();
+  if(m_filename!=""){
+    release();
+    m_f->Close();
+  }
   return StatusCode::SUCCESS;
 }
 
@@ -180,7 +183,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
   
   RunReconstruction *reco = static_cast<RunReconstruction*> (G4RunManager::GetRunManager()->GetNonConstCurrentRun());
 
-  if ( m_evt <  m_ttree->GetEntries() ){
+  if ( m_evt <  m_ttree->GetEntries() && m_filename!="" ){
     m_ttree->GetEntry(m_evt);
     MSG_INFO( "Get event (EventReader) with number " << m_evt << " and EventNumber " << m_eventNumber);
 
