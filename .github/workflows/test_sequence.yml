@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_generation.sh
           
 
@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_simu_trf.sh
 
   merge:
@@ -58,7 +58,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_merge_trf.sh
 
   digitalization:
@@ -71,7 +71,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_digit_trf.sh
               
   reconstruction:
@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_reco_trf.sh
 
 
@@ -103,7 +103,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_gen_zee.sh
 
   gen_jets:
@@ -116,7 +116,7 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_gen_jets.sh
 
   gen_minbias:
@@ -129,5 +129,5 @@ jobs:
         shell: bash
         run: |
           source /setup_envs.sh && cd lorenzetti && source setup.sh
-          cd tests
+          cd .github/workflows/tests
           source test_gen_minbias.sh
