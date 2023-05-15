@@ -94,7 +94,7 @@ RUN mkdir build && cd build && cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_
 
 
 # Install pip packages
-RUN pip3 install --no-cache-dir setuptools pandas sklearn seaborn jupyterlab tqdm atlas-mpl-style twine pyhepmc colorama
+RUN pip3 install --no-cache-dir setuptools pandas sklearn seaborn jupyterlab tqdm atlas-mpl-style twine pyhepmc colorama prettytable
 RUN apt-get install -y xorg
 
 # setup all environments before start bash terminal
