@@ -47,6 +47,7 @@ outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
+
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
@@ -61,22 +62,20 @@ try:
                                 OutputLevel     = outputLevel,
                               )
 
-
   reader.merge(acc)
-
+  
   # digitalization!
-  from DetectorATLASModel import CaloCellBuilder
-  calorimeter = CaloCellBuilder("CaloCellBuilder",
+  from CaloCellBuilder import CaloCellBuilder
+  from ATLAS import ATLASDetector as ATLAS
+  calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
                                 HitsKey       = recordable("Hits"),
-                                EstimationMethodECAL  = args.estimationMethodECAL,
-                                EstimationMethodHAD   = args.estimationMethodHAD,
-                                DoCrosstalk           = args.simulateCrossTalk,
                                 )
+  print('2')
   calorimeter.merge(acc)
 
-
+  print('3')
   from RootStreamBuilder import RootStreamESDMaker
   ESD = RootStreamESDMaker( "RootStreamESDMaker",
                              InputCellsKey   = recordable("Cells"),

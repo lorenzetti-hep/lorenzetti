@@ -18,7 +18,7 @@ namespace xAOD{
       /** Contructor **/
       CaloDetDescriptor( 
                // eta/phi position at the detector, deta/dphi size into the detector, radius
-               float eta, float phi, float deta, float dphi, float radius_min, float radius_max,
+               float eta, float phi, float deta, float dphi,
                // Hash
                unsigned long int hash,
                // cell identification
@@ -46,10 +46,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_deta, setDeltaEta , deltaEta);
       /*! Cell delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
-      /*! Cell minimal radius in the plane xy */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_radius_min, setRmin, rmin );
-      /*! Cell maximal radius in the plane xy */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_radius_max, setRmax, rmax );
       /*! Cell hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
       /*! Cell sampling id */
@@ -136,10 +132,6 @@ namespace xAOD{
       float m_deta;
       /*! delta phi */
       float m_dphi;
-      /*! In plane xy */
-      float m_radius_min; 
-      /*! In plane xy */
-      float m_radius_max;
 
 
       /*! The estimated energy from OF in bcid=0 */

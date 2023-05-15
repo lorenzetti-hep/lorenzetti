@@ -28,7 +28,10 @@ namespace generator{
       virtual float random_gauss() override;
 
       virtual void clear() override;
-      virtual void fill(int id, float energy, float etaIn, float phiIn, bool atRest, bool hasLifetime) override;
+
+
+      Pythia8::Pythia * core(){return &m_gun;};
+      
 
     protected:
 
@@ -49,7 +52,7 @@ namespace generator{
     private:
 
       /*! The pythia event generator */
-      mutable Pythia8::Pythia m_gun;
+      Pythia8::Pythia m_gun;
 
   };
 

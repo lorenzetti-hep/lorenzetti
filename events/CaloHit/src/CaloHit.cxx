@@ -10,8 +10,6 @@ CaloHit::CaloHit(     float eta,
                       float phi, 
                       float deta, 
                       float dphi,
-                      float rmin,
-                      float rmax,
                       // Hash
                       unsigned long int hash,
                       // cell identification
@@ -29,8 +27,6 @@ CaloHit::CaloHit(     float eta,
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
-  m_rmin(rmin),
-  m_rmax(rmax),
   m_bcid_start(bcid_start),
   m_bcid_end(bcid_end),
   m_bc_duration(bc_duration),
@@ -57,8 +53,6 @@ void CaloHit::fill( const G4Step* step )
   // Get total energy deposit
   float edep = (float)step->GetTotalEnergyDeposit();
   G4StepPoint* point = step->GetPreStepPoint();
-  // Get the position
-  G4ThreeVector pos = point->GetPosition();
   // Get the particle time
   float t = (float)point->GetGlobalTime() / ns;
 

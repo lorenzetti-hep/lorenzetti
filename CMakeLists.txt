@@ -61,7 +61,6 @@ include_directories( ${HEPMC_INCLUDE_DIRS} )
 # core
 add_subdirectory( core/GaugiKernel )
 add_subdirectory( core/G4Kernel )
-add_subdirectory( core/GenKernel)
 
 # event packages
 add_subdirectory( events/CaloHit )
@@ -72,13 +71,16 @@ add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
 
 # reconstruction package
-add_subdirectory( reconstruction/CaloCellBuilder )
-add_subdirectory( reconstruction/CaloClusterBuilder )
-add_subdirectory( reconstruction/CaloRingsBuilder )
-add_subdirectory( reconstruction/RootStreamBuilder )
-add_subdirectory( geometry/DetectorATLASModel )
+add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
+add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
+add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
+add_subdirectory( reconstruction/io/RootStreamBuilder )
+
+# detector definitions
+add_subdirectory( geometry/ATLAS )
 
 # generator package
+add_subdirectory( generator/genkernel )
 add_subdirectory( generator/filters )
 add_subdirectory( generator/evtgen )
 
@@ -100,7 +102,6 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingsBuilder>
   $<TARGET_OBJECTS:RootStreamBuilder>
-  $<TARGET_OBJECTS:DetectorATLASModel>
   $<TARGET_OBJECTS:GenKernel>
   $<TARGET_OBJECTS:filters>
   $<TARGET_OBJECTS:evtgen>

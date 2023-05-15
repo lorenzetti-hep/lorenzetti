@@ -8,7 +8,7 @@ import os, time, gc
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed", "Timeout"]
+  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed", "Timeout", "VisMac"]
 
   def __init__( self, name , detector, **kw):
 
@@ -17,9 +17,16 @@ class ComponentAccumulator( Logger ):
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager
     self.__core = RunManager(name)
-    self.__core.setDetectorConstruction( detector.core() )
+
+    # convert python to geant4
+    self.__detector = detector
+    self.__detector.compile()
+    # set the geant detector into the geant 
+    self.__core.setDetectorConstruction( self.__detector.core() )
     for key, value in kw.items():
       self.setProperty( key, value )
+    # Set the vis mac file into the manager core
+    self.setProperty("VisMac", self.__detector.VisMac)
 
     self.outputFiles = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
 
@@ -74,6 +81,13 @@ class ComponentAccumulator( Logger ):
   def setGenerator( self, gen ):
     self.__numberOfEvents = gen.GetEntries()
     self.core().setGenerator( gen.core() )
+
+
+  #
+  # Get detector contruction object
+  #
+  def detector(self):
+    return self.__detector
 
 
   #

@@ -38,8 +38,9 @@ RunManager::RunManager( std::string name ):
   //XInitThreads();
 #endif
   declareProperty( "OutputFile"     , m_output="Example.root"   );
-  declareProperty( "RunVis"         , m_runVis=false            );
   declareProperty( "Seed"           , m_seed=0                  );
+  declareProperty( "RunVis"         , m_runVis=false            );
+  declareProperty( "VisMac"         , m_vis_mac                 );
   declareProperty( "Timeout"        , m_timeout = 3*60          ); // 3 minutes as default
 
   MSG_INFO( "Run manager was created." );
@@ -138,7 +139,7 @@ void RunManager::run( int evt )
     UImanager->ApplyCommand("/run/initialize");
     UImanager->ApplyCommand("/run/printProgress 1");
     UImanager->ApplyCommand("/run/verbose 2");
-    UImanager->ApplyCommand("/control/execute "+ basepath+"/core/G4Kernel/data/vis.mac");
+    UImanager->ApplyCommand("/control/execute "+ m_vis_mac);
     UImanager->ApplyCommand(runCommand.str());
     ui->SessionStart();
     delete ui;

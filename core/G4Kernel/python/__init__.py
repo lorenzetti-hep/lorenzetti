@@ -41,6 +41,8 @@ from . import EventReader
 __all__.extend(EventReader.__all__)
 from .EventReader import *
 
-
+from . import DetectorConstruction
+__all__.extend(DetectorConstruction.__all__)
+from .DetectorConstruction import *
 
 

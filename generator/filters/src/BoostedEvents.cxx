@@ -2,6 +2,11 @@
 #include "BoostedEvents.h"
 #include "helper.h"
 #include "TMath.h"
+#include "Pythia8/Pythia.h"
+#include "../../evtgen/src/Pythia8Gen.h"
+
+using namespace Pythia8;
+using namespace generator;
 
 
 using namespace generator;
@@ -29,12 +34,17 @@ BoostedEvents::~BoostedEvents()
 
 StatusCode BoostedEvents::execute(  generator::Event &ctx )
 {
-
+  
   MSG_INFO( "Start boosted gun...");
 
-  HepMC3::GenEvent evt( HepMC3::Units::GEV, HepMC3::Units::MM);
 
   generator()->clear();
+
+  // TODO: This is a hack. Force to get pythia8 object 
+  Pythia8Gen *p8gen = static_cast<Pythia8Gen*>(generator());
+  auto gun = p8gen->core();
+
+
 
   // For each seed inside of the event record we will
   // shoot a particle with DeltaR of distance of the
@@ -52,69 +62,77 @@ StatusCode BoostedEvents::execute(  generator::Event &ctx )
     float energy = seed.etot()*  (  0.1 + 1.8*generator()->random_flat() ); // Will get (0.1->1.9 percent) of the total energy (defined by Werner)
 
     // Fill the particle
-    generator()->fill( m_pdgid, energy, eta, phi, m_atRest, m_hasLifetime);
+    fill( gun, m_pdgid, energy, eta, phi, m_atRest, m_hasLifetime);
   }
   
   
+
+
+
   // Generate main event. Quit if too many failures.
-  if (generator()->execute(evt).isFailure()){
+  if (!gun->next()) {
+    if (m_iAbort++>m_nAbort){
+      MSG_ERROR("Event generation aborted prematurely, owing to error in main event!" );
+      throw AbortPrematurely();
+    }
+  }
+
+  double weight = gun->info.mergingWeight();
+  double evtweight = gun->info.weight();
+  weight *= evtweight;
+
+  // Do not print zero-weight events.
+  if ( weight == 0. ) {
+    MSG_WARNING("Pythia generation return weight zero.");
     return StatusCode::FAILURE;
   }
 
 
-  for (auto part : evt.particles())
-  {
+  for ( int i=0; i<gun->event.size(); ++i ){
+
+    auto *p = &gun->event[i];
+    ParticleData* pdt = &gun->particleData;
+    
 
     // Find any unrecognized particle codes.
-    int id = part->pid();
+    int id = p->id();
 
-    if (id == 0)
-    {
+    if (id == 0 || !pdt->isParticle(id)){
       MSG_WARNING("Unknown code id = " << id );
       continue;
     }
 
     const auto main_event_t = sample_t();
     const auto main_event_z = sample_z();
-    
+
     // Study final-state particles.
-    if (ParticleHelper::isFinal(part.get())) {
+    if (p->isFinal()) {
+    
 
       // Search for the associated seed into the event record
       for (auto& seed : *ctx)
       {
         // Get the associated seed for this generated particle
         // Add the particle into the seed particle list
-        if (dR( part->momentum().eta(), part->momentum().phi(), 
-                seed.eta(), seed.phi() ) <= m_deltaR )
+        if (dR( p->eta(), p->phi(), seed.eta(), seed.phi() ) <= m_deltaR )
         {
-          const auto vtx = part->production_vertex();
+          seed.emplace_back( 1, 0, p->id(), p->px(), p->py(), p->pz(), p->eta(), p->phi(), 
+                         p->xProd(), p->yProd(), p->zProd() + main_event_z, p->tProd() + main_event_t, 
+                         p->e(), p->eT() ); 
 
-          seed.emplace_back( 1, 0, 
-                       part->pid(), 
-                       part->momentum().px(), 
-                       part->momentum().py(), 
-                       part->momentum().pz(), 
-                       part->momentum().eta(), 
-                       part->momentum().phi(), 
-                       vtx->position().px(), 
-                       vtx->position().py(), 
-                       vtx->position().pz() + main_event_z, 
-                       vtx->position().t()  + main_event_t, 
-                       part->momentum().e(), 
-                       part->momentum().pt() ); 
+          MSG_INFO( "Adding particle: id = " << p->id() << 
+                    " eta = " << p->eta() << 
+                    " phi = " << p->phi() << 
+                    " Et = "  << p->eT() );
+        }// delta R inside
+      }// Loop over seeds
+    }// Is final
 
-          MSG_INFO( "Adding particle: id = " << part->id() << 
-                    " eta = " << part->momentum().eta() << 
-                    " phi = " << part->momentum().phi() << 
-                    " Et = "  << ParticleHelper::et(part.get()) );
-        }
-      }
+  }// Loop over particles
 
-    
-    }// Add particle
 
-  }// Loop over all generated particles
+
+
 
   return StatusCode::SUCCESS;
 }
@@ -138,5 +156,44 @@ StatusCode BoostedEvents::finalize()
 {
   return StatusCode::SUCCESS;
 }
+
+
+
+void BoostedEvents::fill(Pythia8::Pythia *gun, int id, float energy, float etaIn, float phiIn, bool atRest=false, bool hasLifetime=false)
+{
+
+  MSG_INFO("Fill particle with ID " << id);
+  float thetaIn = acos( tanh(etaIn ) );
+  ParticleData& pdt = gun->particleData;
+  
+  // Select particle mass; where relevant according to Breit-Wigner.
+  float ee = energy;
+  float mm = pdt.mSel(id);
+  float pp = sqrtpos(ee*ee - mm*mm);
+
+  // Special case when particle is supposed to be at rest.
+  if (atRest) {
+    ee = mm;
+    pp = 0.;
+  }
+
+  // Angles as input or uniform in solid angle.
+  float cThe, sThe, phi;
+  cThe = cos(thetaIn);
+  sThe = sin(thetaIn);
+  phi  = phiIn;
+
+  // Store the particle in the event record.
+
+  MSG_INFO( "Storing particle into the event record..." );
+
+  int iNew = gun->event.append( id, 1, 0, 0, pp * sThe * cos(phi),
+    pp * sThe * sin(phi), pp * cThe, ee, mm);
+  
+  MSG_INFO("Particle stored with i = " << iNew);
+  // Generate lifetime, to give decay away from primary vertex.
+  if (hasLifetime) gun->event[iNew].tau( gun->event[iNew].tau0() * gun->rndm.exp() );
+}
+
 
 

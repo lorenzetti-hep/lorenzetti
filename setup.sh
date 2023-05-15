@@ -13,12 +13,17 @@ cd build
 rm -rf lib
 mkdir lib
 # first level pcm
-for file in "`pwd`"/*/*/*.pcm
+for file in "`pwd`"/*/*/*/*.pcm
 do
   echo "ln -sf $file"
   ln -sf $file
 done
 
+for file in "`pwd`"/*/*/*.pcm
+do
+  echo "ln -sf $file"
+  ln -sf $file
+done
 
 #
 # Link all libs

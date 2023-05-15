@@ -1,0 +1,286 @@
+__all__ = [
+           "Plates", 
+           "DetectorConstruction", 
+           "PhysicalVolume", 
+           "SensitiveVolume", 
+           ]
+
+
+from GaugiKernel import Logger
+from GaugiKernel.macros import *
+from GaugiKernel import EnumStringification
+from G4Kernel import treatPropertyValue
+from prettytable import PrettyTable
+from tqdm import tqdm
+import numpy as np
+import collections
+
+
+class Plates(EnumStringification):
+  Horizontal = 0
+  Vertical   = 1
+
+
+class DetectorConstruction(Logger):
+
+  __allow_keys = [
+                  "UseMagneticField",
+                  "CutOnPhi",
+                  ]
+  
+  def __init__( self, name, samplings, vis_mac, **kw ):
+
+    Logger.__init__(self)
+
+    self.VisMac = vis_mac
+    self.samplings = samplings
+    self.__volumes = collections.OrderedDict({})
+
+    import ROOT
+    ROOT.gSystem.Load('liblorenzetti')
+    from ROOT import RunManager
+    from ROOT import DetectorConstruction as DetectorConstructionCore
+    self.__core = DetectorConstructionCore(self.getLoggerName())
+    for key, value in kw.items():
+      self.setProperty( key, value )
+
+    # add all volumes from samplings
+    for samp in self.samplings:
+      pv = samp.volume(); self+=pv
+   
+
+  def __add__(self, pv):
+    if pv.Name not in self.__volumes.keys():
+      self.__volumes[pv.Name] = pv
+    return self
+
+  #
+  # Build the core object
+  #
+  def compile(self):
+    # Create all volumes inside of the detector
+    for pv in tqdm( self.__volumes.values(), desc="Compiling...", ncols=70):
+      self.__core.AddVolume( pv.Name, pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
+                             # layer
+                             pv.NofLayers, pv.AbsorberThickness, pv.GapThickness,
+                             # dimensions
+                             pv.RMin, pv.RMax, pv.ZSize, pv.X, pv.Y, pv.Z
+                             )
+    create_vis_mac(self.__volumes.values(), self.VisMac)
+
+
+
+
+  def core(self):
+    return self.__core
+
+
+  def setProperty( self, key, value ):
+    if key in self.__allow_keys:
+      setattr( self, '__' + key , value )
+      self.__core.setProperty( key, treatPropertyValue(value) )
+    else:
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+ 
+  def getProperty( self, key ):
+    if key in self.__allow_keys:
+      return getattr( self, '__' + key )
+    else:
+      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+
+  def summary(self):
+
+      t = PrettyTable(["Name", "Plates", "z",'Zmin','Zmax', "Rmin", "Rmax", "abso","gap", "deta", "dphi", "EtaMin", "EtaMax", "N_bins", "Container"])
+
+      samp_vol_names = []
+
+      # Add all volumes that came from a sampling detector and has a sensitive parameter
+      for samp in self.samplings:
+        pv = samp.volume(); sv = samp.sensitive(); samp_vol_names.append(pv.Name)
+        t.add_row( [pv.Name,
+                    Plates.tostring(pv.Plates),pv.ZSize,pv.ZMin,pv.ZMax,pv.RMin,pv.RMax,
+                    pv.AbsorberMaterial,pv.GapMaterial,round(sv.DeltaEta,4),round(sv.DeltaPhi,4),
+                    sv.EtaMin,sv.EtaMax, len(sv.EtaBins)*len(sv.PhiBins)   ,samp.CollectionKey
+                  ])
+
+      # Add ither volumes that not came from a sampling detector (extra volumes only)
+      for key, pv in self.__volumes.items():
+        if key not in samp_vol_names:
+          t.add_row([pv.Name, Plates.tostring(pv.Plates),pv.ZSize, pv.ZMin, pv.ZMax, 
+                     pv.RMin, pv.RMax, pv.AbsorberMaterial, pv.GapMaterial,'-', '-', '-', '-', '-', '-']) 
+
+
+      print(t)
+
+
+
+
+
+
+#
+# x,y,z to eta,phi coords. transformation functions
+#
+
+def xy_z_to_theta( r_xy, r_z ):
+  if r_z!=0:
+    theta = np.arctan2(  r_xy , r_z )
+  else:
+    theta = np.pi/2
+  return theta
+
+def theta_to_eta( theta ):
+  try:
+    eta = -np.log(np.tan( theta/2. ) )
+  except:
+    eta = -np.log(np.tan( (theta+np.pi)/2.) )
+  return eta
+
+def xy_z_to_eta( r_xy, z ):
+  return theta_to_eta( xy_z_to_theta( r_xy, z ) )
+
+
+
+
+
+
+#
+# Geant4 physical volume dimensions
+#
+class PhysicalVolume(Logger):
+
+    __allow_keys = [
+                      "Name",
+                      "Plates",
+                      "AbsorberMaterial",
+                      "GapMaterial",
+                      "NofLayers",
+                      "AbsorberThickness",
+                      "GapThickness",
+                      "RMin",
+                      "RMax",
+                      "ZSize",
+                      "X",
+                      "Y",
+                      "Z",
+                      "Visualization",
+                      "Color",
+                   ]
+
+    # Constructor
+    def __init__(self, **kw):
+
+        Logger.__init__(self)
+        for key, value in kw.items():
+          if key in self.__allow_keys:
+            setattr(self, key, value )
+          else:
+            MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+        self.ZMin = self.Z - self.ZSize / 2
+        self.ZMax = self.Z + self.ZSize / 2
+
+
+
+
+#
+# Sensitive volume
+#
+class SensitiveVolume(Logger):
+
+    __allow_keys = [
+                      "DeltaEta",
+                      "DeltaPhi",
+
+                  ]
+
+    # Hold all granularity information from physical volume in eta x phi plane
+    def __init__(self, pv, EtaMin=None, EtaMax=None, Segment=0,  **kw):
+
+        Logger.__init__(self)
+        for key, value in kw.items():
+          if key in self.__allow_keys:
+            setattr(self, key, value )
+          else:
+            MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
+        self.pv = pv
+        self.PhiBins = np.round( np.arange( -np.pi, np.pi+self.DeltaPhi, step = self.DeltaPhi ), 4 ).tolist()
+      
+        # Create eta bins given the detector z position
+        if pv.ZMin > 0: # entire in positive side
+          eta_min = round(xy_z_to_eta( pv.RMax, pv.ZMin ), 4) if EtaMin is None else EtaMin 
+          eta_max = round(xy_z_to_eta( pv.RMin, pv.ZMax ), 4) if EtaMax is None else EtaMax
+          self.EtaBins = np.round( np.arange( eta_min, eta_max, step = self.DeltaEta ), 4 ).tolist()
+          self.EtaMin = self.EtaBins[0];self.EtaMax = self.EtaBins[-1]
+        elif pv.ZMax < 0: # entire in negative side:
+          #etamin=EtaMax;EtaMin=EtaMax;EtaMax=etamin 
+          eta_min = round(xy_z_to_eta( pv.RMax, pv.ZMax ), 4) if not EtaMin else EtaMin
+          eta_max = round(xy_z_to_eta( pv.RMin, pv.ZMin ), 4) if not EtaMax else EtaMax
+          self.EtaBins = np.flip(np.round( np.arange( eta_min, eta_max , step = -1*self.DeltaEta ), 4 )).tolist()
+          self.EtaMin = self.EtaBins[-1]; self.EtaMax = self.EtaBins[0]
+        else: # The volume cut the zero axis
+          eta_min = round(xy_z_to_eta( pv.RMax, 0 ), 4) if EtaMin is None else EtaMin
+          eta_max = round(xy_z_to_eta( pv.RMin, pv.ZMax ), 4) if EtaMax is None else EtaMax
+          right_eta_bins = np.round( np.arange( eta_min, eta_max  , step = self.DeltaEta ), 4 )
+          eta_min = round(xy_z_to_eta( pv.RMax, 0 ), 4) if EtaMin is None else EtaMin
+          eta_max = round(xy_z_to_eta( pv.RMin, pv.ZMin ), 4) if EtaMax is None else EtaMax
+          left_eta_bins = np.flip(np.round( np.arange( eta_min, eta_max  , step = -1*self.DeltaEta ), 4 ))
+          self.EtaBins = np.concatenate( (left_eta_bins, right_eta_bins[1::]) ).tolist()
+          self.EtaMin = self.EtaBins[0];self.EtaMax = self.EtaBins[-1]
+
+        self.Segment = Segment
+
+
+    def volume(self):
+      return self.pv
+
+
+
+
+vis_begin = """
+/vis/open OGL 600x600-0+0
+/vis/viewer/set/autoRefresh false
+/vis/verbose errors
+/vis/drawVolume
+/vis/viewer/set/viewpointVector 1 0 0
+/vis/viewer/set/lightsVector 1 0 0
+/vis/viewer/set/style wireframe
+/vis/viewer/set/auxiliaryEdge true
+/vis/viewer/set/lineSegmentsPerCircle 100
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 2
+/vis/scene/endOfEventAction accumulate
+/vis/geometry/set/visibility World 0 false
+#/vis/geometry/set/visibility World 0 true
+/vis/ogl/set/displayListLimit 10000000
+"""
+  
+vis_command = """
+/vis/geometry/set/colour {name} 0 {color}
+/vis/geometry/set/colour {name}_Layer 0 {color}
+/vis/geometry/set/colour {name}_Abso 0 {color}
+/vis/geometry/set/colour {name}_Gap 0 {color}
+/vis/geometry/set/visibility {name} 0 {visualization}
+/vis/geometry/set/visibility {name}_Layer 0 {visualization}
+/vis/geometry/set/visibility {name}_Abso 0 {visualization}
+/vis/geometry/set/visibility {name}_Gap 0 {visualization}
+"""
+
+vis_end = """
+/vis/viewer/set/autoRefresh true
+/vis/verbose warnings
+"""
+
+def create_vis_mac(volumes, opath ):
+  with open(opath, 'w') as f:
+    f.write(vis_begin)
+    for vol in volumes:
+      f.write(vis_command.format(color=vol.Color, name=vol.Name, visualization='true' if vol.Visualization else 'false'))
+    f.write(vis_end)
+
+
+

@@ -11,7 +11,7 @@ import os
 class ComponentAccumulator( Logger ):
 
 
-  def __init__(self, name, output ):
+  def __init__(self, name, output, detector=None ):
     
     Logger.__init__(self)
     import ROOT
@@ -24,6 +24,8 @@ class ComponentAccumulator( Logger ):
     self.__ctx = SG.EventContext("EventContext")
     self.__store = SG.StoreGate(output)
     self.__ctx.setStoreGateSvc(self.__store)
+    self.__detector = detector
+
 
   #
   # Set the reader as first alg
@@ -75,6 +77,8 @@ class ComponentAccumulator( Logger ):
     self.__acc.finalize()
     self.__ctx.getStoreGateSvc().save()
  
- 
+  
 
+  def detector(self):
+    return self.__detector
     

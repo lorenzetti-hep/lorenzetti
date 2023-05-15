@@ -50,7 +50,7 @@ StatusCode Pythia8Gen::initialize()
 
 StatusCode Pythia8Gen::execute(HepMC3::GenEvent &evt){
 
-  MSG_DEBUG("Pythia8::next()...");
+  MSG_INFO("Pythia8::next()...");
   if (!m_gun.next()) {
     if (m_iAbort++>m_nAbort){
       MSG_ERROR("Event generation aborted prematurely, owing to error in main event!" );
@@ -70,6 +70,7 @@ StatusCode Pythia8Gen::execute(HepMC3::GenEvent &evt){
   m_nEvent+=1;
 
   HepMC3::Pythia8ToHepMC3 converter;
+
 
   MSG_DEBUG("Pythia8 to HepMC3");
   converter.fill_next_event(m_gun.event, &evt);
@@ -98,42 +99,8 @@ float Pythia8Gen::random_gauss(){
   return m_gun.rndm.gauss();
 }
 
-
-
 void Pythia8Gen::clear(){
   m_gun.event.reset();
-}
-
-void Pythia8Gen::fill(int id, float energy, float etaIn, float phiIn, bool atRest=false, bool hasLifetime=false)
-{
-
-
-  float thetaIn = acos( tanh(etaIn ) );
-  ParticleData& pdt = m_gun.particleData;
-  
-  // Select particle mass; where relevant according to Breit-Wigner.
-  float ee = energy;
-  float mm = pdt.mSel(id);
-  float pp = sqrtpos(ee*ee - mm*mm);
-
-  // Special case when particle is supposed to be at rest.
-  if (atRest) {
-    ee = mm;
-    pp = 0.;
-  }
-
-  // Angles as input or uniform in solid angle.
-  float cThe, sThe, phi;
-  cThe = cos(thetaIn);
-  sThe = sin(thetaIn);
-  phi  = phiIn;
-
-  // Store the particle in the event record.
-  int iNew = m_gun.event.append( id, 1, 0, 0, pp * sThe * cos(phi),
-    pp * sThe * sin(phi), pp * cThe, ee, mm);
-
-  // Generate lifetime, to give decay away from primary vertex.
-  if (hasLifetime) m_gun.event[iNew].tau( m_gun.event[iNew].tau0() * m_gun.rndm.exp() );
 }
 
 

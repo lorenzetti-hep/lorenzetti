@@ -16,8 +16,6 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.phi         = descriptor->phi();
     descriptor_t.deta        = descriptor->deltaEta(); 
     descriptor_t.dphi        = descriptor->deltaPhi();
-    descriptor_t.rmin        = descriptor->rmin(); 
-    descriptor_t.rmax        = descriptor->rmax();
     descriptor_t.e           = descriptor->e();
     descriptor_t.edep        = descriptor->edep(); // truth energy into the bunch crossing zero
     descriptor_t.bcid_start  = descriptor->bcid_start();
@@ -48,8 +46,6 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             descriptor_t.phi,
                                             descriptor_t.deta,
                                             descriptor_t.dphi,
-                                            descriptor_t.rmin,
-                                            descriptor_t.rmax,
                                             descriptor_t.hash,
                                             (CaloSampling)descriptor_t.sampling, 
                                             (Detector)descriptor_t.detector,

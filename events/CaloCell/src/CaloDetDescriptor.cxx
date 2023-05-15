@@ -13,8 +13,6 @@ CaloDetDescriptor::CaloDetDescriptor(
                   float phi, 
                   float deta, 
                   float dphi, 
-                  float radius_min, 
-                  float radius_max,
                   unsigned long int hash,
                   CaloSampling sampling, 
                   Detector detector,
@@ -28,8 +26,6 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_phi(phi),
   m_deta(deta),
   m_dphi(dphi),
-  m_radius_min(radius_min),
-  m_radius_max(radius_max),
   m_e(0),
   /* Bunch crossing information */
   m_bcid_start( bcid_start ),

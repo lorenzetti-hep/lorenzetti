@@ -37,11 +37,12 @@ class RunManager: public MsgService,
     int m_nThreads;
 
     bool m_runVis;
-
+    
     float m_seed;
 
     int m_timeout;
-
+    
+    std::string m_vis_mac;
     std::string m_output;
 
     std::vector< Gaugi::Algorithm* > m_acc;
