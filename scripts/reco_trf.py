@@ -29,6 +29,10 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
+parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
+                    help = "If used, enable cross talk cell propagation.")
+
+
 
 
 
@@ -51,9 +55,11 @@ try:
   ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
                             CellsKey        = recordable("Cells"),
+                            XTCellsKey      = recordable("XTCells"),
                             EventKey        = recordable("EventInfo"),
                             TruthKey        = recordable("Particles"),
                             NtupleName      = "CollectionTree",
+                            DoCrosstalk     = args.simulateCrossTalk,
                           )
   ESD.merge(acc)
 
@@ -68,7 +74,7 @@ try:
                               PhiWindow       = 0.4,
                               MinCenterEnergy = 1*GeV, 
                               HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
+                              OutputLevel     = 1 )
 
   rings   = CaloRingsMaker(   "CaloRingsMaker",
                               RingerKey     = recordable("Rings"),
@@ -86,27 +92,68 @@ try:
                                 [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
                               ],
                               HistogramPath = "Expert/Rings",
-                              OutputLevel   = outputLevel)
+                              OutputLevel   = 1)
+
+  # build cluster for all seeds, but for XT affected cells
+  if (args.simulateCrossTalk):
+    xt_cluster = CaloClusterMaker( "XTCaloClusterMaker",
+                                CellsKey        = recordable("XTCells"),
+                                EventKey        = recordable("EventInfo"),
+                                ClusterKey      = recordable("XTClusters"),
+                                TruthKey        = recordable("Particles"),
+                                EtaWindow       = 0.4,
+                                PhiWindow       = 0.4,
+                                MinCenterEnergy = 1*GeV, 
+                                HistogramPath   = "Expert/XTClusters",
+                                OutputLevel     = 1 )
+
+    xt_rings   = CaloRingsMaker(   "XTCaloRingsMaker",
+                                RingerKey     = recordable("XTRings"),
+                                ClusterKey    = recordable("XTClusters"),
+                                DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                                DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                                NRings        = [8, 64, 8, 8, 4, 4, 4],
+                                LayerRings = [
+                                  [CaloSampling.PSB, CaloSampling.PSE],
+                                  [CaloSampling.EMB1, CaloSampling.EMEC1],
+                                  [CaloSampling.EMB2, CaloSampling.EMEC2],
+                                  [CaloSampling.EMB3, CaloSampling.EMEC3],
+                                  [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
+                                  [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
+                                  [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
+                                ],
+                                HistogramPath = "Expert/XTRings",
+                                OutputLevel   = 1)
  
 
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
-                            InputCellsKey        = recordable("Cells"),
-                            InputEventKey        = recordable("EventInfo"),
-                            InputTruthKey        = recordable("Particles"),
-                            InputRingerKey       = recordable("Rings"),
-                            InputClusterKey      = recordable("Clusters"),
-                            OutputCellsKey       = recordable("Cells"),
-                            OutputEventKey       = recordable("EventInfo"),
-                            OutputTruthKey       = recordable("Particles"),
-                            OutputRingerKey      = recordable("Rings"),
-                            OutputClusterKey     = recordable("Clusters"),
-                            DumpCells            = True,
-                            OutputLevel          = outputLevel)
+                            InputCellsKey         = recordable("Cells"),
+                            InputXTCellsKey       = recordable("XTCells"),
+                            InputEventKey         = recordable("EventInfo"),
+                            InputTruthKey         = recordable("Particles"),
+                            InputRingerKey        = recordable("Rings"),
+                            InputXTRingerKey      = recordable("XTRings"),
+                            InputClusterKey       = recordable("Clusters"),
+                            InputXTClusterKey     = recordable("XTClusters"),
+                            OutputCellsKey        = recordable("Cells"),
+                            OutputXTCellsKey      = recordable("XTCells"),
+                            OutputEventKey        = recordable("EventInfo"),
+                            OutputTruthKey        = recordable("Particles"),
+                            OutputRingerKey       = recordable("Rings"),
+                            OutputXTRingerKey     = recordable("XTRings"),
+                            OutputClusterKey      = recordable("Clusters"),
+                            OutputXTClusterKey    = recordable("XTClusters"),
+                            DumpCells             = True,
+                            DoCrosstalk           = args.simulateCrossTalk,
+                            OutputLevel           = 1)
       
   # sequence
   acc+= cluster
   acc+= rings
+  if(args.simulateCrossTalk):
+    acc+= xt_cluster
+    acc+= xt_rings
   acc+= AOD
 
   acc.run(args.numberOfEvents)

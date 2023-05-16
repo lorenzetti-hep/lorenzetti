@@ -11,6 +11,8 @@ class RootStreamESDReader( Logger ):
                   "EventKey",
                   "TruthKey",
                   "CellsKey",
+                  "XTCellsKey",
+                  "DoCrosstalk",
                   "OutputLevel", 
                   "NtupleName",
                   "InputFile",

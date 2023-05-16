@@ -11,13 +11,16 @@ class RootStreamESDMaker( Logger ):
                   "InputEventKey",
                   "InputTruthKey",
                   "InputCellsKey",
+                  "InputXTCellsKey",
                   "OutputEventKey",
                   "OutputTruthKey",
-                  "OutputCellsKey",                 
+                  "OutputCellsKey",
+                  "OutputXTCellsKey",
                   "OutputLevel", 
                   "NtupleName",
                   "EtaWindow",
                   "PhiWindow",
+                  "DumpCrossTalkCells",
                   ]
 
 

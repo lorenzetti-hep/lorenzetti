@@ -42,10 +42,13 @@ class RootStreamESDReader : public Gaugi::Algorithm
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
     std::string m_cellsKey;
+    std::string m_xtcellsKey;
     std::string m_eventKey;
     std::string m_truthKey;
     std::string m_inputFile;
     std::string m_ntupleName;
+
+    bool m_doCrosstalk;
 
     int m_outputLevel;
 

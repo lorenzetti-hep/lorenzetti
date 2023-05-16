@@ -79,14 +79,18 @@ try:
 
   from RootStreamBuilder import RootStreamESDMaker
   ESD = RootStreamESDMaker( "RootStreamESDMaker",
-                             InputCellsKey   = recordable("Cells"),
-                             InputEventKey   = recordable("EventInfo"),
-                             InputTruthKey   = recordable("Particles"),
-                             OutputCellsKey  = recordable("Cells"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),            
-                             NtupleName      = "CollectionTree",
-                             OutputLevel     = outputLevel)
+                             InputCellsKey      = recordable("Cells"),
+                             InputXTCellsKey    = recordable("XTCells"),
+                             InputEventKey      = recordable("EventInfo"),
+                             InputTruthKey      = recordable("Particles"),
+                             OutputCellsKey     = recordable("Cells"),
+                             OutputXTCellsKey   = recordable("XTCells"),
+                             OutputEventKey     = recordable("EventInfo"),
+                             OutputTruthKey     = recordable("Particles"),            
+                             NtupleName         = "CollectionTree",
+                             OutputLevel        = outputLevel,
+                             DumpCrossTalkCells = args.simulateCrossTalk,
+                             )
   acc += ESD
   
 

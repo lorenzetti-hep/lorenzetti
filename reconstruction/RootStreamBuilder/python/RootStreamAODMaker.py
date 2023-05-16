@@ -13,16 +13,23 @@ class RootStreamAODMaker( Logger ):
                   "InputCellsKey",
                   "InputClusterKey",
                   "InputRingerKey",
+                  "InputXTCellsKey",
+                  "InputXTRingerKey",
+                  "InputXTClusterKey",
 
                   "OutputEventKey",
                   "OutputTruthKey",
                   "OutputCellsKey",
                   "OutputClusterKey",
                   "OutputRingerKey",
+                  "OutputXTCellsKey",
+                  "OutputXTClusterKey",
+                  "OutputXTRingerKey",
 
                   "OutputLevel", 
                   "NtupleName",
                   "DumpCells",
+                  "DoCrosstalk",
                   ]
 
 

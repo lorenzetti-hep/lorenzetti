@@ -130,10 +130,11 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
 
   if( !container.isValid() )
   {
-    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Context using this key " << m_cellsKey );
   }
 
   MSG_DEBUG( "Associate all truth particles and clusters");
+  MSG_DEBUG( "For cell container of key "<< m_cellsKey << ", there are "<< container.ptr()->size() <<" stored cells.");
 
   // Loop over all truth particles (here, we have seeds)
   for ( const auto part : **particles.ptr() )

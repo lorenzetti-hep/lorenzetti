@@ -2,6 +2,8 @@
 #define CrossTalk_h
 
 #include "GaugiKernel/AlgTool.h"
+#include "GaugiKernel/Algorithm.h" //test_mateus
+#include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/EDM.h"
 #include "CaloCell/CaloDetDescriptor.h"
 #include "CaloCell/CaloDetDescriptorCollection.h"
@@ -9,40 +11,66 @@
 
 
 
-class CrossTalk : public Gaugi::AlgTool
+// class CrossTalk : public Gaugi::AlgTool
+class CrossTalk : public Gaugi::Algorithm
 {
   public:
     /** Constructor **/
     CrossTalk( std::string name );
-    virtual ~CrossTalk();
-    virtual StatusCode initialize() override;
+    // virtual ~CrossTalk();
+    ~CrossTalk()=default;
+
+    virtual StatusCode initialize() override;    
+    // virtual StatusCode execute( SG::EventContext &ctx, Gaugi::EDM * ) const override; //test_mateus
+    /*! Book all histograms into the current storegate **/
+    virtual StatusCode bookHistograms( SG::EventContext &ctx ) const override;
+    /*! execute before start the step action **/
+    virtual StatusCode pre_execute( SG::EventContext &ctx ) const override;
+    /*! Execute in step action step from geant core **/
+    virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
+    /*! Execute in ComponentAccumulator **/
+    virtual StatusCode execute( SG::EventContext &ctx , int /*evt*/ ) const override;
+    /*! execute after the step action **/ 
+    virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
+
     virtual StatusCode finalize() override;
 
-    virtual StatusCode execute( SG::EventContext &ctx, Gaugi::EDM * ) const override;
-    virtual StatusCode fillHistograms( SG::EventContext &ctx, std::vector<float> samples_ind, std::vector<float> samples_cap, std::vector<float> samples_signal, std::vector<float> samples_signal_xtalk ) const;
-    double  XTalk(double x, bool type) const ;
+    // virtual StatusCode fillHistograms( SG::EventContext &ctx, std::vector<float> samples_ind, std::vector<float> samples_cap, std::vector<float> samples_signal, std::vector<float> samples_signal_xtalk ) ;
+    /*! Fill all histograms into the current store gate */
+    virtual StatusCode fillHistograms( SG::EventContext & /*ctx*/ ) const override;
+    /*! Add tools to be executed into the post execute step. The order is matter here */
+    void push_back( Gaugi::AlgTool *);
+
+    double  XTalk(double x, bool type) const;
+
     double  CellFunction(double x, bool type) const;
-    // void    XTalkTF(float &ind_part, float &cap_part, float sample, int samp_index, bool diagonal);
+    
     float   XTalkTF( float sample, int samp_index, bool diagonal, bool inductive) const;
 
+    // void    XTalkTF(float &ind_part, float &cap_part, float sample, int samp_index, bool diagonal);
     // void    BuildSampCluster(vector<double> BaseAmpXTc, vector<double> BaseAmpXTl,  vector<double> BaseAmpXTr, vector<double> delayPerCell, vector<double> &XTcSamples, vector<double> &XTlSamples, vector<double> &XTrSamples, vector<double> &CellSigSamples, vector<double> &SampClusNoise, uint m_Nsamples, double m_tau_0 ) const;
 
   private:
 
-    // std::vector<xAOD::CaloDetDescriptor*> copiedROI = nullptr;
+    /*! The tool list that will be executed into the post execute step */
+    std::vector< Gaugi::AlgTool* > m_toolHandles;
 
     float m_minEnergy;
-    std::string m_collectionKey;
+    // std::string m_collectionKey;
+    std::vector<std::string> m_collectionKeys;
+    std::string m_cellsKey;
+    std::string m_xtcellsKey;
     std::string m_histPath;
 
     uint m_Nsamples = 5 ;
     uint m_tSamp = 25 ;
 
     // booking variables
-    mutable std::vector < float > samples_xtalk_ind    ;
-    mutable std::vector < float > samples_xtalk_cap    ;
-    mutable std::vector < float > samples_signal       ;
-    mutable std::vector < float > samples_signal_xtalk ;
+    // mutable std::vector < float > samples_xtalk_ind    ;
+    // mutable std::vector < float > samples_xtalk_cap    ;
+    // mutable std::vector < float > samples_signal       ;
+    // mutable std::vector < float > samples_signal_xtalk ;
+
 
       // cts modelling xtalk
     double m_Cx      =  47.000 ;

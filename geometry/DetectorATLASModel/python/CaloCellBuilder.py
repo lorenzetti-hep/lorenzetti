@@ -77,11 +77,11 @@ class CaloCellBuilder( Logger ):
                                   StartSamplingBC = seg.StartSamplingBC, 
                                 )
 
-          cx = CrossTalk("CrossTalk",
-                          MinEnergy       =1*GeV,
-                          # input key
-                          CollectionKey   = seg.CollectionKey, 
-                          )
+          # cx = CrossTalk("CrossTalk", // test_mateus
+          #                 MinEnergy       =1*GeV,
+          #                 # input key
+          #                 CollectionKey   = seg.CollectionKey, 
+          #                 )
           method = []
           if seg.isEMLayer:
             if self.__estimationMethodECAL == 'OF':
@@ -136,16 +136,16 @@ class CaloCellBuilder( Logger ):
   
           alg.PulseGenerator = pulse # for all cell
 
-          if self.__doCrosstalk:
-            # print(seg.name)
-            if seg.name == 'EMB2_0' or seg.name == 'EMEC2_0' or seg.name == 'EMEC2_1':
-              # print(seg.name)
-              MSG_INFO(self, "Applying CrossTalk effect into %s sampling.",seg.name)
-              alg.Tools = [cx, method] # for each cell
-            else:
-              alg.Tools = [ method] # for each cell
-          else:
-            alg.Tools = [ method] # for each cell
+          # if self.__doCrosstalk: ## test_mateus
+          #   # print(seg.name)
+          #   if seg.name == 'EMB2_0' or seg.name == 'EMEC2_0' or seg.name == 'EMEC2_1':
+          #     # print(seg.name)
+          #     MSG_INFO(self, "Applying CrossTalk effect into %s sampling.",seg.name)
+          #     alg.Tools = [cx, method] # for each cell
+          #   else:
+          #     alg.Tools = [ method] # for each cell
+          # else:
+          alg.Tools = [ method] # for each cell
 
           self.__recoAlgs.append( alg )
           collectionKeys.append( seg.CollectionKey )
@@ -158,8 +158,22 @@ class CaloCellBuilder( Logger ):
                               CellsKey        = recordable("Cells"),
                               TruthCellsKey   = recordable("TruthCells"),
                               OutputLevel     = self.__outputLevel )
-
+    
     self.__recoAlgs.append( mergeAlg )
+    MSG_INFO(self, "Create CrossTalk effect into Cell Collection")
+    ## test_mateus
+    if self.__doCrosstalk: 
+      cx = CrossTalk("CrossTalk",
+                            MinEnergy       = 1*GeV,
+                            CollectionKeys  = collectionKeys,
+                            XTCellsKey      = recordable("XTCells"),
+                            CellsKey        = recordable("Cells"),
+                            HistogramPath   = "")#,
+                            # OutputLevel     = self.__outputLevel )
+      cx.Tools = [ method]      
+      self.__recoAlgs.append( cx )
+
+
 
 
 

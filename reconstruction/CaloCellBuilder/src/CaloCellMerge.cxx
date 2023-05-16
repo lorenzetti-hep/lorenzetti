@@ -22,6 +22,7 @@ CaloCellMerge::CaloCellMerge( std::string name ) :
 {
   declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
   declareProperty( "CellsKey"         , m_cellsKey="Cells"            );
+  // declareProperty( "XTCellsKey"       , m_xtcellsKey="XTCells"        ); //test_mateus
   declareProperty( "TruthCellsKey"    , m_truthCellsKey="TruthCells"  );
   declareProperty( "OutputLevel"      , m_outputLevel=1               );
 }
@@ -86,6 +87,9 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
   SG::WriteHandle<xAOD::CaloCellContainer> recoContainer( m_cellsKey , ctx );
   recoContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
   
+  // MSG_INFO( "Creating reco XT cells containers with key " << m_xtcellsKey); // test_mateus
+  // SG::WriteHandle<xAOD::CaloCellContainer> recoXTContainer( m_xtcellsKey , ctx );
+  // recoXTContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
 
   MSG_DEBUG( "Creating truth cells containers with key " << m_truthCellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> truthContainer( m_truthCellsKey , ctx );
@@ -104,7 +108,8 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       continue;
     }
 
-    MSG_DEBUG( "Creating new cells and attach the object into the container" );
+    // MSG_DEBUG( "Creating new cells and attach the object into the container" ); 
+    MSG_INFO( "Creating new cells and attach the object into the container" ); //teste_mateus
     for (const auto &pair : **collection.ptr() )
     {
       // descriptor Cell with all geant/bunch/pulse information
@@ -135,6 +140,18 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
 
       cell->setDescriptor( descriptor );
       recoContainer->push_back( cell );
+
+      // Create XT Cell reco - test_mateus
+      // auto xtcell = new xAOD::CaloCell();
+      // xtcell->setEta( descriptor->eta() );
+      // xtcell->setPhi( descriptor->phi() );
+      // xtcell->setDeltaEta( descriptor->deltaEta() );
+      // xtcell->setDeltaPhi( descriptor->deltaPhi() );
+      // xtcell->setE( descriptor->e() ); // Estimated energy from OF
+      // xtcell->setEt( cell->e() / std::cosh( cell->eta() ) );
+
+      // xtcell->setDescriptor( descriptor );
+      // recoXTContainer->push_back( xtcell );
 
     }// Loop over all descriptorCells
   }// Loop over all collections

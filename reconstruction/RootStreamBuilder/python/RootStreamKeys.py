@@ -18,6 +18,10 @@ def recordable( key ):
             # CaloCellMerge
             "Cells",
             "TruthCells",
+            # CrossTalk
+            "XTCells",
+            "XTClusters",
+            "XTRings",
             # CaloClusterMaker
             "EventInfo",
             "Clusters",

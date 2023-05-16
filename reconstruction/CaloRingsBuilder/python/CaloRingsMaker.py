@@ -10,7 +10,9 @@ class CaloRingsMaker(Logger):
 
   __allow_keys = [
                   "RingerKey",
+                  "XTRingerKey",
                   "ClusterKey",
+                  "XTClusterKey",
                   "DeltaEtaRings",
                   "DeltaPhiRings",
                   "NRings",
