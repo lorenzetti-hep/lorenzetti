@@ -91,7 +91,7 @@ try:
 
   if args.pileupAvg > 0:
 
-    mb_file   = os.environ['LZT_PATH']+'/generator/guns/data/minbias_config.cmnd'
+    mb_file   = os.environ['LZT_PATH']+'/generator/evtgen/data/minbias_config.cmnd'
 
     from filters import Pileup
     pileup = Pileup("Pileup",

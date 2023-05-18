@@ -24,8 +24,6 @@ namespace xAOD{
                float phi, 
                float deta, 
                float dphi,
-               float rmin,
-               float rmax,
                // Hash
                unsigned long int hash,
                // Hit identification
@@ -58,10 +56,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_deta, setDeltaEta , deltaEta);
       /*! Hit delta phi */
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
-      /*! Hit r min */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_rmin, setRMin, rMin );
-      /*! Hit r max */
-      PRIMITIVE_SETTER_AND_GETTER( float, m_rmax, setRMax, rMax );
       /*! Hit hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
       /*! Hit sampling id */
@@ -120,10 +114,6 @@ namespace xAOD{
       float m_deta;
       /*! delta phi */
       float m_dphi;
-      /*! radius min */
-      float m_rmin;
-      /*! radius max */
-      float m_rmax;
       /*! bunch crossing start id */
       int m_bcid_start;
       /*! bunch crossing end id */

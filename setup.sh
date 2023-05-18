@@ -13,12 +13,17 @@ cd build
 rm -rf lib
 mkdir lib
 # first level pcm
-for file in "`pwd`"/*/*/*.pcm
+for file in "`pwd`"/*/*/*/*.pcm
 do
   echo "ln -sf $file"
   ln -sf $file
 done
 
+for file in "`pwd`"/*/*/*.pcm
+do
+  echo "ln -sf $file"
+  ln -sf $file
+done
 
 #
 # Link all libs
@@ -68,5 +73,6 @@ cd $LZT_PATH
 #
 export PATH=$PATH:$PWD/core/GaugiKernel/scripts
 export PATH=$PATH:$PWD/generator/scripts
+export PATH=$PATH:$PWD/geometry/DetectorATLASModel/scripts
 export PATH=$PATH:$PWD/scripts
 

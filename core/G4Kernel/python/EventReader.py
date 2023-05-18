@@ -10,12 +10,12 @@ class EventReader( Logger ):
   __allow_keys = [
                   "EventKey", 
                   "TruthKey",
-                  "FileName",
                   "BunchDuration",
+                  "FileName",
                   ]
 
 
-  def __init__( self, name, **kw ): 
+  def __init__( self, name,  **kw ): 
     
     Logger.__init__(self)
     import ROOT
@@ -27,12 +27,14 @@ class EventReader( Logger ):
     for key, value in kw.items():
       self.setProperty( key,value )
 
-    from ROOT import TFile, TTree
-    f = TFile( self.getProperty("FileName") )
-    t = f.Get("particles")
-    self.__entries = t.GetEntries()
-    f.Close()
-
+    if self.getProperty("FileName") != "":
+      from ROOT import TFile, TTree
+      f = TFile( self.getProperty("FileName") )
+      t = f.Get("particles")
+      self.__entries = t.GetEntries()
+      f.Close()
+    else:
+      self.__entries = 0
 
 
   def core(self):

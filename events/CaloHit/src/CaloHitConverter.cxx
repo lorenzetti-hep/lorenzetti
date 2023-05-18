@@ -16,8 +16,6 @@ bool CaloHitConverter::convert( const CaloHit *hit, CaloHit_t &hit_t )
     hit_t.phi         = hit->phi();
     hit_t.deta        = hit->deltaEta(); 
     hit_t.dphi        = hit->deltaPhi();
-    hit_t.rmin        = hit->rMin();
-    hit_t.rmax        = hit->rMax();
     hit_t.bcid_start  = hit->bcid_start();
     hit_t.bcid_end    = hit->bcid_end();
     hit_t.bc_duration = hit->bc_duration();
@@ -43,8 +41,6 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit )
                            hit_t.phi,
                            hit_t.deta,
                            hit_t.dphi,
-                           hit_t.rmin,
-                           hit_t.rmax,
                            hit_t.hash,
                            (CaloSampling)hit_t.sampling, 
                            (Detector)hit_t.detector,

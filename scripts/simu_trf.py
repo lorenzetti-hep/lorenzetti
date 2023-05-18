@@ -56,27 +56,11 @@ outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
-  from DetectorATLASModel import DetectorConstruction as ATLAS
-  from DetectorATLASModel import CaloHitBuilder
-  
-  
+  from ATLAS import ATLASDetector as ATLAS
+
   # Build the ATLAS detector
-  detector = ATLAS("GenericATLASDetector", 
+  detector = ATLAS(
                    UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   #UseMagneticField = True,
-                   UseDeadMaterial=True, # cause
-                   # PS,EM1,EM2,EM3
-                   UseBarrel=True,
-                   # HAD1,2,3
-                   UseTile=True,
-                   # HAD1,2,3 ext.
-                   UseTileExt=True,
-                   # EMECs
-                   UseEMEC= True,
-                   # HECs
-                   UseHEC = True, # cause
-                   # crack region
-                   UseCrack = True, # cause
                    CutOnPhi = False,
                    )
 
@@ -96,7 +80,7 @@ try:
                      BunchDuration = 25.0,#ns
                      )
 
-
+  from CaloCellBuilder import CaloHitBuilder
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,

@@ -32,6 +32,9 @@ parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', r
 parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
                     help = "If used, enable cross talk cell propagation.")
 
+parser.add_argument('--dumpCells', action='store_true', dest='dumpCells', required = False,
+                    help = "If used, dump the cell and descriptor containers into output AOD file.")
+
 
 
 
@@ -74,7 +77,7 @@ try:
                               PhiWindow       = 0.4,
                               MinCenterEnergy = 1*GeV, 
                               HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = 1 )
+                              OutputLevel     = outputLevel )
 
   rings   = CaloRingsMaker(   "CaloRingsMaker",
                               RingerKey     = recordable("Rings"),
@@ -92,7 +95,7 @@ try:
                                 [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
                               ],
                               HistogramPath = "Expert/Rings",
-                              OutputLevel   = 1)
+                              OutputLevel   = outputLevel)
 
   # build cluster for all seeds, but for XT affected cells
   if (args.simulateCrossTalk):
@@ -105,7 +108,7 @@ try:
                                 PhiWindow       = 0.4,
                                 MinCenterEnergy = 1*GeV, 
                                 HistogramPath   = "Expert/XTClusters",
-                                OutputLevel     = 1 )
+                                OutputLevel     = outputLevel )
 
     xt_rings   = CaloRingsMaker(   "XTCaloRingsMaker",
                                 RingerKey     = recordable("XTRings"),
@@ -123,7 +126,7 @@ try:
                                   [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
                                 ],
                                 HistogramPath = "Expert/XTRings",
-                                OutputLevel   = 1)
+                                OutputLevel   = outputLevel)
  
 
   from RootStreamBuilder import RootStreamAODMaker
@@ -144,10 +147,10 @@ try:
                             OutputXTRingerKey     = recordable("XTRings"),
                             OutputClusterKey      = recordable("Clusters"),
                             OutputXTClusterKey    = recordable("XTClusters"),
-                            DumpCells             = True,
+                            DumpCells             = args.dumpCells,
                             DoCrosstalk           = args.simulateCrossTalk,
-                            OutputLevel           = 1)
-      
+                            OutputLevel           = outputLevel)
+
   # sequence
   acc+= cluster
   acc+= rings

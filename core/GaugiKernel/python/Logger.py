@@ -171,6 +171,10 @@ class Logger( object ):
     self._logger = self.getModuleLogger( self.__class__.__name__, self.getLevel() )
     self._logger.verbose('Initialiazing %s', self.__class__.__name__)
 
+
+  def getLoggerName(self):
+    return self.__class__.__name__
+
  
   def __getattr__(self, attr):
     if attr.startswith('_') and  attr.lstrip('_') in ( 'verbose', 'debug', 'info'

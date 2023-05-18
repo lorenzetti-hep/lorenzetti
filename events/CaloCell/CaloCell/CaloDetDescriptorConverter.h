@@ -17,8 +17,6 @@ namespace xAOD{
         float phi;
         float deta;
         float dphi;
-        float rmin; 
-        float rmax;
         float e;
         float edep;
         int bcid_start;

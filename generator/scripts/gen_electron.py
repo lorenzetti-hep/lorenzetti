@@ -101,7 +101,8 @@ try:
 
   tape = EventTape( "EventTape", OutputFile = args.outputFile, RunNumber=args.runNumber )
   
-  
+  single_part_file   = os.environ['LZT_PATH']+'/generator/evtgen/data/single_particle_config.cmnd'
+
   # Create the seed
   electron = SingleParticle( "Electron",
                              Pythia8("Generator", 
@@ -121,7 +122,7 @@ try:
 
   if args.pileupAvg > 0:
 
-    mb_file   = os.environ['LZT_PATH']+'/generator/guns/data/minbias_config.cmnd'
+    mb_file   = os.environ['LZT_PATH']+'/generator/evtgen/data/minbias_config.cmnd'
 
     pileup = Pileup("Pileup",
                    Pythia8("Generator", File=mb_file, Seed=args.seed),
