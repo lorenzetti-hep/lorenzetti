@@ -8,6 +8,7 @@
 #include "G4PVPlacement.hh"
 #include "G4PVReplica.hh"
 #include "G4GlobalMagFieldMessenger.hh"
+#include "G4ProductionCuts.hh"
 #include "G4AutoDelete.hh"
 #include "G4GeometryManager.hh"
 #include "G4PhysicalVolumeStore.hh"
@@ -69,10 +70,16 @@ void DetectorConstruction::AddVolume(std::string region,
                                         double zSize,
                                         double x,
                                         double y,
-                                        double z
+                                        double z,
+                                        // production cuts
+                                        double electronCut,
+                                        double positronCut,
+                                        double gammaCut,
+                                        double photonCut
                                         )
 {
-  m_volumes.push_back(Volume{region,plates,absorberMaterial,gapMaterial,nofLayers,absoThickness,gapThickness,rMin,rMax,zSize,x,y,z});
+  m_volumes.push_back(Volume{region,plates,absorberMaterial,gapMaterial,nofLayers,absoThickness,gapThickness,rMin,rMax,zSize,x,y,z,
+                      electronCut,positronCut,gammaCut,photonCut});
 }
 
 
@@ -135,6 +142,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                     volume.zSize ,// z
                     G4ThreeVector(volume.x,volume.y,volume.z),
                     region );
+      G4ProductionCuts* cuts=new G4ProductionCuts();
+      cuts->SetProductionCut(volume.gammaCut,"gamma");
+      cuts->SetProductionCut(volume.electronCut,"e-");
+      cuts->SetProductionCut(volume.positronCut,"e+");
+      cuts->SetProductionCut(volume.photonCut,"proton");
+      // assign cuts to the region and return succesfully
+      region->SetProductionCuts(cuts);
+      
     }else if (volume.plates == 1){ //Plates::Vertical){
 
       auto region = GetRegion(volume.name);
@@ -152,6 +167,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                     volume.zSize ,// z
                     G4ThreeVector(volume.x,volume.y,volume.z),
                     region );
+
+
+      G4ProductionCuts* cuts=new G4ProductionCuts();
+      cuts->SetProductionCut(volume.gammaCut,"gamma");
+      cuts->SetProductionCut(volume.electronCut,"e-");
+      cuts->SetProductionCut(volume.positronCut,"e+");
+      cuts->SetProductionCut(volume.photonCut,"proton");
+      // assign cuts to the region and return succesfully
+      region->SetProductionCuts(cuts);
     
     }else{
       MSG_FATAL("Volume type is not recognize. Abort!");

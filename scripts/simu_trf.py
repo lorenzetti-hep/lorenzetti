@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-from GaugiKernel          import LoggingLevel, Logger
-from GaugiKernel          import GeV
-from G4Kernel             import *
-from CaloCell.CaloDefs    import CaloSampling
-from RootStreamBuilder    import recordable
+from GaugiKernel.constants import *
+from GaugiKernel           import LoggingLevel, Logger
+from G4Kernel              import *
+from CaloCell.CaloDefs     import CaloSampling
+from RootStreamBuilder     import recordable
 import numpy as np
 import argparse
 import sys,os,gc
 
-pi = np.pi
-MINUTES = 60
 
 mainLogger = Logger.getModuleLogger("job")
 parser = argparse.ArgumentParser(description = '', add_help = False)
@@ -56,7 +54,7 @@ outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
-  from ATLAS import ATLASDetector as ATLAS
+  from ATLAS import ATLASConstruction as ATLAS
 
   # Build the ATLAS detector
   detector = ATLAS(

@@ -1,35 +1,32 @@
 
-__all__ = []
+__all__ = ["getLArBarrelCfg"]
 
 
 #
 # ATLAS Detector construction
 #
-
+from GaugiKernel.constants import *
 from G4Kernel.DetectorConstruction import *
+from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
 from CaloCellBuilder import Calorimeter
 import numpy as np
 import os
 
-basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
-m   = 1000
-dm  = 100
-cm  = 10
-mm  = 1
-pi  = np.pi
-MeV = 1
 
 
-# ECal
-ecal_barrel_start = 0*m
-ecal_barrel_end   = 3.4*m
-ecal_barrel_z     = (ecal_barrel_start + ecal_barrel_end) * 2
+
+def getLArBarrelCfg():
+
+  basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+
+  # ECal
+  ecal_barrel_start = 0*m
+  ecal_barrel_end   = 3.4*m
+  ecal_barrel_z     = (ecal_barrel_start + ecal_barrel_end) * 2
 
 
-def createECal():
-
-  psb_pv =  PhysicalVolume( Name               = "PSB",
+  psb_pv =  PhysicalVolume( Name               = "LAr::PSB",
                             Plates             = Plates.Horizontal, # Logical type
                             AbsorberMaterial   = "Vacuum", # absorber
                             GapMaterial        = "liquidArgon", # gap
@@ -45,7 +42,7 @@ def createECal():
                             Color         = 'orange'
                           )
 
-  emb1_pv = PhysicalVolume( Name               = "EMB1", 
+  emb1_pv = PhysicalVolume( Name               = "LAr::EMB1", 
                             Plates             = Plates.Horizontal, # Logical type
                             AbsorberMaterial   = "G4_Pb", # absorber
                             GapMaterial        = "liquidArgon", # gap
@@ -60,7 +57,7 @@ def createECal():
                             Color         = 'aquamarine'
                           )
 
-  emb2_pv = PhysicalVolume( Name               = "EMB2", 
+  emb2_pv = PhysicalVolume( Name               = "LAr::EMB2", 
                             Plates             = Plates.Horizontal, # Logical type
                             AbsorberMaterial   = "G4_Pb", # absorber
                             GapMaterial        = "liquidArgon", # gap
@@ -75,7 +72,7 @@ def createECal():
                             Color         = 'cornflowerblue'
                           )
 
-  emb3_pv = PhysicalVolume( Name               = "EMB3", 
+  emb3_pv = PhysicalVolume( Name               = "LAr::EMB3", 
                             Plates             = Plates.Horizontal, # Logical type
                             AbsorberMaterial   = "G4_Pb", # absorber
                             GapMaterial        = "liquidArgon", # gap
@@ -90,19 +87,6 @@ def createECal():
                             Color         = 'cyan'
                           )
 
-  ecalboundary_pv =  PhysicalVolume( 
-                             Name               = "ECal_Boundary", 
-                             Plates             = Plates.Horizontal, # Logical type
-                             AbsorberMaterial   = "G4_Pb", # absorber
-                             GapMaterial        = "Vacuum", # gap
-                             NofLayers          = 1, # layers
-                             AbsorberThickness  = 10*cm, # abso
-                             GapThickness       = 3*mm, # gap
-                             RMin               = 198*cm, # radio min,
-                             RMax               = 198*cm + 1*(10.0*cm + 3*mm), # radio max 
-                             ZSize              = ecal_barrel_z ,# z (3.4 left and 3.4 right)
-                             X=0,Y=0,Z=0, # x,y,z (center in 0,0,0)
-                             )
 
 
   psb_sv  = SensitiveVolume( psb_pv , DeltaEta = 0.025  , DeltaPhi = pi/32  )

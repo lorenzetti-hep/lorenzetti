@@ -107,69 +107,6 @@
 /vis/geometry/set/visibility TileCalExt3_A_Abso 0 true
 /vis/geometry/set/visibility TileCalExt3_A_Gap 0 true
 
-/vis/geometry/set/colour PSE_A 0 orange
-/vis/geometry/set/colour PSE_A_Layer 0 orange
-/vis/geometry/set/colour PSE_A_Abso 0 orange
-/vis/geometry/set/colour PSE_A_Gap 0 orange
-/vis/geometry/set/visibility PSE_A 0 true
-/vis/geometry/set/visibility PSE_A_Layer 0 true
-/vis/geometry/set/visibility PSE_A_Abso 0 true
-/vis/geometry/set/visibility PSE_A_Gap 0 true
-
-/vis/geometry/set/colour EMEC1_A 0 aquamarine
-/vis/geometry/set/colour EMEC1_A_Layer 0 aquamarine
-/vis/geometry/set/colour EMEC1_A_Abso 0 aquamarine
-/vis/geometry/set/colour EMEC1_A_Gap 0 aquamarine
-/vis/geometry/set/visibility EMEC1_A 0 true
-/vis/geometry/set/visibility EMEC1_A_Layer 0 true
-/vis/geometry/set/visibility EMEC1_A_Abso 0 true
-/vis/geometry/set/visibility EMEC1_A_Gap 0 true
-
-/vis/geometry/set/colour EMEC2_A 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_A_Layer 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_A_Abso 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_A_Gap 0 cornflowerblue
-/vis/geometry/set/visibility EMEC2_A 0 true
-/vis/geometry/set/visibility EMEC2_A_Layer 0 true
-/vis/geometry/set/visibility EMEC2_A_Abso 0 true
-/vis/geometry/set/visibility EMEC2_A_Gap 0 true
-
-/vis/geometry/set/colour EMEC3_A 0 cyan
-/vis/geometry/set/colour EMEC3_A_Layer 0 cyan
-/vis/geometry/set/colour EMEC3_A_Abso 0 cyan
-/vis/geometry/set/colour EMEC3_A_Gap 0 cyan
-/vis/geometry/set/visibility EMEC3_A 0 true
-/vis/geometry/set/visibility EMEC3_A_Layer 0 true
-/vis/geometry/set/visibility EMEC3_A_Abso 0 true
-/vis/geometry/set/visibility EMEC3_A_Gap 0 true
-
-/vis/geometry/set/colour HEC1_A 0 salmon
-/vis/geometry/set/colour HEC1_A_Layer 0 salmon
-/vis/geometry/set/colour HEC1_A_Abso 0 salmon
-/vis/geometry/set/colour HEC1_A_Gap 0 salmon
-/vis/geometry/set/visibility HEC1_A 0 true
-/vis/geometry/set/visibility HEC1_A_Layer 0 true
-/vis/geometry/set/visibility HEC1_A_Abso 0 true
-/vis/geometry/set/visibility HEC1_A_Gap 0 true
-
-/vis/geometry/set/colour HEC2_A 0 violetred
-/vis/geometry/set/colour HEC2_A_Layer 0 violetred
-/vis/geometry/set/colour HEC2_A_Abso 0 violetred
-/vis/geometry/set/colour HEC2_A_Gap 0 violetred
-/vis/geometry/set/visibility HEC2_A 0 true
-/vis/geometry/set/visibility HEC2_A_Layer 0 true
-/vis/geometry/set/visibility HEC2_A_Abso 0 true
-/vis/geometry/set/visibility HEC2_A_Gap 0 true
-
-/vis/geometry/set/colour HEC3_A 0 orangered
-/vis/geometry/set/colour HEC3_A_Layer 0 orangered
-/vis/geometry/set/colour HEC3_A_Abso 0 orangered
-/vis/geometry/set/colour HEC3_A_Gap 0 orangered
-/vis/geometry/set/visibility HEC3_A 0 true
-/vis/geometry/set/visibility HEC3_A_Layer 0 true
-/vis/geometry/set/visibility HEC3_A_Abso 0 true
-/vis/geometry/set/visibility HEC3_A_Gap 0 true
-
 /vis/geometry/set/colour TileCalExt1_B 0 salmon
 /vis/geometry/set/colour TileCalExt1_B_Layer 0 salmon
 /vis/geometry/set/colour TileCalExt1_B_Abso 0 salmon
@@ -196,69 +133,6 @@
 /vis/geometry/set/visibility TileCalExt3_B_Layer 0 true
 /vis/geometry/set/visibility TileCalExt3_B_Abso 0 true
 /vis/geometry/set/visibility TileCalExt3_B_Gap 0 true
-
-/vis/geometry/set/colour PSE_B 0 orange
-/vis/geometry/set/colour PSE_B_Layer 0 orange
-/vis/geometry/set/colour PSE_B_Abso 0 orange
-/vis/geometry/set/colour PSE_B_Gap 0 orange
-/vis/geometry/set/visibility PSE_B 0 true
-/vis/geometry/set/visibility PSE_B_Layer 0 true
-/vis/geometry/set/visibility PSE_B_Abso 0 true
-/vis/geometry/set/visibility PSE_B_Gap 0 true
-
-/vis/geometry/set/colour EMEC1_B 0 aquamarine
-/vis/geometry/set/colour EMEC1_B_Layer 0 aquamarine
-/vis/geometry/set/colour EMEC1_B_Abso 0 aquamarine
-/vis/geometry/set/colour EMEC1_B_Gap 0 aquamarine
-/vis/geometry/set/visibility EMEC1_B 0 true
-/vis/geometry/set/visibility EMEC1_B_Layer 0 true
-/vis/geometry/set/visibility EMEC1_B_Abso 0 true
-/vis/geometry/set/visibility EMEC1_B_Gap 0 true
-
-/vis/geometry/set/colour EMEC2_B 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_B_Layer 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_B_Abso 0 cornflowerblue
-/vis/geometry/set/colour EMEC2_B_Gap 0 cornflowerblue
-/vis/geometry/set/visibility EMEC2_B 0 true
-/vis/geometry/set/visibility EMEC2_B_Layer 0 true
-/vis/geometry/set/visibility EMEC2_B_Abso 0 true
-/vis/geometry/set/visibility EMEC2_B_Gap 0 true
-
-/vis/geometry/set/colour EMEC3_B 0 cyan
-/vis/geometry/set/colour EMEC3_B_Layer 0 cyan
-/vis/geometry/set/colour EMEC3_B_Abso 0 cyan
-/vis/geometry/set/colour EMEC3_B_Gap 0 cyan
-/vis/geometry/set/visibility EMEC3_B 0 true
-/vis/geometry/set/visibility EMEC3_B_Layer 0 true
-/vis/geometry/set/visibility EMEC3_B_Abso 0 true
-/vis/geometry/set/visibility EMEC3_B_Gap 0 true
-
-/vis/geometry/set/colour HEC1_B 0 salmon
-/vis/geometry/set/colour HEC1_B_Layer 0 salmon
-/vis/geometry/set/colour HEC1_B_Abso 0 salmon
-/vis/geometry/set/colour HEC1_B_Gap 0 salmon
-/vis/geometry/set/visibility HEC1_B 0 true
-/vis/geometry/set/visibility HEC1_B_Layer 0 true
-/vis/geometry/set/visibility HEC1_B_Abso 0 true
-/vis/geometry/set/visibility HEC1_B_Gap 0 true
-
-/vis/geometry/set/colour HEC2_B 0 violetred
-/vis/geometry/set/colour HEC2_B_Layer 0 violetred
-/vis/geometry/set/colour HEC2_B_Abso 0 violetred
-/vis/geometry/set/colour HEC2_B_Gap 0 violetred
-/vis/geometry/set/visibility HEC2_B 0 true
-/vis/geometry/set/visibility HEC2_B_Layer 0 true
-/vis/geometry/set/visibility HEC2_B_Abso 0 true
-/vis/geometry/set/visibility HEC2_B_Gap 0 true
-
-/vis/geometry/set/colour HEC3_B 0 orangered
-/vis/geometry/set/colour HEC3_B_Layer 0 orangered
-/vis/geometry/set/colour HEC3_B_Abso 0 orangered
-/vis/geometry/set/colour HEC3_B_Gap 0 orangered
-/vis/geometry/set/visibility HEC3_B 0 true
-/vis/geometry/set/visibility HEC3_B_Layer 0 true
-/vis/geometry/set/visibility HEC3_B_Abso 0 true
-/vis/geometry/set/visibility HEC3_B_Gap 0 true
 
 /vis/geometry/set/colour Crack_EM_A 0 gray
 /vis/geometry/set/colour Crack_EM_A_Layer 0 gray
@@ -300,10 +174,10 @@
 /vis/geometry/set/colour DeadMaterial_Layer 0 gray
 /vis/geometry/set/colour DeadMaterial_Abso 0 gray
 /vis/geometry/set/colour DeadMaterial_Gap 0 gray
-/vis/geometry/set/visibility DeadMaterial 0 true
-/vis/geometry/set/visibility DeadMaterial_Layer 0 true
-/vis/geometry/set/visibility DeadMaterial_Abso 0 true
-/vis/geometry/set/visibility DeadMaterial_Gap 0 true
+/vis/geometry/set/visibility DeadMaterial 0 false
+/vis/geometry/set/visibility DeadMaterial_Layer 0 false
+/vis/geometry/set/visibility DeadMaterial_Abso 0 false
+/vis/geometry/set/visibility DeadMaterial_Gap 0 false
 
 /vis/geometry/set/colour ECalBoundary 0 gray
 /vis/geometry/set/colour ECalBoundary_Layer 0 gray
@@ -322,6 +196,33 @@
 /vis/geometry/set/visibility TileCalBoundary_Layer 0 true
 /vis/geometry/set/visibility TileCalBoundary_Abso 0 true
 /vis/geometry/set/visibility TileCalBoundary_Gap 0 true
+
+/vis/geometry/set/colour Pixel1 0 gray
+/vis/geometry/set/colour Pixel1_Layer 0 gray
+/vis/geometry/set/colour Pixel1_Abso 0 gray
+/vis/geometry/set/colour Pixel1_Gap 0 gray
+/vis/geometry/set/visibility Pixel1 0 true
+/vis/geometry/set/visibility Pixel1_Layer 0 true
+/vis/geometry/set/visibility Pixel1_Abso 0 true
+/vis/geometry/set/visibility Pixel1_Gap 0 true
+
+/vis/geometry/set/colour Pixel2 0 gray
+/vis/geometry/set/colour Pixel2_Layer 0 gray
+/vis/geometry/set/colour Pixel2_Abso 0 gray
+/vis/geometry/set/colour Pixel2_Gap 0 gray
+/vis/geometry/set/visibility Pixel2 0 true
+/vis/geometry/set/visibility Pixel2_Layer 0 true
+/vis/geometry/set/visibility Pixel2_Abso 0 true
+/vis/geometry/set/visibility Pixel2_Gap 0 true
+
+/vis/geometry/set/colour Pixel3 0 gray
+/vis/geometry/set/colour Pixel3_Layer 0 gray
+/vis/geometry/set/colour Pixel3_Abso 0 gray
+/vis/geometry/set/colour Pixel3_Gap 0 gray
+/vis/geometry/set/visibility Pixel3 0 true
+/vis/geometry/set/visibility Pixel3_Layer 0 true
+/vis/geometry/set/visibility Pixel3_Abso 0 true
+/vis/geometry/set/visibility Pixel3_Gap 0 true
 
 /vis/viewer/set/autoRefresh true
 /vis/verbose warnings

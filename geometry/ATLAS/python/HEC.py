@@ -1,37 +1,31 @@
 
 
-__all__ = []
+__all__ = ["getHECCfg"]
 
-
+from GaugiKernel.constants import *
 from G4Kernel.DetectorConstruction import *
+from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
 from CaloCellBuilder import Calorimeter
 import numpy as np
 import os
 
-basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
-
-m   = 1000
-dm  = 100
-cm  = 10
-mm  = 1
-pi  = np.pi
-MeV = 1
-hec_start = 4262*mm
 
 
-def createHEC(left_side=False):
+def getHECCfg(left_side=False):
 
     sign = -1 if left_side else 1
     side_name = 'B' if left_side else 'A'
-
+    
+    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+    hec_start = 4262*mm
 
     #
     # HEC1
     #
     nlayers=9; absorber=12.5*mm; gap=8.5*mm; zsize=nlayers*(absorber+gap)
     hec1_zsize = zsize
-    hec1_pv    =  PhysicalVolume(  Name               = "HEC1_"+side_name, 
+    hec1_pv    =  PhysicalVolume(  Name               = "FCal::HEC1::"+side_name, 
                                    Plates             = Plates.Vertical, # Logical type
                                    AbsorberMaterial   = "G4_Cu", # absorber
                                    GapMaterial        = "liquidArgon", # gap
@@ -80,7 +74,7 @@ def createHEC(left_side=False):
     #
     nlayers=16; absorber=12.5*mm; gap=8.5*mm; zsize=nlayers*(absorber+gap)
     hec2_zsize = zsize
-    hec2_pv  =  PhysicalVolume(  Name               = "HEC2_"+side_name, 
+    hec2_pv  =  PhysicalVolume(  Name               = "FCal::HEC2::"+side_name, 
                                  Plates             = Plates.Vertical, # Logical type
                                  AbsorberMaterial   = "G4_Cu", # absorber
                                  GapMaterial        = "liquidArgon", # gap
@@ -130,7 +124,7 @@ def createHEC(left_side=False):
     #
     nlayers=16; absorber=50*mm; gap=8.5*mm; zsize=nlayers*(absorber+gap)
     hec3_zsize = zsize
-    hec3_pv  =  PhysicalVolume(  Name               = "HEC3_"+side_name, 
+    hec3_pv  =  PhysicalVolume(  Name               = "FCal::HEC3::"+side_name, 
                                  Plates             = Plates.Vertical, # Logical type
                                  AbsorberMaterial   = "G4_Cu", # absorber
                                  GapMaterial        = "liquidArgon", # gap

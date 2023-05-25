@@ -66,7 +66,8 @@ try:
   
   # digitalization!
   from CaloCellBuilder import CaloCellBuilder
-  from ATLAS import ATLASDetector as ATLAS
+  from ATLAS import ATLASConstruction as ATLAS
+
   calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
                                 HistogramPath = "Expert/Cells",
                                 OutputLevel   = outputLevel,
