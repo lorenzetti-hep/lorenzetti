@@ -3,7 +3,8 @@ __all__ = [
             "MeV",
             "GeV",
             "m","dm","cm","mm","um",
-            "pi"
+            "pi",
+            "SECONDS", "MINUTES"
           ]
 
 

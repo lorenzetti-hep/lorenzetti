@@ -67,7 +67,7 @@ class DetectorConstruction(Logger):
   def compile(self):
     # Create all volumes inside of the detector
     for pv in tqdm( self.__volumes.values(), desc="Compiling...", ncols=70):
-      self.__core.AddVolume( pv.Name, pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
+      self.__core.AddVolume( pv.name(), pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
                              # layer
                              pv.NofLayers, pv.AbsorberThickness, pv.GapThickness,
                              # dimensions
@@ -221,7 +221,8 @@ class PhysicalVolume(Logger):
         self.ZMax = self.Z + self.ZSize / 2
         self.Cuts = ProductionCuts()
 
-    
+    def name(self):
+      return self.Name.replace('::','_')
 
 
 # https://acode-browser1.usatlas.bnl.gov/lxr/source/athena/Simulation/G4Atlas/G4AtlasTools/python/G4PhysicsRegionConfig.py
@@ -392,7 +393,7 @@ def create_vis_mac(volumes, opath ):
   with open(opath, 'w') as f:
     f.write(vis_begin)
     for vol in volumes:
-      f.write(vis_command.format(color=vol.Color, name=vol.Name, visualization='true' if vol.Visualization else 'false'))
+      f.write(vis_command.format(color=vol.Color, name=vol.name(), visualization='true' if vol.Visualization else 'false'))
     f.write(vis_end)
 
 

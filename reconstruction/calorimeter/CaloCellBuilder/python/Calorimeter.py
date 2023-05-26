@@ -35,5 +35,5 @@ class Calorimeter(Logger):
     return self.sv
 
   def name(self):
-    return self.volume().Name + '_' + str(self.sv.Segment)
+    return self.volume().name() + '_' + str(self.sv.Segment)
 
