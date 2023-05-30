@@ -16,6 +16,7 @@ JF17::JF17(const std::string name , IGenerator *gen):
   IAlgorithm(gen)
 {
   declareProperty( "EtaMax"         , m_etaMax=1.4                );
+  declareProperty( "EtaMin"         , m_etaMin=0                  );
   declareProperty( "MinPt"          , m_minPt=0.0                 );
   declareProperty( "Select"         , m_select=2                  );
   declareProperty( "EtaWindow"      , m_etaWindow=0.4             );
@@ -56,7 +57,7 @@ StatusCode JF17::execute( generator::Event &ctx )
 
  
 
-  ParticleHelper::ParticleFilter filter( m_select, m_etaMax + .05, 0.7, 0.05 );
+  ParticleHelper::ParticleFilter filter( m_select, m_etaMax + .05, m_etaMin - 0.05, 0.7, 0.05 );
   filter.filter(evt);
 
 
@@ -82,9 +83,10 @@ StatusCode JF17::execute( generator::Event &ctx )
   
   const float minPt=m_minPt/1.e3; 
   const float etaMax=m_etaMax;
+  const float etaMin=m_etaMin;
   inclusive_jets.erase(std::remove_if(inclusive_jets.begin(),
                                       inclusive_jets.end(),
-                                      [minPt,etaMax](fastjet::PseudoJet& j){return (std::abs(j.eta()) > etaMax) || (j.pt() < minPt);}
+                                      [minPt,etaMax, etaMin](fastjet::PseudoJet& j){return (std::abs(j.eta()) > etaMax) || (std::abs(j.eta()) < etaMin) || (j.pt() < minPt);}
                                      ), inclusive_jets.end());
 
   if ( inclusive_jets.empty() ){

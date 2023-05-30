@@ -40,10 +40,11 @@ namespace generator{
     
       public:
         // Constructor sets properties of filter.
-        ParticleFilter( int selectIn, float etaMaxIn = 50.,
+        ParticleFilter( int selectIn, float etaMaxIn = 50., float etaMinIn = 0.,
                         float pTminChargedIn = 0., float pTminNeutralIn = 0.)
                         : m_select(selectIn), 
                           m_etaMax(etaMaxIn), 
+                          m_etaMin(etaMinIn),
                           m_pTminCharged(pTminChargedIn),
                           m_pTminNeutral(pTminNeutralIn) {}
 
@@ -66,6 +67,7 @@ namespace generator{
         // Filter properties, set by constructor.
         int    m_select;
         float m_etaMax;
+        float m_etaMin;
         float m_pTminCharged;
         float m_pTminNeutral;
         // Kept particle pointers, referring to original event.

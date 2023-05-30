@@ -9,6 +9,7 @@ class JF17( Logger ):
 
   __allow_keys = [
                   "EtaMax",
+                  "EtaMin",
                   "MinPt",
                   "Select",
                   "Seed",
