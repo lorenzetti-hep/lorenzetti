@@ -52,3 +52,38 @@ bool CaloClusterConverter::convert( const CaloCluster *clus, CaloCluster_t &clus
   }
   return false;
 }
+
+bool CaloClusterConverter::convert( const CaloCluster_t &cluster_t, CaloCluster *&cluster )
+{
+  cluster = new xAOD::CaloCluster( cluster_t.emaxs2,
+                                  cluster_t.eta, 
+                                  cluster_t.phi, 
+                                  cluster_t.deta, 
+                                  cluster_t.dphi );
+  cluster->setE(cluster_t.e); // estimated energy from OF. Same as descriptor->e()
+  cluster->setEt(cluster_t.et); // estimated transverse energy from OF
+  cluster->setE0(cluster_t.e0);
+  cluster->setE1(cluster_t.e1);
+  cluster->setE2(cluster_t.e2);
+  cluster->setE3(cluster_t.e3);
+  cluster->setEhad1(cluster_t.ehad1);
+  cluster->setEhad2(cluster_t.ehad2);
+  cluster->setEhad3(cluster_t.ehad3);
+  cluster->setEtot(cluster_t.etot);
+  cluster->setE277(cluster_t.e277);
+  cluster->setE237(cluster_t.e237);
+  cluster->setE233(cluster_t.e233);
+  cluster->setReta(cluster_t.reta);
+  cluster->setRphi(cluster_t.rphi);
+  cluster->setWeta2(cluster_t.weta2);
+  cluster->setEratio(cluster_t.eratio);
+  cluster->setEmaxs1(cluster_t.emaxs1);
+  cluster->setE2tsts1(cluster_t.e2tsts1);
+  cluster->setF0(cluster_t.f0);
+  cluster->setF1(cluster_t.f1);
+  cluster->setF2(cluster_t.f2);
+  cluster->setF3(cluster_t.f3);
+  cluster->setRhad(cluster_t.rhad);
+  cluster->setRhad1(cluster_t.rhad1);
+  return true;
+}

@@ -17,6 +17,10 @@ from . import RootStreamESDMaker
 __all__.extend(RootStreamESDMaker.__all__)
 from .RootStreamESDMaker import *
 
+from . import RootStreamNTUPLEMaker
+__all__.extend(RootStreamNTUPLEMaker.__all__)
+from .RootStreamNTUPLEMaker import *
+
 from . import RootStreamHITReader
 __all__.extend(RootStreamHITReader.__all__)
 from .RootStreamHITReader import *
