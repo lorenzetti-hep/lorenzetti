@@ -78,6 +78,7 @@ namespace generator{
           // Skip if too large pseudorapidity.
           float eta = p->momentum().eta();
           if (abs(eta) > m_etaMax) continue;
+          if (abs(eta) < m_etaMin) continue;
           // Skip if too small pT.
           float pT = p->momentum().pt();
           if       (isCharged && pT < m_pTminCharged) continue;

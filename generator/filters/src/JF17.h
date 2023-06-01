@@ -22,6 +22,7 @@ namespace generator{
       int m_select;
       float m_minPt;
       float m_etaMax;
+      float m_etaMin;
       float m_etaWindow;
       float m_phiWindow;
       
