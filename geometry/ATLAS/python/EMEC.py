@@ -1,35 +1,31 @@
 
-__all__ = []
+__all__ = ["getLArEMECCfg"]
 
+from GaugiKernel.constants import *
 from G4Kernel.DetectorConstruction import *
+from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
 from CaloCellBuilder import Calorimeter
 import numpy as np
 import os
 
-basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
-
-m   = 1000
-dm  = 100
-cm  = 10
-mm  = 1
-pi  = np.pi
-MeV = 1
-
-endcap_start    = 3704.*mm
-ps_endcap_start = endcap_start + 31*mm
 
 
 
-def createEMEC(left_side=False):
+def getLArEMECCfg(left_side=False):
 
     sign = -1 if left_side else 1
     side_name = 'B' if left_side else 'A'
+    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+
+    endcap_start    = 3704.*mm
+    ps_endcap_start = endcap_start + 31*mm
+
 
     #
     # PSE
     #
-    pse_pv      =  PhysicalVolume( Name               = "PSE_"+side_name, 
+    pse_pv      =  PhysicalVolume( Name               = "LAr::PSE::"+side_name, 
                                    Plates             = Plates.Vertical, # Logical type
                                    AbsorberMaterial   = "Vacuum", # absorber
                                    GapMaterial        = "liquidArgon", # gap
@@ -65,7 +61,7 @@ def createEMEC(left_side=False):
     # EMEC1
     #
     nlayers = 16; absorber=2.27*mm; gap=3.73*mm; zsize=nlayers*(absorber+gap)
-    emec1_pv   =  PhysicalVolume( Name               = "EMEC1_"+side_name, 
+    emec1_pv   =  PhysicalVolume( Name               = "LAr::EMEC1::"+side_name, 
                                   Plates             = Plates.Vertical, # Logical type
                                   AbsorberMaterial   = "G4_Pb", # absorber
                                   GapMaterial        = "liquidArgon", # gap
@@ -131,7 +127,7 @@ def createEMEC(left_side=False):
     # EMEC2
     #
     nlayers=55; absorber=2.27*mm; gap=3.73*mm; zsize=nlayers*(absorber+gap)
-    emec2_pv   =  PhysicalVolume( Name               = "EMEC2_"+side_name, 
+    emec2_pv   =  PhysicalVolume( Name               = "LAr::EMEC2::"+side_name, 
                                   Plates             = Plates.Vertical, # Logical type
                                   AbsorberMaterial   = "G4_Pb", # absorber
                                   GapMaterial        = "liquidArgon", # gap
@@ -179,7 +175,7 @@ def createEMEC(left_side=False):
     # EMEC3
     #
     nlayers=9; absorber=2.41*mm; gap=3.59*mm; zsize=nlayers*(absorber+gap)
-    emec3_pv   =  PhysicalVolume( Name               = "EMEC3_"+side_name, 
+    emec3_pv   =  PhysicalVolume( Name               = "LAr::EMEC3::"+side_name, 
                                   Plates             = Plates.Vertical, # Logical type
                                   AbsorberMaterial   = "G4_Pb", # absorber
                                   GapMaterial        = "liquidArgon", # gap

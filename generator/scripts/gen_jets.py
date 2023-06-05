@@ -62,6 +62,9 @@ parser.add_argument('-s','--seed', action='store', dest='seed', required = False
 parser.add_argument('--maxEta', action='store', dest='maxEta', required = False, type=float, default=3.2,
                     help = "Maximum eta coordinate")
 
+parser.add_argument('--minEta', action='store', dest='minEta', required = False, type=float, default=0,
+                    help = "Maximum eta coordinate")
+
 parser.add_argument('--energy_min', action='store', dest='energy_min', required = False, type=float, default=17,
                     help = "Maximum eta coordinate")
 
@@ -91,6 +94,7 @@ try:
                #SherpaGun("Generator", File=main_file, Seed=args.seed)
                Pythia8("Generator", File=main_file, Seed=args.seed, EventNumber = args.eventNumber),
                EtaMax      = args.maxEta,
+               EtaMin      = args.minEta,
                MinPt       = args.energy_min*GeV,
                Select      = 2,
                EtaWindow   = 0.4,

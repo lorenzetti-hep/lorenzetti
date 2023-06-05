@@ -39,6 +39,11 @@ class DetectorConstruction : public G4VUserDetectorConstruction, public MsgServi
       double x;
       double y;
       double z;
+
+      double electronCut;
+      double positronCut;
+      double gammaCut;
+      double photonCut;
     };
 
     DetectorConstruction(std::string);
@@ -62,7 +67,12 @@ class DetectorConstruction : public G4VUserDetectorConstruction, public MsgServi
                    double zSize,
                    double x,
                    double y,
-                   double z
+                   double z,
+                   // production cuts
+                   double electronCut,
+                   double positronCut,
+                   double gammaCut,
+                   double photonCut
                    );
 
   private:
