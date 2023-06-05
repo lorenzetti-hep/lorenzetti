@@ -19,7 +19,10 @@ class CaloCellBuilder( Logger ):
                       HistogramPath        = "Expert", 
                       HitsKey              = "Hits",
                       DoCrosstalk          = False,
-                      OutputLevel          = 1,                      
+                      OutputLevel          = 1,
+                      XTAmpCapacitive      = 4.2,
+                      XTAmpInductive       = 2.3,
+                      XTAmpResistive       = 1.0,
                       ):
 
     Logger.__init__(self)
@@ -29,6 +32,9 @@ class CaloCellBuilder( Logger ):
     self.HitsKey = HitsKey
     self.__detector = detector
     self.__doCrosstalk = DoCrosstalk
+    self.__XTAmpCapacitive  = XTAmpCapacitive
+    self.__XTAmpInductive   = XTAmpInductive
+    self.__XTAmpResistive   = XTAmpResistive
 
     
 
@@ -114,7 +120,11 @@ class CaloCellBuilder( Logger ):
                             XTCellsKey      = recordable("XTCells"),
                             CellsKey        = recordable("Cells"),
                             HistogramPath   = "",
-                            OutputLevel     = self.OutputLevel )
+                            OutputLevel     = self.OutputLevel,
+                            XTAmpCapacitive = self.__XTAmpCapacitive,
+                            XTAmpInductive  = self.__XTAmpInductive,
+                            XTAmpResistive  = self.__XTAmpResistive,
+                            )
       xt.Tools = [ of]
       self.__recoAlgs.append( xt )
 

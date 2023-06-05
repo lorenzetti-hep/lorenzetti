@@ -35,6 +35,15 @@ parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMet
 parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
                     help = "If used, enable cross talk cell propagation.")
 
+parser.add_argument('--XTAmpCapacitive', action='store', dest='XTAmpCapacitive', required = False,
+                    help = "A percentage value that will impact into capacitive crosstalk component of the signal model.", type=float, default=4.2)
+
+parser.add_argument('--XTAmpInductive', action='store', dest='XTAmpInductive', required = False,
+                    help = "A percentage value that will impact into inductive crosstalk component of the signal model.", type=float, default=2.3)
+
+parser.add_argument('--XTAmpResistive', action='store', dest='XTAmpResistive', required = False,
+                    help = "A percentage value that will impact into resistive crosstalk component of the signal model.", type=float, default=1.0)
+
 
 pi = np.pi
 
@@ -68,10 +77,14 @@ try:
   from CaloCellBuilder import CaloCellBuilder
   from ATLAS import ATLASDetector as ATLAS
   calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
-                                HistogramPath = "Expert/Cells",
-                                OutputLevel   = outputLevel,
-                                HitsKey       = recordable("Hits"),
-                                DoCrosstalk   = args.simulateCrossTalk,
+                                HistogramPath   = "Expert/Cells",
+                                OutputLevel     = outputLevel,
+                                HitsKey         = recordable("Hits"),
+                                # Crosstalk simulation parameters
+                                DoCrosstalk     = args.simulateCrossTalk,
+                                XTAmpCapacitive = args.XTAmpCapacitive,
+                                XTAmpInductive  = args.XTAmpInductive,
+                                XTAmpResistive  = args.XTAmpResistive,
                                 )
   print('2')
   calorimeter.merge(acc)

@@ -26,8 +26,11 @@ CrossTalk::CrossTalk( std::string name ) :
   declareProperty( "CollectionKeys"   , m_collectionKeys={}                            ); // input
   declareProperty( "XTCellsKey"       , m_xtcellsKey="XTCells"                         ); // input
   declareProperty( "CellsKey"         , m_cellsKey="Cells"                             ); // input
-  declareProperty( "HistogramPath"    , m_histPath="/CrossTalkSimulator"                                  );
+  declareProperty( "HistogramPath"    , m_histPath="/CrossTalkSimulator"               );
   declareProperty( "OutputLevel"      , m_outputLevel=1                                );
+  declareProperty( "XTAmpCapacitive"  , m_AmpXt_C=4.2                                  ); // in %
+  declareProperty( "XTAmpInductive"   , m_AmpXt_L=2.3                                  ); // in %
+  declareProperty( "XTAmpResistive"   , m_AmpXt_R=1.0                                  ); // in %
 }
 
 //!=====================================================================
@@ -306,8 +309,8 @@ StatusCode CrossTalk::post_execute( SG::EventContext &ctx ) const
 float CrossTalk::XTalkTF(float sample, int samp_index, bool diagonal, bool inductive) const
 {
 
-  float BaseAmpXTc = m_AmpXt_C*sample ;
-  float BaseAmpXTl = m_AmpXt_L*sample ;
+  float BaseAmpXTc = m_AmpXt_C/100*sample ;
+  float BaseAmpXTl = m_AmpXt_L/100*sample ;
   // float BaseAmpXTr = m_AmpXt_R*sample ;
   float XTcSamples = BaseAmpXTc * XTalk       (25*(samp_index+1) , false ); //+ delayPerCell[cell] + m_tau_0, false ) ) ;
   float XTlSamples = BaseAmpXTl * XTalk       (25*(samp_index+1) , false ); //+ delayPerCell[cell] + m_tau_0, false ) ) ;

@@ -13,6 +13,9 @@ class CrossTalk( Logger ):
                   "CellsKey",
                   "HistogramPath",
                   "OutputLevel",
+                  "XTAmpCapacitive",
+                  "XTAmpInductive",
+                  "XTAmpResistive",
                   ]
 
   def __init__( self, name, **kw ):

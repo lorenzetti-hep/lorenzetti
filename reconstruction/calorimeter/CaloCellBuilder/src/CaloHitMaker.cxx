@@ -141,6 +141,20 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 
   // Get the position
   G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
+
+  // test_mateus ----------------------------------------------
+  if ((CaloSampling)m_sampling == CaloSampling::EMB2){
+    float tau = (float)step->GetPreStepPoint()->GetGlobalTime() / ns;
+    MSG_INFO("EMB2: Global time is " << tau<< " ns.");
+  }
+  if ((CaloSampling)m_sampling == CaloSampling::TileCal3){
+    float tau = (float)step->GetPreStepPoint()->GetGlobalTime() / ns;
+    MSG_INFO("TileCal3: Global time is " << tau<< " ns.");
+  }
+  // ----------------------------------------------
+
+
+
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());

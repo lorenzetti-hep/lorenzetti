@@ -78,9 +78,9 @@ class CrossTalk : public Gaugi::Algorithm
     // Noise amplitude on LAr is 50 MeV
 
     // XTalk amplitude on % values of the Energy
-    double m_AmpXt_C   = 4.2/100  ;
-    double m_AmpXt_L   = 2.3/100  ;       // XTalk amplitude on % values of the Energy
-    double m_AmpXt_R   = 1.0/100  ;       // XTalk amplitude on % values of the Energy
+    double m_AmpXt_C; //4.2/100  ;
+    double m_AmpXt_L; //2.3/100  ;       // XTalk amplitude on % values of the Energy
+    double m_AmpXt_R; //1.0/100  ;       // XTalk amplitude on % values of the Energy
     double m_AmpNoise  = 50 ;             // Noise amplitude 50 MeV
     double tau_0_mean  = 0 ;
     double tau_std     = 0.5 ;
