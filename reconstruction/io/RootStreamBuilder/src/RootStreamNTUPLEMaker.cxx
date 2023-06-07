@@ -2,11 +2,13 @@
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
+#include "CaloRings/CaloRingsContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
 #include "CaloCluster/CaloClusterConverter.h"
+#include "CaloRings/CaloRingsConverter.h"
 #include "RootStreamNTUPLEMaker.h"
 #include "GaugiKernel/EDM.h"
 
@@ -62,36 +64,37 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
 
   
   store->cd();
-  std::vector<float> *eta = nullptr;
-  std::vector<float> *phi = nullptr;
-  std::vector<float> *e   = nullptr;
-  std::vector<float> *et  = nullptr;
-  std::vector<float>*deta         = nullptr;
-  std::vector<float>*dphi         = nullptr;
-  std::vector<float>*e0           = nullptr;
-  std::vector<float>*e1           = nullptr;
-  std::vector<float>*e2           = nullptr;
-  std::vector<float>*e3           = nullptr;
-  std::vector<float>*ehad1        = nullptr;
-  std::vector<float>*ehad2        = nullptr;
-  std::vector<float>*ehad3        = nullptr;
-  std::vector<float>*etot         = nullptr;
-  std::vector<float>*e233         = nullptr;
-  std::vector<float>*e237         = nullptr;
-  std::vector<float>*e277         = nullptr;
-  std::vector<float>*emaxs1       = nullptr;
-  std::vector<float>*emaxs2       = nullptr;
-  std::vector<float>*e2tsts1      = nullptr;
-  std::vector<float>*reta         = nullptr;
-  std::vector<float>*rphi         = nullptr;
-  std::vector<float>*rhad         = nullptr;
-  std::vector<float>*rhad1        = nullptr;
-  std::vector<float>*eratio       = nullptr;
-  std::vector<float>*f0           = nullptr;
-  std::vector<float>*f1           = nullptr;
-  std::vector<float>*f2           = nullptr;
-  std::vector<float>*f3           = nullptr;
-  std::vector<float>*weta2        = nullptr;
+  float eta = 0;
+  float phi = 0;
+  float e   = 0;
+  float et  = 0;
+  float deta         = 0;
+  float dphi         = 0;
+  float e0           = 0;
+  float e1           = 0;
+  float e2           = 0;
+  float e3           = 0;
+  float ehad1        = 0;
+  float ehad2        = 0;
+  float ehad3        = 0;
+  float etot         = 0;
+  float e233         = 0;
+  float e237         = 0;
+  float e277         = 0;
+  float emaxs1       = 0;
+  float emaxs2       = 0;
+  float e2tsts1      = 0;
+  float reta         = 0;
+  float rphi         = 0;
+  float rhad         = 0;
+  float rhad1        = 0;
+  float eratio       = 0;
+  float f0           = 0;
+  float f1           = 0;
+  float f2           = 0;
+  float f3           = 0;
+  float weta2        = 0;
+  std::vector<float>*rings        = nullptr;
 
 
   TTree *outputTree = new TTree(m_outputNtupleName.c_str(), "");
@@ -125,6 +128,7 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   outputTree->Branch("cluster_f2"     , &f2);
   outputTree->Branch("cluster_f3"     , &f3);
   outputTree->Branch("cluster_weta2"  , &weta2);
+  outputTree->Branch("rings"          , &rings);
 
   store->add(outputTree);
   return StatusCode::SUCCESS; 
@@ -174,6 +178,7 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
   std::vector<xAOD::CaloCluster_t       > *collection_cluster    = nullptr;
+  std::vector<xAOD::CaloRings_t         > *collection_rings      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
@@ -186,100 +191,44 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   InitBranch( tree, ("CaloCellContainer_"          + m_cellsKey).c_str() ,  &collection_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_cellsKey).c_str() ,  &collection_descriptor);
   InitBranch( tree, ("CaloClusterContainer_"       + m_clusterKey).c_str(), &collection_cluster);
+  InitBranch( tree, ("CaloRingsContainer_"         + m_ringerKey).c_str(),  &collection_rings);
 
   tree->GetEntry( evt );
-
-  
-  { // deserialize EventInfo
-    SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
-    container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
-
-    xAOD::TruthParticleConverter cnv;
-    for( auto& par_t : *collection_truth)
-    {
-      xAOD::TruthParticle  *par=nullptr;
-      cnv.convert(par_t, par);
-      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
-      container->push_back(par);
-    }
-  }
-
-
-
-  { // deserialize EventInfo
-
-    SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
-    container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
-    xAOD::EventInfo  *event=nullptr;
-    xAOD::EventInfoConverter cnv;
-    cnv.convert(  collection_event->at(0), event);
-    MSG_INFO( "EventNumber = " << event->eventNumber() << ", Avgmu = " << event->avgmu());
-    container->push_back(event);
-  }
-  
-
-  {
-    
-    std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
-
-    int link=0;
-    for (auto &descriptor_t : *collection_descriptor )
-    {
-      xAOD::CaloDetDescriptor *descriptor = nullptr;
-      xAOD::CaloDetDescriptorConverter cnv;
-      cnv.convert(descriptor_t, descriptor); // alloc memory
-      descriptor_links[link] = descriptor;
-      link++;
-    }
-
-    SG::WriteHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
-    container.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()));
-
-    for( auto &cell_t : *collection_cells )
-    {
-      xAOD::CaloCell *cell = nullptr;
-      xAOD::CaloCellConverter cnv;
-      cnv.convert(cell_t, cell); // alloc memory
-      cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
-      container->push_back(cell);
-    }
-
-    
-  }
 
   store->cd();
   TTree *outputTree = store->tree(m_outputNtupleName.c_str());
 
-  std::vector<float> *eta = nullptr;
-  std::vector<float> *phi = nullptr;
-  std::vector<float> *e = nullptr;
-  std::vector<float> *et = nullptr;
-  std::vector<float>*deta         = nullptr;
-  std::vector<float>*dphi         = nullptr;
-  std::vector<float>*e0           = nullptr;
-  std::vector<float>*e1           = nullptr;
-  std::vector<float>*e2           = nullptr;
-  std::vector<float>*e3           = nullptr;
-  std::vector<float>*ehad1        = nullptr;
-  std::vector<float>*ehad2        = nullptr;
-  std::vector<float>*ehad3        = nullptr;
-  std::vector<float>*etot         = nullptr;
-  std::vector<float>*e233         = nullptr;
-  std::vector<float>*e237         = nullptr;
-  std::vector<float>*e277         = nullptr;
-  std::vector<float>*emaxs1       = nullptr;
-  std::vector<float>*emaxs2       = nullptr;
-  std::vector<float>*e2tsts1      = nullptr;
-  std::vector<float>*reta         = nullptr;
-  std::vector<float>*rphi         = nullptr;
-  std::vector<float>*rhad         = nullptr;
-  std::vector<float>*rhad1        = nullptr;
-  std::vector<float>*eratio       = nullptr;
-  std::vector<float>*f0           = nullptr;
-  std::vector<float>*f1           = nullptr;
-  std::vector<float>*f2           = nullptr;
-  std::vector<float>*f3           = nullptr;
-  std::vector<float>*weta2        = nullptr;
+  float eta = 0;
+  float phi = 0;
+  float e = 0;
+  float et = 0;
+  float deta         = 0;
+  float dphi         = 0;
+  float e0           = 0;
+  float e1           = 0;
+  float e2           = 0;
+  float e3           = 0;
+  float ehad1        = 0;
+  float ehad2        = 0;
+  float ehad3        = 0;
+  float etot         = 0;
+  float e233         = 0;
+  float e237         = 0;
+  float e277         = 0;
+  float emaxs1       = 0;
+  float emaxs2       = 0;
+  float e2tsts1      = 0;
+  float reta         = 0;
+  float rphi         = 0;
+  float rhad         = 0;
+  float rhad1        = 0;
+  float eratio       = 0;
+  float f0           = 0;
+  float f1           = 0;
+  float f2           = 0;
+  float f3           = 0;
+  float weta2        = 0;
+  std::vector<float> *rings = nullptr;
   
   InitBranch( outputTree, "cluster_eta" , &eta);
   InitBranch( outputTree, "cluster_phi" , &phi);
@@ -311,91 +260,98 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   InitBranch( outputTree,"cluster_f2"     , &f2);
   InitBranch( outputTree,"cluster_f3"     , &f3);
   InitBranch( outputTree,"cluster_weta2"  , &weta2);
-
-
   
-  {
 
-    SG::WriteHandle<xAOD::CaloClusterContainer> container(m_clusterKey, ctx);
-    container.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()));
+  { //main loop (from cluster to truth)
+  
+    InitBranch(outputTree, "rings", &rings);
+    SG::WriteHandle<xAOD::CaloRingsContainer> ringerContainer(m_ringerKey, ctx);
+    ringerContainer.record( std::unique_ptr<xAOD::CaloRingsContainer>(new xAOD::CaloRingsContainer()));
 
+    SG::WriteHandle<xAOD::CaloClusterContainer> clusterContainer(m_clusterKey, ctx);
+    clusterContainer.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()));
+    int cluster_link = 0;
+    for (auto &cluster_t: *collection_cluster){
+      for (auto &ringer_t : *collection_rings ){
+        if (ringer_t.cluster_link == cluster_link){
+          MSG_DEBUG("Match between cluster and ringer");
+          xAOD::CaloRings *ringer = nullptr;
+          xAOD::CaloRingsConverter cnv;
+          cnv.convert(ringer_t, ringer); // alloc memory
+          for (auto ring : ringer->rings()) rings->push_back(ring);
+          xAOD::CaloCluster *cluster = nullptr;
+          xAOD::CaloClusterConverter clusterCnv;
+          clusterCnv.convert(cluster_t, cluster);
+          eta     = cluster->eta();
+          phi     = cluster->phi();
+          e       = cluster->e();
+          et      = cluster->et();
+          deta    = cluster->deltaEta();
+          dphi    = cluster->deltaPhi();
+          e0      = cluster->e0();
+          e1      = cluster->e1();
+          e2      = cluster->e2();
+          e3      = cluster->e3();
+          ehad1   = cluster->ehad1();
+          ehad2   = cluster->ehad2();
+          ehad3   = cluster->ehad3();
+          etot    = cluster->etot();
+          e233    = cluster->e233();
+          e237    = cluster->e237();
+          e277    = cluster->e277();
+          emaxs1  = cluster->emaxs1();
+          emaxs2  = cluster->emaxs2();
+          e2tsts1 = cluster->e2tsts1();
+          reta    = cluster->reta();
+          rphi    = cluster->rphi();
+          rhad    = cluster->rhad();
+          rhad1   = cluster->rhad1();
+          eratio  = cluster->eratio();
+          f0      = cluster->f0();
+          f1      = cluster->f1();
+          f2      = cluster->f2();
+          f3      = cluster->f3();
+          weta2   = cluster->weta2();
+          
+        }
+        break;
+      }
+      outputTree->Fill(); //each cluster should be 1 entry on ntulpe file
+      cluster_link++;
+    } //end loop of cluster
+  } 
 
-
-    for( auto &cluster_t : *collection_cluster )
-    {
-      xAOD::CaloCluster *cluster = nullptr;
-      xAOD::CaloClusterConverter cnv;
-      cnv.convert(cluster_t, cluster); // alloc memory
-      // cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
-      MSG_INFO( "Cluster seeded in eta = " << cluster->eta() << ", phi = " << cluster->phi());
-      MSG_INFO( "Cluster transverse energy = " << cluster->et());
-      eta->push_back(cluster->eta());
-      phi->push_back(cluster->phi());
-      e->push_back(cluster->e());
-      et->push_back(cluster->et());
-      deta   ->push_back( cluster->deltaEta());
-      dphi   ->push_back( cluster->deltaPhi());
-      e0     ->push_back( cluster->e0());
-      e1     ->push_back( cluster->e1());
-      e2     ->push_back( cluster->e2());
-      e3     ->push_back( cluster->e3());
-      ehad1  ->push_back( cluster->ehad1());
-      ehad2  ->push_back( cluster->ehad2());
-      ehad3  ->push_back( cluster->ehad3());
-      etot   ->push_back( cluster->etot());
-      e233   ->push_back( cluster->e233());
-      e237   ->push_back( cluster->e237());
-      e277   ->push_back( cluster->e277());
-      emaxs1 ->push_back( cluster->emaxs1());
-      emaxs2 ->push_back( cluster->emaxs2());
-      e2tsts1->push_back( cluster->e2tsts1());
-      reta   ->push_back( cluster->reta());
-      rphi   ->push_back( cluster->rphi());
-      rhad   ->push_back( cluster->rhad());
-      rhad1  ->push_back( cluster->rhad1());
-      eratio ->push_back( cluster->eratio());
-      f0     ->push_back( cluster->f0());
-      f1     ->push_back( cluster->f1());
-      f2     ->push_back( cluster->f2());
-      f3     ->push_back( cluster->f3());
-      weta2  ->push_back( cluster->weta2());
-      container->push_back(cluster);
-    }
- 
-  }
-
-  outputTree->Fill();
-
-  delete eta ;
-  delete phi ;
-  delete e   ;
-  delete et  ;
-  delete deta         ;
-  delete dphi         ;
-  delete e0           ;
-  delete e1           ;
-  delete e2           ;
-  delete e3           ;
-  delete ehad1        ;
-  delete ehad2        ;
-  delete ehad3        ;
-  delete etot         ;
-  delete e233         ;
-  delete e237         ;
-  delete e277         ;
-  delete emaxs1       ;
-  delete emaxs2       ;
-  delete e2tsts1      ;
-  delete reta         ;
-  delete rphi         ;
-  delete rhad         ;
-  delete rhad1        ;
-  delete eratio       ;
-  delete f0           ;
-  delete f1           ;
-  delete f2           ;
-  delete f3           ;
-  delete weta2        ;
+  eta   = 0;
+  phi   = 0 ;
+  e     = 0  ;
+  et    = 0 ;
+  deta         = 0;
+  dphi         = 0;
+  e0           = 0;
+  e1           = 0;
+  e2           = 0;
+  e3           = 0;
+  ehad1        = 0;
+  ehad2        = 0;
+  ehad3        = 0;
+  etot         = 0;
+  e233         = 0;
+  e237         = 0;
+  e277         = 0;
+  emaxs1       = 0;
+  emaxs2       = 0;
+  e2tsts1      = 0;
+  reta         = 0;
+  rphi         = 0;
+  rhad         = 0;
+  rhad1        = 0;
+  eratio       = 0;
+  f0           = 0;
+  f1           = 0;
+  f2           = 0;
+  f3           = 0;
+  weta2        = 0;
+  delete rings        ;
 
   delete collection_descriptor;
   delete collection_cells     ;
@@ -423,4 +379,3 @@ void RootStreamNTUPLEMaker::InitBranch(TTree* fChain, std::string branch_name, T
   fChain->SetBranchStatus(bname.c_str(), 1.);
   fChain->SetBranchAddress(bname.c_str(), param);
 }
-

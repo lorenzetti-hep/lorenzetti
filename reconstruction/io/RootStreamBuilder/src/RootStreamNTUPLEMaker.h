@@ -6,6 +6,7 @@
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
 #include "CaloCluster/CaloCluster.h"
+#include "CaloRings/CaloRings.h"
 
 
 
