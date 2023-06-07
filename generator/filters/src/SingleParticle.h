@@ -35,6 +35,9 @@ namespace generator{
       bool m_doRangedEta;
       float m_etaMin;
       float m_etaMax;
+      bool m_doRangedPhi;
+      float m_phiMin;
+      float m_phiMax;
      
   };
 }

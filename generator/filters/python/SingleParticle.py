@@ -31,6 +31,9 @@ class SingleParticle( Logger ):
                 "DoRangedEta",
                 "EtaMin",
                 "EtaMax",
+                "DoRangedPhi",
+                "PhiMin",
+                "PhiMax",
                 ]
 
   def __init__( self, name, gen, **kw ): 
