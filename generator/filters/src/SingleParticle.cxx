@@ -24,6 +24,9 @@ SingleParticle::SingleParticle(const std::string name, IGenerator *gen):
   declareProperty( "DoRangedEta"      , m_doRangedEta=false         );
   declareProperty( "EtaMin"           , m_etaMin=-2.5               );
   declareProperty( "EtaMax"           , m_etaMax=2.5                );
+  declareProperty( "DoRangedPhi"      , m_doRangedPhi=false         );
+  declareProperty( "PhiMin"           , m_phiMin=-3.14              );
+  declareProperty( "PhiMax"           , m_phiMax=3.14               );
 }
 
 
@@ -56,11 +59,12 @@ StatusCode SingleParticle::execute( generator::Event &ctx )
   // Fix energy or flat distribution between min->max 
   float energy = m_energy>0.0 ? m_energy : ( m_energyMin + (m_energyMax-m_energyMin)*generator()->random_flat());
   float eta = m_doRangedEta? ( m_etaMin + (m_etaMax-m_etaMin)*generator()->random_flat()) : m_eta;
+  float phi = m_doRangedPhi? ( m_phiMin + (m_phiMax-m_phiMin)*generator()->random_flat()) : m_phi;
 
   gun->event.reset();
 
-  MSG_INFO("Fill particle: eta = " << eta << " phi = " << m_phi << " energy = " << energy);
-  fill( gun, m_pdgid, energy/1e3, eta, m_phi, m_atRest, m_hasLifetime);
+  MSG_INFO("Fill particle: eta = " << eta << " phi = " << phi << " energy = " << energy);
+  fill( gun, m_pdgid, energy/1e3, eta, phi, m_atRest, m_hasLifetime);
   
   
 

@@ -55,6 +55,15 @@ parser.add_argument('--eta_min', action='store', dest='eta_min', required = Fals
 parser.add_argument('--eta_max', action='store', dest='eta_max', required = False, type=float, default=2.5,
                     help = "Maximum Eta.")
 
+parser.add_argument('--doPhiRanged', action='store', dest='doPhiRanged', required = False, type=bool, default=False,
+                    help = "Enable phi range.")
+
+parser.add_argument('--phi_min', action='store', dest='phi_min', required = False, type=float, default=-3.14,
+                    help = "Minimum Phi.")
+
+parser.add_argument('--phi_max', action='store', dest='phi_max', required = False, type=float, default=3.14,
+                    help = "Maximum Phi.")
+
 #
 # Pileup simulation arguments
 #
@@ -116,7 +125,10 @@ try:
                              Particle     = Particle.Electron, 
                              DoRangedEta  = args.doEtaRanged,
                              EtaMin       = args.eta_min,
-                             EtaMax       = args.eta_max )
+                             EtaMax       = args.eta_max,
+                             DoRangedPhi  = args.doPhiRanged,
+                             PhiMin       = args.phi_min,
+                             PhiMax       = args.phi_max)
   
   tape+=electron
 
