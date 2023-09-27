@@ -54,13 +54,14 @@ class CaloHitBuilder( Logger ):
                               Sampling                = samp.Sampling,
                               Detector                = samp.Detector,                    
                               Segment                 = samp.sensitive().Segment,
+                              SamplingNoiseStd        = samp.Noise, # TOF selection
                               # Bunch crossing configuration
                               BunchIdStart            = samp.BunchIdStart,
                               BunchIdEnd              = samp.BunchIdEnd,
                               BunchDuration           = 25, #ns
                               # monitoring configuration
                               HistogramPath           = self.HistogramPath + '/' + samp.name(),
-                              OutputLevel             = self.OutputLevel,
+                              OutputLevel             = 1,#self.OutputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
           self.__recoAlgs.append( alg )

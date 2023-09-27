@@ -3,6 +3,7 @@
 #include "CaloRings/CaloRingsContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+#include "TruthParticle/ParticleSeedContainer.h"
 
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
@@ -10,6 +11,7 @@
 #include "CaloRings/CaloRingsConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "TruthParticle/ParticleSeedConverter.h"
 #include "TTree.h"
 #include "RootStreamAODMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -26,6 +28,7 @@ RootStreamAODMaker::RootStreamAODMaker( std::string name ) :
 {
   declareProperty( "InputEventKey"           , m_inputEventKey="EventInfo"            );
   declareProperty( "InputTruthKey"           , m_inputTruthKey="Particles"            );
+  declareProperty( "InputSeedsKey"           , m_inputSeedsKey="Seeds"                );
   declareProperty( "InputCellsKey"           , m_inputCellsKey="Cells"                );
   declareProperty( "InputClusterKey"         , m_inputClusterKey="Clusters"           );
   declareProperty( "InputRingerKey"          , m_inputRingerKey="Rings"               );
@@ -35,6 +38,7 @@ RootStreamAODMaker::RootStreamAODMaker( std::string name ) :
 
   declareProperty( "OutputEventKey"          , m_outputEventKey="EventInfo"           );
   declareProperty( "OutputTruthKey"          , m_outputTruthKey="Particles"           );
+  declareProperty( "OutputSeedsKey"          , m_outputSeedsKey="Seeds"               );
   declareProperty( "OutputCellsKey"          , m_outputCellsKey="Cells"               );
   declareProperty( "OutputClusterKey"        , m_outputClusterKey="Clusters"          );
   declareProperty( "OutputRingerKey"         , m_outputRingerKey="Rings"              );
@@ -74,12 +78,14 @@ StatusCode RootStreamAODMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloRings_t           > container_rings, container_xtrings;
   std::vector<xAOD::EventInfo_t           > container_event;
   std::vector<xAOD::TruthParticle_t       > container_truth;
+  std::vector<xAOD::ParticleSeed_t        > container_seeds;
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
 
   tree->Branch( ("EventInfoContainer_"     + m_outputEventKey).c_str()       , &container_event      );
   tree->Branch( ("TruthParticleContainer_" + m_outputTruthKey).c_str()       , &container_truth      );
+  tree->Branch( ("ParticleSeedContainer_"  + m_outputSeedsKey).c_str()       , &container_seeds      );
   tree->Branch( ("CaloRingsContainer_"     + m_outputRingerKey).c_str()      , &container_rings      );
   tree->Branch( ("CaloClusterContainer_"   + m_outputClusterKey).c_str()     , &container_clus       );
   if(m_doCrosstalk){
@@ -182,11 +188,13 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloRings_t         > *container_xtrings      = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event        = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth        = nullptr;
+  std::vector<xAOD::ParticleSeed_t      > *container_seeds        = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"     + m_outputEventKey).c_str()       , &container_event      );
   InitBranch( tree, ("TruthParticleContainer_" + m_outputTruthKey).c_str()       , &container_truth      );
+  InitBranch( tree, ("ParticleSeedContainer_"  + m_outputSeedsKey).c_str()       , &container_seeds      );
   InitBranch( tree, ("CaloRingsContainer_"     + m_outputRingerKey).c_str()     , &container_rings      );
   InitBranch( tree, ("CaloClusterContainer_"   + m_outputClusterKey).c_str()     , &container_clus       );
   if(m_doCrosstalk){
@@ -240,6 +248,24 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
       xAOD::TruthParticleConverter cnv;
       cnv.convert( par, par_t );
       container_truth->push_back(par_t);
+    }
+  
+  }
+
+  { // Serialize Particle Seed
+
+    SG::ReadHandle<xAOD::ParticleSeedContainer> container( m_inputSeedsKey, ctx );
+  
+    if( !container.isValid() )
+    {
+      MSG_FATAL("It's not possible to read the xAOD::ParticleSeedContainer from this Context using this key " << m_inputSeedsKey );
+    }
+
+    for (const auto par : **container.ptr() ){
+      xAOD::ParticleSeed_t par_t;
+      xAOD::ParticleSeedConverter cnv;
+      cnv.convert( par, par_t );
+      container_seeds->push_back(par_t);
     }
   
   }
@@ -425,6 +451,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   delete container_rings     ;
   delete container_event     ;
   delete container_truth     ;
+  delete container_seeds     ;
   if(m_doCrosstalk){
     delete container_xtclus   ;
     delete container_xtrings  ;

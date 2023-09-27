@@ -24,6 +24,8 @@ bool CaloHitConverter::convert( const CaloHit *hit, CaloHit_t &hit_t )
     for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
     {
       hit_t.edep.push_back( hit->edep(bcid) );
+      hit_t.tof.push_back ( hit->tof(bcid)  ); //
+      
     }
 
     return true;
@@ -52,6 +54,7 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit )
   for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid)
   {
     hit->edep( bcid, hit_t.edep.at(pos) ); // truth energy for each bunch crossing
+    hit->tof ( bcid, hit_t.tof.at(pos)  ); // truth time of flight (it takes the last hit in the simulation order. Need to evaluate which strategy is the best.)
     pos++;
   }
 

@@ -1,9 +1,11 @@
 #include "CaloHit/CaloHitContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+#include "TruthParticle/ParticleSeedContainer.h"
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "TruthParticle/ParticleSeedConverter.h"
 #include "TTree.h"
 #include "RootStreamHITMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -22,9 +24,11 @@ RootStreamHITMaker::RootStreamHITMaker( std::string name ) :
 {
   declareProperty( "InputEventKey"           , m_inputEventKey="EventInfo"             );
   declareProperty( "InputTruthKey"           , m_inputTruthKey="Particles"             );
+  declareProperty( "InputSeedsKey"           , m_inputSeedsKey="Seeds"                 );
   declareProperty( "InputHitsKey"            , m_inputHitsKey="Hits"                   );
   declareProperty( "OutputEventKey"          , m_outputEventKey="EventInfo"            );
   declareProperty( "OutputTruthKey"          , m_outputTruthKey="Particles"            );
+  declareProperty( "OutputSeedsKey"          , m_outputSeedsKey="Seeds"                );
   declareProperty( "OutputHitsKey"           , m_outputHitsKey="Hits"                  );
   declareProperty( "OutputLevel"             , m_outputLevel=1                         );
   declareProperty( "NtupleName"              , m_ntupleName="CollectionTree"           );
@@ -57,11 +61,13 @@ StatusCode RootStreamHITMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloHit_t             > container_hits;
   std::vector<xAOD::EventInfo_t           > container_event;
   std::vector<xAOD::TruthParticle_t       > container_truth;
+  std::vector<xAOD::ParticleSeed_t        > container_seeds;
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   tree->Branch( ("EventInfoContainer_"+m_outputEventKey).c_str()     , &container_event     );
   tree->Branch( ("TruthParticleContainer_"+m_outputTruthKey).c_str() , &container_truth     );
+  tree->Branch( ("ParticleSeedContainer_"+m_outputSeedsKey).c_str()  , &container_seeds     );
   tree->Branch( ("CaloHitContainer_"+m_outputHitsKey).c_str()        , &container_hits      );
   
   store->add( tree );
@@ -147,11 +153,13 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloHit_t           > *container_hits       = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth      = nullptr;
+  std::vector<xAOD::ParticleSeed_t      > *container_seeds      = nullptr;
 
   MSG_INFO( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"+m_outputEventKey).c_str()     , &container_event     );
   InitBranch( tree, ("TruthParticleContainer_"+m_outputTruthKey).c_str() , &container_truth     );
+  InitBranch( tree, ("ParticleSeedContainer_"+m_outputSeedsKey).c_str()  , &container_seeds     );
   InitBranch( tree, ("CaloHitContainer_"+m_outputHitsKey).c_str()        , &container_hits      );
 
   { // serialize EventInfo
@@ -172,12 +180,13 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
   {
     MSG_INFO("Serialize CaloHits...");
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
+    // SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
+    SG::ReadHandle<xAOD::ParticleSeedContainer> seeds( m_inputSeedsKey, ctx );
 
     SG::ReadHandle<xAOD::CaloHitContainer> container(m_inputHitsKey, ctx);
     if( !container.isValid() )
     {
-        MSG_FATAL("It's not possible to read the xAOD::CaloHitContainer from this Contaxt using this key " << m_inputHitsKey );
+        MSG_FATAL("It's not possible to read the xAOD::CaloHitContainer from this Context using this key " << m_inputHitsKey );
     }
 
     float etot=0;
@@ -185,7 +194,8 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
          
       if(m_onlyRoI){
         bool match=false;
-        for (const auto& par : **particles.ptr())
+        // for (const auto& par : **particles.ptr())
+        for (const auto& par : **seeds.ptr())
         {
           float deltaEta = std::abs( par->eta() - hit->eta() );
           float deltaPhi = std::abs( CaloPhiRange::diff(par->phi(), hit->phi()) );
@@ -233,12 +243,31 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
     }
   
   }
+
+  { // Serialize Particle Seeds
+    MSG_INFO("Serialize ParticleSeed...");
+    SG::ReadHandle<xAOD::ParticleSeedContainer> container( m_inputSeedsKey, ctx );
+  
+    if( !container.isValid() )
+    {
+      MSG_FATAL("It's not possible to read the xAOD::ParticleSeedContainer from this Context using this key " << m_inputSeedsKey );
+    }
+
+    for (const auto par : **container.ptr() ){
+      xAOD::ParticleSeed_t par_t;
+      xAOD::ParticleSeedConverter cnv;
+      cnv.convert( par, par_t );
+      container_seeds->push_back(par_t);
+    }
+  
+  }
   
   tree->Fill();
 
   delete container_hits   ;
   delete container_event  ;
   delete container_truth  ;
+  delete container_seeds  ;
 
   return StatusCode::SUCCESS;
  

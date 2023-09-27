@@ -10,6 +10,7 @@ class RootStreamHITReader( Logger ):
   __allow_keys = [
                   "EventKey",
                   "TruthKey",
+                  "SeedsKey",
                   "HitsKey",
                   "OutputLevel", 
                   "NtupleName",

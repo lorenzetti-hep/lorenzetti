@@ -61,6 +61,7 @@ try:
                             XTCellsKey      = recordable("XTCells"),
                             EventKey        = recordable("EventInfo"),
                             TruthKey        = recordable("Particles"),
+                            SeedsKey        = recordable("Seeds"),
                             NtupleName      = "CollectionTree",
                             DoCrosstalk     = args.simulateCrossTalk,
                           )
@@ -73,6 +74,7 @@ try:
                               EventKey        = recordable("EventInfo"),
                               ClusterKey      = recordable("Clusters"),
                               TruthKey        = recordable("Particles"),
+                              SeedsKey        = recordable("Seeds"),
                               EtaWindow       = 0.4,
                               PhiWindow       = 0.4,
                               MinCenterEnergy = 1*GeV, 
@@ -104,6 +106,7 @@ try:
                                 EventKey        = recordable("EventInfo"),
                                 ClusterKey      = recordable("XTClusters"),
                                 TruthKey        = recordable("Particles"),
+                                SeedsKey        = recordable("Seeds"),
                                 EtaWindow       = 0.4,
                                 PhiWindow       = 0.4,
                                 MinCenterEnergy = 1*GeV, 

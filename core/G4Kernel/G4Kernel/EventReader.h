@@ -37,7 +37,7 @@ namespace generator{
       void release();
   
       // We  have to take care for the position of primaries because
-      // primary vertices outside the world voulme give rise to G4Execption.
+      // primary vertices outside the world volume give rise to G4Execption.
       // If the default implementation is not adequate, an alternative
       // can be implemented in your own class.
       bool CheckVertexInsideWorld(const G4ThreeVector& pos) const;
@@ -50,6 +50,7 @@ namespace generator{
       std::string            m_filename;
       std::string            m_eventKey;
       std::string            m_truthKey;
+      std::string            m_seedsKey;
 
       TFile *m_f;
       TTree *m_ttree;

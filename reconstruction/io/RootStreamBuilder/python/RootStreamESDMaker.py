@@ -10,10 +10,12 @@ class RootStreamESDMaker( Logger ):
   __allow_keys = [
                   "InputEventKey",
                   "InputTruthKey",
+                  "InputSeedsKey",
                   "InputCellsKey",
                   "InputXTCellsKey",
                   "OutputEventKey",
                   "OutputTruthKey",
+                  "OutputSeedsKey",
                   "OutputCellsKey",
                   "OutputXTCellsKey",
                   "OutputLevel", 

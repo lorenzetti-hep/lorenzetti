@@ -14,6 +14,7 @@ class CaloClusterMaker( Logger ):
                   "XTClusterKey", 
                   "EventKey", 
                   "TruthKey", 
+                  "SeedsKey",
                   "EtaWindow" , 
                   "PhiWindow",
                   "MinCenterEnergy",

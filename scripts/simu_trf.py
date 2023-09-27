@@ -74,6 +74,7 @@ try:
   gun = EventReader( "EventReader",
                      EventKey   = recordable("EventInfo"),
                      TruthKey   = recordable("Particles"),
+                     SeedsKey   = recordable("Seeds"),
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
                      )
@@ -91,16 +92,17 @@ try:
   OutputEventKey  = recordable("EventInfo")
 
   from RootStreamBuilder import RootStreamHITMaker, recordable
-
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              # input from context
                              InputHitsKey    = OutputHitsKey,
                              InputEventKey   = OutputEventKey,
                              InputTruthKey   = recordable("Particles"),
+                             InputSeedsKey   = recordable("Seeds"),
                              # output to file
                              OutputHitsKey   = recordable("Hits"),
                              OutputEventKey  = recordable("EventInfo"),
                              OutputTruthKey  = recordable("Particles"),
+                             OutputSeedsKey  = recordable("Seeds"),
                              # special parameters
                              EtaWindow       = 0.6,
                              PhiWindow       = 0.6,

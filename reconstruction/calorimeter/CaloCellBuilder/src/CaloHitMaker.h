@@ -54,6 +54,7 @@ class CaloHitMaker : public Gaugi::Algorithm
     float m_rMax; 
     float m_zMin;
     float m_zMax;
+    float m_noiseStd;
 
     /*! Sampling id for this reconstruction */
     int m_sampling;

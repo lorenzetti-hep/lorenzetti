@@ -5,6 +5,7 @@
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
+#include "TruthParticle/ParticleSeed.h"
 
 
 class RootStreamHITReader : public Gaugi::Algorithm
@@ -44,6 +45,7 @@ class RootStreamHITReader : public Gaugi::Algorithm
     std::string m_hitsKey;
     std::string m_eventKey;
     std::string m_truthKey;
+    std::string m_seedsKey;
     std::string m_inputFile;
     std::string m_ntupleName;
     int m_outputLevel;

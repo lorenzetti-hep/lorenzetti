@@ -121,6 +121,9 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
       for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
       {
         hit->edep( bcid, const_hit->edep(bcid) ); // truth energy for each bunch crossing
+        hit->tof ( bcid, const_hit->tof(bcid) );  // truth time for each bunch crossing 
+                                                  // (in fact, this time is the time from the signal at the
+                                                  // moment its energy holds above 1*sigma noise threshold)
       }
       etot+=hit->edep();
 

@@ -10,6 +10,7 @@ class Zee( Logger ):
   __allow_keys = [
                 "EtaMax",
                 "MinPt",
+                "zeroVertexParticles",
                 "OutputLevel",
                 ]
 

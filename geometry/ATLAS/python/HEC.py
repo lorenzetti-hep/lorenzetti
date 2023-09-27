@@ -49,22 +49,24 @@ def getHECCfg(left_side=False):
     # Configure the electronic frontend and the detector parameters
     hec1_det0  = Calorimeter( hec1_sv0, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC1_0" + side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC1, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 250*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC1, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 250*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
     # Configure the electronic frontend and the detector parameters
     hec1_det1  = Calorimeter( hec1_sv1, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC1_1"+ side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC1, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 250*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC1, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 250*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
 
 
@@ -97,22 +99,24 @@ def getHECCfg(left_side=False):
     # Configure the electronic frontend and the detector parameters
     hec2_det0  = Calorimeter( hec2_sv0, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC2_0" + side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC2, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 400*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC2, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 400*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
     # Configure the electronic frontend and the detector parameters
     hec2_det1  = Calorimeter( hec2_sv1, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC2_1"+ side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC2, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 400*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC2, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 400*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
 
 
@@ -146,22 +150,24 @@ def getHECCfg(left_side=False):
     # Configure the electronic frontend and the detector parameters
     hec3_det0  = Calorimeter( hec3_sv0, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC3_0" + side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC3, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 750*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC3, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 750*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
     # Configure the electronic frontend and the detector parameters
     hec3_det1  = Calorimeter( hec3_sv1, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
                               CollectionKey = "Collection_HEC3_1"+ side_name, # collection key
-                              Detector      = Detector.TTHEC, # detector type
-                              Sampling      = CaloSampling.HEC3, # sampling type
-                              Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                              Noise         = 750*MeV, # electronic noise
-                              Samples       = 5, # how many samples
-                              OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                              Detector        = Detector.TTHEC, # detector type
+                              Sampling        = CaloSampling.HEC3, # sampling type
+                              Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                              Noise           = 750*MeV, # electronic noise
+                              Samples         = 5, # how many samples
+                              OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                              OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                             )
     
     hec1 = [hec1_det0, hec1_det1]

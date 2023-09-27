@@ -1,10 +1,12 @@
 #include "CaloCell/CaloCellContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+#include "TruthParticle/ParticleSeedContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "TruthParticle/ParticleSeedConverter.h"
 #include "TTree.h"
 #include "RootStreamESDMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -23,10 +25,12 @@ RootStreamESDMaker::RootStreamESDMaker( std::string name ) :
 {
   declareProperty( "InputEventKey"      , m_inputEventKey="EventInfo"       );
   declareProperty( "InputTruthKey"      , m_inputTruthKey="Particles"       );
+  declareProperty( "InputSeedsKey"      , m_inputSeedsKey="Seeds"           );
   declareProperty( "InputCellsKey"      , m_inputCellsKey="Cells"           );
   declareProperty( "InputXTCellsKey"    , m_inputXTCellsKey="XTCells"       );
   declareProperty( "OutputEventKey"     , m_outputEventKey="EventInfo"      );
   declareProperty( "OutputTruthKey"     , m_outputTruthKey="Particles"      );
+  declareProperty( "OutputSeedsKey"     , m_outputSeedsKey="Seeds"          );
   declareProperty( "OutputCellsKey"     , m_outputCellsKey="Cells"          );
   declareProperty( "OutputXTCellsKey"   , m_outputXTCellsKey="XTCells"      );
 
@@ -64,11 +68,13 @@ StatusCode RootStreamESDMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t   > container_descriptor, container_xtdescriptor;
   std::vector<xAOD::EventInfo_t           > container_event;
   std::vector<xAOD::TruthParticle_t       > container_truth;
+  std::vector<xAOD::ParticleSeed_t        > container_seeds;
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   tree->Branch( ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
   tree->Branch( ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
+  tree->Branch( ("ParticleSeedContainer_"      + m_outputSeedsKey).c_str() , &container_seeds     );
   tree->Branch( ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
   tree->Branch( ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
   if (m_dumpXTCells){
@@ -157,6 +163,7 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloCell_t          > *container_cells        = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event        = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth        = nullptr;
+  std::vector<xAOD::ParticleSeed_t      > *container_seeds        = nullptr;
   std::vector<xAOD::CaloDetDescriptor_t > *container_xtdescriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *container_xtcells      = nullptr;
 
@@ -164,6 +171,7 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
   InitBranch( tree, ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
   InitBranch( tree, ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
+  InitBranch( tree, ("ParticleSeedContainer_"      + m_outputSeedsKey).c_str() , &container_seeds     );
   InitBranch( tree, ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
   if (m_dumpXTCells){
@@ -208,16 +216,18 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
     if( !xtcontainer.isValid() && !m_dumpXTCells) {MSG_WARNING("There will be no CrossTalk Cells in the output ESD file (DumpCrossTalkCells="<<m_dumpXTCells << ").");}
     // ------------------------------------
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
+    // SG::ReadHandle<xAOD::TruthParticleContainer> particles( m_inputTruthKey, ctx );
+    SG::ReadHandle<xAOD::ParticleSeedContainer> seeds( m_inputSeedsKey, ctx);
   
-    if( !particles.isValid() )
+    if( !seeds.isValid() )
     {
-      MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_inputTruthKey );
+      MSG_FATAL("It's not possible to read the xAOD::ParticleSeedsContainer from this Context using this key " << m_inputSeedsKey );
     }
 
     int linkXT = 0, link = 0; // decorate all cells 
 
-    for (const auto par : **particles.ptr() )
+    // for (const auto par : **particles.ptr() )
+    for (const auto par : **seeds.ptr() )
     {
         //MSG_DEBUG("New particle...");
         for (const auto cell : **container.ptr() ){
@@ -287,8 +297,6 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
         }
 
         
-
-
     }// loop over all seeds
 
   }
@@ -312,6 +320,25 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
     }
   
   }
+
+
+  { // Serialize Particle Seeds
+    MSG_DEBUG("Serialize ParticleSeeds...");
+    SG::ReadHandle<xAOD::ParticleSeedContainer> container( m_inputSeedsKey, ctx );
+  
+    if( !container.isValid() )
+    {
+      MSG_FATAL("It's not possible to read the xAOD::ParticleSeedContainer from this Context using this key " << m_inputSeedsKey );
+    }
+
+    for (const auto par : **container.ptr() ){
+      xAOD::ParticleSeed_t par_t;
+      xAOD::ParticleSeedConverter cnv;
+      cnv.convert( par, par_t );
+      container_seeds->push_back(par_t);
+    }
+  
+  }
   
   tree->Fill();
 
@@ -324,6 +351,7 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
   delete container_cells      ;
   delete container_event      ;
   delete container_truth      ;
+  delete container_seeds      ;
 
   return StatusCode::SUCCESS;
  

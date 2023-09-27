@@ -28,6 +28,7 @@ def recordable( key ):
             "TruthClusters",
             "Particles",
             "TruthParticles",
+            "Seeds",
             # CaloRingsBuilder
             "Rings",
             "TruthRings",

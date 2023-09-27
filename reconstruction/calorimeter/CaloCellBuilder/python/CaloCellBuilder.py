@@ -67,7 +67,8 @@ class CaloCellBuilder( Logger ):
                               StartSamplingBC = samp.StartSamplingBC )
                       
       of= OptimalFilter("OptimalFilter",
-                        Weights  = samp.OFWeights,
+                        WeightsEnergy  = samp.OFWeightsEnergy,
+                        WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
  
           
