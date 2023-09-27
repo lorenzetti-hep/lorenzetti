@@ -54,6 +54,8 @@ namespace xAOD{
             // convert a class object into a struct
             bool convert(const CaloCluster *, CaloCluster_t & , cell_links_t &);
 
+            bool convert( const CaloCluster_t &, CaloCluster *& );
+
 
         private:
 

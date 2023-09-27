@@ -113,7 +113,7 @@ try:
   single_part_file   = os.environ['LZT_PATH']+'/generator/evtgen/data/single_particle_config.cmnd'
 
   # Create the seed
-  electron = SingleParticle( "Electron",
+  photon = SingleParticle( "Photon",
                              Pythia8("Generator", 
                                    Seed=args.seed, 
                                    EventNumber = args.eventNumber),
@@ -122,7 +122,7 @@ try:
                              EnergyMin    = args.energy_min*GeV,
                              EnergyMax    = args.energy_max*GeV,
                              Energy       = args.energy*GeV,
-                             Particle     = Particle.Electron, 
+                             Particle     = Particle.Photon, 
                              DoRangedEta  = args.doEtaRanged,
                              EtaMin       = args.eta_min,
                              EtaMax       = args.eta_max,
@@ -130,7 +130,7 @@ try:
                              PhiMin       = args.phi_min,
                              PhiMax       = args.phi_max)
   
-  tape+=electron
+  tape+=photon
 
   if args.pileupAvg > 0:
 

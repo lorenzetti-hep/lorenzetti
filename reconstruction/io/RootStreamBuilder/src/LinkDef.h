@@ -2,6 +2,7 @@
 #include "src/RootStreamHITMaker.h"
 #include "src/RootStreamAODMaker.h"
 #include "src/RootStreamESDMaker.h"
+#include "src/RootStreamNTUPLEMaker.h"
 
 #include "src/RootStreamHITReader.h"
 #include "src/RootStreamESDReader.h"
@@ -17,6 +18,7 @@
 #pragma link C++ class RootStreamHITMaker+;
 #pragma link C++ class RootStreamAODMaker+;
 #pragma link C++ class RootStreamESDMaker+;
+#pragma link C++ class RootStreamNTUPLEMaker+;
 
 #pragma link C++ class RootStreamHITReader+;
 #pragma link C++ class RootStreamESDReader+;
