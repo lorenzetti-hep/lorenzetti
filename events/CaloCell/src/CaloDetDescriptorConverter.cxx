@@ -17,7 +17,9 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.deta        = descriptor->deltaEta(); 
     descriptor_t.dphi        = descriptor->deltaPhi();
     descriptor_t.e           = descriptor->e();
+    descriptor_t.tau         = descriptor->tau(); // estimated time of flight  
     descriptor_t.edep        = descriptor->edep(); // truth energy into the bunch crossing zero
+    descriptor_t.tof         = descriptor->tof(); // 'truth' time of flight in the cell at BC=0  
     descriptor_t.bcid_start  = descriptor->bcid_start();
     descriptor_t.bcid_end    = descriptor->bcid_end();
     descriptor_t.bc_duration = descriptor->bc_duration();
@@ -29,6 +31,7 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
     {
       descriptor_t.edep_per_bunch.push_back( descriptor->edep(bcid) );
+      descriptor_t.tof_per_bunch.push_back( descriptor->tof(bcid)   );
     }
 
     return true;
@@ -54,11 +57,13 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             descriptor_t.bcid_end );
 
   descriptor->setE(descriptor_t.e); // estimated energy from OF
+  descriptor->setTau(descriptor_t.tau); // 
   descriptor->setPulse( descriptor_t.pulse); // pulse from generator
   
   for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
   {
     descriptor->edep( bcid, descriptor_t.edep_per_bunch[bcid] ); // truth energy for each bunch crossing
+    descriptor->tof ( bcid, descriptor_t.tof_per_bunch[bcid]  ); //
   }
   return true;
 }

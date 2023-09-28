@@ -21,6 +21,7 @@ namespace xAOD{
         int bcid_end;
         float bc_duration;
         std::vector<float> edep;
+        std::vector<float> tof; // 
         unsigned long int hash;
     };
 

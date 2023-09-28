@@ -21,6 +21,7 @@ namespace generator{
   
       float m_minPt;
       float m_etaMax;
+      bool  m_zeroVertexParticles;
      
   };
 

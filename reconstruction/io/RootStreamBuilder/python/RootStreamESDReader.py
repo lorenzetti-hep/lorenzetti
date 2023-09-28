@@ -10,7 +10,10 @@ class RootStreamESDReader( Logger ):
   __allow_keys = [
                   "EventKey",
                   "TruthKey",
+                  "SeedsKey",
                   "CellsKey",
+                  "XTCellsKey",
+                  "DoCrosstalk",
                   "OutputLevel", 
                   "NtupleName",
                   "InputFile",

@@ -3,10 +3,12 @@
 #include "CaloHit/CaloHitContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+#include "TruthParticle/ParticleSeedContainer.h"
 
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "TruthParticle/ParticleSeedConverter.h"
 
 #include "RootStreamHITReader.h"
 #include "GaugiKernel/EDM.h"
@@ -24,6 +26,7 @@ RootStreamHITReader::RootStreamHITReader( std::string name ) :
   declareProperty( "InputFile"          , m_inputFile=""                    );
   declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
   declareProperty( "TruthKey"           , m_truthKey="Particles"            );
+  declareProperty( "SeedsKey"           , m_seedsKey="Seeds"                );
   declareProperty( "HitsKey"            , m_hitsKey="Hits"                  );
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
@@ -104,6 +107,7 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   std::vector<xAOD::CaloHit_t           > *collection_hits       = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
+  std::vector<xAOD::ParticleSeed_t      > *collection_seeds      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
   
@@ -113,12 +117,13 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
 
   InitBranch( tree, ("EventInfoContainer_"+m_eventKey).c_str()     , &collection_event     );
   InitBranch( tree, ("TruthParticleContainer_"+m_truthKey).c_str() , &collection_truth     );
+  InitBranch( tree, ("ParticleSeedContainer_"+m_seedsKey).c_str()  , &collection_seeds     );
   InitBranch( tree, ("CaloHitContainer_"+m_hitsKey).c_str()        , &collection_hits      );
 
   tree->GetEntry( evt );
 
 
-  { // deserialize EventInfo
+  { // deserialize TruthParticle
     SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
     container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
 
@@ -127,7 +132,21 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
     {
       xAOD::TruthParticle  *par=nullptr;
       cnv.convert(par_t, par);
-      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
+      MSG_INFO( "Particle in eta = " << par->eta() << ", phi = " << par->phi() << ", pdgID = "<< par->pdgid());
+      container->push_back(par);
+    }
+  }
+
+  { // deserialize ParticleSeed
+    SG::WriteHandle<xAOD::ParticleSeedContainer> container(m_seedsKey, ctx);
+    container.record( std::unique_ptr<xAOD::ParticleSeedContainer>(new xAOD::ParticleSeedContainer()));
+
+    xAOD::ParticleSeedConverter cnv;
+    for( auto& par_t : *collection_seeds)
+    {
+      xAOD::ParticleSeed  *par=nullptr;
+      cnv.convert(par_t, par);
+      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi() << ", et_tot = "<< par->ettot());
       container->push_back(par);
     }
   }
@@ -167,6 +186,7 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   delete collection_hits      ;
   delete collection_event     ;
   delete collection_truth     ;
+  delete collection_seeds     ;
   return StatusCode::SUCCESS;
  
 }

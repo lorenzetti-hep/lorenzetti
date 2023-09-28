@@ -2,8 +2,13 @@
 #include "CaloHit/CaloHit.h"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-using namespace xAOD;
 
+// #include "GaugiKernel/MsgStream.h" //
+#include <iostream>//
+using namespace std;//
+
+using namespace xAOD;
+using namespace Gaugi;
 
 
 CaloHit::CaloHit(     float eta, 
@@ -33,6 +38,7 @@ CaloHit::CaloHit(     float eta,
   m_hash(hash)
 
 {
+  // setMsgLevel( (MSG::Level)1 ); //
   // Initalize the time vector using the bunch crossing informations
   float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
   float step  = m_bc_duration;
@@ -45,6 +51,7 @@ CaloHit::CaloHit(     float eta,
 void CaloHit::clear()
 {
   m_edep.clear(); // zeroize deposit energy for all bunchs
+  m_tof.clear(); //
 }
 
 
@@ -60,7 +67,43 @@ void CaloHit::fill( const G4Step* step )
   int samp = find(t);
   if ( samp != -1 ){
     int bcid = m_bcid_start + samp;
+
+    // cout << "sampling: "<< m_sampling << ", BCID: "<< bcid << ", samp: " << samp << ", HIT: " << m_hash << ", t: " << t << ", edep: "<< edep << ", m_edep[bcid]="<< m_edep[bcid] << ", m_tof[bcid]="<< m_tof[bcid] << "\n"; // 
+
+    m_edep[bcid]  +=  (edep/MeV);
+    m_tof[bcid]   =   t; // the TOF comes from the last hit
+
+  }
+}
+
+void CaloHit::fill( const G4Step* step , float sampNoiseStd)
+{
+  // Get total energy deposit
+  float edep = (float)step->GetTotalEnergyDeposit();
+  G4StepPoint* point = step->GetPreStepPoint();
+  // Get the particle time
+  float t = (float)point->GetGlobalTime() / ns;
+
+  // Get the bin index into the time vector
+  int samp = find(t);
+  if ( samp != -1 ){
+    int bcid = m_bcid_start + samp;
+
+    // cout << "sampling: "<< m_sampling << ", BCID: "<< bcid << ", samp: " << samp << ", HIT: " << m_hash << ", t: " << t << ", edep: "<< edep << ", m_edep[bcid]="<< m_edep[bcid] << ", m_tof[bcid]="<< m_tof[bcid] <<", m_firstHit=" << m_firstHit << "\n"; // 
+
     m_edep[bcid]+=(edep/MeV);
+
+    if ((m_edep[bcid] > sampNoiseStd/MeV) && !m_firstHit){
+      m_tof[bcid] = t; // the TOF comes from the FIRST sensible hit that allows to readout the cell energy, above n*sigmaNoise (n=1)
+      m_firstHit  = true;
+      // cout << "energy higher than "<< sampNoiseStd <<" MeV: tof="<< t<<"\n";
+    }
+    else if ((m_edep[bcid] <= sampNoiseStd/MeV) && !m_firstHit){
+      m_tof[bcid] = 0.0;
+    }
+    // else if (m_firstHit){
+    //   cout << "first hit TOF already saved. tof="<< m_tof[bcid] <<"\n";
+    // }
   }
 }
 

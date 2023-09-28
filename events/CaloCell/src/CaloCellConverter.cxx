@@ -10,6 +10,7 @@ bool CaloCellConverter::convert( const CaloCell *cell, CaloCell_t &cell_t, int l
 {
   if(cell){
       cell_t.e       = cell->e();
+      cell_t.tau     = cell->tau(); 
       cell_t.et      = cell->et();
       cell_t.eta     = cell->eta();
       cell_t.phi     = cell->phi();
@@ -29,6 +30,7 @@ bool CaloCellConverter::convert( const CaloCell_t &cell_t, CaloCell *&cell )
                              cell_t.deta, 
                              cell_t.dphi );
   cell->setE(cell_t.e); // estimated energy from OF. Same as descriptor->e()
+  cell->setTau(cell_t.tau); // estimated time of flight from OF. Same as descriptor->tau()     
   cell->setEt(cell_t.et); // estimated transverse energy from OF
   return true;
 }

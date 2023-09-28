@@ -18,7 +18,11 @@ class CaloCellBuilder( Logger ):
   def __init__( self, name, detector,
                       HistogramPath        = "Expert", 
                       HitsKey              = "Hits",
+                      DoCrosstalk          = False,
                       OutputLevel          = 1,
+                      XTAmpCapacitive      = 4.2,
+                      XTAmpInductive       = 2.3,
+                      XTAmpResistive       = 1.0,
                       ):
 
     Logger.__init__(self)
@@ -27,6 +31,10 @@ class CaloCellBuilder( Logger ):
     self.OutputLevel = OutputLevel
     self.HitsKey = HitsKey
     self.__detector = detector
+    self.__doCrosstalk = DoCrosstalk
+    self.__XTAmpCapacitive  = XTAmpCapacitive
+    self.__XTAmpInductive   = XTAmpInductive
+    self.__XTAmpResistive   = XTAmpResistive
 
     
 
@@ -38,7 +46,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
 
     collectionKeys = []
  
@@ -59,7 +67,8 @@ class CaloCellBuilder( Logger ):
                               StartSamplingBC = samp.StartSamplingBC )
                       
       of= OptimalFilter("OptimalFilter",
-                        Weights  = samp.OFWeights,
+                        WeightsEnergy  = samp.OFWeightsEnergy,
+                        WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
  
           
@@ -104,6 +113,21 @@ class CaloCellBuilder( Logger ):
 
     self.__recoAlgs.append( mergeAlg )
 
+    if self.__doCrosstalk: 
+      MSG_INFO(self, "Create CrossTalk effect into Cell Collection")
+      xt = CrossTalk("CrossTalk",
+                            MinEnergy       = 1*GeV,
+                            CollectionKeys  = collectionKeys,
+                            XTCellsKey      = recordable("XTCells"),
+                            CellsKey        = recordable("Cells"),
+                            HistogramPath   = "",
+                            OutputLevel     = self.OutputLevel,
+                            XTAmpCapacitive = self.__XTAmpCapacitive,
+                            XTAmpInductive  = self.__XTAmpInductive,
+                            XTAmpResistive  = self.__XTAmpResistive,
+                            )
+      xt.Tools = [ of]
+      self.__recoAlgs.append( xt )
 
 
   def merge( self, acc ):

@@ -8,6 +8,7 @@
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+#include "TruthParticle/ParticleSeedContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "ShowerShapes.h"
 
@@ -56,6 +57,7 @@ class CaloClusterMaker : public Gaugi::Algorithm
     
     // output keys
     std::string m_truthKey;
+    std::string m_seedsKey;
     std::string m_clusterKey;
 
     float m_etaWindow;

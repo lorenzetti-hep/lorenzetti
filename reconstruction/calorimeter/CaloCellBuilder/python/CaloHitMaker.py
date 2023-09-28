@@ -29,6 +29,7 @@ class CaloHitMaker( Logger ):
                   "OutputLevel"       ,
                   "DetailedHistograms",
                   "HistogramPath"     ,
+                  "SamplingNoiseStd"  ,
                   ]
 
   def __init__( self, name, **kw ): 

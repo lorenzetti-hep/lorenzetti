@@ -9,9 +9,12 @@ class CaloClusterMaker( Logger ):
 
   __allow_keys = [
                   "CellsKey", 
+                  "XTCellsKey", 
                   "ClusterKey", 
+                  "XTClusterKey", 
                   "EventKey", 
                   "TruthKey", 
+                  "SeedsKey",
                   "EtaWindow" , 
                   "PhiWindow",
                   "MinCenterEnergy",

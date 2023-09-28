@@ -22,6 +22,7 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   declareProperty( "CellsKey"       , m_cellsKey="Cells"                );
   declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
   declareProperty( "TruthKey"       , m_truthKey="Particles"            );
+  declareProperty( "SeedsKey"       , m_seedsKey="Seeds"                );
   // Key outputs
   declareProperty( "ClusterKey"     , m_clusterKey="Clusters"           );
   // Algorithm configuration
@@ -116,7 +117,8 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   
   // Event info
   SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-  SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
+  // SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
+  SG::ReadHandle<xAOD::ParticleSeedContainer> seeds(m_seedsKey, ctx);
   SG::ReadHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
   
 
@@ -124,19 +126,21 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
   }
 
-  if( !particles.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::TruthParticleContainer from this Context" );
+  if( !seeds.isValid() ){
+    MSG_FATAL( "It's not possible to read the xAOD::ParticleSeedContainer from this Context" );
   }
 
   if( !container.isValid() )
   {
-    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Context using this key " << m_cellsKey );
   }
 
-  MSG_DEBUG( "Associate all truth particles and clusters");
+  MSG_DEBUG( "Associate all particle seeds and clusters");
+  MSG_DEBUG( "For cell container of key "<< m_cellsKey << ", there are "<< container.ptr()->size() <<" stored cells.");
 
   // Loop over all truth particles (here, we have seeds)
-  for ( const auto part : **particles.ptr() )
+  // for ( const auto part : **particles.ptr() )
+  for ( const auto part : **seeds.ptr() )
   {
     const xAOD::CaloCell *hotcell=nullptr;
     float emaxs2 = 0.0;
@@ -145,10 +149,10 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     for (const auto cell : **container.ptr() ){
 
       const xAOD::CaloDetDescriptor* det = cell->descriptor();
-
       
       // Must be EM2 cells layer
-      if( (det->sampling() != CaloSampling::EMB2) && (det->sampling() != CaloSampling::EMEC2) ) continue;      
+      if( (det->sampling() != CaloSampling::EMB2) && (det->sampling() != CaloSampling::EMEC2) ) continue;
+
       // Check if cell is inside 
       float deltaEta = std::abs( part->eta() - cell->eta() );
       float deltaPhi = std::abs( CaloPhiRange::diff( part->phi() , cell->phi() ));
@@ -186,7 +190,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
         clusters->push_back( clus );
       }
     }else{
-      MSG_DEBUG( "There is not hottest cell for this particle.");
+      MSG_DEBUG( "There is no hottest cell for this particle.");
     }
 
   }
@@ -211,9 +215,10 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
 
   MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
 
-  SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  if( !particles.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::TruthParticleContainer from this Context" );
+  // SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
+  SG::ReadHandle<xAOD::ParticleSeedContainer> seeds(m_seedsKey, ctx);
+  if( !seeds.isValid() ){
+    MSG_FATAL( "It's not possible to read the xAOD::ParticleSeedContainer from this Context" );
   }
 
   store->cd(m_histPath);
@@ -221,11 +226,13 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   for( const auto& clus : **clusters.ptr() ){
   
     
-    const xAOD::TruthParticle *particle=nullptr;
+    // const xAOD::TruthParticle *particle=nullptr;
+    const xAOD::ParticleSeed *particle=nullptr;
 
     // TODO: Probably some c++ expert can reduce this **var.ptr(), too verbose...
     // Try to find the associated truth particle
-    for(const auto& part : **particles.ptr() ){
+    // for(const auto& part : **particles.ptr() ){
+    for(const auto& part : **seeds.ptr() ){
       if( dR(clus->eta(), clus->phi(), part->eta(), part->phi() ) < 0.4){
         particle=part;
         break;
@@ -241,12 +248,16 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
       store->hist1("res_eta")->Fill( (clus->eta() - particle->eta()) );
       store->hist1("res_phi")->Fill( (clus->phi() - particle->phi()) );
       // estimated transverse energy and truth
-      store->hist1("res_et")->Fill( (clus->et() - particle->et() ) );
+      // store->hist1("res_et")->Fill( (clus->et() - particle->et() ) );
+      store->hist1("res_et")->Fill( (clus->et() - particle->ettot() ) );
       // estimated energy and truth
-      store->hist1("res_e")->Fill( (clus->e() - particle->e()) );
+      // store->hist1("res_e")->Fill( (clus->e() - particle->e()) );
+      store->hist1("res_e")->Fill( (clus->e() - particle->etot()) );
       MSG_DEBUG( "Truth Particle information:" );
-      MSG_DEBUG( "E        : " << particle->e() );
-      MSG_DEBUG( "Et       : " << particle->et() );
+      // MSG_DEBUG( "E        : " << particle->e() );
+      MSG_DEBUG( "E        : " << particle->etot() );
+      // MSG_DEBUG( "Et       : " << particle->et() );
+      MSG_DEBUG( "Et       : " << particle->ettot() );
       MSG_DEBUG( "Eta      : " << particle->eta() );
       MSG_DEBUG( "Phi      : " << particle->phi() );
     }

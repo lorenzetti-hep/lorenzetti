@@ -131,12 +131,14 @@ StatusCode JF17::execute( generator::Event &ctx )
     // can include these particles to the jet cluster vector
     if (etot > minPt){
 
+
       auto seed = generator::Seed( main_p->momentum().eta(), main_p->momentum().phi() );
 
       for ( auto& part : cluster ){
   
-        const auto vtx = part->production_vertex();
-
+        const auto  vtx         = part->production_vertex();
+        
+        //-----------
         seed.emplace_back( 1, 0, 
                            part->pid(), 
                            part->momentum().px(), 

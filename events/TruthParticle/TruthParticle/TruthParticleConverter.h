@@ -15,6 +15,15 @@ namespace xAOD{
         float px;
         float py;
         float pz;
+        float vx; // vertex position x (prod_vx)
+        float vy; // vertex position y
+        float vz; // vertex position z
+        
+        // generator seed properties
+        // float seedEta;
+        // float seedPhi;
+        // float seedEtot;
+        // float seedEttot;
     };
 
  

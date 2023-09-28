@@ -9,8 +9,9 @@ Zee::Zee(const std::string name, IGenerator *gen):
   IAlgorithm(gen),
   IMsgService(name)
 {
-  declareProperty( "EtaMax"         , m_etaMax=1.4                );
-  declareProperty( "MinPt"          , m_minPt=0.0                 );
+  declareProperty( "EtaMax"               , m_etaMax=1.4                );
+  declareProperty( "MinPt"                , m_minPt=0.0                 );
+  declareProperty( "zeroVertexParticles"  , m_zeroVertexParticles=false );
 }
 
 
@@ -81,9 +82,16 @@ StatusCode Zee::execute( generator::Event &ctx )
   for ( auto& e : zee ){
 
     auto seed = generator::Seed( e->momentum().eta(), e->momentum().phi() );
-    const auto vtx = e->production_vertex();
 
-    seed.emplace_back( 1, 0, 
+    const auto vtx    = e->production_vertex();    
+    float zVertexPos  = vtx->position().pz() + main_event_z;
+
+    // Calibration use only.
+    if (m_zeroVertexParticles){
+      zVertexPos  = vtx->position().pz();
+    }
+
+    seed.emplace_back( 1, 0,
                        e->pid(), 
                        e->momentum().px(), 
                        e->momentum().py(), 
@@ -92,11 +100,13 @@ StatusCode Zee::execute( generator::Event &ctx )
                        e->momentum().phi(), 
                        vtx->position().px(), 
                        vtx->position().py(), 
-                       vtx->position().pz() + main_event_z, 
+                       //  vtx->position().pz() + main_event_z,
+                       zVertexPos,
                        vtx->position().t() + main_event_t, 
                        e->momentum().e(), 
                        e->momentum().pt() ); 
-    MSG_INFO("Add particle with PDGID " << e->pid() << " into the context.");
+    // MSG_INFO("Add particle with PDGID " << e->pid() << " into the context.");
+    MSG_INFO("Add particle with PDGID " << e->pid() << " and vertex x="<< vtx->position().px() <<", y=" <<vtx->position().py() <<", z=" << zVertexPos <<", t="<< vtx->position().t()+main_event_t <<" into the context."); 
     ctx.push_back( seed );
   }
   
