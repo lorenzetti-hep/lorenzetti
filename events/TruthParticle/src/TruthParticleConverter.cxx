@@ -12,6 +12,7 @@ bool TruthParticleConverter::convert( const TruthParticle *truth, TruthParticle_
 {
   if(truth){
     truth_t.pdgid = truth->pdgid();
+    truth_t.seedid=truth->seedid();
     truth_t.e  = truth->e();
     truth_t.et = truth->et();
     truth_t.eta = truth->eta();
@@ -35,7 +36,8 @@ bool TruthParticleConverter::convert( const TruthParticle_t &truth_t , TruthPart
                                    truth_t.px,
                                    truth_t.py,
                                    truth_t.pz,
-                                   truth_t.pdgid
+                                   truth_t.pdgid,
+                                   truth_t.seedid
                                   );
   return true;
 }

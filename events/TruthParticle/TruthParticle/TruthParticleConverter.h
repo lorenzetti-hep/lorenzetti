@@ -8,6 +8,7 @@ namespace xAOD{
 
     struct TruthParticle_t{
         int pdgid;
+        int seedid;
         float e;
         float et;
         float eta;

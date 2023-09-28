@@ -106,7 +106,7 @@ try:
       
   # sequence
   acc+= cluster
-  acc+= rings
+  acc+= ringss
   acc+= AOD
 
   acc.run(args.numberOfEvents)
@@ -117,3 +117,4 @@ try:
 except  Exception as e:
   print(e)
   sys.exit(1)
+

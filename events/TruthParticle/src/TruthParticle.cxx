@@ -8,6 +8,7 @@ using namespace xAOD;
 
 TruthParticle::TruthParticle():
   m_pdgid(0),
+  m_seedid(0),
   m_e(0),
   m_et(0),
   m_eta(0),
@@ -19,8 +20,9 @@ TruthParticle::TruthParticle():
 
 
 TruthParticle::TruthParticle( float e, float et, float eta, float phi , 
-                              float px, float py, float pz, int pdgid ): 
+                              float px, float py, float pz, int pdgid, int seedid ): 
   m_pdgid(pdgid),
+  m_seedid(seedid),
   m_e(e),
   m_et(et),
   m_eta(eta),

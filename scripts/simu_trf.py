@@ -74,6 +74,7 @@ try:
   gun = EventReader( "EventReader",
                      EventKey   = recordable("EventInfo"),
                      TruthKey   = recordable("Particles"),
+                     SeedKey    = recordable("Seeds"),
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
                      )
@@ -87,16 +88,14 @@ try:
   gun.merge(acc)
   calorimeter.merge(acc)
 
-  OutputHitsKey   = recordable("Hits")
-  OutputEventKey  = recordable("EventInfo")
 
   from RootStreamBuilder import RootStreamHITMaker, recordable
-
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              # input from context
-                             InputHitsKey    = OutputHitsKey,
-                             InputEventKey   = OutputEventKey,
+                             InputHitsKey    = recordable("Hits"),
+                             InputEventKey   = recordable("EventInfo"),
                              InputTruthKey   = recordable("Particles"),
+                             InputSeedKey    = recordable("Seeds"),
                              # output to file
                              OutputHitsKey   = recordable("Hits"),
                              OutputEventKey  = recordable("EventInfo"),
@@ -114,9 +113,6 @@ try:
   if args.visualization:
       input("Press Enter to quit...")
 
-  
-  #del acc # remove all instances
-  #gc.collect() # make sure everything was removed
   sys.exit(0)
   
 except  Exception as e:
