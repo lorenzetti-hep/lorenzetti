@@ -13,8 +13,11 @@ namespace xAOD{
       /*! Contructor */
       TruthParticle();
       /*! Contructor */
-      TruthParticle( float e, float et, float eta, float phi, 
-                     float px, float py, float pz, int pdgid, int seedid );
+      TruthParticle( int pdgid, int seedid, 
+                     float e, float et, float eta, float phi, 
+                     float px, float py, float pz, 
+                     float vx, float vy, float vz); // production vertex position
+                      
       /*! Destructor */
       ~TruthParticle()=default;
       /*! The eta center of the cluster given by the simulation (RoI) */ 
@@ -36,6 +39,14 @@ namespace xAOD{
 
       PRIMITIVE_SETTER_AND_GETTER( float, m_pz, setPz, pz );
 
+      /*! set/get vertex position */
+      PRIMITIVE_SETTER_AND_GETTER( float, m_vtx_x, setVx, vx );
+
+      PRIMITIVE_SETTER_AND_GETTER( float, m_vtx_y, setVy, vy );
+
+      PRIMITIVE_SETTER_AND_GETTER( float, m_vtx_z, setVz, vz );
+
+ 
 
 
     private:
@@ -49,6 +60,11 @@ namespace xAOD{
       float m_px;
       float m_py;
       float m_pz;
+      // vertex position
+      float m_vtx_x;      
+      float m_vtx_y;
+      float m_vtx_z;
+
   };
 }
 #endif

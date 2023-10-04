@@ -233,6 +233,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
       {
         // transfer truth energy for each bunch crossing to descriptor
         descriptor->edep( bcid, hit->edep(bcid) ); 
+        descriptor->tof ( bcid, hit->tof(bcid)  );
       }  
 
       if( m_pulseGenerator->execute(ctx, descriptor).isFailure() ){

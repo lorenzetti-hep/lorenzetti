@@ -18,6 +18,7 @@ class CaloCellBuilder( Logger ):
   def __init__( self, name, detector,
                       HistogramPath        = "Expert", 
                       HitsKey              = "Hits",
+                      DoCrosstalk          = False,
                       OutputLevel          = 1,
                       ):
 
@@ -38,7 +39,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
 
     collectionKeys = []
  
@@ -59,16 +60,17 @@ class CaloCellBuilder( Logger ):
                               StartSamplingBC = samp.StartSamplingBC )
                       
       of= OptimalFilter("OptimalFilter",
-                        Weights  = samp.OFWeights,
+                        WeightsEnergy  = samp.OFWeightsEnergy,
+                        WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
  
           
       alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, 
                             # input key
-                            EventKey                = recordable( "EventInfo" ), 
-                            HitsKey                 = recordable( self.HitsKey ),
+                            EventKey                =  "EventInfo" , # events
+                            HitsKey                 =  self.HitsKey, # hits
                             # output key
-                            CollectionKey           = samp.CollectionKey, 
+                            CollectionKey           = samp.CollectionKey, # descriptors
                             # Hits grid configuration
                             EtaBins                 = samp.sensitive().EtaBins,
                             PhiBins                 = samp.sensitive().PhiBins,
@@ -97,13 +99,15 @@ class CaloCellBuilder( Logger ):
     MSG_INFO(self, "Create CaloCellMerge and dump all cell collections into %s container", "Cells")
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloCellMerge( "CaloCellMerge" , 
-                              CollectionKeys  = collectionKeys,
-                              CellsKey        = recordable("Cells"),
-                              TruthCellsKey   = recordable("TruthCells"),
+                              # input key
+                              CollectionKeys  = collectionKeys, # descriptors
+                              # output key
+                              TruthCellsKey   = recordable("TruthCells", container="CaloCellContainer"), # cells
+                              CellsKey        = recordable("Cells"     , container="CaloCellContainer"), # cells
+                              # configs
                               OutputLevel     = self.OutputLevel )
 
     self.__recoAlgs.append( mergeAlg )
-
 
 
   def merge( self, acc ):

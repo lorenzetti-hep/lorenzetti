@@ -9,7 +9,8 @@ from G4Kernel import treatPropertyValue
 class OptimalFilter(Logger):
 
   __allow_keys = ["OutputLevel",
-                  "Weights",
+                  "WeightsEnergy",
+                  "WeightsTime",
                   ]
   
   def __init__( self, name, **kw ):

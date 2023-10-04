@@ -98,43 +98,47 @@ def getLArBarrelCfg():
 
   # Configure the electronic frontend and the detector parameters
   psb_det  = Calorimeter( psb_sv, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
-                          CollectionKey = "Collection_PSB", # collection key
-                          Detector      = Detector.TTEM, # detector type
-                          Sampling      = CaloSampling.PSB, # sampling type
-                          Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                          Noise         = 90*MeV, # electronic noise
-                          Samples       = 5, # how many samples
-                          OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                          CollectionKey   = "Collection_PSB", # collection key
+                          Detector        = Detector.TTEM, # detector type
+                          Sampling        = CaloSampling.PSB, # sampling type
+                          Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                          Noise           = 90*MeV, # electronic noise
+                          Samples         = 5, # how many samples
+                          OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                          OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                         )
   # Configure the electronic frontend and the detector parameters
   emb1_det = Calorimeter( emb1_sv, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
-                          CollectionKey = "Collection_EMB1", # collection key
-                          Detector      = Detector.TTEM, # detector type
-                          Sampling      = CaloSampling.EMB1, # sampling type
-                          Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                          Noise         = 26*MeV, # electronic noise
-                          Samples       = 5, # how many samples
-                          OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                          CollectionKey   = "Collection_EMB1", # collection key
+                          Detector        = Detector.TTEM, # detector type
+                          Sampling        = CaloSampling.EMB1, # sampling type
+                          Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                          Noise           = 26*MeV, # electronic noise
+                          Samples         = 5, # how many samples
+                          OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                          OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                         )
   # Configure the electronic frontend and the detector parameters
   emb2_det = Calorimeter( emb2_sv, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
-                          CollectionKey = "Collection_EMB2", # collection key
-                          Detector      = Detector.TTEM, # detector type
-                          Sampling      = CaloSampling.EMB2, # sampling type
-                          Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                          Noise         = 60*MeV, # electronic noise
-                          Samples       = 5, # how many samples
-                          OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                          CollectionKey   = "Collection_EMB2", # collection key
+                          Detector        = Detector.TTEM, # detector type
+                          Sampling        = CaloSampling.EMB2, # sampling type
+                          Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                          Noise           = 60*MeV, # electronic noise
+                          Samples         = 5, # how many samples
+                          OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                          OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                         )
   # Configure the electronic frontend and the detector parameters
   emb3_det = Calorimeter( emb3_sv, -21, 3, -2, # sensitive volume, bunch start, bunch end, sampling start,
-                          CollectionKey = "Collection_EMB3", # collection key
-                          Detector      = Detector.TTEM, # detector type
-                          Sampling      = CaloSampling.EMB3, # sampling type
-                          Shaper        = basepath + "/pulseLar.dat", # pulse shaper
-                          Noise         = 40*MeV, # electronic noise
-                          Samples       = 5, # how many samples
-                          OFWeights     = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters
+                          CollectionKey   = "Collection_EMB3", # collection key
+                          Detector        = Detector.TTEM, # detector type
+                          Sampling        = CaloSampling.EMB3, # sampling type
+                          Shaper          = basepath + "/pulseLar.dat", # pulse shaper
+                          Noise           = 40*MeV, # electronic noise
+                          Samples         = 5, # how many samples
+                          OFWeightsEnergy = [-0.0000853580,    0.265132,    0.594162,     0.389505,     0.124353], # optimal filter parameters for energy estimation
+                          OFWeightsTime   = [-0.0000853580,   -12.870312690734863, -27.39136505126953, 8.075883865356445, 13.768877029418945] # EMB1 ATLAS sample to test (fake first number to add to 5) 
                         )
 
 

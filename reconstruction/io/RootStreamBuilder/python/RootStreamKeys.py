@@ -2,31 +2,11 @@
 
 __all__ = ['recordable']
 
+recodable_keys = []
 
-
-def recordable( key ):
-
-  keys = [
-            # CaloCellMaker
-            "Collection_EM1",
-            "Collection_EM2",
-            "Collection_EM3",
-            "Collection_HAD1",
-            "Collection_HAD2",
-            "Collection_HAD3",
-            "Hits",
-            # CaloCellMerge
-            "Cells",
-            "TruthCells",
-            # CaloClusterMaker
-            "EventInfo",
-            "Clusters",
-            "TruthClusters",
-            "Particles",
-            "TruthParticles",
-            # CaloRingsBuilder
-            "Rings",
-            "TruthRings",
-            ]
-
-  return key
+def recordable( key:str , container: str) -> str:
+  name = (container+'_'+key)   
+  if name in recodable_keys:
+    raise RuntimeError(f"Key {name} repeated. please use another key.")
+  recodable_keys.append(name)
+  return name

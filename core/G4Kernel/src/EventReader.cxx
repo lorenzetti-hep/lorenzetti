@@ -1,8 +1,8 @@
 
-#include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
-#include "TruthParticle/TruthParticle.h"
+#include "EventInfo/EventSeedContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+
 
 #include "G4Kernel/EventReader.h"
 #include "G4Kernel/RunReconstruction.h"
@@ -233,22 +233,23 @@ int EventReader::Load( G4Event* g4event )
   SG::WriteHandle<xAOD::TruthParticleContainer>  particles(m_truthKey, reco->getContext());
   particles.record( std::unique_ptr<xAOD::TruthParticleContainer>( new xAOD::TruthParticleContainer() ) );
 
-  SG::WriteHandle<xAOD::SeedContainer>  particles(m_seedKey, reco->getContext());
-  seeds.record( std::unique_ptr<xAOD::SeedContainer>( new xAOD::SeedContainer() ) );
-  
+  SG::WriteHandle<xAOD::EventSeedContainer>  seeds(m_seedKey, reco->getContext());
+  seeds.record( std::unique_ptr<xAOD::EventSeedContainer>( new xAOD::EventSeedContainer() ) );
+ 
   float totalEnergy=0;
   int num_of_seeds = 0;
+  
   
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     int bc_id = m_p_bc_id->at(i);
     if(m_p_pdg_id->at(i)==0){ // is seed?
-      xAOD::Seed *seed = new xAOD::Seed( m_p_e->at(i)*MeV, 
-                                         m_p_et->at(i)*MeV, 
-                                         m_p_eta->at(i), 
-                                         m_p_phi->at(i), 
-                                         m_p_seed_id->at(i) );
+      xAOD::EventSeed *seed = new xAOD::EventSeed( m_p_e->at(i)*MeV, 
+                                                   m_p_et->at(i)*MeV, 
+                                                   m_p_eta->at(i), 
+                                                   m_p_phi->at(i), 
+                                                   m_p_seed_id->at(i) );
 
       MSG_INFO( "Particle seeded in eta = " << seed->eta() << ", phi = " << seed->phi());
       seeds->push_back(seed);
@@ -261,19 +262,24 @@ int EventReader::Load( G4Event* g4event )
         if( Add( g4event, i, bc_id ) ){ // Is inside of the world
             // particle is main event and inside of the world, add particle
             totalEnergy+= m_p_et->at(i);
-            xAOD::TruthParticle *par = new xAOD::TruthParticle( m_p_e->at(i)*MeV, 
+            xAOD::TruthParticle *par = new xAOD::TruthParticle( 
+                                                                m_p_pdg_id->at(i),
+                                                                m_p_seed_id->at(i) ,
+                                                                m_p_e->at(i)*MeV, 
                                                                 m_p_et->at(i)*MeV, 
                                                                 m_p_eta->at(i), 
                                                                 m_p_phi->at(i), 
                                                                 m_p_px->at(i)*MeV, 
                                                                 m_p_py->at(i)*MeV, 
                                                                 m_p_pz->at(i)*MeV, 
-                                                                m_p_pdg_id->at(i),
-                                                                m_p_seed_id->at(i) );
+                                                                m_p_prod_x->at(i)*mm,
+                                                                m_p_prod_y->at(i)*mm,
+                                                                m_p_prod_z->at(i)*mm
+                                                              );
+
             MSG_DEBUG( "Particle in eta = " << par->eta() << ", phi = " << par->phi());
             particles->push_back(par);
         }
-      }
     }else{ // Is not a main event
       Add( g4event, i, bc_id );
     }

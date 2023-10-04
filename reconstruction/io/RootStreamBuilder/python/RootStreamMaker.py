@@ -1,19 +1,18 @@
-__all__ = ["RootStreamHITReader"]
+__all__ = ["RootStreamHITMaker"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
+from pprint import pprint
 
-
-class RootStreamHITReader( Logger ):
+class RootStreamMaker( Logger ):
 
   __allow_keys = [
-                  "EventKey",
-                  "TruthKey",
-                  "HitsKey",
                   "OutputLevel", 
                   "NtupleName",
-                  "InputFile",
+                  "OnlyRoI",
+                  "EtaWindow",
+                  "PhiWindow",
                   ]
 
 
@@ -22,15 +21,15 @@ class RootStreamHITReader( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamHITReader
-    self.__core = RootStreamHITReader(name)
+    from ROOT import RootStreamMaker
+    self.__core = RootStreamMaker(name)
+
     for key, value in kw.items():
       self.setProperty( key,value )
 
-    from ROOT import TFile, TTree 
-    f = TFile( self.getProperty("InputFile"),"read")
-    t = f.Get( self.getProperty("NtupleName"))
-    self.__entries = t.GetEntries()
+    from RootStreamBuilder import recodable_keys
+    pprint(recodable_keys)
+    self.setProperty("Containers", recodable_keys)
 
   def core(self):
     return self.__core
@@ -51,9 +50,4 @@ class RootStreamHITReader( Logger ):
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
-  def GetEntries(self):
-    return self.__entries
 
-
-  def merge(self, acc):
-    acc.SetReader(self)

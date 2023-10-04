@@ -55,12 +55,14 @@ namespace xAOD{
      
 
       /*
-       * Energy values
-       */
+      * Energy values
+      */
 
 
       /*! Estimated energy from OF **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
+      /*! Estimated time of flight from OF **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_tau, setTau, tau );
 
 
       /*! Energy deposity from simulated hits **/
@@ -76,10 +78,26 @@ namespace xAOD{
         m_edep[bc_id] += e;
       }
 
+      /*
+      * Time of flight (Global time from G4)
+      */
+
+      /*! Time of flight from simulated hits **/
+      float tof( int bc_id=0 ) const{
+        if (m_tof.count(bc_id)){
+          return m_tof.at(bc_id);
+        }else{// return zero case bc not exist
+          return 0;
+        }
+      }
+      void tof( int bc_id, float t ){
+        m_tof[bc_id] = t;
+      }
+
 
       /*
-       * Bunch crossing information
-       */
+      * Bunch crossing information
+      */
 
       /*! Bunch crossing id start */
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , bcid_start    );
@@ -113,6 +131,8 @@ namespace xAOD{
       };
 
 
+      CaloDetDescriptor * copy();
+
 
     private:
  
@@ -136,6 +156,8 @@ namespace xAOD{
 
       /*! The estimated energy from OF in bcid=0 */
       float m_e;
+      /*! The estimated time of flight from OF in bcid=0 */
+      float m_tau;
       /*! Digitalized integrated pulse for the main event (bcid=0) */
       std::vector<float> m_pulse;
 
@@ -152,6 +174,8 @@ namespace xAOD{
       std::vector<float> m_time;
       /*! energy deposit between bcid_start and bcid_end */
       std::map< int, float> m_edep;
+      /*! time of flight of a hit in the cell between bcid_start and bcid_end */
+      std::map< int, float> m_tof;
       /*! Digitalized pulse for each bunch between bcid_start and bcid_end */
       std::map< int, std::vector<float> > m_pulsePerBunch;
 

@@ -1,23 +1,20 @@
-__all__ = ["RootStreamESDMaker"]
+__all__ = ["RootStreamHITReader"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class RootStreamESDMaker( Logger ):
+class RootStreamHITReader( Logger ):
 
   __allow_keys = [
-                  "InputEventKey",
-                  "InputTruthKey",
-                  "InputCellsKey",
-                  "OutputEventKey",
-                  "OutputTruthKey",
-                  "OutputCellsKey",                 
+                  "EventKey",
+                  "TruthKey",
+                  "SeedsKey",
+                  "HitsKey",
                   "OutputLevel", 
                   "NtupleName",
-                  "EtaWindow",
-                  "PhiWindow",
+                  "InputFile",
                   ]
 
 
@@ -26,12 +23,15 @@ class RootStreamESDMaker( Logger ):
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamESDMaker
-    self.__core = RootStreamESDMaker(name)
-
+    from ROOT import RootStreamHITReader
+    self.__core = RootStreamHITReader(name)
     for key, value in kw.items():
       self.setProperty( key,value )
 
+    from ROOT import TFile, TTree 
+    f = TFile( self.getProperty("InputFile"),"read")
+    t = f.Get( self.getProperty("NtupleName"))
+    self.__entries = t.GetEntries()
 
   def core(self):
     return self.__core
@@ -52,4 +52,9 @@ class RootStreamESDMaker( Logger ):
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
+  def GetEntries(self):
+    return self.__entries
 
+
+  def merge(self, acc):
+    acc.SetReader(self)

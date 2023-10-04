@@ -2,7 +2,7 @@
 #define CaloHitConverter_h
 
 /** simulator includes **/
-#include "CaloHit/CaloHit.h"
+#include "CaloHit/CaloHitContainer.h"
 
 namespace xAOD{
 
@@ -21,21 +21,39 @@ namespace xAOD{
         int bcid_end;
         float bc_duration;
         std::vector<float> edep;
+        std::vector<float> tof; // 
         unsigned long int hash;
     };
 
-    class CaloHitConverter{
+
+    class CaloHitConverter: public MsgService{
 
         public:
-            CaloHitConverter()=default;
+        
+            CaloHitConverter( std::string seedKey, bool onlyRoi, 
+                              float etaWindow, float phiWindow):IMsgService(),m_seedKey(seedKey), m_onlyRoi(onlyRoi),
+                                                                m_etaWindow(etaWindow),m_phiWindow(phiWindow){;};
+
             ~CaloHitConverter()=default;
 
-            // convert a class object into a struct
-            bool convert(const CaloHit *, CaloHit_t & );
+            std::string name(){return "CaloHitContainer";};
 
-            bool convert( const CaloHit_t &, CaloHit *& );
-            
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/,  TTree *);
+            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
+
         private:
+
+            // convert a class object into a struct
+            bool convert(const CaloHit *truth, CaloHit_t &truth_t ) const;
+            bool convert(const CaloHit_t & , CaloHit *&) const;
+            template <class T> bool InitBranch(TTree* fChain, std::string branch_name, T* param) const;
+
+            std::string m_seedKey;
+            bool m_onlyRoi;
+            float m_etaWindow;
+            float m_phiWindow;
+
+            std::vector<xAOD::CaloHit_t> m_hits_t;
 
     };
 

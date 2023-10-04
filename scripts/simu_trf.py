@@ -72,9 +72,10 @@ try:
 
 
   gun = EventReader( "EventReader",
-                     EventKey   = recordable("EventInfo"),
-                     TruthKey   = recordable("Particles"),
-                     SeedKey    = recordable("Seeds"),
+                     # outputs
+                     EventKey   = recordable("EventInfo", container="EventInfoContainer"    ),
+                     TruthKey   = recordable("Particles", container="TruthParticleContainer"),
+                     SeedKey    = recordable("Seeds"    , container="EventSeedContainer"    ),
                      FileName   = args.inputFile,
                      BunchDuration = 25.0,#ns
                      )
@@ -83,6 +84,7 @@ try:
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
+                                HitKey        = recordable( "Hits", container="CaloHitContainer")
                                 )
 
   gun.merge(acc)
@@ -90,23 +92,14 @@ try:
 
 
   from RootStreamBuilder import RootStreamHITMaker, recordable
-  HIT = RootStreamHITMaker( "RootStreamHITMaker",
-                             # input from context
-                             InputHitsKey    = recordable("Hits"),
-                             InputEventKey   = recordable("EventInfo"),
-                             InputTruthKey   = recordable("Particles"),
-                             InputSeedKey    = recordable("Seeds"),
-                             # output to file
-                             OutputHitsKey   = recordable("Hits"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),
-                             # special parameters
-                             EtaWindow       = 0.6,
-                             PhiWindow       = 0.6,
-                             OnlyRoI         = not args.saveAllHits,
-                             OutputLevel     = outputLevel)
+  stream = RootStreamMaker( "RootStreamMaker",
+                            # special parameters
+                            EtaWindow       = 0.6,
+                            PhiWindow       = 0.6,
+                            OnlyRoI         = not args.saveAllHits,
+                            OutputLevel     = outputLevel)
 
-  acc += HIT
+  acc += stream
   
   acc.run(args.numberOfEvents)
   

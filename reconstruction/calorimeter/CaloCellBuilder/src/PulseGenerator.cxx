@@ -63,7 +63,8 @@ StatusCode PulseGenerator::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm )
   {
     // Generate the pulse
     std::vector<float> pulse;
-    GenerateDeterministicPulse( pulse, cell->edep(bcid), 0, bcid*cell->bc_duration() );
+    // GenerateDeterministicPulse( pulse, cell->edep(bcid), 0, bcid*cell->bc_duration() ); // phase=0
+    GenerateDeterministicPulse( pulse, cell->edep(bcid), cell->tof(bcid), bcid*cell->bc_duration() ); // phase='truth' tof
     // Accumulate into pulse sum (Sum all pulses)
     for ( int samp=0; samp < pulse_size; ++samp ){
       pulse_sum[samp] += pulse[samp];

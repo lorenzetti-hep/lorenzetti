@@ -1,12 +1,12 @@
 
 
-#include "Seed/Seed.h"
+#include "EventInfo/EventSeed.h"
 
 
 using namespace xAOD;
 
 
-Seed::Seed():
+EventSeed::EventSeed():
   m_id(-1),
   m_e(0),
   m_et(0),
@@ -15,7 +15,7 @@ Seed::Seed():
 {;}
 
 
-Seed::Seed( int id, float e, float et, float eta, float phi  ): 
+EventSeed::EventSeed( int id, float e, float et, float eta, float phi  ): 
   m_id(id),
   m_e(e),
   m_et(et),

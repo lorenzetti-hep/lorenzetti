@@ -86,7 +86,6 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
   SG::WriteHandle<xAOD::CaloCellContainer> recoContainer( m_cellsKey , ctx );
   recoContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
   
-
   MSG_DEBUG( "Creating truth cells containers with key " << m_truthCellsKey);
   SG::WriteHandle<xAOD::CaloCellContainer> truthContainer( m_truthCellsKey , ctx );
   truthContainer.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()) );
@@ -104,7 +103,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       continue;
     }
 
-    MSG_DEBUG( "Creating new cells and attach the object into the container" );
+    MSG_DEBUG( "Creating new cells and attach the object into the container" ); 
     for (const auto &pair : **collection.ptr() )
     {
       // descriptor Cell with all geant/bunch/pulse information
@@ -119,6 +118,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       truth_cell->setDeltaPhi( descriptor->deltaPhi() );
       truth_cell->setE( descriptor->edep() ); // The truth will be the energy deposity
       truth_cell->setEt( truth_cell->e() / std::cosh( truth_cell->eta() ) );
+      truth_cell->setTau( descriptor->tof());
       
       truth_cell->setDescriptor( descriptor );
       truthContainer->push_back( truth_cell );
@@ -131,6 +131,7 @@ StatusCode CaloCellMerge::post_execute( EventContext &ctx ) const
       cell->setDeltaEta( descriptor->deltaEta() );
       cell->setDeltaPhi( descriptor->deltaPhi() );
       cell->setE( descriptor->e() ); // Estimated energy from OF
+      cell->setTau( descriptor->tau());
       cell->setEt( cell->e() / std::cosh( cell->eta() ) );
 
       cell->setDescriptor( descriptor );

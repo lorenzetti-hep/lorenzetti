@@ -1,9 +1,10 @@
-#ifndef RootStreamESDMaker_h
-#define RootStreamESDMaker_h
+#ifndef RootStreamHITMaker_h
+#define RootStreamHITMaker_h
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
+#include "TruthParticle/Seed.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
@@ -11,14 +12,14 @@
 
 
 
-class RootStreamESDMaker : public Gaugi::Algorithm
+class RootStreamHITMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    RootStreamESDMaker( std::string );
+    RootStreamHITMaker( std::string );
     
-    virtual ~RootStreamESDMaker();
+    virtual ~RootStreamHITMaker();
     
     virtual StatusCode initialize() override;
 
@@ -46,14 +47,20 @@ class RootStreamESDMaker : public Gaugi::Algorithm
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
     std::string m_ntupleName;
-    std::string m_inputCellsKey;
+
+    std::string m_inputHitsKey;
     std::string m_inputEventKey;
     std::string m_inputTruthKey;
-    std::string m_outputCellsKey;
+    std::string m_inputSeedKey;
+
+    std::string m_outputHitsKey;
     std::string m_outputEventKey;
     std::string m_outputTruthKey;
+    std::string m_outputSeedKey;
     
-    float m_etaWindow, m_phiWindow;
+    float m_etaWindow;
+    float m_phiWindow;
+    bool m_onlyRoI;
 
     int m_outputLevel;
 };

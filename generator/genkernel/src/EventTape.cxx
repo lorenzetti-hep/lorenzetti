@@ -224,7 +224,7 @@ void EventTape::dump( Event &event )
     m_p_phi->push_back( seed.phi() );
     m_p_prod_x->push_back( 0 ); 
     m_p_prod_y->push_back( 0 ); 
-    m_p_prod_z->push_back( 0 ); 
+    m_p_prod_z->push_back( 0 );
     m_p_prod_t->push_back( 0 );
     m_p_e->push_back( seed.etot() ); 
     m_p_et->push_back( seed.ettot() );

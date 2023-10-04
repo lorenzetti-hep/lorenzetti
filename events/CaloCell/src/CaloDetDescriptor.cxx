@@ -42,3 +42,21 @@ CaloDetDescriptor::CaloDetDescriptor(
   }
 }
 
+CaloDetDescriptor * CaloDetDescriptor::copy(){
+
+  auto det = new CaloDetDescriptor( m_eta, 
+                                    m_phi, 
+                                    m_deta, 
+                                    m_dphi, 
+                                    m_hash,
+                                    m_sampling, 
+                                    m_detector,
+                                    m_bc_duration,
+                                    m_bcid_start,
+                                    m_bcid_end );
+
+  
+
+}
+
+

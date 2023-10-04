@@ -65,25 +65,25 @@ add_subdirectory( core/G4Kernel )
 # event packages
 add_subdirectory( events/CaloHit )
 add_subdirectory( events/CaloCell )
-add_subdirectory( events/SpacePoint )
-add_subdirectory( events/CaloCluster )
+#add_subdirectory( events/SpacePoint )
+#add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
-add_subdirectory( events/CaloRings )
+#add_subdirectory( events/CaloRings )
 
 # reconstruction package
 add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
-add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
-add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
-add_subdirectory( reconstruction/io/RootStreamBuilder )
+#add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
+#add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
+#add_subdirectory( reconstruction/io/RootStreamBuilder )
 
 # detector definitions
-add_subdirectory( geometry/ATLAS )
+#add_subdirectory( geometry/ATLAS )
 
 # generator package
-add_subdirectory( generator/genkernel )
-add_subdirectory( generator/filters )
-add_subdirectory( generator/evtgen )
+#add_subdirectory( generator/genkernel )
+#add_subdirectory( generator/filters )
+#add_subdirectory( generator/evtgen )
 
 
 
@@ -94,19 +94,19 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:GaugiKernel>
   $<TARGET_OBJECTS:G4Kernel>
   $<TARGET_OBJECTS:CaloHit>
-  $<TARGET_OBJECTS:CaloCell>
-  $<TARGET_OBJECTS:CaloCluster>
+  #$<TARGET_OBJECTS:CaloCell>
+  #$<TARGET_OBJECTS:CaloCluster>
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
-  $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:SpacePoint>
-  $<TARGET_OBJECTS:CaloCellBuilder>
-  $<TARGET_OBJECTS:CaloClusterBuilder>
-  $<TARGET_OBJECTS:CaloRingsBuilder>
-  $<TARGET_OBJECTS:RootStreamBuilder>
-  $<TARGET_OBJECTS:GenKernel>
-  $<TARGET_OBJECTS:filters>
-  $<TARGET_OBJECTS:evtgen>
+  #$<TARGET_OBJECTS:CaloRings>
+  #$<TARGET_OBJECTS:SpacePoint>
+  #$<TARGET_OBJECTS:CaloCellBuilder>
+  #$<TARGET_OBJECTS:CaloClusterBuilder>
+  #$<TARGET_OBJECTS:CaloRingsBuilder>
+  #$<TARGET_OBJECTS:RootStreamBuilder>
+  #$<TARGET_OBJECTS:GenKernel>
+  #$<TARGET_OBJECTS:filters>
+  #$<TARGET_OBJECTS:evtgen>
 )
 
 message( STATUS ${FASTJET_LIBRARIES} )

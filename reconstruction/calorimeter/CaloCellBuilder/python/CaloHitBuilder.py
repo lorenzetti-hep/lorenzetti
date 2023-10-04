@@ -18,12 +18,14 @@ class CaloHitBuilder( Logger ):
   def __init__( self, name, 
                       HistogramPath  = "Expert", 
                       OutputLevel    = 1,
+                      HitsKey        = "Hits",
                       ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
     self.HistogramPath = HistogramPath
     self.OutputLevel = OutputLevel
+    self.HitsKey = HitsKey
 
 
   #
@@ -41,7 +43,7 @@ class CaloHitBuilder( Logger ):
           MSG_INFO(self, "Create new CaloHitMaker and dump all hits into %s collection", samp.CollectionKey)
           alg = CaloHitMaker("CaloHitMaker", 
                               # input key
-                              EventKey                = recordable( "EventInfo" ), 
+                              EventKey                = "EventInfo", 
                               # output key
                               CollectionKey           = samp.CollectionKey, 
                               # Hits grid configuration
@@ -54,13 +56,14 @@ class CaloHitBuilder( Logger ):
                               Sampling                = samp.Sampling,
                               Detector                = samp.Detector,                    
                               Segment                 = samp.sensitive().Segment,
+                              SamplingNoiseStd        = samp.Noise, # TOF selection
                               # Bunch crossing configuration
                               BunchIdStart            = samp.BunchIdStart,
                               BunchIdEnd              = samp.BunchIdEnd,
                               BunchDuration           = 25, #ns
                               # monitoring configuration
                               HistogramPath           = self.HistogramPath + '/' + samp.name(),
-                              OutputLevel             = self.OutputLevel,
+                              OutputLevel             = 1,#self.OutputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
           self.__recoAlgs.append( alg )
@@ -71,7 +74,7 @@ class CaloHitBuilder( Logger ):
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloHitMerge( "CaloHitMerge" , 
                               CollectionKeys  = collectionKeys,
-                              HitsKey         = recordable("Hits"),
+                              HitsKey         = self.HitsKey,
                               OutputLevel     = self.OutputLevel )
     self.__recoAlgs.append( mergeAlg )
 
