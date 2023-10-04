@@ -24,8 +24,7 @@ namespace xAOD{
             EventSeedConverter():IMsgService(){;};
             ~EventSeedConverter()=default;
 
-            std::string name(){return "EventSeedContainer";};
-
+            std::string key(){return m_key;};
              bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *);
              bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
 
@@ -36,6 +35,8 @@ namespace xAOD{
             template <class T> bool InitBranch(TTree* fChain, std::string branch_name, T* param) const;
 
             std::vector<xAOD::EventSeed_t>  m_seeds_t;
+
+            std::string m_key;
     };
 
 }

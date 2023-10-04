@@ -28,9 +28,10 @@ bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
 bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
 {
   m_events_t.clear();
+  m_key = "EventInfoContainer_"+key;
 
   MSG_INFO( "Create and link all branches..." );
-  tree->Branch( ("EventInfoContainer_"+key).c_str(), &m_events_t      );
+  tree->Branch( (m_key).c_str(), &m_events_t      );
 
   MSG_INFO("Serialize EventInfo...");
   SG::ReadHandle<xAOD::EventInfoContainer> container( key, ctx );
@@ -53,10 +54,11 @@ bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTr
 bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
 {
   std::vector<xAOD::EventInfo_t> events_t;
- 
+  m_key = "EventInfoContainer_"+key;
+
   MSG_DEBUG( "Link all branches..." );
   
-  InitBranch( tree, (key).c_str() , &events_t     );
+  InitBranch( tree, (m_key).c_str() , &events_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::EventInfoContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));

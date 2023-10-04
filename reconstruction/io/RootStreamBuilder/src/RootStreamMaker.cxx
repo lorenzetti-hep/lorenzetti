@@ -1,18 +1,19 @@
 
 
 #include "CaloHit/CaloHitConverter.h"
+#include "CaloCell/CaloCellConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "EventInfo/EventSeedConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "TruthParticle/ParticleSeedConverter.h"
 #include "RootStreamMaker.h"
-#include "GaugiKernel/EDM.h"
-#include "G4Kernel/CaloPhiRange.h"
 #include "TTree.h"
+
+#include <boost/algorithm/string.hpp>
+
 
 using namespace SG;
 using namespace Gaugi;
-
+using namespace xAOD;
 
 
 RootStreamMaker::RootStreamMaker( std::string name ) : 
@@ -68,7 +69,7 @@ StatusCode RootStreamMaker::execute( EventContext &/*ctx*/, const G4Step * /*ste
 
 //!=====================================================================
 
-StatusCode RootStreamMaker::execute( EventContext &ctx, int /*evt*/ ) const
+StatusCode RootStreamMaker::execute( EventContext &/*ctx*/, int /*evt*/ ) const
 {
   return StatusCode::SUCCESS;
 }
@@ -110,26 +111,52 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
   store->cd();
   TTree *tree = store->tree(m_ntupleName);
  
-  EventSeedConverter seedCnv;
-  TruthParticleConverter truthCnv;
-  CaloCellConverter cellCnv;
-  CaloHitConverter hitCnv;
+  // NOTE: this is unique always. We can not have more than one container for these objects stored into the contenx.
+  EventInfoConverter                  eventCnv;
+  EventSeedConverter                  seedCnv;
+  std::vector<TruthParticleConverter> truthCnv;
+  std::vector<CaloCellConverter>      cellCnv;
+  std::vector<CaloHitConverter>       hitCnv;
 
-  for (auto &key : m_containers){
-    container = 
+  for (auto &container_key : m_containers){
+    
+    MSG_INFO("Storing " << container_key << "...");
+
+    std::vector<std::string> result;
+    boost::split(result, container_key, boost::is_any_of("_") );
+    auto container = result.at(0);
+    auto key = result.at(1);
     
     if (container == "EventInfoContainer"){
-      EventInfoConverter cnv;
-      cnv.serialize( ctx, key, tree );
-      converters.push_back(cnv);
+
+      MSG_INFO("Converting and serializing EventInfo objects into root file...");
+      eventCnv.serialize( key, ctx, tree );
+
     }else if (container == "EventSeedContainer"){
-      seedCnv.serialize( ctx, key, tree);
+
+      MSG_INFO("Converting and serializing EventSeed objects into root file...");
+      seedCnv.serialize( key, ctx, tree );
+
     }else if (container == "TruthParticleContainer"){
-      truthCnv.serialize( ctx, key, tree);
+
+      MSG_INFO("Converting and serializing TruthParticle objects into root file...");
+      TruthParticleConverter cnv;
+      cnv.serialize( key, ctx, tree );
+      truthCnv.push_back(cnv);
+
     }else if (container == "CaloCellContainer"){
-      cellCnv.serialize( ctx, key, tree);
+
+      MSG_INFO("Converting and serializing CaloCell objects into root file...");
+      CaloCellConverter cnv(seedCnv.key() , m_etaWindow, m_phiWindow );
+      cnv.serialize( key, ctx, tree );
+      cellCnv.push_back(cnv);
+
     }else if (container == "CaloHitContainer"){
-      hitCnv.serialize( ctx, key, tree);
+
+      MSG_INFO("Converting and serializing CaloHit objects into root file...");
+      CaloHitConverter cnv(seedCnv.key(), m_onlyRoI, m_etaWindow, m_phiWindow);
+      cnv.serialize( key, ctx, tree );
+      hitCnv.push_back(cnv);
     }
   }
 
@@ -137,6 +164,6 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
   return StatusCode::SUCCESS;
  
 }
-
+                           
 //!=====================================================================
 

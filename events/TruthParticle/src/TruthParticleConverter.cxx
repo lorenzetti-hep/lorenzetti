@@ -51,9 +51,10 @@ bool TruthParticleConverter::convert( const TruthParticle_t &truth_t , TruthPart
 bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
 {
   m_particles_t.clear();
+  m_key = "TruthParticleContainer_"+key;
 
   MSG_INFO( "Create and link all branches..." );
-  tree->Branch( ("TruthParticleContainer_"+key).c_str(), &m_particles_t     );
+  tree->Branch( (m_key).c_str(), &m_particles_t     );
 
   MSG_INFO("Serialize TruthParticle...");
   SG::ReadHandle<xAOD::TruthParticleContainer> container( key, ctx );
@@ -75,11 +76,12 @@ bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx,
 
 bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
 {
+  m_key = "TruthParticleContainer_"+key;
   std::vector<xAOD::TruthParticle_t> particles_t;
  
   MSG_DEBUG( "Link all branches..." );
   
-  InitBranch( tree, (key).c_str() , &particles_t     );
+  InitBranch( tree, (m_key).c_str() , &particles_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::TruthParticleContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));

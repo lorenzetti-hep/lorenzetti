@@ -56,9 +56,9 @@ namespace xAOD{
 
             ~CaloCellConverter()=default;
 
-            std::string name(){return "CaloCellContainer";};
+            std::string key(){return m_key;};
 
-            bool serialize(  std::string &cellKey, SG::EventContext &/*ctx*/, TTree * );
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree * );
             bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
 
         private:
@@ -75,6 +75,8 @@ namespace xAOD{
             std::vector<xAOD::CaloDetDescriptor_t> m_descriptors_t;
             std::string m_seedKey;
             float m_etaWindow, m_phiWindow; 
+
+            std::string m_key;
     };
 }
 #endif

@@ -6,7 +6,7 @@
 
 namespace xAOD{
 
-    typedef std::map<const CaloHit *, int> descriptor_links_t;
+    typedef std::map<const CaloHit *, int> hit_links_t;
 
 
     struct CaloHit_t{
@@ -36,7 +36,7 @@ namespace xAOD{
 
             ~CaloHitConverter()=default;
 
-            std::string name(){return "CaloHitContainer";};
+            std::string key(){return m_key;};
 
             bool serialize(  std::string &, SG::EventContext &/*ctx*/,  TTree *);
             bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
@@ -55,6 +55,7 @@ namespace xAOD{
 
             std::vector<xAOD::CaloHit_t> m_hits_t;
 
+            std::string m_key;
     };
 
 }

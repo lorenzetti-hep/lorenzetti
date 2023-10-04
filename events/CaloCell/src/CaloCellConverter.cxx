@@ -100,11 +100,14 @@ bool CaloCellConverter::convert( const CaloCell_t &cell_t, CaloCell *&cell ) con
 
 bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
 {
+  m_key = "CaloCellContainer_" + key;
+
   m_cells_t.clear();
   m_descriptors_t.clear();
 
   MSG_INFO( "Create and link all branches..." );
-  tree->Branch( ("CaloCellContainer_"+key).c_str()         , &m_cells_t         );
+  tree->Branch( m_key.c_str()         , &m_cells_t         );
+  // aux container for calo cells
   tree->Branch( ("CaloDetDescriptorContainer_"+key).c_str(), &m_descriptors_t   );
 
 
@@ -156,12 +159,14 @@ bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTre
 
 bool CaloCellConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
 {
+  m_key = "CaloCellContainer_" + key;
   std::vector<xAOD::CaloCell_t> cells_t;
   std::vector<xAOD::CaloDetDescriptor_t> descriptors_t;
 
   MSG_DEBUG( "Link all branches..." );
   
-  InitBranch( tree, ("CaloCellContainer_"+key).c_str()          , &cells_t       );
+  InitBranch( tree, m_key.c_str()          , &cells_t       );
+  // aux container for calo cells
   InitBranch( tree, ("CaloDetDescriptorContainer_"+key).c_str() , &descriptors_t );
 
   tree->GetEntry( evt );

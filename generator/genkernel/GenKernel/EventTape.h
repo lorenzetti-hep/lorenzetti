@@ -56,7 +56,7 @@ namespace generator{
       std::vector<int>   *m_p_isMain    ;
       std::vector<int>   *m_p_pdg_id    ; 
       std::vector<int>   *m_p_bc_id     ; 
-      std::vector<int>   *m_seed_id_mu  ; 
+      std::vector<int>   *m_p_seed_id   ; 
       std::vector<float> *m_p_px        ; 
       std::vector<float> *m_p_py        ; 
       std::vector<float> *m_p_pz        ;

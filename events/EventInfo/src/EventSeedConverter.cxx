@@ -34,9 +34,10 @@ bool EventSeedConverter::convert( const EventSeed_t &seed_t , EventSeed *&seed )
 bool EventSeedConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
 {
   m_seeds_t.clear();
+  m_key = "EventSeedContainer_"+key;
 
   MSG_INFO( "Create and link all branches..." );
-  tree->Branch( ("EventSeedConverter_"+key).c_str(), &m_seeds_t      );
+  tree->Branch( (m_key).c_str(), &m_seeds_t      );
 
   MSG_INFO("Serialize EventSeed...");
   SG::ReadHandle<xAOD::EventSeedContainer> container( key, ctx );
@@ -59,9 +60,10 @@ bool EventSeedConverter::serialize( std::string &key, SG::EventContext &ctx, TTr
 bool EventSeedConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
 {
   std::vector<xAOD::EventSeed_t> seeds_t;
- 
+  m_key = "EventSeedContainer_"+key;
+
   MSG_DEBUG( "Link all branches..." );
-  InitBranch( tree, (key).c_str() , &seeds_t     );
+  InitBranch( tree, (m_key).c_str() , &seeds_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::EventSeedContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));

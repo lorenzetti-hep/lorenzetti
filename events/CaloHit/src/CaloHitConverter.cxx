@@ -64,11 +64,11 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit ) const
 
 bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
 {
+  m_key = "CaloHitContainer_"+key;
   m_hits_t.clear();
 
   MSG_INFO( "Create and link all branches..." );
-  tree->Branch( ("CaloHitConverter_"+key).c_str(), &m_hits_t     );
-
+  tree->Branch( m_key.c_str(), &m_hits_t     );
   MSG_INFO("Serialize CaloHits...");
   
   SG::ReadHandle<xAOD::EventSeedContainer> seeds( m_seedKey, ctx );
@@ -120,10 +120,11 @@ bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree
 bool CaloHitConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
 {
   std::vector<xAOD::CaloHit_t> *hits_t = nullptr;
- 
+  m_key = "CaloHitContainer_"+key;
+
   MSG_DEBUG( "Link all branches..." );
   
-  InitBranch( tree, (key).c_str() , &hits_t     );
+  InitBranch( tree, m_key.c_str() , &hits_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::CaloHitContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::CaloHitContainer>(new xAOD::CaloHitContainer()));

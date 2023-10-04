@@ -1,9 +1,25 @@
-__all__ = ["RootStreamHITMaker"]
+__all__ = ["RootStreamMaker", "recordable", "get_recordable_keys"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 from pprint import pprint
+
+
+recodable_keys = []
+
+def recordable( key:str , container: str) -> str:
+  name = (container+'_'+key)   
+  if name in recodable_keys:
+    raise RuntimeError(f"Key {name} repeated. please use another key.")
+  recodable_keys.append(name)
+  return name
+
+def get_recordable_keys():
+  return recordable_keys
+
+
+
 
 class RootStreamMaker( Logger ):
 

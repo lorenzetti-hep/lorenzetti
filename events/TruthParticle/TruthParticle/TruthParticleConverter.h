@@ -29,7 +29,7 @@ namespace xAOD{
         public:
             TruthParticleConverter():IMsgService(){;};
             ~TruthParticleConverter()=default;
-            std::string name(){return "TruthParticleContainer";};
+            std::string key(){return m_key;};
 
             bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *);
             bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
@@ -43,6 +43,7 @@ namespace xAOD{
 
             std::vector<xAOD::TruthParticle_t>  m_particles_t;
 
+            std::string m_key;
     };
 }
 #endif
