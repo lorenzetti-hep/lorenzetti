@@ -48,20 +48,15 @@ bool TruthParticleConverter::convert( const TruthParticle_t &truth_t , TruthPart
 }
 
 
-bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
+bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  m_particles_t.clear();
-  m_key = "TruthParticleContainer_"+key;
+  std::vector<xAOD::TruthParticle_t>  m_particles_t;
 
-  MSG_INFO( "Create and link all branches..." );
-  tree->Branch( (m_key).c_str(), &m_particles_t     );
-
-  MSG_INFO("Serialize TruthParticle...");
+  auto branch = tree->Branch( ("TruthParticleContainer_"+key).c_str(), &m_particles_t     );
   SG::ReadHandle<xAOD::TruthParticleContainer> container( key, ctx );
 
   if( !container.isValid() )
   {
-    MSG_ERROR("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << key );
     return false;
   }
 
@@ -70,18 +65,17 @@ bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx,
     convert( par, par_t );
     m_particles_t.push_back(par_t);
   }
+
+  branch->Fill();
   return true;
 }
 
 
-bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
+bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
-  m_key = "TruthParticleContainer_"+key;
   std::vector<xAOD::TruthParticle_t> particles_t;
  
-  MSG_DEBUG( "Link all branches..." );
-  
-  InitBranch( tree, (m_key).c_str() , &particles_t     );
+  tree->SetBranchAddress( ("TruthParticleContainer_"+key).c_str() , &particles_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::TruthParticleContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
@@ -90,7 +84,6 @@ bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tr
   {
     xAOD::TruthParticle  *par=nullptr;
     convert(par_t, par);
-    MSG_INFO( "Particle in eta = " << par->eta() << ", phi = " << par->phi() << ", pdgID = "<< par->pdgid());
     container->push_back(par);
   }
 
@@ -99,18 +92,3 @@ bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tr
 
 
 
-template <class T>
-bool TruthParticleConverter::InitBranch(TTree* fChain, std::string branch_name, T* param) const
-{
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return false;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
-  return true;
-}

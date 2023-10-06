@@ -98,32 +98,27 @@ bool CaloCellConverter::convert( const CaloCell_t &cell_t, CaloCell *&cell ) con
 }
 
 
-bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
+bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  m_key = "CaloCellContainer_" + key;
+  std::vector<xAOD::CaloCell_t> cells_t;
+  std::vector<xAOD::CaloDetDescriptor_t> descriptors_t;
 
-  m_cells_t.clear();
-  m_descriptors_t.clear();
-
-  MSG_INFO( "Create and link all branches..." );
-  tree->Branch( m_key.c_str()         , &m_cells_t         );
-  // aux container for calo cells
-  tree->Branch( ("CaloDetDescriptorContainer_"+key).c_str(), &m_descriptors_t   );
+  auto branch_cells = tree->Branch( ("CaloCellContainer_" + key).c_str()       , &cells_t         );
+  auto branch_desc  = tree->Branch( ("CaloDetDescriptorContainer_"+key).c_str(), &descriptors_t   );
 
 
-  MSG_DEBUG("Serialize CaloCells...");
-  xAOD::cell_links_t       cell_links;
+  xAOD::cell_links_t cell_links;
 
   SG::ReadHandle<xAOD::CaloCellContainer> container(key, ctx);
   if( !container.isValid() )
   {
-      MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << key );
+    return false;
   }
     
   SG::ReadHandle<xAOD::EventSeedContainer> seeds( m_seedKey, ctx);
   if( !seeds.isValid() )
   {
-    MSG_FATAL("It's not possible to read the xAOD::EventSeedContainer from this Context using this key " << m_seedKey );
+    return false;
   }
 
   int link = 0; // decorate all cells 
@@ -147,31 +142,28 @@ bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTre
                   convert( descriptor, descriptor_t, link);
                   link++;
               }
-              m_cells_t.push_back(cell_t);
-              m_descriptors_t.push_back(descriptor_t);
+              cells_t.push_back(cell_t);
+              descriptors_t.push_back(descriptor_t);
           }// check if cell is inside of the window
       }// loop over all cells
   }// loop over all seeds
+
+  branch_cells->Fill();
+  branch_desc->Fill();
 
   return true;
 }
 
 
-bool CaloCellConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
+bool CaloCellConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
-  m_key = "CaloCellContainer_" + key;
   std::vector<xAOD::CaloCell_t> cells_t;
   std::vector<xAOD::CaloDetDescriptor_t> descriptors_t;
-
-  MSG_DEBUG( "Link all branches..." );
   
-  InitBranch( tree, m_key.c_str()          , &cells_t       );
-  // aux container for calo cells
-  InitBranch( tree, ("CaloDetDescriptorContainer_"+key).c_str() , &descriptors_t );
-
+  tree->SetBranchAddress( ("CaloCellContainer_" +key).c_str()         , &cells_t       );
+  tree->SetBranchAddress( ("CaloDetDescriptorContainer_"+key).c_str() , &descriptors_t );
   tree->GetEntry( evt );
 
-  // deserialize Cells
   std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
 
   int link=0;
@@ -194,22 +186,5 @@ bool CaloCellConverter::deserialize( std::string &key , int &evt, TTree* tree, S
     container->push_back(cell);
   }
 
-  return true;
-}
-
-
-template <class T>
-bool CaloCellConverter::InitBranch(TTree* fChain, std::string branch_name, T* seedam) const
-{
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return false;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), seedam);
   return true;
 }

@@ -20,9 +20,9 @@ CaloHitMerge::CaloHitMerge( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
-  declareProperty( "HitsKey"          , m_hitsKey="Hits"              );
-  declareProperty( "OutputLevel"      , m_outputLevel=1               );
+  declareProperty( "InputCollectionKeys"    , m_collectionKeys={}           );
+  declareProperty( "OutputHitsKey"          , m_hitsKey="Hits"              );
+  declareProperty( "OutputLevel"            , m_outputLevel=1               );
 }
 
 //!=====================================================================

@@ -65,7 +65,7 @@ add_subdirectory( core/G4Kernel )
 # event packages
 add_subdirectory( events/CaloHit )
 add_subdirectory( events/CaloCell )
-#add_subdirectory( events/SpacePoint )
+add_subdirectory( events/SpacePoint )
 #add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
@@ -99,7 +99,7 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   #$<TARGET_OBJECTS:CaloRings>
-  #$<TARGET_OBJECTS:SpacePoint>
+  $<TARGET_OBJECTS:SpacePoint>
   $<TARGET_OBJECTS:CaloCellBuilder>
   #$<TARGET_OBJECTS:CaloClusterBuilder>
   #$<TARGET_OBJECTS:CaloRingsBuilder>

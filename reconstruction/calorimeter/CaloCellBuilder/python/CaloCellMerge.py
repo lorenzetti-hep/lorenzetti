@@ -8,9 +8,9 @@ from G4Kernel import treatPropertyValue
 class CaloCellMerge( Logger ):
 
   __allow_keys = [
-                  "CollectionKeys", 
-                  "CellsKey", 
-                  "TruthCellsKey", 
+                  "InputCollectionKeys", 
+                  "OutputCellsKey", 
+                  "OutputTruthCellsKey", 
                   "OutputLevel", 
                   ]
 

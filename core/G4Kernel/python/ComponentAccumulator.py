@@ -8,7 +8,14 @@ import os, time, gc
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = ["NumberOfThreads", "OutputFile", "RunVis", "Seed", "Timeout", "VisMac"]
+  __allow_keys = [
+                  "Seed",
+                  "NumberOfThreads", 
+                  "OutputFile", 
+                  "RunVis", 
+                  "Timeout", 
+                  "VisMac",
+                  ]
 
   def __init__( self, name , detector, **kw):
 
@@ -96,7 +103,6 @@ class ComponentAccumulator( Logger ):
   def merge(self):
     files = ' '.join(self.outputFiles)
     command = f"hadd -f {self.OutputFile} {files}"
-    print( command )
     os.system(command)
     # remove thread files
     for fname in self.outputFiles:

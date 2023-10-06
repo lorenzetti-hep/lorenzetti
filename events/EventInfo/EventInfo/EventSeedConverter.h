@@ -4,7 +4,7 @@
 /** simulator includes **/
 #include "EventInfo/EventSeedContainer.h"
 #include "GaugiKernel/DataHandle.h"
-#include "GaugiKernel/MsgStream.h"
+
 
 
 namespace xAOD{
@@ -18,25 +18,17 @@ namespace xAOD{
     };
 
  
-    class EventSeedConverter: public MsgService{
+    class EventSeedConverter{
 
         public:
-            EventSeedConverter():IMsgService(){;};
+            EventSeedConverter()=default;
             ~EventSeedConverter()=default;
 
-            std::string key(){return m_key;};
-             bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *);
-             bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
-
-        private:
-            // convert a class object into a struct
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
+            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
             bool convert(const EventSeed *truth, EventSeed_t &truth_t ) const;
             bool convert(const EventSeed_t & , EventSeed *&) const;
-            template <class T> bool InitBranch(TTree* fChain, std::string branch_name, T* param) const;
 
-            std::vector<xAOD::EventSeed_t>  m_seeds_t;
-
-            std::string m_key;
     };
 
 }

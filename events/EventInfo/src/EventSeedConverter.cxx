@@ -31,39 +31,35 @@ bool EventSeedConverter::convert( const EventSeed_t &seed_t , EventSeed *&seed )
 }
 
 
-bool EventSeedConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
+bool EventSeedConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  m_seeds_t.clear();
-  m_key = "EventSeedContainer_"+key;
+  std::vector<xAOD::EventSeed_t>  seeds_t;
 
-  MSG_INFO( "Create and link all branches..." );
-  tree->Branch( (m_key).c_str(), &m_seeds_t      );
+  auto branch = tree->Branch( ("EventSeedContainer_"+key).c_str(), &seeds_t );
 
-  MSG_INFO("Serialize EventSeed...");
   SG::ReadHandle<xAOD::EventSeedContainer> container( key, ctx );
 
   if( !container.isValid() )
   {
-    MSG_ERROR("It's not possible to read the xAOD::EventSeedContainer from this Context using this key " << key );
     return false;
   }
 
   for (const auto seed : **container.ptr() ){
     xAOD::EventSeed_t seed_t;
     convert( seed, seed_t );
-    m_seeds_t.push_back(seed_t);
+    seeds_t.push_back(seed_t);
   }
+
+  branch->Fill();
   return true;
 }
 
 
-bool EventSeedConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
+bool EventSeedConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
   std::vector<xAOD::EventSeed_t> seeds_t;
-  m_key = "EventSeedContainer_"+key;
 
-  MSG_DEBUG( "Link all branches..." );
-  InitBranch( tree, (m_key).c_str() , &seeds_t     );
+  tree->SetBranchAddress( ("EventSeedContainer_"+key).c_str() , &seeds_t );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::EventSeedContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
@@ -74,24 +70,9 @@ bool EventSeedConverter::deserialize( std::string &key , int &evt, TTree* tree, 
     convert(seed_t, seed);
     container->push_back(seed);
   }
-
   return true;
 }
 
 
-template <class T>
-bool EventSeedConverter::InitBranch(TTree* fChain, std::string branch_name, T* param) const
-{
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
 
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return false;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
-  return true;
-}
 

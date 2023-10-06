@@ -99,71 +99,80 @@ StatusCode RootStreamMaker::fillHistograms( EventContext &ctx ) const
 
 StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
 {
+  MSG_INFO("Serialize all containers...");
 
-  MSG_INFO("Serialize...");
   auto store = ctx.getStoreGateSvc();
-
   for( auto key : ctx.keys())
   {
     MSG_INFO(key);
   }
 
+  std::string seedKey = "";
+
   store->cd();
   TTree *tree = store->tree(m_ntupleName);
  
-  // NOTE: this is unique always. We can not have more than one container for these objects stored into the contenx.
-  EventInfoConverter                  eventCnv;
-  EventSeedConverter                  seedCnv;
-  std::vector<TruthParticleConverter> truthCnv;
-  std::vector<CaloCellConverter>      cellCnv;
-  std::vector<CaloHitConverter>       hitCnv;
-
   for (auto &container_key : m_containers){
     
-    MSG_INFO("Storing " << container_key << "...");
+    MSG_INFO("Preparing " << container_key << "...");
 
     std::vector<std::string> result;
     boost::split(result, container_key, boost::is_any_of("_") );
     auto container = result.at(0);
-    auto key = result.at(1);
+    auto key       = result.at(1);
     
     if (container == "EventInfoContainer"){
 
       MSG_INFO("Converting and serializing EventInfo objects into root file...");
-      eventCnv.serialize( key, ctx, tree );
+      EventInfoConverter cnv;
+      if( !cnv.serialize( key, ctx, tree ) ){
+        MSG_FATAL("Its not possible to serialize xAOD::EventInfoContainer.");
+      };
 
     }else if (container == "EventSeedContainer"){
 
       MSG_INFO("Converting and serializing EventSeed objects into root file...");
-      seedCnv.serialize( key, ctx, tree );
+      EventSeedConverter cnv;
+      if( !cnv.serialize( key, ctx, tree ) ){
+        MSG_FATAL("Its not possible to serialize xAOD::EventSeedContainer.");
+      };
+      seedKey = key;
 
     }else if (container == "TruthParticleContainer"){
 
       MSG_INFO("Converting and serializing TruthParticle objects into root file...");
       TruthParticleConverter cnv;
-      cnv.serialize( key, ctx, tree );
-      truthCnv.push_back(cnv);
+      if( !cnv.serialize( key, ctx, tree ) ){
+        MSG_FATAL("Its not possible to serialize xAOD::TruthParticleContainer.");
+      };
 
     }else if (container == "CaloCellContainer"){
 
       MSG_INFO("Converting and serializing CaloCell objects into root file...");
-      CaloCellConverter cnv(seedCnv.key() , m_etaWindow, m_phiWindow );
-      cnv.serialize( key, ctx, tree );
-      cellCnv.push_back(cnv);
+      CaloCellConverter cnv(seedKey , m_etaWindow, m_phiWindow );
+      if( !cnv.serialize( key, ctx, tree ) ){
+        MSG_FATAL("Its not possible to serialize xAOD::CaloCellContainer.");
+      };
 
     }else if (container == "CaloHitContainer"){
 
       MSG_INFO("Converting and serializing CaloHit objects into root file...");
-      CaloHitConverter cnv(seedCnv.key(), m_onlyRoI, m_etaWindow, m_phiWindow);
-      cnv.serialize( key, ctx, tree );
-      hitCnv.push_back(cnv);
+      CaloHitConverter cnv(seedKey, m_onlyRoI, m_etaWindow, m_phiWindow);
+      if( !cnv.serialize( key, ctx, tree ) ){
+        MSG_FATAL("Its not possible to serialize xAOD::CaloHitContainer.");
+      };
     }
   }
 
-  tree->Fill();
   return StatusCode::SUCCESS;
  
 }
                            
 //!=====================================================================
+
+
+
+
+
+
 

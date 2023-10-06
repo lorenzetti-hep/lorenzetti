@@ -8,11 +8,14 @@ from G4Kernel import treatPropertyValue
 class EventReader( Logger ):
 
   __allow_keys = [
-                  "EventKey", 
-                  "TruthKey",
-                  "SeedKey",
+                  # input
+                  "InputFileName",
+                  # outputs
+                  "OutputEventKey", 
+                  "OutputTruthKey",
+                  "OutputSeedKey",
+                  # parameters
                   "BunchDuration",
-                  "FileName",
                   ]
 
 
@@ -28,9 +31,9 @@ class EventReader( Logger ):
     for key, value in kw.items():
       self.setProperty( key,value )
 
-    if self.getProperty("FileName") != "":
+    if self.getProperty("InputFileName") != "":
       from ROOT import TFile, TTree
-      f = TFile( self.getProperty("FileName") )
+      f = TFile( self.getProperty("InputFileName") )
       t = f.Get("particles")
       self.__entries = t.GetEntries()
       f.Close()

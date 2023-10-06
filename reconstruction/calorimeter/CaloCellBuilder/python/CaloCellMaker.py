@@ -12,22 +12,23 @@ from G4Kernel import treatPropertyValue
 class CaloCellMaker( Logger ):
 
   __allow_keys = [
-                    "EventKey"          ,
-                    "HitsKey"           ,
-                    "CollectionKey"     ,
-                    "EtaBins"           ,
-                    "PhiBins"           ,
-                    "ZMin"              ,
-                    "ZMax"              ,
-                    "Sampling"          ,
-                    "Segment"           ,
-                    "Detector"          ,
-                    "BunchIdStart"      ,
-                    "BunchIdEnd"        ,
-                    "BunchDuration"     ,
-                    "OutputLevel"       ,
-                    "DetailedHistograms",
-                    "HistogramPath"     ,
+                    # i/o keys
+                    "InputHitsKey"            ,
+                    "OutputCollectionKey"     ,
+                    # parameters
+                    "EtaBins"                 ,
+                    "PhiBins"                 ,
+                    "ZMin"                    ,
+                    "ZMax"                    ,
+                    "Sampling"                ,
+                    "Segment"                 ,
+                    "Detector"                ,
+                    "BunchIdStart"            ,
+                    "BunchIdEnd"              ,
+                    "BunchDuration"           ,
+                    "OutputLevel"             ,
+                    "DetailedHistograms"      ,
+                    "HistogramPath"           ,
                 ]
 
   def __init__( self, name, **kw ): 

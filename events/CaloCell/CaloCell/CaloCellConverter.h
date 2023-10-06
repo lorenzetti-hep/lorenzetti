@@ -4,9 +4,10 @@
 /** simulator includes **/
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCell/CaloDetDescriptor.h"
+#include "GaugiKernel/DataHandle.h"
+
 
 namespace xAOD{
-
 
     typedef std::map<const xAOD::CaloCell*, int> cell_links_t;
 
@@ -48,35 +49,27 @@ namespace xAOD{
         int cell_link;
     };
 
-    class CaloCellConverter: public MsgService{
+    class CaloCellConverter{
 
         public:
             CaloCellConverter( std::string seedKey, float etaWindow, float phiWindow):
-                               IMsgService(),m_seedKey(seedKey), m_etaWindow(etaWindow), m_phiWindow(phiWindow){;};
+                               m_seedKey(seedKey), m_etaWindow(etaWindow), m_phiWindow(phiWindow){;};
 
             ~CaloCellConverter()=default;
 
-            std::string key(){return m_key;};
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree * ) const;
+            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
 
-            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree * );
-            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
-
-        private:
-
-            // convert a class object into a struct
             bool convert(const CaloCell *           , CaloCell_t &  , int link) const;
             bool convert(const CaloCell_t &         , CaloCell   *& ) const;
             bool convert(const CaloDetDescriptor *  , CaloDetDescriptor_t &, int link ) const;
             bool convert(const CaloDetDescriptor_t &, CaloDetDescriptor *& ) const;
             
-            template <class T> bool InitBranch(TTree* fChain, std::string branch_name, T* param) const;
+        private:
 
-            std::vector<xAOD::CaloCell_t> m_cells_t;
-            std::vector<xAOD::CaloDetDescriptor_t> m_descriptors_t;
             std::string m_seedKey;
             float m_etaWindow, m_phiWindow; 
 
-            std::string m_key;
     };
 }
 #endif

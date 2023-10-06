@@ -26,8 +26,8 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
-  declareProperty( "CollectionKey"            , m_collectionKey="CaloHitCollection"   ); // output
+  declareProperty( "OutputCollectionKey"      , m_collectionKey="CaloHitCollection"   ); // output
+  
   declareProperty( "EtaBins"                  , m_etaBins                             );
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "RMin"                     , m_rMin                                );

@@ -24,9 +24,9 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "CollectionKey"            , m_collectionKey="Cells"               ); // input
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
-  declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      ); // input
+  declareProperty( "InputHitsKey"             , m_hitsKey="Hits"                      ); // input
+  declareProperty( "OutputCollectionKey"      , m_collectionKey="Cells"               ); // output
+
   declareProperty( "EtaBins"                  , m_etaBins                             );
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "ZMin"                     , m_zMin                                );

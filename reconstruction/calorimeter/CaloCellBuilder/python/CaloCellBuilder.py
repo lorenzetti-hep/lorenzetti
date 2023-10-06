@@ -17,17 +17,22 @@ class CaloCellBuilder( Logger ):
 
   def __init__( self, name, detector,
                       HistogramPath        = "Expert", 
-                      HitsKey              = "Hits",
+                      InputHitsKey         = "Hits",
+                      OutputCellsKey       = "Cells",
+                      OutputTruthCellsKey  = "TruthCells",
                       DoCrosstalk          = False,
                       OutputLevel          = 1,
                       ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
-    self.HistogramPath = HistogramPath
-    self.OutputLevel = OutputLevel
-    self.HitsKey = HitsKey
-    self.__detector = detector
+    self.HistogramPath    = HistogramPath
+    self.OutputLevel      = OutputLevel
+    self.InputHitsKey     = InputHitsKey
+    self.OutputCellsKey   = OutputCellsKey
+    self.OutputTruthCells = OutputTruthCellsKey
+    self.__detector       = detector
+    self.OutputCollectionKeys   = []
 
     
 
@@ -41,7 +46,6 @@ class CaloCellBuilder( Logger ):
 
     from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
 
-    collectionKeys = []
  
   
     for samp in self.__detector.samplings:
@@ -58,19 +62,20 @@ class CaloCellBuilder( Logger ):
                               NoiseMean       = 0.0,
                               NoiseStd        = samp.Noise,
                               StartSamplingBC = samp.StartSamplingBC )
-                      
+      print('2')
+
       of= OptimalFilter("OptimalFilter",
                         WeightsEnergy  = samp.OFWeightsEnergy,
                         WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
- 
-          
+      print('1')
+      print(self.InputHitsKey)
+      print(samp.CollectionKey)
       alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, 
                             # input key
-                            EventKey                =  "EventInfo" , # events
-                            HitsKey                 =  self.HitsKey, # hits
+                            InputHitsKey            =  self.InputHitsKey, # hits
                             # output key
-                            CollectionKey           = samp.CollectionKey, # descriptors
+                            OutputCollectionKey     = samp.CollectionKey, # descriptors
                             # Hits grid configuration
                             EtaBins                 = samp.sensitive().EtaBins,
                             PhiBins                 = samp.sensitive().PhiBins,
@@ -88,11 +93,13 @@ class CaloCellBuilder( Logger ):
                             OutputLevel             = self.OutputLevel,
                             DetailedHistograms      = False, # Use True when debug with only one thread
                             )
-  
+      print('done')
+
+
       alg.PulseGenerator = pulse # for all cell
       alg.Tools = [of] # for each cel
       self.__recoAlgs.append( alg )
-      collectionKeys.append( samp.CollectionKey )
+      self.OutputCollectionKeys.append( samp.CollectionKey )
 
 
 
@@ -100,12 +107,12 @@ class CaloCellBuilder( Logger ):
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloCellMerge( "CaloCellMerge" , 
                               # input key
-                              CollectionKeys  = collectionKeys, # descriptors
+                              InputCollectionKeys   = self.OutputCollectionKeys, # descriptors
                               # output key
-                              TruthCellsKey   = recordable("TruthCells", container="CaloCellContainer"), # cells
-                              CellsKey        = recordable("Cells"     , container="CaloCellContainer"), # cells
+                              OutputTruthCellsKey   = self.OutputTruthCellsKey , # cells
+                              OutputCellsKey        = self.OutputCellsKey      , # cells
                               # configs
-                              OutputLevel     = self.OutputLevel )
+                              OutputLevel           = self.OutputLevel )
 
     self.__recoAlgs.append( mergeAlg )
 

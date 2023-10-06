@@ -18,14 +18,16 @@ class CaloHitBuilder( Logger ):
   def __init__( self, name, 
                       HistogramPath  = "Expert", 
                       OutputLevel    = 1,
-                      HitsKey        = "Hits",
+                      InputEventKey  = "EventInfo",
+                      OutputHitsKey  = "Hits",
                       ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
     self.HistogramPath = HistogramPath
-    self.OutputLevel = OutputLevel
-    self.HitsKey = HitsKey
+    self.OutputLevel   = OutputLevel
+    self.OutputHitsKey = OutputHitsKey
+    self.OutputCollectionKeys = []
 
 
   #
@@ -36,16 +38,13 @@ class CaloHitBuilder( Logger ):
     MSG_INFO(self, "Configure CaloHitBuilder.")
     
     from CaloCellBuilder import CaloHitMaker, CaloHitMerge
-    collectionKeys = []
 
     for samp in self.__detector.samplings:
 
           MSG_INFO(self, "Create new CaloHitMaker and dump all hits into %s collection", samp.CollectionKey)
           alg = CaloHitMaker("CaloHitMaker", 
-                              # input key
-                              EventKey                = "EventInfo", 
                               # output key
-                              CollectionKey           = samp.CollectionKey, 
+                              OutputCollectionKey     = samp.CollectionKey, 
                               # Hits grid configuration
                               EtaBins                 = samp.sensitive().EtaBins,
                               PhiBins                 = samp.sensitive().PhiBins,
@@ -67,15 +66,15 @@ class CaloHitBuilder( Logger ):
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
           self.__recoAlgs.append( alg )
-          collectionKeys.append( samp.CollectionKey )
+          self.OutputCollectionKeys.append( samp.CollectionKey )
 
 
     MSG_INFO(self, "Create CaloHitMerge and dump all hit colelctions into %s container", "Hits")
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloHitMerge( "CaloHitMerge" , 
-                              CollectionKeys  = collectionKeys,
-                              HitsKey         = self.HitsKey,
-                              OutputLevel     = self.OutputLevel )
+                              InputCollectionKeys  = self.OutputCollectionKeys,
+                              OutputHitsKey        = self.OutputHitsKey,
+                              OutputLevel          = self.OutputLevel )
     self.__recoAlgs.append( mergeAlg )
 
 

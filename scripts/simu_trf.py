@@ -63,35 +63,37 @@ try:
                    )
 
   acc = ComponentAccumulator("ComponentAccumulator", detector,
-                              RunVis=args.visualization,
+                              RunVis          = args.visualization,
                               NumberOfThreads = args.numberOfThreads,
-                              Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
+                              Seed            = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
                               OutputFile = args.outputFile,
                               Timeout = args.timeout * MINUTES )
   
 
 
   gun = EventReader( "EventReader",
+                     # inputs
+                     InputFileName    = args.inputFile,
                      # outputs
-                     EventKey   = recordable("EventInfo", container="EventInfoContainer"    ),
-                     TruthKey   = recordable("Particles", container="TruthParticleContainer"),
-                     SeedKey    = recordable("Seeds"    , container="EventSeedContainer"    ),
-                     FileName   = args.inputFile,
-                     BunchDuration = 25.0,#ns
+                     OutputEventKey   = recordable("EventInfo", container="EventInfoContainer"    ),
+                     OutputTruthKey   = recordable("Particles", container="TruthParticleContainer"),
+                     OutputSeedKey    = recordable("Seeds"    , container="EventSeedContainer"    ),
+                     # parameters
+                     BunchDuration    = 25.0,#ns
                      )
 
   from CaloCellBuilder import CaloHitBuilder
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
-                                HitKey        = recordable( "Hits", container="CaloHitContainer")
+                                OutputHitsKey = recordable( "Hits", container="CaloHitContainer")
                                 )
 
   gun.merge(acc)
   calorimeter.merge(acc)
 
 
-  from RootStreamBuilder import RootStreamHITMaker, recordable
+  from RootStreamBuilder import RootStreamMaker
   stream = RootStreamMaker( "RootStreamMaker",
                             # special parameters
                             EtaWindow       = 0.6,

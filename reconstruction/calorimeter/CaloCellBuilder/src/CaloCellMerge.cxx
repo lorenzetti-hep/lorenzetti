@@ -20,10 +20,10 @@ CaloCellMerge::CaloCellMerge( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
-  declareProperty( "CellsKey"         , m_cellsKey="Cells"            );
-  declareProperty( "TruthCellsKey"    , m_truthCellsKey="TruthCells"  );
-  declareProperty( "OutputLevel"      , m_outputLevel=1               );
+  declareProperty( "InputCollectionKeys"    , m_collectionKeys={}           );
+  declareProperty( "OutputCellsKey"         , m_cellsKey="Cells"            );
+  declareProperty( "OutputTruthCellsKey"    , m_truthCellsKey="TruthCells"  );
+  declareProperty( "OutputLevel"            , m_outputLevel=1               );
 }
 
 //!=====================================================================

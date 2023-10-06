@@ -15,6 +15,7 @@ bool EventInfoConverter::convert( const EventInfo *event, EventInfo_t &event_t) 
   return false;
 }
 
+
 bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event ) const
 {
   event = new xAOD::EventInfo();
@@ -25,40 +26,33 @@ bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
 }
 
 
-bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
+bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  m_events_t.clear();
-  m_key = "EventInfoContainer_"+key;
+  std::vector<xAOD::EventInfo_t> events_t;
+  auto branch = tree->Branch( ("EventInfoContainer_"+key).c_str(), &events_t );
 
-  MSG_INFO( "Create and link all branches..." );
-  tree->Branch( (m_key).c_str(), &m_events_t      );
-
-  MSG_INFO("Serialize EventInfo...");
   SG::ReadHandle<xAOD::EventInfoContainer> container( key, ctx );
 
   if( !container.isValid() )
   {
-    MSG_ERROR("It's not possible to read the xAOD::EventInfoContainer from this Context using this key " << key );
     return false;
   }
 
   for (const auto event : **container.ptr() ){
     xAOD::EventInfo_t event_t;
     convert( event, event_t );
-    m_events_t.push_back(event_t);
+    events_t.push_back(event_t);
   }
+
+  branch->Fill();
   return true;
 }
 
 
-bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
+bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
   std::vector<xAOD::EventInfo_t> events_t;
-  m_key = "EventInfoContainer_"+key;
-
-  MSG_DEBUG( "Link all branches..." );
-  
-  InitBranch( tree, (m_key).c_str() , &events_t     );
+  tree->SetBranchAddress(  ("EventInfoContainer_"+key).c_str() , &events_t );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::EventInfoContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
@@ -72,22 +66,3 @@ bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, 
 
   return true;
 }
-
-
-template <class T>
-bool EventInfoConverter::InitBranch(TTree* fChain, std::string branch_name, T* param) const
-{
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return false;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
-  return true;
-}
-
-

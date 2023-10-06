@@ -1,6 +1,5 @@
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventSeedContainer.h"
-//#include "G4Kernel/macros.h"
 #include "G4Kernel/CaloPhiRange.h"
 
 
@@ -62,26 +61,23 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit ) const
 }
 
 
-bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree)
+bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  m_key = "CaloHitContainer_"+key;
-  m_hits_t.clear();
+  std::vector<xAOD::CaloHit_t> hits_t;
 
-  MSG_INFO( "Create and link all branches..." );
-  tree->Branch( m_key.c_str(), &m_hits_t     );
-  MSG_INFO("Serialize CaloHits...");
+  auto branch = tree->Branch( ("CaloHitContainer_"+key).c_str(), &hits_t     );
   
   SG::ReadHandle<xAOD::EventSeedContainer> seeds( m_seedKey, ctx );
   SG::ReadHandle<xAOD::CaloHitContainer> container(key, ctx);
   
   if( !seeds.isValid() )
   {
-      MSG_FATAL("It's not possible to read the xAOD::SeedContainer from this Context using this key " << m_seedKey );
+      return false;
   }
 
   if( !container.isValid() )
   {
-      MSG_FATAL("It's not possible to read the xAOD::CaloHitContainer from this Context using this key " << key );
+    return false;
   }
 
   float etot=0;
@@ -105,26 +101,21 @@ bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree
     xAOD::CaloHit_t hit_t;
     convert(hit, hit_t);
     if(hit->hash() != hit_t.hash){
-      MSG_FATAL("Hit missmatch " << hit->hash() << " != " << hit_t.hash);
+      return false;
     }
-    
-    m_hits_t.push_back(hit_t);
+    hits_t.push_back(hit_t);
     etot+=hit->edep();
   }// check if hit is inside of the window
 
-  MSG_INFO("Container hit size is " << m_hits_t.size() << " and total energy " << etot << " MeV");
+  branch->Fill();
   return true;
 }
 
 
-bool CaloHitConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx)
+bool CaloHitConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
   std::vector<xAOD::CaloHit_t> *hits_t = nullptr;
-  m_key = "CaloHitContainer_"+key;
-
-  MSG_DEBUG( "Link all branches..." );
-  
-  InitBranch( tree, m_key.c_str() , &hits_t     );
+  tree->SetBranchAddress( ("CaloHitContainer_"+key).c_str() , &hits_t );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::CaloHitContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::CaloHitContainer>(new xAOD::CaloHitContainer()));
@@ -138,23 +129,6 @@ bool CaloHitConverter::deserialize( std::string &key , int &evt, TTree* tree, SG
     etot+=hit->edep();
   }
 
-  MSG_DEBUG("Container hit size is " << container->size() << " and total energy " << etot << " MeV " );
   return true;
 }
 
-
-template <class T>
-bool CaloHitConverter::InitBranch(TTree* fChain, std::string branch_name, T* param) const
-{
-  std::string bname = branch_name;
-  if (fChain->GetAlias(bname.c_str()))
-     bname = std::string(fChain->GetAlias(bname.c_str()));
-
-  if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return false;
-  }
-  fChain->SetBranchStatus(bname.c_str(), 1.);
-  fChain->SetBranchAddress(bname.c_str(), param);
-  return true;
-}

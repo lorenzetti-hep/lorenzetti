@@ -27,22 +27,24 @@ EventReader::EventReader(std::string name):
     PrimaryGenerator(),
     m_evt(0)
 {
-  ROOT::EnableThreadSafety();
-  declareProperty( "FileName",      m_filename=""          );
-  declareProperty( "EventKey",      m_eventKey="EventInfo" );
-  declareProperty( "TruthKey",      m_truthKey="Particles" );
-  declareProperty( "SeedKey" ,      m_seedKey="Seed"       );
-  declareProperty( "BunchDuration", m_bc_duration=25*ns    );
+  ROOT::EnableThreadSafety();  
+  
+  declareProperty( "InputFileName"      , m_filename=""          );
+  declareProperty( "OutputEventKey"     , m_eventKey="EventInfo" );
+  declareProperty( "OutputTruthKey"     , m_truthKey="Particles" );
+  declareProperty( "OutputSeedKey"      , m_seedKey="Seed"       );
+  declareProperty( "BunchDuration"      , m_bc_duration=25*ns    );
+
 }
 
 PrimaryGenerator* EventReader::copy()
 {
   auto *gun = new EventReader(getLogName());
-  gun->setProperty( "FileName", m_filename );
-  gun->setProperty( "EventKey", m_eventKey );
-  gun->setProperty( "TruthKey", m_truthKey );
-  gun->setProperty( "SeedKey" , m_seedKey );
-  gun->setProperty( "BunchDuration", m_bc_duration);
+  gun->setProperty( "InputFileName" , m_filename   );
+  gun->setProperty( "OutputEventKey", m_eventKey   );
+  gun->setProperty( "OutputTruthKey", m_truthKey   );
+  gun->setProperty( "OutputSeedKey" , m_seedKey    );
+  gun->setProperty( "BunchDuration" , m_bc_duration);
   return gun;
 }
 

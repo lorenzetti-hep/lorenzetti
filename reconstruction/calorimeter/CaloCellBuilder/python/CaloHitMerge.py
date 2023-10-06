@@ -8,9 +8,9 @@ from G4Kernel import treatPropertyValue
 class CaloHitMerge( Logger ):
 
   __allow_keys = [
-                  "CollectionKeys", 
-                  "HitsKey", 
-                  "TruthHitsKey", 
+                  "InputCollectionKeys", 
+                  "OutputHitsKey", 
+                  "OutputTruthHitsKey", 
                   "OutputLevel", 
                   ]
 

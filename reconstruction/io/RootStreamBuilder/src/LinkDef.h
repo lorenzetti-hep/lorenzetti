@@ -1,5 +1,7 @@
 
 #include "src/RootStreamMaker.h"
+#include "src/RootStreamReader.h"
+
 //#include "src/RootStreamNTUPLEMaker.h"
 
 
@@ -11,6 +13,7 @@
 #pragma link C++ nestedclass;
 
 #pragma link C++ class RootStreamMaker+;
+#pragma link C++ class RootStreamReader+;
 
 
 

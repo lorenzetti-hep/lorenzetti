@@ -44,9 +44,6 @@ class CaloHitMaker : public Gaugi::Algorithm
 
     /*! collection key */
     std::string m_collectionKey; // output
-    /*! event key */
-    std::string m_eventKey; // input
-
 
     std::vector<float> m_etaBins; 
     std::vector<float> m_phiBins; 

@@ -61,16 +61,12 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
   # the reader must be first in sequence
-  from RootStreamBuilder import RootStreamHITReader, recordable
-  reader = RootStreamHITReader("HITReader", 
-                                InputFile       = args.inputFile,
-                                HitsKey         = recordable("Hits"),
-                                EventKey        = recordable("EventInfo"),
-                                TruthKey        = recordable("Particles"),
-                                SeedsKey        = recordable("Seeds"),
-                                NtupleName      = "CollectionTree",
-                                OutputLevel     = outputLevel,
-                              )
+  from RootStreamBuilder import RootStreamReader, recordable
+  reader = RootStreamReader("HITReader", 
+                            InputFile       = args.inputFile,
+                            NtupleName      = "CollectionTree",
+                            OutputLevel     = outputLevel,
+                           )
 
   reader.merge(acc)
   
@@ -79,36 +75,20 @@ try:
   from ATLAS import ATLASConstruction as ATLAS
 
   calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
-                                HistogramPath   = "Expert/Cells",
-                                OutputLevel     = outputLevel,
-                                HitsKey         = recordable("Hits"),
-                                # Crosstalk simulation parameters
-                                DoCrosstalk     = args.simulateCrossTalk,
-                                XTAmpCapacitive = args.XTAmpCapacitive,
-                                XTAmpInductive  = args.XTAmpInductive,
-                                XTAmpResistive  = args.XTAmpResistive,
+                                HistogramPath         = "Expert/Cells",
+                                OutputLevel           = outputLevel,
+                                InputHitsKey          = "Hits",
+                                OutputCellsKey        = recordable("Cells"     , container="CaloCellContainer" ),
+                                OutputTruthCellsKey   = recordable("TruthCells", container="CaloCellContainer" ),
                                 )
-  print('2')
   calorimeter.merge(acc)
 
-  print('3')
-  from RootStreamBuilder import RootStreamESDMaker
-  ESD = RootStreamESDMaker( "RootStreamESDMaker",
-                             InputCellsKey      = recordable("Cells"),
-                             InputXTCellsKey    = recordable("XTCells"),
-                             InputEventKey      = recordable("EventInfo"),
-                             InputTruthKey      = recordable("Particles"),
-                             InputSeedsKey      = recordable("Seeds"),
-                             OutputCellsKey     = recordable("Cells"),
-                             OutputXTCellsKey   = recordable("XTCells"),
-                             OutputEventKey     = recordable("EventInfo"),
-                             OutputTruthKey     = recordable("Particles"),    
-                             OutputSeedsKey     = recordable("Seeds"),
-                             NtupleName         = "CollectionTree",
-                             OutputLevel        = outputLevel,
-                             DumpCrossTalkCells = args.simulateCrossTalk,
-                             )
-  acc += ESD
+  from RootStreamBuilder import RootStreamMaker
+  stream = RootStreamMaker( "RootStreamESDMaker",
+                            NtupleName         = "CollectionTree",
+                            OutputLevel        = outputLevel,
+                          )
+  acc += stream
   
 
   acc.run(args.numberOfEvents)

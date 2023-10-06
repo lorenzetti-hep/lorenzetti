@@ -3,7 +3,6 @@
 
 #include "TruthParticle/TruthParticle.h"
 #include "GaugiKernel/DataHandle.h"
-#include "GaugiKernel/MsgStream.h"
 
 
 namespace xAOD{
@@ -24,26 +23,16 @@ namespace xAOD{
     };
 
  
-    class TruthParticleConverter: public MsgService{
+    class TruthParticleConverter{
 
         public:
-            TruthParticleConverter():IMsgService(){;};
+            TruthParticleConverter()=default;
             ~TruthParticleConverter()=default;
-            std::string key(){return m_key;};
 
-            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *);
-            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/);
-
-        private:
-            // convert a class object into a struct
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
+            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
             bool convert(const TruthParticle *truth, TruthParticle_t &truth_t ) const;
             bool convert(const TruthParticle_t & , TruthParticle *&) const;
-        
-            template <class T> bool InitBranch(TTree* fChain, std::string branch_name, T* param) const;
-
-            std::vector<xAOD::TruthParticle_t>  m_particles_t;
-
-            std::string m_key;
     };
 }
 #endif

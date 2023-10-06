@@ -6,14 +6,14 @@ from G4Kernel import treatPropertyValue
 from pprint import pprint
 
 
-recodable_keys = []
+recordable_keys = []
 
 def recordable( key:str , container: str) -> str:
   name = (container+'_'+key)   
-  if name in recodable_keys:
+  if name in recordable_keys:
     raise RuntimeError(f"Key {name} repeated. please use another key.")
-  recodable_keys.append(name)
-  return name
+  recordable_keys.append(name)
+  return key
 
 def get_recordable_keys():
   return recordable_keys
@@ -29,6 +29,7 @@ class RootStreamMaker( Logger ):
                   "OnlyRoI",
                   "EtaWindow",
                   "PhiWindow",
+                  "Containers",
                   ]
 
 
@@ -43,9 +44,8 @@ class RootStreamMaker( Logger ):
     for key, value in kw.items():
       self.setProperty( key,value )
 
-    from RootStreamBuilder import recodable_keys
-    pprint(recodable_keys)
-    self.setProperty("Containers", recodable_keys)
+    pprint(recordable_keys)
+    self.setProperty("Containers", recordable_keys)
 
   def core(self):
     return self.__core
