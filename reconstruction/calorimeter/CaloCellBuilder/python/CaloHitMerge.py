@@ -7,14 +7,11 @@ from G4Kernel import treatPropertyValue
 
 class CaloHitMerge( Logger ):
 
-  __allow_keys = [
-                  "InputCollectionKeys", 
-                  "OutputHitsKey", 
-                  "OutputTruthHitsKey", 
-                  "OutputLevel", 
-                  ]
-
-  def __init__( self, name, **kw ): 
+  def __init__( self, name, 
+                InputCollectionKeys : str = "",
+                OutputHitsKey       : str = "Hits",
+                OutputTruthHitsKey
+                ): 
     
     Logger.__init__(self)
     import ROOT
@@ -22,9 +19,10 @@ class CaloHitMerge( Logger ):
     from ROOT import CaloHitMerge
     # Create the algorithm
     self.__core = CaloHitMerge(name)
-
-    for key, value in kw.items():
-      self.setProperty( key,value  )
+    self.setProperty( "InputCollectionKeys" , InputCollectionKeys )
+    self.setProperty( "OutputHitsKey"       , OutputHitsKey       ) 
+    self.setProperty( "OutputTruthHitsKey"  , OutputTruthHitsKey  ) 
+    self.setProperty( "OutputLevel"         , OutputLevel         ) 
 
 
   def core(self):
@@ -32,18 +30,19 @@ class CaloHitMerge( Logger ):
 
 
   def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
+    if key in self.__core.hasProperty(key):
+      setattr( self, key , value )
       self.__core.setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
+    if hasattr(self, key):
+      return getattr( self, key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+
 
 
 

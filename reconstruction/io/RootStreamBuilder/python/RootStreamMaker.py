@@ -1,69 +1,75 @@
-__all__ = ["RootStreamMaker", "recordable", "get_recordable_keys"]
+
+__all__ = ["RootStreamHITMaker","RootStreamESDMaker", "RootStreamAODMaker"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
-from pprint import pprint
-
-
-recordable_keys = []
-
-def recordable( key:str , container: str) -> str:
-  name = (container+'_'+key)   
-  if name in recordable_keys:
-    raise RuntimeError(f"Key {name} repeated. please use another key.")
-  recordable_keys.append(name)
-  return key
-
-def get_recordable_keys():
-  return recordable_keys
-
-
+from RootStreamBuilder import RootStreamEDMList, RootStreamFlags
 
 
 class RootStreamMaker( Logger ):
 
-  __allow_keys = [
-                  "OutputLevel", 
-                  "NtupleName",
-                  "OnlyRoI",
-                  "EtaWindow",
-                  "PhiWindow",
-                  "Containers",
-                  ]
-
-
-  def __init__( self, name, **kw ): 
+  def __init__( self, name: str, edm: str, 
+                      NtupleName  : str = "CollectionTree",
+                      EtaWindow   : int = RootStreamFlags.EtaWindow, 
+                      PhiWindow   : int = RootStreamFlags.PhiWindow,
+                      OnlyRoI     : bool= RootStreamFlags.OnlyRoI,
+                      OutputLevel : int = 0,
+                      ): 
     
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamMaker
-    self.__core = RootStreamMaker(name)
+    self.__core = ROOT.RootStreamMaker(name)
+    
+    self.EDMFormat = edm
+    # cpp core configuration and python var set
+    self.setProperty( "NtupleName"  , NtupleName  )
+    self.setProperty( "OnlyRoI"     , OnlyRoI     )
+    self.setProperty( "EtaWindow"   , EtaWindow   )
+    self.setProperty( "PhiWindow"   , PhiWindow   )
+    self.setProperty( "OutputLevel" , OutputLevel )
 
-    for key, value in kw.items():
-      self.setProperty( key,value )
+    # cpp core configuration only
+    containers = [stream[0] for stream in RootStreamEDMList if self.EDMFormat in stream[1]]
+    self.core().setProperty("Containers", treatPropertyValue(containers) )
 
-    pprint(recordable_keys)
-    self.setProperty("Containers", recordable_keys)
+
 
   def core(self):
     return self.__core
 
 
   def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
+    if key in self.core().hasProperty(key):
+      setattr( self, key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
+    if hasattr(self, key):
+      return getattr( self, key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
+
+#
+# format types
+#
+
+
+class RootStreamHITMaker(RootStreamMaker):
+  def __init__(self, name, **kw):
+    RootStreamMaker.__init__(self, name, 'HIT', **kw)
+
+class RootStreamESDMaker(RootStreamMaker):
+  def __init__(self, name, **kw):
+    RootStreamMaker.__init__(self, name, 'ESD', **kw)
+
+class RootStreamAODMaker(RootStreamMaker):
+  def __init__(self, name, **kw):
+    RootStreamMaker.__init__(self, name, 'AOD', **kw)
 
 

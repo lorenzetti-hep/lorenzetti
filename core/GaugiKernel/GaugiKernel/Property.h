@@ -74,6 +74,8 @@ namespace Gaugi{
       void getProperty( std::string name, std::vector<std::string>  &value );
       void getProperty( std::string name, std::vector<std::vector<int>>          &value );
   
+      bool hasProperty( std::string name);
+
 
     private:
 
@@ -108,9 +110,7 @@ namespace Gaugi{
   inline void PropertyService::declareProperty( std::string name, std::vector<bool>         &value ){__declareProperty<std::vector<bool>>(name,value);}
   inline void PropertyService::declareProperty( std::string name, std::vector<float>        &value ){__declareProperty<std::vector<float>>(name,value);}
   inline void PropertyService::declareProperty( std::string name, std::vector<std::string>  &value ){__declareProperty<std::vector<std::string>>(name,value);}
-  
   inline void PropertyService::declareProperty( std::string name, std::vector<std::vector<int>>  &value ){__declareProperty<std::vector<std::vector<int>>>(name,value);}
-
 
 
 
@@ -119,7 +119,10 @@ namespace Gaugi{
 
   template<typename T> inline void PropertyService::__setProperty( std::string name, T &value )
   {
-    dynamic_cast<Property<T>&>(*m_properties[name]).setValue(value);
+    if (m_properties.find(name) != m_properties.end()) {
+      dynamic_cast<Property<T>&>(*m_properties[name]).setValue(value);
+    }
+    throw std::runtime_error("set property with name " << name << " failed. the property does not exist."); 
   }
   
   inline void PropertyService::setProperty( std::string name, int                       value ){__setProperty<int>(name,value);}
@@ -138,7 +141,11 @@ namespace Gaugi{
 
   template<typename T> inline void PropertyService::__getProperty( std::string name, T &value )
   {
-    value = dynamic_cast<Property<T>&>(*m_properties[name]).getValue(); 
+    if (m_properties.find(name) != m_properties.end()) {
+      value = dynamic_cast<Property<T>&>(*m_properties[name]).getValue(); 
+    }
+    throw std::runtime_error("get property with name " << name << " failed. the property does not exist."); 
+
   }
    
   inline void PropertyService::getProperty( std::string name, int                       &value ){__getProperty<int>(name,value);}
@@ -152,6 +159,14 @@ namespace Gaugi{
   inline void PropertyService::getProperty( std::string name, std::vector<std::string>  &value ){__getProperty<std::vector<std::string>>(name,value);}
   inline void PropertyService::getProperty( std::string name, std::vector<std::vector<int>>  &value ){__getProperty<std::vector<std::vector<int>>>(name,value);}
 
+
+
+  inline bool PropertyService::hasProperty( std::string name ){
+    if (m_properties.find(name) != m_properties.end()) {
+      return true; 
+    }
+    return false;
+  }
 
 
 }//namespace

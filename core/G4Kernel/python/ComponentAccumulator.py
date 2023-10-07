@@ -1,6 +1,7 @@
 
 __all__ = ["ComponentAccumulator"]
 
+from GaugiKernel.constants import *
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 import os, time, gc
@@ -8,16 +9,13 @@ import os, time, gc
 
 class ComponentAccumulator( Logger ):
 
-  __allow_keys = [
-                  "Seed",
-                  "NumberOfThreads", 
-                  "OutputFile", 
-                  "RunVis", 
-                  "Timeout", 
-                  "VisMac",
-                  ]
-
-  def __init__( self, name , detector, **kw):
+  def __init__( self, name , detector, 
+                OutputFile      : str="output.root",
+                Seed            : int=512,
+                NumberOfThreads : int=1,
+                RunVis          : bool=False,
+                Timeout         : int=120*MINUTES,
+              ):
 
     Logger.__init__(self)
     import ROOT
@@ -29,12 +27,13 @@ class ComponentAccumulator( Logger ):
     self.__detector = detector
     self.__detector.compile()
     # set the geant detector into the geant 
-    self.__core.setDetectorConstruction( self.__detector.core() )
-    for key, value in kw.items():
-      self.setProperty( key, value )
+    self.__core.setDetectorConstruction( self.__detector.core()   )
+    self.setProperty( "VisMac"          , self.__detector.VisMac  )
+    self.setProperty( "NumberOfThreads" , NumberOfThreads         )
+    self.setProperty( "Timeout"         , Timeout                 )
+    self.setProperty( "RunVis"          , RunVis                  )
+    self.setProperty( "Seed"            , Seed                    )
     # Set the vis mac file into the manager core
-    self.setProperty("VisMac", self.__detector.VisMac)
-
     self.outputFiles = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
 
 
@@ -56,16 +55,16 @@ class ComponentAccumulator( Logger ):
 
 
   def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self,  key , value )
-      self.core().setProperty( key, value )
+    if key in self.core().hasProperty(key):
+      setattr( self, key , value )
+      self.core().setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
+    if hasattr(self, key):
+      return getattr( self, key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 

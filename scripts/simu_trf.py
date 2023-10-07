@@ -27,14 +27,8 @@ parser.add_argument('-nt','--numberOfThreads', action='store', dest='numberOfThr
 parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=None,
                     help = "The number of events to apply the reconstruction.")
 
-parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
-                    help = "Run with Qt interface.")
-
 parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
                     help = "Enable the magnetic field.")
-
-parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
-                    help = "Save all detector hits.")
 
 parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=120,
                     help = "Event timeout in minutes")
@@ -42,7 +36,8 @@ parser.add_argument('-t','--timeout', action='store', dest='timeout', required =
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="",
+                    help = "The preexec command")
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -54,55 +49,43 @@ outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
+  eval(args.command)
+
   from ATLAS import ATLASConstruction as ATLAS
 
   # Build the ATLAS detector
-  detector = ATLAS(
-                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   CutOnPhi = False,
-                   )
+  detector = ATLAS( UseMagneticField = args.enableMagneticField )
 
   acc = ComponentAccumulator("ComponentAccumulator", detector,
-                              RunVis          = args.visualization,
                               NumberOfThreads = args.numberOfThreads,
-                              Seed            = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
-                              OutputFile = args.outputFile,
-                              Timeout = args.timeout * MINUTES )
+                              OutputFile      = args.outputFile,
+                              Timeout         = args.timeout * MINUTES )
   
 
-
-  gun = EventReader( "EventReader",
-                     # inputs
-                     InputFileName    = args.inputFile,
+  gun = EventReader( "EventReader", args.inputFile,
                      # outputs
-                     OutputEventKey   = recordable("EventInfo", container="EventInfoContainer"    ),
-                     OutputTruthKey   = recordable("Particles", container="TruthParticleContainer"),
-                     OutputSeedKey    = recordable("Seeds"    , container="EventSeedContainer"    ),
-                     # parameters
-                     BunchDuration    = 25.0,#ns
+                     OutputEventKey   = recordable("EventInfo"),
+                     OutputTruthKey   = recordable("Particles"),
+                     OutputSeedKey    = recordable("Seeds"    ),
                      )
+
 
   from CaloCellBuilder import CaloHitBuilder
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
-                                OutputHitsKey = recordable( "Hits", container="CaloHitContainer")
+                                OutputHitsKey = recordable("Hits")
                                 )
 
   gun.merge(acc)
   calorimeter.merge(acc)
 
 
-  from RootStreamBuilder import RootStreamMaker
-  stream = RootStreamMaker( "RootStreamMaker",
-                            # special parameters
-                            EtaWindow       = 0.6,
-                            PhiWindow       = 0.6,
-                            OnlyRoI         = not args.saveAllHits,
-                            OutputLevel     = outputLevel)
+  from RootStreamBuilder import RootStreamHITMaker
+  acc += RootStreamHITMaker( "RootStreamHITMaker", OutputLevel = outputLevel)
 
-  acc += stream
-  
+
+
   acc.run(args.numberOfEvents)
   
   if args.visualization:

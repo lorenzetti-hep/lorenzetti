@@ -44,7 +44,7 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter, CrossTalk
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
 
  
   
@@ -62,15 +62,13 @@ class CaloCellBuilder( Logger ):
                               NoiseMean       = 0.0,
                               NoiseStd        = samp.Noise,
                               StartSamplingBC = samp.StartSamplingBC )
-      print('2')
+     
 
       of= OptimalFilter("OptimalFilter",
                         WeightsEnergy  = samp.OFWeightsEnergy,
                         WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
-      print('1')
-      print(self.InputHitsKey)
-      print(samp.CollectionKey)
+    
       alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, 
                             # input key
                             InputHitsKey            =  self.InputHitsKey, # hits
@@ -93,9 +91,7 @@ class CaloCellBuilder( Logger ):
                             OutputLevel             = self.OutputLevel,
                             DetailedHistograms      = False, # Use True when debug with only one thread
                             )
-      print('done')
-
-
+  
       alg.PulseGenerator = pulse # for all cell
       alg.Tools = [of] # for each cel
       self.__recoAlgs.append( alg )

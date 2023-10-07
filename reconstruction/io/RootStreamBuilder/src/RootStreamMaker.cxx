@@ -117,11 +117,11 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
     MSG_INFO("Preparing " << container_key << "...");
 
     std::vector<std::string> result;
-    boost::split(result, container_key, boost::is_any_of("_") );
+    boost::split(result, container_key, boost::is_any_of("#") );
     auto container = result.at(0);
     auto key       = result.at(1);
     
-    if (container == "EventInfoContainer"){
+    if (container == "xAOD::EventInfoContainer"){
 
       MSG_INFO("Converting and serializing EventInfo objects into root file...");
       EventInfoConverter cnv;
@@ -129,7 +129,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::EventInfoContainer.");
       };
 
-    }else if (container == "EventSeedContainer"){
+    }else if (container == "xAOD::EventSeedContainer"){
 
       MSG_INFO("Converting and serializing EventSeed objects into root file...");
       EventSeedConverter cnv;
@@ -138,7 +138,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
       };
       seedKey = key;
 
-    }else if (container == "TruthParticleContainer"){
+    }else if (container == "xAOD::TruthParticleContainer"){
 
       MSG_INFO("Converting and serializing TruthParticle objects into root file...");
       TruthParticleConverter cnv;
@@ -146,7 +146,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::TruthParticleContainer.");
       };
 
-    }else if (container == "CaloCellContainer"){
+    }else if (container == "xAOD::CaloCellContainer"){
 
       MSG_INFO("Converting and serializing CaloCell objects into root file...");
       CaloCellConverter cnv(seedKey , m_etaWindow, m_phiWindow );
@@ -154,13 +154,15 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::CaloCellContainer.");
       };
 
-    }else if (container == "CaloHitContainer"){
+    }else if (container == "xAOD::CaloHitContainer"){
 
       MSG_INFO("Converting and serializing CaloHit objects into root file...");
       CaloHitConverter cnv(seedKey, m_onlyRoI, m_etaWindow, m_phiWindow);
       if( !cnv.serialize( key, ctx, tree ) ){
         MSG_FATAL("Its not possible to serialize xAOD::CaloHitContainer.");
       };
+    }else{
+      MSG_WARNING("There is not converver for the container " << container << " in key " << key);
     }
   }
 

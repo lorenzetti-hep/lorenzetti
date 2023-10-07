@@ -26,12 +26,7 @@ class Plates(EnumStringification):
 
 class DetectorConstruction(Logger):
 
-  __allow_keys = [
-                  "UseMagneticField",
-                  "CutOnPhi",
-                  ]
-  
-  def __init__( self, name, vis_path, samplings=[], trackings=[], **kw ):
+  def __init__( self, name, vis_path, samplings=[], trackings=[], UseMagneticField : bool=False, CutOnPhi : bool=False ):
 
     Logger.__init__(self)
 
@@ -45,8 +40,8 @@ class DetectorConstruction(Logger):
     from ROOT import RunManager
     from ROOT import DetectorConstruction as DetectorConstructionCore
     self.__core = DetectorConstructionCore(self.getLoggerName())
-    for key, value in kw.items():
-      self.setProperty( key, value )
+    self.setProperty( "UseMagneticField", UseMagneticField  )
+    self.setProperty( "CutOnPhi"        , CutOnPhi          )
 
     # add all volumes from samplings
     for samp in self.samplings:
@@ -82,16 +77,16 @@ class DetectorConstruction(Logger):
 
 
   def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.__core.setProperty( key, treatPropertyValue(value) )
+    if key in self.core().hasProperty(key):
+      setattr( self, key , value )
+      self.core().setProperty( key, treatPropertyValue(value) )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
   def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
+    if hasattr(self, key):
+      return getattr( self, key )
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 

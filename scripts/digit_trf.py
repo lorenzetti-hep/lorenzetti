@@ -26,24 +26,6 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-parser.add_argument('--estimationMethodECAL', action='store', dest='estimationMethodECAL', required = False, choices = ['OF','COF'], type=str,  default='OF',
-                    help = "The energy estimation method (OF or COF).")
-
-parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, choices = ['OF', 'COF'], type=str, default='OF',
-                    help = "The energy estimation method (OF or COF).")
-
-parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
-                    help = "If used, enable cross talk cell propagation.")
-
-parser.add_argument('--XTAmpCapacitive', action='store', dest='XTAmpCapacitive', required = False,
-                    help = "A percentage value that will impact into capacitive crosstalk component of the signal model.", type=float, default=4.2)
-
-parser.add_argument('--XTAmpInductive', action='store', dest='XTAmpInductive', required = False,
-                    help = "A percentage value that will impact into inductive crosstalk component of the signal model.", type=float, default=2.3)
-
-parser.add_argument('--XTAmpResistive', action='store', dest='XTAmpResistive', required = False,
-                    help = "A percentage value that will impact into resistive crosstalk component of the signal model.", type=float, default=1.0)
-
 
 pi = np.pi
 
@@ -62,7 +44,7 @@ try:
 
   # the reader must be first in sequence
   from RootStreamBuilder import RootStreamReader, recordable
-  reader = RootStreamReader("HITReader", 
+  reader = RootStreamReader("HITReader",
                             InputFile       = args.inputFile,
                             NtupleName      = "CollectionTree",
                             OutputLevel     = outputLevel,
@@ -77,9 +59,9 @@ try:
   calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
                                 HistogramPath         = "Expert/Cells",
                                 OutputLevel           = outputLevel,
-                                InputHitsKey          = "Hits",
-                                OutputCellsKey        = recordable("Cells"     , container="CaloCellContainer" ),
-                                OutputTruthCellsKey   = recordable("TruthCells", container="CaloCellContainer" ),
+                                InputHitsKey          = recordable("Hits"      ),
+                                OutputCellsKey        = recordable("Cells"     ),
+                                OutputTruthCellsKey   = recordable("TruthCells"),
                                 )
   calorimeter.merge(acc)
 

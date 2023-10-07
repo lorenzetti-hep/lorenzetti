@@ -1,6 +1,13 @@
 
 __all__ = []
 
+from . import RootStreamFlags
+__all__.extend(RootStreamFlags.__all__)
+from .RootStreamFlags import *
+
+from . import RootStreamKeys
+__all__.extend(RootStreamKeys.__all__)
+from .RootStreamKeys import *
 
 from . import RootStreamMaker
 __all__.extend(RootStreamMaker.__all__)

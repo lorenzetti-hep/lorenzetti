@@ -7,12 +7,7 @@ from G4Kernel import treatPropertyValue
 
 class CaloPhiRange( Logger ):
 
-  __allow_keys = [
-                  ]
-
-
-  def __init__( self ): 
-    
+  def __init__( self ):     
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')

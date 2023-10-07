@@ -29,13 +29,6 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
-                    help = "If used, enable cross talk cell propagation.")
-
-parser.add_argument('--dumpCells', action='store_true', dest='dumpCells', required = False,
-                    help = "If used, dump the cell and descriptor containers into output AOD file.")
-
-
 
 
 
@@ -70,24 +63,24 @@ try:
 
   # build cluster for all seeds
   cluster = CaloClusterMaker( "CaloClusterMaker",
-                              CellsKey        = recordable("Cells"),
-                              EventKey        = recordable("EventInfo"),
-                              ClusterKey      = recordable("Clusters"),
-                              TruthKey        = recordable("Particles"),
-                              SeedsKey        = recordable("Seeds"),
-                              EtaWindow       = 0.4,
-                              PhiWindow       = 0.4,
-                              MinCenterEnergy = 1*GeV, 
-                              HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
+                              InputCellsKey        = recordable("Cells"),
+                              InputEventKey        = recordable("EventInfo"),
+                              InputTruthKey        = recordable("Particles"),
+                              InputSeedsKey        = recordable("Seeds"),
+                              OutputClusterKey     = recordable("Clusters"),
+                              EtaWindow            = 0.4,
+                              PhiWindow            = 0.4,
+                              MinCenterEnergy      = 1*GeV, 
+                              HistogramPath        = "Expert/Clusters",
+                              OutputLevel          = outputLevel )
 
   rings   = CaloRingsMaker(   "CaloRingsMaker",
-                              RingerKey     = recordable("Rings"),
-                              ClusterKey    = recordable("Clusters"),
-                              DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                              DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                              NRings        = [8, 64, 8, 8, 4, 4, 4],
-                              LayerRings = [
+                              InputClusterKey    = recordable("Clusters"),  
+                              OutputRingerKey    = recordable("Rings"),
+                              DeltaEtaRings      = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
+                              DeltaPhiRings      = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
+                              NRings             = [8, 64, 8, 8, 4, 4, 4],
+                              LayerRings         = [
                                 [CaloSampling.PSB, CaloSampling.PSE],
                                 [CaloSampling.EMB1, CaloSampling.EMEC1],
                                 [CaloSampling.EMB2, CaloSampling.EMEC2],
@@ -99,57 +92,10 @@ try:
                               HistogramPath = "Expert/Rings",
                               OutputLevel   = outputLevel)
 
-  # build cluster for all seeds, but for XT affected cells
-  if (args.simulateCrossTalk):
-    xt_cluster = CaloClusterMaker( "XTCaloClusterMaker",
-                                CellsKey        = recordable("XTCells"),
-                                EventKey        = recordable("EventInfo"),
-                                ClusterKey      = recordable("XTClusters"),
-                                TruthKey        = recordable("Particles"),
-                                SeedsKey        = recordable("Seeds"),
-                                EtaWindow       = 0.4,
-                                PhiWindow       = 0.4,
-                                MinCenterEnergy = 1*GeV, 
-                                HistogramPath   = "Expert/XTClusters",
-                                OutputLevel     = outputLevel )
 
-    xt_rings   = CaloRingsMaker(   "XTCaloRingsMaker",
-                                RingerKey     = recordable("XTRings"),
-                                ClusterKey    = recordable("XTClusters"),
-                                DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                                DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                                NRings        = [8, 64, 8, 8, 4, 4, 4],
-                                LayerRings = [
-                                  [CaloSampling.PSB, CaloSampling.PSE],
-                                  [CaloSampling.EMB1, CaloSampling.EMEC1],
-                                  [CaloSampling.EMB2, CaloSampling.EMEC2],
-                                  [CaloSampling.EMB3, CaloSampling.EMEC3],
-                                  [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
-                                  [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
-                                  [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
-                                ],
-                                HistogramPath = "Expert/XTRings",
-                                OutputLevel   = outputLevel)
- 
 
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
-                            InputCellsKey         = recordable("Cells"),
-                            InputXTCellsKey       = recordable("XTCells"),
-                            InputEventKey         = recordable("EventInfo"),
-                            InputTruthKey         = recordable("Particles"),
-                            InputRingerKey        = recordable("Rings"),
-                            InputXTRingerKey      = recordable("XTRings"),
-                            InputClusterKey       = recordable("Clusters"),
-                            InputXTClusterKey     = recordable("XTClusters"),
-                            OutputCellsKey        = recordable("Cells"),
-                            OutputXTCellsKey      = recordable("XTCells"),
-                            OutputEventKey        = recordable("EventInfo"),
-                            OutputTruthKey        = recordable("Particles"),
-                            OutputRingerKey       = recordable("Rings"),
-                            OutputXTRingerKey     = recordable("XTRings"),
-                            OutputClusterKey      = recordable("Clusters"),
-                            OutputXTClusterKey    = recordable("XTClusters"),
                             DumpCells             = args.dumpCells,
                             DoCrosstalk           = args.simulateCrossTalk,
                             OutputLevel           = outputLevel)
@@ -157,9 +103,6 @@ try:
   # sequence
   acc+= cluster
   acc+= rings
-  if(args.simulateCrossTalk):
-    acc+= xt_cluster
-    acc+= xt_rings
   acc+= AOD
 
   acc.run(args.numberOfEvents)
