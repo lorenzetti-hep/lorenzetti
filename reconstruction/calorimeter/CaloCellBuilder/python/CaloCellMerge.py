@@ -7,14 +7,13 @@ from G4Kernel import treatPropertyValue
 
 class CaloCellMerge( Logger ):
 
-  __allow_keys = [
-                  "InputCollectionKeys", 
-                  "OutputCellsKey", 
-                  "OutputTruthCellsKey", 
-                  "OutputLevel", 
-                  ]
 
-  def __init__( self, name, **kw ): 
+  def __init__( self, name, 
+                InputCollectionKeys : str="Collection" ,
+                OutputCellsKey      : str="Cells",
+                OutputTruthCellsKey : str="TruthCells",
+                OutputLevel         : int=0 
+                ): 
     
     Logger.__init__(self)
     import ROOT
@@ -22,10 +21,12 @@ class CaloCellMerge( Logger ):
     from ROOT import CaloCellMerge
     # Create the algorithm
     self.__core = CaloCellMerge(name)
+    self.setProperty( "InputCollectionKeys" , InputCollectionKeys ) 
+    self.setProperty( "OutputCellsKey"      , OutputCellsKey      ) 
+    self.setProperty( "OutputTruthCellsKey" , OutputTruthCellsKey ) 
+    self.setProperty( "OutputLevel"         , OutputLevel         ) 
 
-    for key, value in kw.items():
-      self.setProperty( key,value  )
-
+ 
 
   def core(self):
     return self.__core

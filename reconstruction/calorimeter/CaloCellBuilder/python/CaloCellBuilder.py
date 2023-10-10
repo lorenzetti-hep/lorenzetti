@@ -69,23 +69,11 @@ class CaloCellBuilder( Logger ):
                         WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
     
-      alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, 
+      alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, samp,
                             # input key
                             InputHitsKey            =  self.InputHitsKey, # hits
                             # output key
                             OutputCollectionKey     = samp.CollectionKey, # descriptors
-                            # Hits grid configuration
-                            EtaBins                 = samp.sensitive().EtaBins,
-                            PhiBins                 = samp.sensitive().PhiBins,
-                            ZMin                    = samp.volume().ZMin,
-                            ZMax                    = samp.volume().ZMax,
-                            Sampling                = samp.Sampling,
-                            Segment                 = samp.sensitive().Segment,
-                            Detector                = samp.Detector,
-                            # Bunch crossing configuration
-                            BunchIdStart            = samp.BunchIdStart,
-                            BunchIdEnd              = samp.BunchIdEnd,
-                            BunchDuration           = 25, #ns
                             # monitoring configuration
                             HistogramPath           = self.HistogramPath + '/' + samp.name(),
                             OutputLevel             = self.OutputLevel,

@@ -18,7 +18,10 @@ class CrossTalk( Logger ):
                   "XTAmpResistive",
                   ]
 
-  def __init__( self, name, **kw ):
+  def __init__( self, name, 
+                InputCollectionKeys : list=[],
+                OutputCellsKey      : str="Cells",
+                ):
 
     Logger.__init__(self)
     import ROOT
@@ -29,6 +32,17 @@ class CrossTalk( Logger ):
     # self.__core = CrossTalk(name)
     self.__core = core(name)
     self.Tools = []
+
+    self.setProperty( "InputCollectionKeys"   , )
+    self.setProperty( "OutputCellsKey"        , )
+    self.setProperty( "MinEnergy"             , )
+
+    self.setProperty( "XTAmpCapacitive" , )
+    self.setProperty( "XTAmpInductive"  , )
+    self.setProperty( "XTAmpResistive"  , )
+ 
+    self.setProperty( "HistogramPath"   , )
+    self.setProperty( "OutputLevel"     , )
 
     for key, value in kw.items():
       self.setProperty( key,value  )

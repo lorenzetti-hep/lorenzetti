@@ -11,27 +11,13 @@ from G4Kernel import treatPropertyValue
 
 class CaloCellMaker( Logger ):
 
-  __allow_keys = [
-                    # i/o keys
-                    "InputHitsKey"            ,
-                    "OutputCollectionKey"     ,
-                    # parameters
-                    "EtaBins"                 ,
-                    "PhiBins"                 ,
-                    "ZMin"                    ,
-                    "ZMax"                    ,
-                    "Sampling"                ,
-                    "Segment"                 ,
-                    "Detector"                ,
-                    "BunchIdStart"            ,
-                    "BunchIdEnd"              ,
-                    "BunchDuration"           ,
-                    "OutputLevel"             ,
-                    "DetailedHistograms"      ,
-                    "HistogramPath"           ,
-                ]
+  def __init__( self, name, sampling, 
+                InputHitsKey        : str="Hits",
+                OutputCollectionKey : str="Collection",
+                OutputLevel         : int=0,
+                DetailedHistograms  : bool=False,
+                HistogramPath       : str="/Hists/Cells" ): 
 
-  def __init__( self, name, **kw ): 
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
@@ -40,9 +26,23 @@ class CaloCellMaker( Logger ):
     self.__core = core(name)
     self.Tools = []
     self.PulseGenerator = None
-    for key, value in kw.items():
-      self.setProperty( key, value )
 
+    self.setProperty( "InputHitsKey"            , InputHitsKey                )
+    self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )
+    self.setProperty( "EtaBins"                 , sampling.sensitive().EtaBins)
+    self.setProperty( "PhiBins"                 , sampling.sensitive().PhiBins)
+    self.setProperty( "ZMin"                    , sampling.volume().ZMin      )
+    self.setProperty( "ZMax"                    , sampling.volume().ZMax      )
+    self.setProperty( "Sampling"                , sampling.Sampling           )
+    self.setProperty( "Segment"                 , sampling.sensitive().Segment)
+    self.setProperty( "Detector"                , sampling.Detector           )
+    self.setProperty( "BunchIdStart"            , sampling.BunchIdStart       )
+    self.setProperty( "BunchIdEnd"              , sampling.BunchIdEnd         )
+    self.setProperty( "BunchDuration"           , 25                          )
+    self.setProperty( "OutputLevel"             , OutputLevel                 )
+    self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
+    self.setProperty( "HistogramPath"           , HistogramPath               )
+ 
 
   def core(self):
     # Attach all tools before return the core

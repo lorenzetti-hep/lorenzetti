@@ -12,24 +12,12 @@ from G4Kernel import treatPropertyValue
 class CaloHitMaker( Logger ):
 
 
-  def __init__( self, name, 
+  def __init__( self, name, sampling
                 OutputCollectionKey  : str    = "",
-                EtaBins              : list   = [],
-                PhiBins              : list   = [],
-                RMin                 : float  = ,
-                RMax                 : float  = ,
-                ZMin                 : float  = ,
-                ZMax                 : float  = ,
-                Sampling             : int    = ,
-                Segment              : int    = ,
-                Detector             : int    = ,
-                BunchIdStart         : int    = ,
-                BunchIdEnd           : int    = ,
-                BunchDuration        : float  = ,
                 OutputLevel          : int    = ,
                 DetailedHistograms   : bool   = ,
                 HistogramPath        : str    = ,
-                SamplingNoiseStd     : float  = ,
+                SamplingNoiseStd     : float  = 0,
               ):
 
     Logger.__init__(self)
@@ -40,24 +28,25 @@ class CaloHitMaker( Logger ):
     self.Tools = []
 
     self.__core = CaloHitMaker(name)
-    self.setProperty("OutputCollectionKey"    ,OutputCollectionKey  )
-    self.setProperty("EtaBins"                ,EtaBins              )
-    self.setProperty("PhiBins"                ,PhiBins              )
-    self.setProperty("RMin"                   ,RMin                 )
-    self.setProperty("RMax"                   ,RMax                 )
-    self.setProperty("ZMin"                   ,ZMin                 )
-    self.setProperty("ZMax"                   ,ZMax                 )
-    self.setProperty("Sampling"               ,Sampling             )
-    self.setProperty("Segment"                ,Segment              )
-    self.setProperty("Detector"               ,Detector             )
-    self.setProperty("BunchIdStart"           ,BunchIdStart         )
-    self.setProperty("BunchIdEnd"             ,BunchIdEnd           )
-    self.setProperty("BunchDuration"          ,BunchDuration        )
-    self.setProperty("OutputLevel"            ,OutputLevel          )
-    self.setProperty("DetailedHistograms"     ,DetailedHistograms   )
-    self.setProperty("HistogramPath"          ,HistogramPath        )
-    self.setProperty("SamplingNoiseStd"       ,SamplingNoiseStd     )
-
+    self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )
+    self.setProperty( "EtaBins"                 , sampling.sensitive().EtaBins)
+    self.setProperty( "PhiBins"                 , sampling.sensitive().PhiBins)
+    self.setProperty( "RMin"                    , sampling.volume().RMin      )
+    self.setProperty( "RMax"                    , sampling.volume().RMax      )
+    self.setProperty( "ZMin"                    , sampling.volume().ZMin      )
+    self.setProperty( "ZMax"                    , sampling.volume().ZMax      )
+    self.setProperty( "Sampling"                , sampling.Sampling           )
+    self.setProperty( "Segment"                 , sampling.sensitive().Segment)
+    self.setProperty( "Detector"                , sampling.Detector           )
+    self.setProperty( "BunchIdStart"            , sampling.BunchIdStart       )
+    self.setProperty( "BunchIdEnd"              , sampling.BunchIdEnd         )
+    self.setProperty( "BunchDuration"           , 25                          )
+    self.setProperty( "SamplingNoiseStd"        , SamplingNoiseStd            )
+    self.setProperty( "OutputLevel"             , OutputLevel                 )
+    self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
+    self.setProperty( "HistogramPath"           , HistogramPath               )
+ 
+    
 
   def core(self):
     # Attach all tools before return the core

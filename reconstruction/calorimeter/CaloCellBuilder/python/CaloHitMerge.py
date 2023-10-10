@@ -10,7 +10,6 @@ class CaloHitMerge( Logger ):
   def __init__( self, name, 
                 InputCollectionKeys : str = "",
                 OutputHitsKey       : str = "Hits",
-                OutputTruthHitsKey
                 ): 
     
     Logger.__init__(self)
@@ -21,8 +20,8 @@ class CaloHitMerge( Logger ):
     self.__core = CaloHitMerge(name)
     self.setProperty( "InputCollectionKeys" , InputCollectionKeys )
     self.setProperty( "OutputHitsKey"       , OutputHitsKey       ) 
-    self.setProperty( "OutputTruthHitsKey"  , OutputTruthHitsKey  ) 
     self.setProperty( "OutputLevel"         , OutputLevel         ) 
+
 
 
   def core(self):

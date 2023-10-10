@@ -42,29 +42,14 @@ class CaloHitBuilder( Logger ):
     for samp in self.__detector.samplings:
 
           MSG_INFO(self, "Create new CaloHitMaker and dump all hits into %s collection", samp.CollectionKey)
-          alg = CaloHitMaker("CaloHitMaker", 
-                              # output key
+          alg = CaloHitMaker("CaloHitMaker", samp,
                               OutputCollectionKey     = samp.CollectionKey, 
-                              # Hits grid configuration
-                              EtaBins                 = samp.sensitive().EtaBins,
-                              PhiBins                 = samp.sensitive().PhiBins,
-                              RMin                    = samp.volume().RMin,
-                              RMax                    = samp.volume().RMax,
-                              ZMin                    = samp.volume().ZMin,
-                              ZMax                    = samp.volume().ZMax,
-                              Sampling                = samp.Sampling,
-                              Detector                = samp.Detector,                    
-                              Segment                 = samp.sensitive().Segment,
                               SamplingNoiseStd        = samp.Noise, # TOF selection
-                              # Bunch crossing configuration
-                              BunchIdStart            = samp.BunchIdStart,
-                              BunchIdEnd              = samp.BunchIdEnd,
-                              BunchDuration           = 25, #ns
-                              # monitoring configuration
                               HistogramPath           = self.HistogramPath + '/' + samp.name(),
                               OutputLevel             = 1,#self.OutputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
+                              
           self.__recoAlgs.append( alg )
           self.OutputCollectionKeys.append( samp.CollectionKey )
 
