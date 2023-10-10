@@ -8,24 +8,27 @@ from G4Kernel import treatPropertyValue
 
 class ConstrainedOptimalFilter(Logger):
 
-  __allow_keys = ["OutputLevel",
-                  "PulsePath",
-                  "Threshold",
-                  "NSamples",
-                  "StartSamplingBC",
-                  "SamplingRate",
-                  ]
   
-  def __init__( self, name, **kw ):
+  def __init__( self, name,
+                OutputLevel       : int=0, 
+                NSamples          : float=0, 
+                PulsePath         : str="",
+                Threshold         : float=0,
+                SamplingRate      : float=0,
+                StartSamplingBC   : float=0,
+              ):
 
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, ConstrainedOptimalFilter
     self.__core = ConstrainedOptimalFilter(name)
-    for key, value in kw.items():
-      self.setProperty( key, value )
-
+    self.setProperty( "OutputLevel"     , OutputLevel       ) 
+    self.setProperty( "NSamples"        , NSamples          ) 
+    self.setProperty( "PulsePath"       , PulsePath         )
+    self.setProperty( "Threshold"       , Threshold         )
+    self.setProperty( "SamplingRate"    , SamplingRate      )
+    self.setProperty( "StartSamplingBC" , StartSamplingBC   )
 
   def core(self):
     return self.__core

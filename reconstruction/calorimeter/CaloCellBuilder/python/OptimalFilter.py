@@ -7,23 +7,23 @@ from G4Kernel import treatPropertyValue
 
 
 class OptimalFilter(Logger):
-
-  __allow_keys = ["OutputLevel",
-                  "WeightsEnergy",
-                  "WeightsTime",
-                  ]
   
-  def __init__( self, name, **kw ):
+  def __init__( self, name,
+                WeightsEnergy : list=[],
+                WeightsTime   : list=[],
+                OutputLevel   : int=0 
+              ):
 
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
     from ROOT import RunManager, OptimalFilter
     self.__core = OptimalFilter(name)
-    for key, value in kw.items():
-      self.setProperty( key, value )
+    self.setProperty( "OutputLevel"   , OutputLevel   )
+    self.setProperty( "WeightsEnergy" , WeightsEnergy )
+    self.setProperty( "WeightsTime"   , WeightsTime   )
 
-
+ 
   def core(self):
     return self.__core
 
