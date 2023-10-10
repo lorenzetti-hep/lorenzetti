@@ -20,7 +20,6 @@ class CaloCellBuilder( Logger ):
                       InputHitsKey         = "Hits",
                       OutputCellsKey       = "Cells",
                       OutputTruthCellsKey  = "TruthCells",
-                      DoCrosstalk          = False,
                       OutputLevel          = 1,
                       ):
 
@@ -44,11 +43,15 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CrossTalkMaker, PulseGenerator, OptimalFilter
 
  
   
     for samp in self.__detector.samplings:
+
+      DoCrosstalk = True if CaloFlags.DoCrosstalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EM2) else False
+
+
 
       MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", samp.CollectionKey)
       pulse = PulseGenerator( "PulseGenerator", 
@@ -73,7 +76,7 @@ class CaloCellBuilder( Logger ):
                             # input key
                             InputHitsKey            =  self.InputHitsKey, # hits
                             # output key
-                            OutputCollectionKey     = samp.CollectionKey, # descriptors
+                            OutputCollectionKey     = samp.CollectionKey + "_Aux" if DoCrosstalk else samp.CollectionKey, # descriptors
                             # monitoring configuration
                             HistogramPath           = self.HistogramPath + '/' + samp.name(),
                             OutputLevel             = self.OutputLevel,
@@ -83,6 +86,24 @@ class CaloCellBuilder( Logger ):
       alg.PulseGenerator = pulse # for all cell
       alg.Tools = [of] # for each cel
       self.__recoAlgs.append( alg )
+
+
+      if DoCrosstalk:
+          cx = CrossTalkMaker( "CrossTalkMaker_" + samp.CollectionKey,
+                                InputCellsKey    = samp.CollectionKey + "_Aux",
+                                OutputCellsKey   = samp.CollectionKey,
+                                MinEnergy        = CaloFlags.XTMinEnergy,
+                                XTAmpCapacitive  = CaloFlags.XTAmpCapacitive,
+                                XTAmpInductive   = CaloFlags.XTAmpInductive,
+                                XTAmpResistive   = CaloFlags.XTAmpResistive,
+                                HistogramPath    = self.HistogramPath + '/CrossTalk'
+                                OutputLevel      = self.OutputLevel
+                             )
+          cx.Tools = [of]
+          self.__recoAlgs.append( cx )
+
+
+
       self.OutputCollectionKeys.append( samp.CollectionKey )
 
 
@@ -99,6 +120,11 @@ class CaloCellBuilder( Logger ):
                               OutputLevel           = self.OutputLevel )
 
     self.__recoAlgs.append( mergeAlg )
+
+   
+      
+      self.__recoAlgs.append( cx )
+
 
 
   def merge( self, acc ):

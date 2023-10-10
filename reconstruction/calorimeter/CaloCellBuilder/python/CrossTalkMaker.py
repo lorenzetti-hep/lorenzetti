@@ -7,47 +7,34 @@ from G4Kernel import treatPropertyValue
 
 class CrossTalk( Logger ):
 
-  __allow_keys = ["MinEnergy",
-                  "CollectionKeys",
-                  "XTCellsKey",
-                  "CellsKey",
-                  "HistogramPath",
-                  "OutputLevel",
-                  "XTAmpCapacitive",
-                  "XTAmpInductive",
-                  "XTAmpResistive",
-                  ]
-
   def __init__( self, name, 
-                InputCollectionKeys : list=[],
-                OutputCellsKey      : str="Cells",
+                InputCollectionKey  : str="Cells",
+                OutputCollectionKey : str="XTCells",
+                MinEnergy           : float=CaloFlags.XTMinEnergy,
+                XTAmpCapacitive     : float=CaloFlags.XTAmpCapacitive,
+                XTAmpInductive      : float=CaloFlags.XTAmpInductive,
+                XTAmpResistive      : float=CaloFlags.XTAmpResistive,
+                HistogramPath       : str="/CrossTalkMaker",
+                OutputLevel         : int=0,
                 ):
 
     Logger.__init__(self)
     import ROOT
     ROOT.gSystem.Load('liblorenzetti')
-    # from ROOT import RunManager, CrossTalk
-    from ROOT import CrossTalk as core
+    from ROOT import CrossTalkMaker as core
     # Create the algorithm
-    # self.__core = CrossTalk(name)
-    self.__core = core(name)
+    self.__core = CrossTalkMaker(name)
     self.Tools = []
+    self.setProperty( "InputCollectionKey"    , InputCollectionKey  )
+    self.setProperty( "OutputCollectionKey"   , OutputCollectionKey )
+    self.setProperty( "MinEnergy"             , MinEnergy           )
+    self.setProperty( "XTAmpCapacitive"       , XTAmpCapacitive     )
+    self.setProperty( "XTAmpInductive"        , XTAmpInductive      )
+    self.setProperty( "XTAmpResistive"        , XTAmpResistive      )
+    self.setProperty( "HistogramPath"         , HistogramPath       )
+    self.setProperty( "OutputLevel"           , OutputLevel         )
 
-    self.setProperty( "InputCollectionKeys"   , )
-    self.setProperty( "OutputCellsKey"        , )
-    self.setProperty( "MinEnergy"             , )
-
-    self.setProperty( "XTAmpCapacitive" , )
-    self.setProperty( "XTAmpInductive"  , )
-    self.setProperty( "XTAmpResistive"  , )
  
-    self.setProperty( "HistogramPath"   , )
-    self.setProperty( "OutputLevel"     , )
-
-    for key, value in kw.items():
-      self.setProperty( key,value  )
-      # self.__core.setProperty( key, value )
-
 
   def core(self):
     # Attach all tools before return the core

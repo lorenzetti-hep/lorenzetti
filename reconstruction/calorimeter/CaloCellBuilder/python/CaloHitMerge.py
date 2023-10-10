@@ -8,7 +8,7 @@ from G4Kernel import treatPropertyValue
 class CaloHitMerge( Logger ):
 
   def __init__( self, name, 
-                InputCollectionKeys : str = "",
+                InputCollectionKeys : list= [],
                 OutputHitsKey       : str = "Hits",
                 ): 
     

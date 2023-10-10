@@ -13,7 +13,7 @@ class CaloHitMaker( Logger ):
 
 
   def __init__( self, name, sampling
-                OutputCollectionKey  : str    = "",
+                OutputCollectionKey  : str    = "Hits",
                 OutputLevel          : int    = ,
                 DetailedHistograms   : bool   = ,
                 HistogramPath        : str    = ,
