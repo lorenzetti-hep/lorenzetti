@@ -12,11 +12,11 @@ from G4Kernel import treatPropertyValue
 class CaloHitMaker( Logger ):
 
 
-  def __init__( self, name, sampling
+  def __init__( self, name, sampling,
                 OutputCollectionKey  : str    = "Hits",
-                OutputLevel          : int    = ,
-                DetailedHistograms   : bool   = ,
-                HistogramPath        : str    = ,
+                OutputLevel          : int    = 0,
+                DetailedHistograms   : bool   = False,
+                HistogramPath        : str    = "/CaloHitMaker",
                 SamplingNoiseStd     : float  = 0,
               ):
 
@@ -56,13 +56,16 @@ class CaloHitMaker( Logger ):
 
 
   def setProperty( self, key, value ):
-    if key in self.__core.hasProperty(key):
+    if self.__core.hasProperty(key):
       setattr( self, key , value )
-      self.__core.setProperty( key, treatPropertyValue(value) )
+      try:
+        self.__core.setProperty( key, treatPropertyValue(value) )
+      except:
+        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
     else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
 
- 
+
   def getProperty( self, key ):
     if hasattr(self, key):
       return getattr( self, key )

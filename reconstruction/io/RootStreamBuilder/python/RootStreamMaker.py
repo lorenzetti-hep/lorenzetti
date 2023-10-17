@@ -35,15 +35,17 @@ class RootStreamMaker( Logger ):
     self.core().setProperty("Containers", treatPropertyValue(containers) )
 
 
-
   def core(self):
     return self.__core
 
 
   def setProperty( self, key, value ):
-    if key in self.core().hasProperty(key):
+    if self.core().hasProperty(key):
       setattr( self, key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
+      try:
+        self.core().setProperty( key, treatPropertyValue(value) )
+      except:
+        MSG_FATAL( self, "Property with name %s has some problem during type convertion in %s object", key, self.__class__.__name__)
     else:
       MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 

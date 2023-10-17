@@ -50,9 +50,16 @@ bool TruthParticleConverter::convert( const TruthParticle_t &truth_t , TruthPart
 
 bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  std::vector<xAOD::TruthParticle_t>  m_particles_t;
+  std::vector<xAOD::TruthParticle_t>  *particles_t=nullptr;
+  std::string branch_name = "xAOD__TruthParticle";
+  
+  if ( tree->FindBranch(branch_name.c_str())){
+    tree->SetBranchAddress( (branch_name).c_str() , &particles_t     );
+    tree->GetBranch(branch_name.c_str() );
+  }else{
+    tree->Branch( (branch_name).c_str(), &particles_t     );
+  }
 
-  auto branch = tree->Branch( ("TruthParticleContainer_"+key).c_str(), &m_particles_t     );
   SG::ReadHandle<xAOD::TruthParticleContainer> container( key, ctx );
 
   if( !container.isValid() )
@@ -63,24 +70,23 @@ bool TruthParticleConverter::serialize( std::string &key, SG::EventContext &ctx,
   for (const auto par : **container.ptr() ){
     xAOD::TruthParticle_t par_t;
     convert( par, par_t );
-    m_particles_t.push_back(par_t);
+    particles_t->push_back(par_t);
   }
-
-  branch->Fill();
+  tree->Fill();
   return true;
 }
 
 
 bool TruthParticleConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
-  std::vector<xAOD::TruthParticle_t> particles_t;
- 
-  tree->SetBranchAddress( ("TruthParticleContainer_"+key).c_str() , &particles_t     );
+  std::vector<xAOD::TruthParticle_t> *particles_t=nullptr;
+  std::string branch_name = "xAOD__TruthParticle";
+  tree->SetBranchAddress( branch_name.c_str() , &particles_t     );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::TruthParticleContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
 
-  for( auto& par_t : particles_t)
+  for( auto& par_t : *particles_t)
   {
     xAOD::TruthParticle  *par=nullptr;
     convert(par_t, par);

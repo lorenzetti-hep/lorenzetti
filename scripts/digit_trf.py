@@ -26,6 +26,8 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
 pi = np.pi
 
@@ -38,6 +40,7 @@ outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
 
+  eval(args.command)
 
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
@@ -65,11 +68,11 @@ try:
                                 )
   calorimeter.merge(acc)
 
-  from RootStreamBuilder import RootStreamMaker
-  stream = RootStreamMaker( "RootStreamESDMaker",
-                            NtupleName         = "CollectionTree",
-                            OutputLevel        = outputLevel,
-                          )
+  from RootStreamBuilder import RootStreamESDMaker
+  stream = RootStreamESDMaker( "RootStreamESDMaker",
+                                NtupleName         = "CollectionTree",
+                                OutputLevel        = outputLevel,
+                              )
   acc += stream
   
 

@@ -46,7 +46,7 @@ class CaloHitBuilder( Logger ):
                               OutputCollectionKey     = samp.CollectionKey, 
                               SamplingNoiseStd        = samp.Noise, # TOF selection
                               HistogramPath           = self.HistogramPath + '/' + samp.name(),
-                              OutputLevel             = 1,#self.OutputLevel,
+                              OutputLevel             = self.OutputLevel,
                               DetailedHistograms      = False, # Use True when debug with only one thread
                               )
                               
@@ -62,7 +62,7 @@ class CaloHitBuilder( Logger ):
                               OutputLevel          = self.OutputLevel )
     self.__recoAlgs.append( mergeAlg )
 
-
+  
 
   def merge( self, acc ):
 

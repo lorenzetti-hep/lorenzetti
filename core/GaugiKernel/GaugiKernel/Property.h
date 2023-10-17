@@ -121,8 +121,9 @@ namespace Gaugi{
   {
     if (m_properties.find(name) != m_properties.end()) {
       dynamic_cast<Property<T>&>(*m_properties[name]).setValue(value);
+    }else{
+      throw std::runtime_error("set property with name " + name + " failed. the property does not exist."); 
     }
-    throw std::runtime_error("set property with name " + name + " failed. the property does not exist."); 
   }
   
   inline void PropertyService::setProperty( std::string name, int                       value ){__setProperty<int>(name,value);}
@@ -143,8 +144,9 @@ namespace Gaugi{
   {
     if (m_properties.find(name) != m_properties.end()) {
       value = dynamic_cast<Property<T>&>(*m_properties[name]).getValue(); 
+    }else{
+      throw std::runtime_error("get property with name " + name + " failed. the property does not exist."); 
     }
-    throw std::runtime_error("get property with name " + name + " failed. the property does not exist."); 
 
   }
    

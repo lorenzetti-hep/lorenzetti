@@ -36,7 +36,7 @@ parser.add_argument('-t','--timeout', action='store', dest='timeout', required =
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-parser.add_argument('-c','--command', action='store', dest='command', required = False, default="",
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
                     help = "The preexec command")
 
 if len(sys.argv)==1:
@@ -48,11 +48,9 @@ args = parser.parse_args()
 outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
-
   eval(args.command)
 
   from ATLAS import ATLASConstruction as ATLAS
-
   # Build the ATLAS detector
   detector = ATLAS( UseMagneticField = args.enableMagneticField )
 
@@ -61,7 +59,6 @@ try:
                               OutputFile      = args.outputFile,
                               Timeout         = args.timeout * MINUTES )
   
-
   gun = EventReader( "EventReader", args.inputFile,
                      # outputs
                      OutputEventKey   = recordable("EventInfo"),
@@ -69,27 +66,20 @@ try:
                      OutputSeedKey    = recordable("Seeds"    ),
                      )
 
-
   from CaloCellBuilder import CaloHitBuilder
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
                                 OutputHitsKey = recordable("Hits")
                                 )
-
   gun.merge(acc)
   calorimeter.merge(acc)
 
-
   from RootStreamBuilder import RootStreamHITMaker
-  acc += RootStreamHITMaker( "RootStreamHITMaker", OutputLevel = outputLevel)
-
+  acc += RootStreamHITMaker( "RootStreamHITMaker", OutputLevel = outputLevel, OnlyRoI=False)
 
 
   acc.run(args.numberOfEvents)
-  
-  if args.visualization:
-      input("Press Enter to quit...")
 
   sys.exit(0)
   

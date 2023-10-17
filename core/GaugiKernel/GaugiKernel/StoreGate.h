@@ -41,7 +41,7 @@ namespace SG
       void cd(std::string="" );
       
       /** Create 1D histogram **/
-      bool add( TObject *);
+      bool add( TObject * , bool force=false);
       
       /** Get 1D pointer **/
       TH1F* hist1( std::string );

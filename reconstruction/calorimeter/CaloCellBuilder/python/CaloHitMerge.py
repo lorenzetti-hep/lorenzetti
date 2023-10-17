@@ -10,6 +10,7 @@ class CaloHitMerge( Logger ):
   def __init__( self, name, 
                 InputCollectionKeys : list= [],
                 OutputHitsKey       : str = "Hits",
+                OutputLevel         : int = 10,
                 ): 
     
     Logger.__init__(self)
@@ -23,17 +24,19 @@ class CaloHitMerge( Logger ):
     self.setProperty( "OutputLevel"         , OutputLevel         ) 
 
 
-
   def core(self):
     return self.__core
 
 
   def setProperty( self, key, value ):
-    if key in self.__core.hasProperty(key):
+    if self.__core.hasProperty(key):
       setattr( self, key , value )
-      self.__core.setProperty( key, treatPropertyValue(value) )
+      try:
+        self.__core.setProperty( key, treatPropertyValue(value) )
+      except:
+        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
     else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
 
  
   def getProperty( self, key ):

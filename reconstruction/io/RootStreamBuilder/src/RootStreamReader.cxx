@@ -35,7 +35,7 @@ RootStreamReader::~RootStreamReader()
 StatusCode RootStreamReader::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 
@@ -100,32 +100,27 @@ StatusCode RootStreamReader::deserialize( int evt, EventContext &ctx ) const
 
   auto store = ctx.getStoreGateSvc();
   TFile *file = (TFile*)store->decorator("events");
-  TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
-
-
-
-  std::vector<std::string> containers;
-  auto branches = tree->GetListOfBranches();
-  for( auto branch : *branches)
-  {
-    auto name = branch->GetName();
-    MSG_INFO(name);
-    containers.push_back(name);
-  }
-
   std::string seedKey = "Seeds";
 
 
-  for (auto &container_key : containers){
+  for (auto &namespace_container_key : m_containers){
     
-    MSG_INFO("Preparing " << container_key << "...");
+    MSG_INFO("Preparing " << namespace_container_key << "...");
 
     std::vector<std::string> result;
-    boost::split(result, container_key, boost::is_any_of("_") );
-    auto container = result.at(0);
+    boost::split(result, namespace_container_key, boost::is_any_of("#") );
+    auto namespace_container = result.at(0);
     auto key       = result.at(1);
+    result.clear();
+    boost::split(result, namespace_container, boost::is_any_of(":") );
+    auto namespace_class = result.at(0);
+    auto container = result.at(2);
 
-    if (container == "EventInfoContainer"){
+
+    file->cd(m_ntupleName.c_str());
+    auto tree = (TTree*)file->Get( (namespace_class+"__"+container+"_"+key).c+str() );
+
+    if (namespace_container == "EventInfoContainer"){
 
       MSG_INFO("Converting and deseriallizing EventInfo objects into root file...");
       EventInfoConverter cnv;
@@ -133,7 +128,7 @@ StatusCode RootStreamReader::deserialize( int evt, EventContext &ctx ) const
         MSG_FATAL("Its not possible to deserialize xAOD::EventInfoContainer.");
       }
 
-    }else if (container == "EventSeedContainer"){
+    }else if (namespace_container == "EventSeedContainer"){
 
       MSG_INFO("Converting and deseriallizing EventSeed objects into root file...");
       EventSeedConverter cnv;
@@ -142,7 +137,7 @@ StatusCode RootStreamReader::deserialize( int evt, EventContext &ctx ) const
       }
       seedKey = key;
 
-    }else if (container == "TruthParticleContainer"){
+    }else if (namespace_container == "TruthParticleContainer"){
 
       MSG_INFO("Converting and deseriallizing TruthParticle objects into root file...");
       TruthParticleConverter cnv;
@@ -150,7 +145,7 @@ StatusCode RootStreamReader::deserialize( int evt, EventContext &ctx ) const
         MSG_FATAL("Its not possible to deserialize xAOD::TruthParticleContainer.");
       }
 
-    }else if (container == "CaloCellContainer"){
+    }else if (namespace_container == "CaloCellContainer"){
 
       MSG_INFO("Converting and deseriallizing CaloCell objects into root file...");
       CaloCellConverter cnv(seedKey , 0.4, 0.4 );
@@ -158,7 +153,7 @@ StatusCode RootStreamReader::deserialize( int evt, EventContext &ctx ) const
         MSG_FATAL("Its not possible to deserialize xAOD::CaloCellContainer.");
       }
 
-    }else if (container == "CaloHitContainer"){
+    }else if (namespace_container == "CaloHitContainer"){
 
       MSG_INFO("Converting and deseriallizing CaloHit objects into root file...");
       CaloHitConverter cnv(seedKey, false, 0.4, 0.4);

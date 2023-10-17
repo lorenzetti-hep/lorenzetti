@@ -30,7 +30,7 @@ RunReconstruction::RunReconstruction( int numberOfThreads, int timeout,
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
-    MSG_DEBUG( "Booking histograms for " << toolHandle->name() );
+    MSG_INFO( "Booking histograms for " << toolHandle->name() );
     if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }
@@ -98,7 +98,7 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
   if ( m_msgCounter>1e6 && m_timeout.resume() > m_event_timeout*0.8 ){
-    MSG_INFO( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
+    MSG_DEBUG( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
     m_msgCounter=0;
   }
 

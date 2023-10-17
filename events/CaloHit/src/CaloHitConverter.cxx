@@ -1,6 +1,7 @@
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventSeedContainer.h"
 #include "G4Kernel/CaloPhiRange.h"
+#include <iostream>
 
 
 using namespace xAOD;
@@ -63,10 +64,18 @@ bool CaloHitConverter::convert( const CaloHit_t &hit_t, CaloHit *&hit ) const
 
 bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  std::vector<xAOD::CaloHit_t> hits_t;
+  std::string branch_name = "xAOD__CaloHit";
+  std::vector<xAOD::CaloHit_t> *hits_t=nullptr;
 
-  auto branch = tree->Branch( ("CaloHitContainer_"+key).c_str(), &hits_t     );
-  
+  if ( tree->FindBranch(branch_name.c_str())){
+    tree->SetBranchStatus((branch_name).c_str(), 1);
+    tree->SetBranchAddress( (branch_name).c_str() , &hits_t     );
+    tree->GetBranch(branch_name.c_str() );
+  }else{
+    tree->Branch( (branch_name).c_str(), &hits_t     );
+  }
+
+
   SG::ReadHandle<xAOD::EventSeedContainer> seeds( m_seedKey, ctx );
   SG::ReadHandle<xAOD::CaloHitContainer> container(key, ctx);
   
@@ -103,11 +112,11 @@ bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree
     if(hit->hash() != hit_t.hash){
       return false;
     }
-    hits_t.push_back(hit_t);
+    hits_t->push_back(hit_t);
     etot+=hit->edep();
   }// check if hit is inside of the window
 
-  branch->Fill();
+  tree->Fill();
   return true;
 }
 
@@ -115,7 +124,9 @@ bool CaloHitConverter::serialize( std::string &key, SG::EventContext &ctx, TTree
 bool CaloHitConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
   std::vector<xAOD::CaloHit_t> *hits_t = nullptr;
-  tree->SetBranchAddress( ("CaloHitContainer_"+key).c_str() , &hits_t );
+  std::string branch_name = "xAOD__CaloHit";
+  tree->SetBranchAddress( branch_name.c_str() , &hits_t );
+
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::CaloHitContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::CaloHitContainer>(new xAOD::CaloHitContainer()));

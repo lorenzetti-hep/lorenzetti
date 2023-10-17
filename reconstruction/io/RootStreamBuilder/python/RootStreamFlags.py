@@ -6,9 +6,9 @@ from GaugiKernel import EnumStringification
 
 class RootStreamFlags(EnumStringification):
 
-    EtaWindow = 0.6, 
-    PhiWindow = 0.6,
-    OnlyRoI   = True,
+    EtaWindow = 0.6 
+    PhiWindow = 0.6
+    OnlyRoI   = True
     SaveCells = False
 
 

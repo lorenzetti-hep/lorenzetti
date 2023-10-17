@@ -26,10 +26,19 @@ bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
 }
 
 
-bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
+bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree ) const
 {
-  std::vector<xAOD::EventInfo_t> events_t;
-  auto branch = tree->Branch( ("EventInfoContainer_"+key).c_str(), &events_t );
+
+  std::vector<xAOD::EventInfo_t> *events_t=nullptr;
+  std::string branch_name = "xAOD__EventInfo";
+  
+  if ( tree->FindBranch(branch_name.c_str())){
+    tree->SetBranchStatus((branch_name).c_str(), 1);
+    tree->SetBranchAddress( (branch_name).c_str() , &events_t     );
+    tree->GetBranch(branch_name.c_str() );
+  }else{
+    tree->Branch( (branch_name).c_str(), &events_t     );
+  }
 
   SG::ReadHandle<xAOD::EventInfoContainer> container( key, ctx );
 
@@ -41,23 +50,23 @@ bool EventInfoConverter::serialize( std::string &key, SG::EventContext &ctx, TTr
   for (const auto event : **container.ptr() ){
     xAOD::EventInfo_t event_t;
     convert( event, event_t );
-    events_t.push_back(event_t);
+    events_t->push_back(event_t);
   }
-
-  branch->Fill();
+  tree->Fill();
   return true;
 }
 
 
 bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, SG::EventContext &ctx) const
 {
-  std::vector<xAOD::EventInfo_t> events_t;
-  tree->SetBranchAddress(  ("EventInfoContainer_"+key).c_str() , &events_t );
+  std::vector<xAOD::EventInfo_t> *events_t=nullptr;
+  std::string branch_name = "xAOD__EventInfo";
+  tree->SetBranchAddress(  branch_name.c_str() , &events_t );
   tree->GetEntry( evt );
   SG::WriteHandle<xAOD::EventInfoContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
 
-  for( auto& event_t : events_t)
+  for( auto& event_t : *events_t)
   {
     xAOD::EventInfo  *event=nullptr;
     convert(event_t, event);

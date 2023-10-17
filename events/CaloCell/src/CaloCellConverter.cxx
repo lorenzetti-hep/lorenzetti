@@ -100,11 +100,30 @@ bool CaloCellConverter::convert( const CaloCell_t &cell_t, CaloCell *&cell ) con
 
 bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTree *tree) const
 {
-  std::vector<xAOD::CaloCell_t> cells_t;
-  std::vector<xAOD::CaloDetDescriptor_t> descriptors_t;
+  std::vector<xAOD::CaloCell_t> *cells_t=nullptr;
+  std::vector<xAOD::CaloDetDescriptor_t> *descriptors_t=nullptr;
 
-  auto branch_cells = tree->Branch( ("CaloCellContainer_" + key).c_str()       , &cells_t         );
-  auto branch_desc  = tree->Branch( ("CaloDetDescriptorContainer_"+key).c_str(), &descriptors_t   );
+
+  std::string branch_cells_name = "CaloCellContainer_"+key;
+  
+  TBranch *branch_cells=nullptr;
+  if ( tree->FindBranch(branch_cells_name.c_str())){
+    tree->SetBranchAddress( (branch_cells_name).c_str() , &cells_t     );
+    branch_cells = tree->GetBranch(branch_cells_name.c_str() );
+  }else{
+    branch_cells = tree->Branch( (branch_cells_name).c_str(), &cells_t     );
+  }
+
+  std::string branch_desc_name = "CaloDetDescriptorContainer_"+key;
+  
+  TBranch *branch_desc=nullptr;
+  if ( tree->FindBranch(branch_desc_name.c_str())){
+    tree->SetBranchAddress( (branch_desc_name).c_str() , &descriptors_t     );
+    branch_desc = tree->GetBranch(branch_desc_name.c_str() );
+  }else{
+    branch_desc = tree->Branch( (branch_desc_name).c_str(), &descriptors_t     );
+  }
+
 
 
   xAOD::cell_links_t cell_links;
@@ -142,8 +161,8 @@ bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTre
                   convert( descriptor, descriptor_t, link);
                   link++;
               }
-              cells_t.push_back(cell_t);
-              descriptors_t.push_back(descriptor_t);
+              cells_t->push_back(cell_t);
+              descriptors_t->push_back(descriptor_t);
           }// check if cell is inside of the window
       }// loop over all cells
   }// loop over all seeds

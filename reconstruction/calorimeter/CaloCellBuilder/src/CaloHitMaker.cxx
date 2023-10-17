@@ -178,7 +178,6 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
     MSG_FATAL( "Its not possible to retrieve the hit. Bin ("<< bin << ") not exist");
   }
   
-
   return StatusCode::SUCCESS;
 }
 

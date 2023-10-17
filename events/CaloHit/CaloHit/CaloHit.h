@@ -6,6 +6,7 @@
 #include "GaugiKernel/macros.h"
 #include "G4Step.hh"
 #include "globals.hh"
+#include <iostream>
 
 
 
@@ -147,6 +148,7 @@ namespace xAOD{
       std::vector<float> m_time;
       /*! energy deposit between bcid_start and bcid_end */
       std::map< int, float> m_edep;
+
       /*!time of flight of a particle between bcid_start and bcid_end */
       std::map< int, float> m_tof;
       bool m_firstHit = false;

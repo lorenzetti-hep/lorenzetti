@@ -38,7 +38,7 @@ RootStreamMaker::~RootStreamMaker()
 StatusCode RootStreamMaker::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 
@@ -48,8 +48,20 @@ StatusCode RootStreamMaker::bookHistograms( SG::EventContext &ctx ) const
 {
   auto store = ctx.getStoreGateSvc();
   store->cd();
-  TTree *tree = new TTree(m_ntupleName.c_str(), "");
-  store->add( tree );
+  store->mkdir(m_ntupleName);
+  for (auto &container_key : m_containers){
+
+    std::vector<std::string> result;
+    boost::split(result, container_key, boost::is_any_of("#") );
+    auto namespace_container = result.at(0);
+    auto key       = result.at(1);
+    result.clear();
+    boost::split(result, namespace_container, boost::is_any_of(":") );
+    auto namespace_class = result.at(0);
+    auto container = result.at(2);
+    TTree *tree = new TTree((namespace_class+"__"+container+"_"+key).c_str(), "");
+    store->add( tree );
+  }
   return StatusCode::SUCCESS;
 }
 
@@ -78,6 +90,8 @@ StatusCode RootStreamMaker::execute( EventContext &/*ctx*/, int /*evt*/ ) const
 
 StatusCode RootStreamMaker::finalize()
 {
+
+
   return StatusCode::SUCCESS;
 }
 
@@ -109,19 +123,24 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
 
   std::string seedKey = "";
 
-  store->cd();
-  TTree *tree = store->tree(m_ntupleName);
- 
+  store->cd(m_ntupleName);
+
   for (auto &container_key : m_containers){
     
     MSG_INFO("Preparing " << container_key << "...");
 
     std::vector<std::string> result;
     boost::split(result, container_key, boost::is_any_of("#") );
-    auto container = result.at(0);
+    auto namespace_container = result.at(0);
     auto key       = result.at(1);
-    
-    if (container == "xAOD::EventInfoContainer"){
+    result.clear();
+    boost::split(result, namespace_container, boost::is_any_of(":") );
+    auto namespace_class = result.at(0);
+    auto container = result.at(2);
+
+    TTree *tree = store->tree(namespace_class+"__"+container+"_"+key);
+
+    if (namespace_container == "xAOD::EventInfoContainer"){
 
       MSG_INFO("Converting and serializing EventInfo objects into root file...");
       EventInfoConverter cnv;
@@ -129,7 +148,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::EventInfoContainer.");
       };
 
-    }else if (container == "xAOD::EventSeedContainer"){
+    }else if (namespace_container  == "xAOD::EventSeedContainer"){
 
       MSG_INFO("Converting and serializing EventSeed objects into root file...");
       EventSeedConverter cnv;
@@ -138,7 +157,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
       };
       seedKey = key;
 
-    }else if (container == "xAOD::TruthParticleContainer"){
+    }else if (namespace_container  == "xAOD::TruthParticleContainer"){
 
       MSG_INFO("Converting and serializing TruthParticle objects into root file...");
       TruthParticleConverter cnv;
@@ -146,7 +165,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::TruthParticleContainer.");
       };
 
-    }else if (container == "xAOD::CaloCellContainer"){
+    }else if (namespace_container  == "xAOD::CaloCellContainer"){
 
       MSG_INFO("Converting and serializing CaloCell objects into root file...");
       CaloCellConverter cnv(seedKey , m_etaWindow, m_phiWindow );
@@ -154,7 +173,7 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::CaloCellContainer.");
       };
 
-    }else if (container == "xAOD::CaloHitContainer"){
+    }else if (namespace_container  == "xAOD::CaloHitContainer"){
 
       MSG_INFO("Converting and serializing CaloHit objects into root file...");
       CaloHitConverter cnv(seedKey, m_onlyRoI, m_etaWindow, m_phiWindow);
@@ -162,9 +181,23 @@ StatusCode RootStreamMaker::serialize( EventContext &ctx ) const
         MSG_FATAL("Its not possible to serialize xAOD::CaloHitContainer.");
       };
     }else{
-      MSG_WARNING("There is not converver for the container " << container << " in key " << key);
+      MSG_WARNING("There is not converver for the container " << namespace_container  << " in key " << key);
     }
+
   }
+
+
+
+  /*
+  // NOTE: this is a root hack to overwrite the original tree
+  auto tree = store->tree(m_ntupleName);
+  trees->Add(tree);
+  auto merged_tree = TTree::MergeTrees(trees);
+  //delete tree;
+  merged_tree->SetName(m_ntupleName.c_str());
+  store->add(merged_tree, true);
+  //delete trees;
+  */
 
   return StatusCode::SUCCESS;
  

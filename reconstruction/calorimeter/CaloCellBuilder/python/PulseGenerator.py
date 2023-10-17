@@ -44,11 +44,14 @@ class PulseGenerator( Logger ):
 
 
   def setProperty( self, key, value ):
-    if key in self.core().hasProperty(key):
+    if self.__core.hasProperty(key):
       setattr( self, key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
+      try:
+        self.__core.setProperty( key, treatPropertyValue(value) )
+      except:
+        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
     else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
 
  
   def getProperty( self, key ):

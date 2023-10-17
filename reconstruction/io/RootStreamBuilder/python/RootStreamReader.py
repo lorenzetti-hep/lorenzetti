@@ -25,14 +25,14 @@ class RootStreamReader( Logger ):
     f = ROOT.TFile( self.InputFile, "read")
     t = f.Get( self.NtupleName )
     self.__entries = t.GetEntries()
-
+    MSG_INFO(self,f"Getting a total of {self.__entries} events into the ntuple.")
 
   def core(self):
     return self.__core
 
 
   def setProperty( self, key, value ):
-    if key in self.core().hasProperty(key):
+    if self.core().hasProperty(key):
       setattr( self, key , value )
       self.core().setProperty( key, treatPropertyValue(value) )
     else:

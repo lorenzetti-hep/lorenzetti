@@ -25,6 +25,7 @@ namespace xAOD{
             bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
             bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
 
+  
     };
 }
 #endif

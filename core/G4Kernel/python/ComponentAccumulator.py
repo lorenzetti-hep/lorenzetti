@@ -4,6 +4,7 @@ __all__ = ["ComponentAccumulator"]
 from GaugiKernel.constants import *
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
+from G4Kernel import treatPropertyValue
 import os, time, gc
 
 
@@ -28,6 +29,7 @@ class ComponentAccumulator( Logger ):
     self.__detector.compile()
     # set the geant detector into the geant 
     self.__core.setDetectorConstruction( self.__detector.core()   )
+    self.setProperty( "OutputFile"      , OutputFile              )
     self.setProperty( "VisMac"          , self.__detector.VisMac  )
     self.setProperty( "NumberOfThreads" , NumberOfThreads         )
     self.setProperty( "Timeout"         , Timeout                 )
@@ -55,11 +57,14 @@ class ComponentAccumulator( Logger ):
 
 
   def setProperty( self, key, value ):
-    if key in self.core().hasProperty(key):
+    if self.__core.hasProperty(key):
       setattr( self, key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
+      try:
+        self.__core.setProperty( key, treatPropertyValue(value) )
+      except:
+        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
     else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
 
  
   def getProperty( self, key ):

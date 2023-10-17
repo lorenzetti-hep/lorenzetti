@@ -25,13 +25,13 @@ class CaloCellBuilder( Logger ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
-    self.HistogramPath    = HistogramPath
-    self.OutputLevel      = OutputLevel
-    self.InputHitsKey     = InputHitsKey
-    self.OutputCellsKey   = OutputCellsKey
-    self.OutputTruthCells = OutputTruthCellsKey
-    self.__detector       = detector
-    self.OutputCollectionKeys   = []
+    self.HistogramPath       = HistogramPath
+    self.OutputLevel         = OutputLevel
+    self.InputHitsKey        = InputHitsKey
+    self.OutputCellsKey      = OutputCellsKey
+    self.OutputTruthCellsKey = OutputTruthCellsKey
+    self.__detector          = detector
+    self.OutputCollectionKeys= []
 
     
 
@@ -43,13 +43,13 @@ class CaloCellBuilder( Logger ):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
 
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CrossTalkMaker, PulseGenerator, OptimalFilter
+    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CrossTalkMaker, PulseGenerator, OptimalFilter, CaloFlags
 
  
   
     for samp in self.__detector.samplings:
 
-      DoCrosstalk = True if CaloFlags.DoCrosstalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EM2) else False
+      DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EM2) else False
 
 
 
@@ -96,7 +96,7 @@ class CaloCellBuilder( Logger ):
                                 XTAmpCapacitive  = CaloFlags.XTAmpCapacitive,
                                 XTAmpInductive   = CaloFlags.XTAmpInductive,
                                 XTAmpResistive   = CaloFlags.XTAmpResistive,
-                                HistogramPath    = self.HistogramPath + '/CrossTalk'
+                                HistogramPath    = self.HistogramPath + '/CrossTalk',
                                 OutputLevel      = self.OutputLevel
                              )
           cx.Tools = [of]
@@ -122,9 +122,6 @@ class CaloCellBuilder( Logger ):
     self.__recoAlgs.append( mergeAlg )
 
    
-      
-      self.__recoAlgs.append( cx )
-
 
 
   def merge( self, acc ):
