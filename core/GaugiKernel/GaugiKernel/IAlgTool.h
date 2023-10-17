@@ -23,7 +23,6 @@ class IAlgTool
 	    
 	/*! Destructor */
 	virtual ~IAlgTool() {};
-
 	/*! Create all resouces here */    
 	virtual StatusCode initialize()=0;
 	virtual StatusCode execute( SG::EventContext &ctx, Gaugi::EDM * ) const=0;

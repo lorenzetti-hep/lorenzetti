@@ -104,26 +104,21 @@ bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTre
   std::vector<xAOD::CaloDetDescriptor_t> *descriptors_t=nullptr;
 
 
-  std::string branch_cells_name = "CaloCellContainer_"+key;
-  
-  TBranch *branch_cells=nullptr;
+  std::string branch_cells_name = "CaloCell";
   if ( tree->FindBranch(branch_cells_name.c_str())){
     tree->SetBranchAddress( (branch_cells_name).c_str() , &cells_t     );
-    branch_cells = tree->GetBranch(branch_cells_name.c_str() );
+    tree->GetBranch(branch_cells_name.c_str() );
   }else{
-    branch_cells = tree->Branch( (branch_cells_name).c_str(), &cells_t     );
+    tree->Branch( (branch_cells_name).c_str(), &cells_t     );
   }
 
-  std::string branch_desc_name = "CaloDetDescriptorContainer_"+key;
-  
-  TBranch *branch_desc=nullptr;
+  std::string branch_desc_name = "CaloDetDescriptor";
   if ( tree->FindBranch(branch_desc_name.c_str())){
     tree->SetBranchAddress( (branch_desc_name).c_str() , &descriptors_t     );
-    branch_desc = tree->GetBranch(branch_desc_name.c_str() );
+    tree->GetBranch(branch_desc_name.c_str() );
   }else{
-    branch_desc = tree->Branch( (branch_desc_name).c_str(), &descriptors_t     );
+    tree->Branch( (branch_desc_name).c_str(), &descriptors_t     );
   }
-
 
 
   xAOD::cell_links_t cell_links;
@@ -167,8 +162,7 @@ bool CaloCellConverter::serialize( std::string &key, SG::EventContext &ctx, TTre
       }// loop over all cells
   }// loop over all seeds
 
-  branch_cells->Fill();
-  branch_desc->Fill();
+  tree->Fill();
 
   return true;
 }
@@ -179,8 +173,8 @@ bool CaloCellConverter::deserialize( std::string &key , int &evt, TTree* tree, S
   std::vector<xAOD::CaloCell_t> cells_t;
   std::vector<xAOD::CaloDetDescriptor_t> descriptors_t;
   
-  tree->SetBranchAddress( ("CaloCellContainer_" +key).c_str()         , &cells_t       );
-  tree->SetBranchAddress( ("CaloDetDescriptorContainer_"+key).c_str() , &descriptors_t );
+  tree->SetBranchAddress( "CaloCell"          , &cells_t       );
+  tree->SetBranchAddress( "CaloDetDescriptor" , &descriptors_t );
   tree->GetEntry( evt );
 
   std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;

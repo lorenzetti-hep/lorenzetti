@@ -10,7 +10,6 @@ from RootStreamBuilder import RootStreamEDMList, RootStreamFlags
 class RootStreamMaker( Logger ):
 
   def __init__( self, name: str, edm: str, 
-                      NtupleName  : str = "CollectionTree",
                       EtaWindow   : int = RootStreamFlags.EtaWindow, 
                       PhiWindow   : int = RootStreamFlags.PhiWindow,
                       OnlyRoI     : bool= RootStreamFlags.OnlyRoI,
@@ -24,7 +23,6 @@ class RootStreamMaker( Logger ):
     
     self.EDMFormat = edm
     # cpp core configuration and python var set
-    self.setProperty( "NtupleName"  , NtupleName  )
     self.setProperty( "OnlyRoI"     , OnlyRoI     )
     self.setProperty( "EtaWindow"   , EtaWindow   )
     self.setProperty( "PhiWindow"   , PhiWindow   )
@@ -32,7 +30,7 @@ class RootStreamMaker( Logger ):
 
     # cpp core configuration only
     containers = [stream[0] for stream in RootStreamEDMList if self.EDMFormat in stream[1]]
-    self.core().setProperty("Containers", treatPropertyValue(containers) )
+    self.setProperty("Containers", containers )
 
 
   def core(self):

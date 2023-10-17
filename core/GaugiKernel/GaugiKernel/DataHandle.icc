@@ -34,9 +34,9 @@ namespace SG{
   {
     auto it = m_storable_ptr.find(sgkey);
     if ( it != m_storable_ptr.end() ){
-      return  static_cast<const T*> ( m_storable_ptr.at( sgkey ).get() );
+      return static_cast<const T*> ( m_storable_ptr.at( sgkey ).get() );
     }else{
-      MSG_WARNING( "The key (" << sgkey << ") exist into the event context. Its not possible to get this container" );
+      MSG_WARNING( "The key (" << sgkey << ") does not exist into the event context. Its not possible to get this container" );
       return nullptr;
     }
   }

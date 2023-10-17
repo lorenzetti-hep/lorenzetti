@@ -48,13 +48,14 @@ namespace xAOD{
     class CaloClusterConverter{
 
         public:
-            CaloClusterConverter()=default;
+            CaloClusterConverter(std::string cellKey, );
             ~CaloClusterConverter()=default;
 
             // convert a class object into a struct
             bool convert(const CaloCluster *, CaloCluster_t & , cell_links_t &);
-
             bool convert( const CaloCluster_t &, CaloCluster *& );
+            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
+            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
 
 
         private:

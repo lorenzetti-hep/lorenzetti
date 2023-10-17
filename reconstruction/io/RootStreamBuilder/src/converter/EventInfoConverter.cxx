@@ -63,6 +63,7 @@ bool EventInfoConverter::deserialize( std::string &key , int &evt, TTree* tree, 
   std::string branch_name = "xAOD__EventInfo";
   tree->SetBranchAddress(  branch_name.c_str() , &events_t );
   tree->GetEntry( evt );
+
   SG::WriteHandle<xAOD::EventInfoContainer> container(key, ctx);
   container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
 

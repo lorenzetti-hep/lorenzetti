@@ -5,6 +5,7 @@
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
+#include "RootStreamConverter.h"
 
 
 
@@ -33,6 +34,7 @@ class RootStreamReader : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
+   void push_back( RootStreamConverter *converter ){m_converters.push_back(converter);};
 
 
   private:
@@ -41,7 +43,9 @@ class RootStreamReader : public Gaugi::Algorithm
     StatusCode deserialize( int evt, SG::EventContext &ctx ) const;
     
     std::string m_inputFile;
-    std::string m_ntupleName;
+    std::vector<std::string> m_containers;
+    std::vector<RootStreamConverter*> m_converters;
+
     int m_outputLevel;
 };
 

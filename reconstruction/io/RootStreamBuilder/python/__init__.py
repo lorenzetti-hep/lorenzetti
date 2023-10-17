@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import converters
+__all__.extend(converters.__all__)
+from .converters import *
+
 from . import RootStreamFlags
 __all__.extend(RootStreamFlags.__all__)
 from .RootStreamFlags import *

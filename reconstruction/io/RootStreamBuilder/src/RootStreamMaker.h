@@ -5,7 +5,7 @@
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
-
+#include "RootStreamConverter.h"
 
 
 class RootStreamMaker : public Gaugi::Algorithm
@@ -33,18 +33,15 @@ class RootStreamMaker : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
-
+    void push_back( RootStreamConverter *converter ){m_converters.push_back(converter);};
 
   private:
  
 
     StatusCode serialize( SG::EventContext &ctx ) const;
     
+    std::vector<RootStreamConverter*> m_converters;
     std::vector<std::string> m_containers;
-    std::string m_ntupleName;
-    float m_etaWindow;
-    float m_phiWindow;
-    bool m_onlyRoI;
     int m_outputLevel;
 };
 

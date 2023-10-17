@@ -46,12 +46,11 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
   # the reader must be first in sequence
-  from RootStreamBuilder import RootStreamReader, recordable
-  reader = RootStreamReader("HITReader",
-                            InputFile       = args.inputFile,
-                            NtupleName      = "CollectionTree",
-                            OutputLevel     = outputLevel,
-                           )
+  from RootStreamBuilder import RootStreamHITReader, recordable
+  reader = RootStreamHITReader("HITReader",
+                               InputFile       = args.inputFile,
+                               OutputLevel     = outputLevel 
+                               )
 
   reader.merge(acc)
   
@@ -70,7 +69,6 @@ try:
 
   from RootStreamBuilder import RootStreamESDMaker
   stream = RootStreamESDMaker( "RootStreamESDMaker",
-                                NtupleName         = "CollectionTree",
                                 OutputLevel        = outputLevel,
                               )
   acc += stream
