@@ -15,7 +15,7 @@ class FixedRegion( Cpp ):
     Cpp.__init__(self, generator.FixedRegion(name))
     self.setProperty( "Eta"          , Eta           )
     self.setProperty( "Phi"          , Phi           )
-    s#elf.setProperty( "OutputLevel"  , OutputLevel   )
+    self.setProperty( "OutputLevel"  , OutputLevel   )
 
 
 
