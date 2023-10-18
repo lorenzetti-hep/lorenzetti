@@ -98,7 +98,7 @@ void RunReconstruction::ExecuteEvent( const G4Step* step )
   float edep = (float)step->GetTotalEnergyDeposit()/MeV;
 
   if ( m_msgCounter>1e6 && m_timeout.resume() > m_event_timeout*0.8 ){
-    MSG_INFO( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
+    MSG_DEBUG( "Running... " << m_timeout.resume() << " seconds (timeout: "  << m_event_timeout << " seconds)" );
     m_msgCounter=0;
   }
 

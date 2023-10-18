@@ -1,54 +1,33 @@
 __all__ = ["CaloClusterMaker"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+from CaloClusterBuilder import CaloClusterFlags as flags
+import ROOT
+
+class CaloClusterMaker( Cpp ):
 
 
-class CaloClusterMaker( Logger ):
+  def __init__( self, name,
+                InputCellsKey    : str, 
+                InputSeedsKey    : str,
+                OutputClusterKey : str, 
+                EtaWindow        : float=flags.EtaWindow, 
+                PhiWindow        : float=flags.PhiWindow,
+                MinCenterEnergy  : float=flags.MinCenterEnergy,
+                OutputLevel      : str=0, 
+                HistogramPath    : str="Expert/Clusters",
+              ):
 
-  __allow_keys = [
-                  "CellsKey", 
-                  "ClusterKey", 
-                  "EventKey", 
-                  "TruthKey", 
-                  "EtaWindow" , 
-                  "PhiWindow",
-                  "MinCenterEnergy",
-                  "OutputLevel", 
-                  "HistogramPath"]
+    Cpp.__init__(self, ROOT.CaloClusterMaker(name) )
 
-
-  def __init__( self, name, **kw ): 
-    
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloClusterMaker
-    # Create the algorithm
-    self.__core = CaloClusterMaker(name)
-
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
+    self.setProperty( "InputCellsKey"        , InputCellsKey        ) 
+    self.setProperty( "InputSeedsKey"        , InputSeedsKey        )
+    self.setProperty( "OutputClusterKey"     , OutputClusterKey     ) 
+    self.setProperty( "EtaWindow"            , EtaWindow            ) 
+    self.setProperty( "PhiWindow"            , PhiWindow            )
+    self.setProperty( "MinCenterEnergy"      , MinCenterEnergy      )
+    self.setProperty( "OutputLevel"          , OutputLevel          ) 
+    self.setProperty( "HistogramPath"        , HistogramPath        )
 
 

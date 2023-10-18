@@ -1,54 +1,34 @@
 __all__ = ["RootStreamHITReader"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+import ROOT
 
 
-class RootStreamHITReader( Logger ):
+class RootStreamHITReader( Cpp ):
 
-  __allow_keys = [
-                  "EventKey",
-                  "TruthKey",
-                  "HitsKey",
-                  "OutputLevel", 
-                  "NtupleName",
-                  "InputFile",
-                  ]
-
-
-  def __init__( self, name, **kw ): 
+  def __init__( self, name,
+                OutputEventKey   : str,
+                OutputTruthKey   : str,
+                OutputHitsKey    : str,
+                OutputSeedsKey   : str,
+                InputFile        : str,
+                OutputLevel      : int=0, 
+                NtupleName       : str="CollectionTree",
+              ): 
     
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamHITReader
-    self.__core = RootStreamHITReader(name)
-    for key, value in kw.items():
-      self.setProperty( key,value )
+    Cpp.__init__(self, ROOT.RootStreamHITReader(name))
+    self.setProperty( "OutputEventKey"  , OutputEventKey  )
+    self.setProperty( "OutputTruthKey"  , OutputTruthKey  )
+    self.setProperty( "OutputHitsKey"   , OutputHitsKey   )
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey  )
+    self.setProperty( "OutputLevel"     , OutputLevel     ) 
+    self.setProperty( "NtupleName"      , NtupleName      )
+    self.setProperty( "InputFile"       , InputFile       )
 
-    from ROOT import TFile, TTree 
-    f = TFile( self.getProperty("InputFile"),"read")
-    t = f.Get( self.getProperty("NtupleName"))
+    f = ROOT.TFile( self.InputFile,"read")
+    t = f.Get( self.NtupleName)
     self.__entries = t.GetEntries()
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   def GetEntries(self):

@@ -38,6 +38,7 @@ class CaloCellMerge : public Gaugi::Algorithm
     std::vector<std::string> m_collectionKeys;
     /*! CaloCellContainer key for reco cells */
     std::string m_cellsKey;
+    // std::string m_xtcellsKey;
     /*! CaloCellContainer key for truth cells */
     std::string m_truthCellsKey;
 };

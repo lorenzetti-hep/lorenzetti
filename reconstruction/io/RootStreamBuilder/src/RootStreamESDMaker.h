@@ -3,6 +3,7 @@
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventSeed.h"
 #include "TruthParticle/TruthParticle.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
@@ -49,9 +50,11 @@ class RootStreamESDMaker : public Gaugi::Algorithm
     std::string m_inputCellsKey;
     std::string m_inputEventKey;
     std::string m_inputTruthKey;
+    std::string m_inputSeedsKey;
     std::string m_outputCellsKey;
     std::string m_outputEventKey;
     std::string m_outputTruthKey;
+    std::string m_outputSeedsKey;
     
     float m_etaWindow, m_phiWindow;
 

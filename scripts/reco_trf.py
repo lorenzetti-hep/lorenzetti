@@ -2,14 +2,9 @@
 
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
-from CaloClusterBuilder   import CaloClusterMaker
-from CaloRingsBuilder     import CaloRingsMaker
-from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
-import numpy as np
 import argparse
-import sys,os
-pi = np.pi
+import sys,os, traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -29,7 +24,8 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
 
 if len(sys.argv)==1:
@@ -38,10 +34,11 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
+outputLevel = LoggingLevel.toC(args.outputLevel)
 
 try:
 
+  exec(args.command)
 
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
@@ -50,60 +47,45 @@ try:
   from RootStreamBuilder import RootStreamESDReader, recordable
   ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
-                            CellsKey        = recordable("Cells"),
-                            EventKey        = recordable("EventInfo"),
-                            TruthKey        = recordable("Particles"),
-                            NtupleName      = "CollectionTree",
+                            OutputCellsKey  = recordable("Cells"),
+                            OutputEventKey  = recordable("Events"),
+                            OutputTruthKey  = recordable("Particles"),
+                            OutputSeedsKey  = recordable("Seeds"),
+                            OutputLevel     = outputLevel
                           )
   ESD.merge(acc)
 
 
   # build cluster for all seeds
+  from CaloClusterBuilder import CaloClusterMaker
   cluster = CaloClusterMaker( "CaloClusterMaker",
-                              CellsKey        = recordable("Cells"),
-                              EventKey        = recordable("EventInfo"),
-                              ClusterKey      = recordable("Clusters"),
-                              TruthKey        = recordable("Particles"),
-                              EtaWindow       = 0.4,
-                              PhiWindow       = 0.4,
-                              MinCenterEnergy = 1*GeV, 
-                              HistogramPath   = "Expert/Clusters",
-                              OutputLevel     = outputLevel )
+                              InputCellsKey        = recordable("Cells"),
+                              InputSeedsKey        = recordable("Seeds"),
+                              # output as
+                              OutputClusterKey     = recordable("Clusters"),
+                              # other configs
+                              HistogramPath        = "Expert/Clusters",
+                              OutputLevel          = outputLevel )
 
-  rings   = CaloRingsMaker(   "CaloRingsMaker",
-                              RingerKey     = recordable("Rings"),
-                              ClusterKey    = recordable("Clusters"),
-                              DeltaEtaRings = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                              DeltaPhiRings = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                              NRings        = [8, 64, 8, 8, 4, 4, 4],
-                              LayerRings = [
-                                [CaloSampling.PSB, CaloSampling.PSE],
-                                [CaloSampling.EMB1, CaloSampling.EMEC1],
-                                [CaloSampling.EMB2, CaloSampling.EMEC2],
-                                [CaloSampling.EMB3, CaloSampling.EMEC3],
-                                [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
-                                [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
-                                [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
-                              ],
-                              HistogramPath = "Expert/Rings",
-                              OutputLevel   = outputLevel)
- 
+  from CaloRingsBuilder import CaloRingsMakerCfg
+  rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
+                                InputClusterKey    = recordable("Clusters"),  
+                                OutputRingerKey    = recordable("Rings"),
+                                HistogramPath      = "Expert/Rings",
+                                OutputLevel        = outputLevel)
+
+
 
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
-                            InputCellsKey        = recordable("Cells"),
-                            InputEventKey        = recordable("EventInfo"),
-                            InputTruthKey        = recordable("Particles"),
-                            InputRingerKey       = recordable("Rings"),
-                            InputClusterKey      = recordable("Clusters"),
-                            OutputCellsKey       = recordable("Cells"),
-                            OutputEventKey       = recordable("EventInfo"),
-                            OutputTruthKey       = recordable("Particles"),
-                            OutputRingerKey      = recordable("Rings"),
-                            OutputClusterKey     = recordable("Clusters"),
-                            DumpCells            = True,
-                            OutputLevel          = outputLevel)
-      
+                            InputEventKey    = recordable("Events"),
+                            InputSeedsKey    = recordable("Seeds"),
+                            InputTruthKey    = recordable("Particles"),
+                            InputCellsKey    = recordable("Cells"),
+                            InputClusterKey  = recordable("Clusters"),
+                            InputRingerKey   = recordable("Rings"),
+                            OutputLevel      = outputLevel)
+
   # sequence
   acc+= cluster
   acc+= rings
@@ -115,5 +97,7 @@ try:
   sys.exit(0)
   
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)
+

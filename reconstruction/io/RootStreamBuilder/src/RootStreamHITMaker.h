@@ -4,6 +4,7 @@
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
+#include "EventInfo/EventSeed.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
@@ -50,10 +51,12 @@ class RootStreamHITMaker : public Gaugi::Algorithm
     std::string m_inputHitsKey;
     std::string m_inputEventKey;
     std::string m_inputTruthKey;
+    std::string m_inputSeedsKey;
     
     std::string m_outputHitsKey;
     std::string m_outputEventKey;
     std::string m_outputTruthKey;
+    std::string m_outputSeedsKey;
     
     float m_etaWindow;
     float m_phiWindow;

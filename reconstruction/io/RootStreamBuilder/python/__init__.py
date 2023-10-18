@@ -5,6 +5,10 @@ from . import RootStreamKeys
 __all__.extend(RootStreamKeys.__all__)
 from .RootStreamKeys import *
 
+from . import RootStreamFlags
+__all__.extend(RootStreamFlags.__all__)
+from .RootStreamFlags import *
+
 from . import RootStreamHITMaker
 __all__.extend(RootStreamHITMaker.__all__)
 from .RootStreamHITMaker import *

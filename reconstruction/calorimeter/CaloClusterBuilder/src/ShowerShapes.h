@@ -16,7 +16,6 @@ class ShowerShapes : public Gaugi::AlgTool
     
     virtual StatusCode initialize() override;
     virtual StatusCode finalize() override;
-
     virtual StatusCode execute( SG::EventContext &ctx, Gaugi::EDM * ) const override;
 
 

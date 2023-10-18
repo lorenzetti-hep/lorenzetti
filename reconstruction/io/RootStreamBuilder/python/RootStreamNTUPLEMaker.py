@@ -2,7 +2,6 @@ __all__ = ["RootStreamNTUPLEMaker"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
 class RootStreamNTUPLEMaker( Logger ):

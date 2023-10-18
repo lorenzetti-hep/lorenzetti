@@ -6,7 +6,7 @@ from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
 import numpy as np
 import argparse
-import sys,os
+import sys,os,gc,traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -26,27 +26,19 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-parser.add_argument('--estimationMethodECAL', action='store', dest='estimationMethodECAL', required = False, choices = ['OF','COF'], type=str,  default='OF',
-                    help = "The energy estimation method (OF or COF).")
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
-parser.add_argument('--estimationMethodHAD', action='store', dest='estimationMethodHAD', required = False, choices = ['OF', 'COF'], type=str, default='OF',
-                    help = "The energy estimation method (OF or COF).")
-
-parser.add_argument('--simulateCrossTalk', action='store_true', dest='simulateCrossTalk', required = False,
-                    help = "If used, enable cross talk cell propagation.")
-
-
-pi = np.pi
 
 if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
 
 args = parser.parse_args()
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
-
+outputLevel = LoggingLevel.toC(args.outputLevel)
 try:
 
+  exec(args.command)
 
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
@@ -55,10 +47,10 @@ try:
   from RootStreamBuilder import RootStreamHITReader, recordable
   reader = RootStreamHITReader("HITReader", 
                                 InputFile       = args.inputFile,
-                                HitsKey         = recordable("Hits"),
-                                EventKey        = recordable("EventInfo"),
-                                TruthKey        = recordable("Particles"),
-                                NtupleName      = "CollectionTree",
+                                OutputHitsKey   = recordable("Hits"),
+                                OutputEventKey  = recordable("Events"),
+                                OutputTruthKey  = recordable("Particles"),
+                                OutputSeedsKey  = recordable("Seeds"),
                                 OutputLevel     = outputLevel,
                               )
 
@@ -69,23 +61,20 @@ try:
   from ATLAS import ATLASConstruction as ATLAS
 
   calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
-                                HistogramPath = "Expert/Cells",
-                                OutputLevel   = outputLevel,
-                                HitsKey       = recordable("Hits"),
+                                HistogramPath         = "Expert/Cells",
+                                OutputLevel           = outputLevel,
+                                InputHitsKey          = recordable("Hits"      ),
+                                OutputCellsKey        = recordable("Cells"     ),
+                                OutputTruthCellsKey   = recordable("TruthCells"),
                                 )
-  print('2')
   calorimeter.merge(acc)
 
-  print('3')
   from RootStreamBuilder import RootStreamESDMaker
   ESD = RootStreamESDMaker( "RootStreamESDMaker",
                              InputCellsKey   = recordable("Cells"),
-                             InputEventKey   = recordable("EventInfo"),
+                             InputEventKey   = recordable("Events"),
                              InputTruthKey   = recordable("Particles"),
-                             OutputCellsKey  = recordable("Cells"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),            
-                             NtupleName      = "CollectionTree",
+                             InputSeedsKey   = recordable("Seeds"),          
                              OutputLevel     = outputLevel)
   acc += ESD
   
@@ -94,5 +83,6 @@ try:
   sys.exit(0)
   
 except Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

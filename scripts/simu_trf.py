@@ -5,9 +5,8 @@ from GaugiKernel           import LoggingLevel, Logger
 from G4Kernel              import *
 from CaloCell.CaloDefs     import CaloSampling
 from RootStreamBuilder     import recordable
-import numpy as np
 import argparse
-import sys,os,gc
+import sys,os,gc,traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -27,14 +26,8 @@ parser.add_argument('-nt','--numberOfThreads', action='store', dest='numberOfThr
 parser.add_argument('--evt','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=None,
                     help = "The number of events to apply the reconstruction.")
 
-parser.add_argument('--visualization', action='store_true', dest='visualization', required = False,
-                    help = "Run with Qt interface.")
-
 parser.add_argument('--enableMagneticField', action='store_true', dest='enableMagneticField',required = False, 
                     help = "Enable the magnetic field.")
-
-parser.add_argument('--saveAllHits', action='store_true', dest='saveAllHits', required = False, 
-                    help = "Save all detector hits.")
 
 parser.add_argument('-t','--timeout', action='store', dest='timeout', required = False, type=int, default=120,
                     help = "Event timeout in minutes")
@@ -42,7 +35,8 @@ parser.add_argument('-t','--timeout', action='store', dest='timeout', required =
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -53,72 +47,51 @@ args = parser.parse_args()
 outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
+  
+  eval(args.command)
 
   from ATLAS import ATLASConstruction as ATLAS
-
   # Build the ATLAS detector
-  detector = ATLAS(
-                   UseMagneticField = args.enableMagneticField, # Force to be false since the mag field it is not working yet
-                   CutOnPhi = False,
-                   )
+  detector = ATLAS( UseMagneticField = args.enableMagneticField )
 
   acc = ComponentAccumulator("ComponentAccumulator", detector,
-                              RunVis=args.visualization,
                               NumberOfThreads = args.numberOfThreads,
-                              Seed = 512, # fixed seed since pythia will be used. The random must be in the pythia generation
-                              OutputFile = args.outputFile,
-                              Timeout = args.timeout * MINUTES )
+                              OutputFile      = args.outputFile,
+                              Timeout         = args.timeout * MINUTES )
   
-
-
-  gun = EventReader( "EventReader",
-                     EventKey   = recordable("EventInfo"),
-                     TruthKey   = recordable("Particles"),
-                     FileName   = args.inputFile,
-                     BunchDuration = 25.0,#ns
+  gun = EventReader( "EventReader", args.inputFile,
+                     # outputs
+                     OutputEventKey   = recordable("Events"   ),
+                     OutputTruthKey   = recordable("Particles"),
+                     OutputSeedKey    = recordable("Seeds"    ),
                      )
 
   from CaloCellBuilder import CaloHitBuilder
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
+                                InputEventKey = recordable("Events"),
+                                OutputHitsKey = recordable("Hits")
                                 )
-
   gun.merge(acc)
   calorimeter.merge(acc)
 
-  OutputHitsKey   = recordable("Hits")
-  OutputEventKey  = recordable("EventInfo")
-
+  
   from RootStreamBuilder import RootStreamHITMaker, recordable
-
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
+                             OutputLevel     = outputLevel,
                              # input from context
-                             InputHitsKey    = OutputHitsKey,
-                             InputEventKey   = OutputEventKey,
+                             InputHitsKey    = recordable("Hits"),
+                             InputEventKey   = recordable("Events"),
                              InputTruthKey   = recordable("Particles"),
-                             # output to file
-                             OutputHitsKey   = recordable("Hits"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),
-                             # special parameters
-                             EtaWindow       = 0.6,
-                             PhiWindow       = 0.6,
-                             OnlyRoI         = not args.saveAllHits,
-                             OutputLevel     = outputLevel)
-
+                             InputSeedsKey   = recordable("Seeds"),
+                             )
   acc += HIT
-  
   acc.run(args.numberOfEvents)
-  
-  if args.visualization:
-      input("Press Enter to quit...")
 
-  
-  #del acc # remove all instances
-  #gc.collect() # make sure everything was removed
   sys.exit(0)
   
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

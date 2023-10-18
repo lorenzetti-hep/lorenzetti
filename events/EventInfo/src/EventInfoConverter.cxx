@@ -1,24 +1,21 @@
 
 #include "EventInfo/EventInfoConverter.h"
-//#include "G4Kernel/macros.h"
-
 
 using namespace xAOD;
 
 
-
-bool EventInfoConverter::convert( const EventInfo *event, EventInfo_t &event_t)
+bool EventInfoConverter::convert( const EventInfo *event, EventInfo_t &event_t) const
 {
   if(event){
-    event_t.runNumber = event->runNumber();
+    event_t.runNumber   = event->runNumber();
     event_t.eventNumber = event->eventNumber();
-    event_t.avgmu = event->avgmu();
+    event_t.avgmu       = event->avgmu();
     return true;
   }
   return false;
 }
 
-bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
+bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event ) const
 {
   event = new xAOD::EventInfo();
   event->setRunNumber( event_t.runNumber );
@@ -26,3 +23,4 @@ bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
   event->setAvgmu( event_t.avgmu);
   return true;
 }
+

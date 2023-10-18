@@ -1,13 +1,16 @@
 
 __all__ = ["CaloCellBuilder"]
 
-from GaugiKernel        import Logger
+from GaugiKernel        import Logger, LoggingLevel
 from GaugiKernel.macros import *
-from GaugiKernel        import GeV
-from G4Kernel           import treatPropertyValue
-from RootStreamBuilder  import recordable
-import os
 
+from CaloCell           import CaloSampling
+from CaloCellBuilder    import CaloCellMaker
+from CaloCellBuilder    import CaloCellMerge
+from CaloCellBuilder    import CrossTalkMaker
+from CaloCellBuilder    import PulseGenerator
+from CaloCellBuilder    import OptimalFilter
+from CaloCellBuilder    import CaloFlags
 
 #
 # Calo cell builder
@@ -17,33 +20,32 @@ class CaloCellBuilder( Logger ):
 
   def __init__( self, name, detector,
                       HistogramPath        = "Expert", 
-                      HitsKey              = "Hits",
-                      OutputLevel          = 1,
+                      InputHitsKey         = "Hits",
+                      OutputCellsKey       = "Cells",
+                      OutputTruthCellsKey  = "TruthCells",
+                      OutputLevel          = LoggingLevel.toC('INFO'),
                       ):
 
     Logger.__init__(self)
     self.__recoAlgs = []
-    self.HistogramPath = HistogramPath
-    self.OutputLevel = OutputLevel
-    self.HitsKey = HitsKey
-    self.__detector = detector
+    self.HistogramPath       = HistogramPath
+    self.OutputLevel         = OutputLevel
+    self.InputHitsKey        = InputHitsKey
+    self.OutputCellsKey      = OutputCellsKey
+    self.OutputTruthCellsKey = OutputTruthCellsKey
+    self.Detector            = detector
+    self.OutputCollectionKeys= []
 
     
-
-
-  #
-  # Configure 
-  #
   def configure(self):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
-
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, PulseGenerator, OptimalFilter
-
-    collectionKeys = []
- 
   
-    for samp in self.__detector.samplings:
+    for samp in self.Detector.samplings:
+
+      DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EMB2) else False
+
+
 
       MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", samp.CollectionKey)
       pulse = PulseGenerator( "PulseGenerator", 
@@ -57,30 +59,18 @@ class CaloCellBuilder( Logger ):
                               NoiseMean       = 0.0,
                               NoiseStd        = samp.Noise,
                               StartSamplingBC = samp.StartSamplingBC )
-                      
+     
+
       of= OptimalFilter("OptimalFilter",
-                        Weights  = samp.OFWeights,
+                        WeightsEnergy  = samp.OFWeightsEnergy,
+                        WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
- 
-          
-      alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, 
+    
+      alg = CaloCellMaker("CaloCellMaker_" + samp.CollectionKey, samp,
                             # input key
-                            EventKey                = recordable( "EventInfo" ), 
-                            HitsKey                 = recordable( self.HitsKey ),
+                            InputHitsKey            =  self.InputHitsKey, # hits
                             # output key
-                            CollectionKey           = samp.CollectionKey, 
-                            # Hits grid configuration
-                            EtaBins                 = samp.sensitive().EtaBins,
-                            PhiBins                 = samp.sensitive().PhiBins,
-                            ZMin                    = samp.volume().ZMin,
-                            ZMax                    = samp.volume().ZMax,
-                            Sampling                = samp.Sampling,
-                            Segment                 = samp.sensitive().Segment,
-                            Detector                = samp.Detector,
-                            # Bunch crossing configuration
-                            BunchIdStart            = samp.BunchIdStart,
-                            BunchIdEnd              = samp.BunchIdEnd,
-                            BunchDuration           = 25, #ns
+                            OutputCollectionKey     = samp.CollectionKey + "_Aux" if DoCrosstalk else samp.CollectionKey, # descriptors
                             # monitoring configuration
                             HistogramPath           = self.HistogramPath + '/' + samp.name(),
                             OutputLevel             = self.OutputLevel,
@@ -90,20 +80,40 @@ class CaloCellBuilder( Logger ):
       alg.PulseGenerator = pulse # for all cell
       alg.Tools = [of] # for each cel
       self.__recoAlgs.append( alg )
-      collectionKeys.append( samp.CollectionKey )
+
+
+      if DoCrosstalk:
+          cx = CrossTalkMaker( "CrossTalkMaker_" + samp.CollectionKey,
+                                InputCollectionKey    = samp.CollectionKey + "_Aux",
+                                OutputCollectionKey   = samp.CollectionKey,
+                                MinEnergy             = CaloFlags.XTMinEnergy,
+                                XTAmpCapacitive       = CaloFlags.XTAmpCapacitive,
+                                XTAmpInductive        = CaloFlags.XTAmpInductive,
+                                XTAmpResistive        = CaloFlags.XTAmpResistive,
+                                HistogramPath         = self.HistogramPath + '/CrossTalk',
+                                OutputLevel           = self.OutputLevel
+                             )
+          cx.Tools = [of]
+          self.__recoAlgs.append( cx )
+
+
+
+      self.OutputCollectionKeys.append( samp.CollectionKey )
 
 
 
     MSG_INFO(self, "Create CaloCellMerge and dump all cell collections into %s container", "Cells")
     # Merge all collection into a container and split between truth and reco
     mergeAlg = CaloCellMerge( "CaloCellMerge" , 
-                              CollectionKeys  = collectionKeys,
-                              CellsKey        = recordable("Cells"),
-                              TruthCellsKey   = recordable("TruthCells"),
-                              OutputLevel     = self.OutputLevel )
+                              # input key
+                              InputCollectionKeys   = self.OutputCollectionKeys, # descriptors
+                              # output key
+                              OutputTruthCellsKey   = self.OutputTruthCellsKey , # cells
+                              OutputCellsKey        = self.OutputCellsKey      , # cells
+                              # configs
+                              OutputLevel           = self.OutputLevel )
 
     self.__recoAlgs.append( mergeAlg )
-
 
 
   def merge( self, acc ):

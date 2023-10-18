@@ -3,6 +3,7 @@
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventSeed.h"
 #include "CaloRings/CaloRings.h"
 #include "CaloCluster/CaloCluster.h"
 #include "TruthParticle/TruthParticle.h"
@@ -52,12 +53,14 @@ class RootStreamAODMaker : public Gaugi::Algorithm
 
     std::string m_inputCellsKey;
     std::string m_inputEventKey;
+    std::string m_inputSeedsKey;
     std::string m_inputClusterKey;
     std::string m_inputRingerKey;
     std::string m_inputTruthKey;
 
     std::string m_outputCellsKey;
     std::string m_outputEventKey;
+    std::string m_outputSeedsKey;
     std::string m_outputClusterKey;
     std::string m_outputRingerKey;
     std::string m_outputTruthKey;

@@ -21,8 +21,6 @@ JF17::JF17(const std::string name , IGenerator *gen):
   declareProperty( "Select"         , m_select=2                  );
   declareProperty( "EtaWindow"      , m_etaWindow=0.4             );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4             );
-
-
 }
 
 JF17::~JF17()
@@ -131,12 +129,14 @@ StatusCode JF17::execute( generator::Event &ctx )
     // can include these particles to the jet cluster vector
     if (etot > minPt){
 
+
       auto seed = generator::Seed( main_p->momentum().eta(), main_p->momentum().phi() );
 
       for ( auto& part : cluster ){
   
-        const auto vtx = part->production_vertex();
-
+        const auto  vtx         = part->production_vertex();
+        
+        //-----------
         seed.emplace_back( 1, 0, 
                            part->pid(), 
                            part->momentum().px(), 

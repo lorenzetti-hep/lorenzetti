@@ -1,51 +1,26 @@
 __all__ = ["PileupMerge"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+import ROOT
 
+class PileupMerge( Cpp ):
 
-class PileupMerge( Logger ):
-
-  __allow_keys = [
-                  "InputHitsKey",
-                  "OutputHitsKey",
-                  "InputEventKey",
-                  "OutputEventKey",
-                  "OutputLevel", 
-                  "NtupleName",
-                  "InputFile",
-                  ]
-
-
-  def __init__( self, name, **kw ): 
+  def __init__( self, name      : str, 
+                InputFile       : str,
+                InputHitsKey    : str="Hits",
+                OutputHitsKey   : str="Hits_Merged",
+                InputEventKey   : str="EventInfo",
+                OutputEventKey  : str="EventInfo_Merged",
+                OutputLevel     : int=LoggingLevel.toC('INFO'),
+                NtupleName      : str="CollectionTree"
+              ): 
     
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import PileupMerge
-    self.__core = PileupMerge(name)
-
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+    Cpp.__init__(self, ROOT.PileupMerge(name) )
+    self.setProperty( "OutputLevel"   , OutputLevel    )
+    self.setProperty( "InputHitsKey"  , InputHitsKey   )  
+    self.setProperty( "OutputHitsKey" , OutputHitsKey  )
+    self.setProperty( "InputEventKey" , InputEventKey  )
+    self.setProperty( "OutputEventKey", OutputEventKey )
+    self.setProperty( "InputFile"     , InputFile      )
 

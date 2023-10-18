@@ -26,8 +26,8 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
-  declareProperty( "CollectionKey"            , m_collectionKey="CaloHitCollection"   ); // output
+  declareProperty( "OutputCollectionKey"      , m_collectionKey="CaloHitCollection"   ); // output
+  
   declareProperty( "EtaBins"                  , m_etaBins                             );
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "RMin"                     , m_rMin                                );
@@ -43,6 +43,7 @@ CaloHitMaker::CaloHitMaker( std::string name ) :
   declareProperty( "OutputLevel"              , m_outputLevel=1                       );
   declareProperty( "DetailedHistograms"       , m_detailedHistograms=false            );
   declareProperty( "HistogramPath"            , m_histPath="/CaloHitMaker"            );
+  declareProperty( "SamplingNoiseStd"         , m_noiseStd=0                          );
 
 
 
@@ -55,7 +56,7 @@ StatusCode CaloHitMaker::initialize()
   MSG_INFO("1 Initialize..." << m_outputLevel);
 
   CHECK_INIT();
-  //setMsgLevel( (MSG::Level)m_outputLevel );
+  setMsgLevel( (MSG::Level)m_outputLevel );
   m_nEtaBins = m_etaBins.size() - 1;
   m_nPhiBins = m_phiBins.size() - 1;
 
@@ -141,6 +142,7 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
 
   // Get the position
   G4ThreeVector pos = step->GetPreStepPoint()->GetPosition();
+
   // Apply all necessary transformation (x,y,z) to (eta,phi,r) coordinates
   // Get ATLAS coordinates (in transverse plane xy)
   auto vpos = TVector3( pos.x(), pos.y(), pos.z());
@@ -170,12 +172,12 @@ StatusCode CaloHitMaker::execute( EventContext &ctx , const G4Step *step ) const
   xAOD::CaloHit *hit=nullptr;
 
   if(collection->retrieve(hash(bin), hit)){
-    hit->fill( step );
+    // hit->fill( step );
+    hit->fill( step , 1*m_noiseStd); // hit with tof selection sensible by 1*sigma of sampling noise.
   }else{
     MSG_FATAL( "Its not possible to retrieve the hit. Bin ("<< bin << ") not exist");
   }
   
-
   return StatusCode::SUCCESS;
 }
 

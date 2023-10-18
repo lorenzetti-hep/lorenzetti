@@ -24,9 +24,9 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "CollectionKey"            , m_collectionKey="Cells"               ); // input
-  declareProperty( "EventKey"                 , m_eventKey="EventInfo"                ); // input
-  declareProperty( "HitsKey"                  , m_hitsKey="Hits"                      ); // input
+  declareProperty( "InputHitsKey"             , m_hitsKey="Hits"                      ); // input
+  declareProperty( "OutputCollectionKey"      , m_collectionKey="Cells"               ); // output
+
   declareProperty( "EtaBins"                  , m_etaBins                             );
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "ZMin"                     , m_zMin                                );
@@ -73,7 +73,7 @@ StatusCode CaloCellMaker::initialize()
  
   for ( auto tool : m_toolHandles )
   {
-    MSG_INFO(tool->name());
+    MSG_DEBUG(tool->name());
     if (tool->initialize().isFailure() )
     {
       MSG_FATAL( "It's not possible to iniatialize " << tool->name() << " tool." );
@@ -233,6 +233,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
       {
         // transfer truth energy for each bunch crossing to descriptor
         descriptor->edep( bcid, hit->edep(bcid) ); 
+        descriptor->tof ( bcid, hit->tof(bcid)  );
       }  
 
       if( m_pulseGenerator->execute(ctx, descriptor).isFailure() ){

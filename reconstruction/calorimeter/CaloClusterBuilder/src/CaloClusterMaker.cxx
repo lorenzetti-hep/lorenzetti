@@ -19,11 +19,10 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   Algorithm()
 {
   // Key inputs
-  declareProperty( "CellsKey"       , m_cellsKey="Cells"                );
-  declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"       , m_truthKey="Particles"            );
+  declareProperty( "InputCellsKey"       , m_cellsKey="Cells"                );
+  declareProperty( "InputSeedsKey"       , m_seedKey="Seeds"                 );
   // Key outputs
-  declareProperty( "ClusterKey"     , m_clusterKey="Clusters"           );
+  declareProperty( "OutputClusterKey"    , m_clusterKey="Clusters"           );
   // Algorithm configuration
   declareProperty( "EtaWindow"      , m_etaWindow=0.4                   );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
@@ -45,7 +44,7 @@ CaloClusterMaker::~CaloClusterMaker()
 StatusCode CaloClusterMaker::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   m_showerShapes = new ShowerShapes( "ShowerShapes" );
   return StatusCode::SUCCESS;
 }
@@ -68,7 +67,6 @@ StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
   store->add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
   store->add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
   store->add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
-
   store->add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
   store->add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
   store->add( new TH1F("res_e"  , "E_{Cluster}-E_{Truth};res_{e} [MeV];Count",100,-10*GeV,10*GeV ) );
@@ -115,28 +113,25 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   clusters.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()) );
   
   // Event info
-  SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-  SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  SG::ReadHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
-  
+  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey,  ctx);
+  SG::ReadHandle<xAOD::CaloCellContainer>  container(m_cellsKey, ctx);
 
-  if( !event.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
-  }
 
-  if( !particles.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::TruthParticleContainer from this Context" );
+  if( !seeds.isValid() ){
+    MSG_FATAL( "It's not possible to read the xAOD::SeedContainer from this Context" );
   }
 
   if( !container.isValid() )
   {
-    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Contaxt using this key " << m_cellsKey );
+    MSG_FATAL("It's not possible to read the xAOD::CaloCellContainer from this Context using this key " << m_cellsKey );
   }
 
-  MSG_DEBUG( "Associate all truth particles and clusters");
+  MSG_DEBUG( "Associate all particle seeds and clusters");
+  MSG_DEBUG( "For cell container of key "<< m_cellsKey << ", there are "<< container.ptr()->size() <<" stored cells.");
 
   // Loop over all truth particles (here, we have seeds)
-  for ( const auto part : **particles.ptr() )
+  // for ( const auto part : **particles.ptr() )
+  for ( const auto part : **seeds.ptr() )
   {
     const xAOD::CaloCell *hotcell=nullptr;
     float emaxs2 = 0.0;
@@ -145,10 +140,10 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
     for (const auto cell : **container.ptr() ){
 
       const xAOD::CaloDetDescriptor* det = cell->descriptor();
-
       
       // Must be EM2 cells layer
-      if( (det->sampling() != CaloSampling::EMB2) && (det->sampling() != CaloSampling::EMEC2) ) continue;      
+      if( (det->sampling() != CaloSampling::EMB2) && (det->sampling() != CaloSampling::EMEC2) ) continue;
+
       // Check if cell is inside 
       float deltaEta = std::abs( part->eta() - cell->eta() );
       float deltaPhi = std::abs( CaloPhiRange::diff( part->phi() , cell->phi() ));
@@ -186,7 +181,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
         clusters->push_back( clus );
       }
     }else{
-      MSG_DEBUG( "There is not hottest cell for this particle.");
+      MSG_DEBUG( "There is no hottest cell for this particle.");
     }
 
   }
@@ -211,9 +206,10 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
 
   MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
 
-  SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  if( !particles.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::TruthParticleContainer from this Context" );
+  // SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
+  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey, ctx);
+  if( !seeds.isValid() ){
+    MSG_FATAL( "It's not possible to read the xAOD::SeedContainer from this Context" );
   }
 
   store->cd(m_histPath);
@@ -221,13 +217,14 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   for( const auto& clus : **clusters.ptr() ){
   
     
-    const xAOD::TruthParticle *particle=nullptr;
+    // const xAOD::TruthParticle *particle=nullptr;
+    const xAOD::EventSeed *seed=nullptr;
 
     // TODO: Probably some c++ expert can reduce this **var.ptr(), too verbose...
     // Try to find the associated truth particle
-    for(const auto& part : **particles.ptr() ){
+    for(const auto& part : **seeds.ptr() ){
       if( dR(clus->eta(), clus->phi(), part->eta(), part->phi() ) < 0.4){
-        particle=part;
+        seed=part;
         break;
       }
     }
@@ -237,18 +234,16 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
     MSG_DEBUG("============== Cluster Information ==============");
 
 
-    if(particle){
-      store->hist1("res_eta")->Fill( (clus->eta() - particle->eta()) );
-      store->hist1("res_phi")->Fill( (clus->phi() - particle->phi()) );
-      // estimated transverse energy and truth
-      store->hist1("res_et")->Fill( (clus->et() - particle->et() ) );
-      // estimated energy and truth
-      store->hist1("res_e")->Fill( (clus->e() - particle->e()) );
-      MSG_DEBUG( "Truth Particle information:" );
-      MSG_DEBUG( "E        : " << particle->e() );
-      MSG_DEBUG( "Et       : " << particle->et() );
-      MSG_DEBUG( "Eta      : " << particle->eta() );
-      MSG_DEBUG( "Phi      : " << particle->phi() );
+    if(seed){
+      store->hist1("res_eta")->Fill( (clus->eta() - seed->eta()) );
+      store->hist1("res_phi")->Fill( (clus->phi() - seed->phi()) );
+      store->hist1("res_et")->Fill( (clus->et() - seed->et() ) );
+      store->hist1("res_e")->Fill( (clus->e() - seed->e()) );
+
+      MSG_DEBUG( "Seed information:" );
+      MSG_DEBUG( "E        : " << seed->e()   );
+      MSG_DEBUG( "Eta      : " << seed->eta() );
+      MSG_DEBUG( "Phi      : " << seed->phi() );
     }
 
     store->hist1("cl_e")->Fill( clus->e() / GeV);

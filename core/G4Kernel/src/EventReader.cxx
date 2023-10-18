@@ -1,8 +1,8 @@
 
-#include "EventInfo/EventInfo.h"
 #include "EventInfo/EventInfoContainer.h"
-#include "TruthParticle/TruthParticle.h"
+#include "EventInfo/EventSeedContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
+
 
 #include "G4Kernel/EventReader.h"
 #include "G4Kernel/RunReconstruction.h"
@@ -27,21 +27,24 @@ EventReader::EventReader(std::string name):
     PrimaryGenerator(),
     m_evt(0)
 {
-  ROOT::EnableThreadSafety();
-  declareProperty( "FileName",      m_filename=""          );
-  declareProperty( "EventKey",      m_eventKey="EventInfo" );
-  declareProperty( "TruthKey",      m_truthKey="Particles" );
-  declareProperty( "BunchDuration", m_bc_duration=25*ns    );
+  ROOT::EnableThreadSafety();  
+  
+  declareProperty( "InputFileName"      , m_filename=""          );
+  declareProperty( "OutputEventKey"     , m_eventKey="EventInfo" );
+  declareProperty( "OutputTruthKey"     , m_truthKey="Particles" );
+  declareProperty( "OutputSeedKey"      , m_seedKey="Seed"       );
+  declareProperty( "BunchDuration"      , m_bc_duration=25*ns    );
 
 }
 
 PrimaryGenerator* EventReader::copy()
 {
   auto *gun = new EventReader(getLogName());
-  gun->setProperty( "FileName", m_filename );
-  gun->setProperty( "EventKey", m_eventKey );
-  gun->setProperty( "TruthKey", m_truthKey );
-  gun->setProperty( "BunchDuration", m_bc_duration);
+  gun->setProperty( "InputFileName" , m_filename   );
+  gun->setProperty( "OutputEventKey", m_eventKey   );
+  gun->setProperty( "OutputTruthKey", m_truthKey   );
+  gun->setProperty( "OutputSeedKey" , m_seedKey    );
+  gun->setProperty( "BunchDuration" , m_bc_duration);
   return gun;
 }
 
@@ -101,7 +104,8 @@ void EventReader::link(TTree *t)
   InitBranch( t, "avg_mu"     ,&m_avgmu       );
   InitBranch( t, "p_isMain"   ,&m_p_isMain    );
   InitBranch( t, "p_pdg_id"   ,&m_p_pdg_id    );
-  InitBranch( t, "p_bc_id"    ,&m_p_bc_id     );
+  InitBranch( t, "p_bc_id"    ,&m_p_bc_id     );  
+  InitBranch( t, "p_seed_id"  ,&m_p_seed_id   );
   InitBranch( t, "p_px"       ,&m_p_px        );
   InitBranch( t, "p_py"       ,&m_p_py        );
   InitBranch( t, "p_pz"       ,&m_p_pz        );
@@ -123,6 +127,7 @@ void EventReader::clear()
   m_p_isMain  ->clear();
   m_p_pdg_id  ->clear();
   m_p_bc_id   ->clear();
+  m_p_seed_id ->clear();
   m_p_px      ->clear();
   m_p_py      ->clear();
   m_p_pz      ->clear();
@@ -142,6 +147,7 @@ void EventReader::allocate()
   m_p_isMain  = new std::vector<int>();
   m_p_pdg_id  = new std::vector<int>();
   m_p_bc_id   = new std::vector<int>();
+  m_p_seed_id = new std::vector<int>();
   m_p_px      = new std::vector<float>();
   m_p_py      = new std::vector<float>();
   m_p_pz      = new std::vector<float>();
@@ -161,6 +167,7 @@ void EventReader::release()
   delete m_p_isMain   ;
   delete m_p_pdg_id   ;
   delete m_p_bc_id    ;
+  delete m_p_seed_id  ;
   delete m_p_px       ;
   delete m_p_py       ;
   delete m_p_pz       ;
@@ -227,36 +234,57 @@ int EventReader::Load( G4Event* g4event )
 
   SG::WriteHandle<xAOD::TruthParticleContainer>  particles(m_truthKey, reco->getContext());
   particles.record( std::unique_ptr<xAOD::TruthParticleContainer>( new xAOD::TruthParticleContainer() ) );
-  
+
+  SG::WriteHandle<xAOD::EventSeedContainer>  seeds(m_seedKey, reco->getContext());
+  seeds.record( std::unique_ptr<xAOD::EventSeedContainer>( new xAOD::EventSeedContainer() ) );
+ 
   float totalEnergy=0;
   int num_of_seeds = 0;
-  
+  int seed_id = -1;
+
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     int bc_id = m_p_bc_id->at(i);
-    if(m_p_pdg_id->at(i)==0){
-      xAOD::TruthParticle *par = new xAOD::TruthParticle( m_p_e->at(i)*MeV, 
-                                                          m_p_et->at(i)*MeV, 
-                                                          m_p_eta->at(i), 
-                                                          m_p_phi->at(i), 
-                                                          m_p_px->at(i)*MeV, 
-                                                          m_p_py->at(i)*MeV, 
-                                                          m_p_pz->at(i)*MeV, 
-                                                          0 );
-      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
-      particles->push_back(par);
+    if(m_p_pdg_id->at(i)==0){ // is seed?
+      seed_id++;
+      xAOD::EventSeed *seed = new xAOD::EventSeed( seed_id,
+                                                   m_p_e->at(i)*MeV, 
+                                                   m_p_et->at(i)*MeV, 
+                                                   m_p_eta->at(i), 
+                                                   m_p_phi->at(i)
+                                                    );
+
+      MSG_INFO( "Seed " << seed_id << " in eta = " << seed->eta() << ", phi = " << seed->phi());
+      seeds->push_back(seed);
       num_of_seeds++;
+      continue; 
     }
     
     
-    if( m_p_isMain->at(i) ){
-      if(m_p_pdg_id->at(i)!=0){
-        totalEnergy+= m_p_et->at(i);
-        Add( g4event, i, bc_id );
-        //Add( g4event, i, special_bcid_for_truth_reconstruction );
-      }
-    }else{
+    if( m_p_isMain->at(i) ){ // Is main event?
+        if( Add( g4event, i, bc_id ) ){ // Is inside of the world
+            // particle is main event and inside of the world, add particle
+            totalEnergy+= m_p_et->at(i);
+            xAOD::TruthParticle *par = new xAOD::TruthParticle( 
+                                                                m_p_pdg_id->at(i),
+                                                                seed_id,
+                                                                m_p_e->at(i)*MeV, 
+                                                                m_p_et->at(i)*MeV, 
+                                                                m_p_eta->at(i), 
+                                                                m_p_phi->at(i), 
+                                                                m_p_px->at(i)*MeV, 
+                                                                m_p_py->at(i)*MeV, 
+                                                                m_p_pz->at(i)*MeV, 
+                                                                m_p_prod_x->at(i)*mm,
+                                                                m_p_prod_y->at(i)*mm,
+                                                                m_p_prod_z->at(i)*mm
+                                                              );
+
+            MSG_DEBUG( "Particle in eta = " << par->eta() << ", phi = " << par->phi());
+            particles->push_back(par);
+        }
+    }else{ // Is not a main event
       Add( g4event, i, bc_id );
     }
   }
@@ -282,6 +310,8 @@ bool EventReader::Add( G4Event* g4event , int i, int bc_id )
         << std::endl;
     return false;
   }
+
+
   G4int pdgcode= m_p_pdg_id->at(i);
   G4LorentzVector p( m_p_px->at(i)*GeV, m_p_py->at(i)*GeV, m_p_pz->at(i)*GeV,  m_p_e->at(i)*GeV );
   G4PrimaryParticle* g4prim = new G4PrimaryParticle(pdgcode, p.x(), p.y(), p.z());

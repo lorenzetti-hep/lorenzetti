@@ -8,45 +8,41 @@ __all__ = [
 
 
 from GaugiKernel.constants import *
-from GaugiKernel import Logger
+from GaugiKernel import Cpp, Logger
 from GaugiKernel.macros import *
 from GaugiKernel import EnumStringification
-from G4Kernel import treatPropertyValue
+
 from prettytable import PrettyTable
 from tqdm import tqdm
 import numpy as np
 import collections
 
-
+import ROOT
 
 class Plates(EnumStringification):
   Horizontal = 0
   Vertical   = 1
 
 
-class DetectorConstruction(Logger):
+class DetectorConstruction( Cpp ):
 
-  __allow_keys = [
-                  "UseMagneticField",
-                  "CutOnPhi",
-                  ]
-  
-  def __init__( self, name, vis_path, samplings=[], trackings=[], **kw ):
+  def __init__( self, 
+                name              : str, 
+                vis_path          : str, 
+                samplings         : list=[], 
+                trackings         : list=[], 
+                UseMagneticField  : bool=False, 
+                CutOnPhi          : bool=False ):
 
-    Logger.__init__(self)
+    Cpp.__init__(self, ROOT.DetectorConstruction(name) ) 
+    
+    self.setProperty( "UseMagneticField", UseMagneticField  )
+    self.setProperty( "CutOnPhi"        , CutOnPhi          )
 
     self.VisMac = vis_path
     self.samplings = samplings
     self.trackings = trackings
     self.__volumes = collections.OrderedDict({})
-
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager
-    from ROOT import DetectorConstruction as DetectorConstructionCore
-    self.__core = DetectorConstructionCore(self.getLoggerName())
-    for key, value in kw.items():
-      self.setProperty( key, value )
 
     # add all volumes from samplings
     for samp in self.samplings:
@@ -67,7 +63,7 @@ class DetectorConstruction(Logger):
   def compile(self):
     # Create all volumes inside of the detector
     for pv in tqdm( self.__volumes.values(), desc="Compiling...", ncols=70):
-      self.__core.AddVolume( pv.name(), pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
+      self._core.AddVolume( pv.name(), pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
                              # layer
                              pv.NofLayers, pv.AbsorberThickness, pv.GapThickness,
                              # dimensions
@@ -77,27 +73,8 @@ class DetectorConstruction(Logger):
                              )
     create_vis_mac(self.__volumes.values(), self.VisMac)
 
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.__core.setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
 
   def summary(self):
-
 
       samp_vol_names = []
 

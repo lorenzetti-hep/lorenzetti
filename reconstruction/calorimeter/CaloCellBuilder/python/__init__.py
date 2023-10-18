@@ -1,6 +1,10 @@
 
 __all__ = []
 
+from . import CaloFlags
+__all__.extend(CaloFlags.__all__)
+from .CaloFlags import *
+
 from . import Calorimeter
 __all__.extend(Calorimeter.__all__)
 from .Calorimeter import *
@@ -9,17 +13,13 @@ from . import PulseGenerator
 __all__.extend(PulseGenerator.__all__)
 from .PulseGenerator import *
 
-from . import CrossTalk
-__all__.extend(CrossTalk.__all__)
-from .CrossTalk import *
+from . import CrossTalkMaker
+__all__.extend(CrossTalkMaker.__all__)
+from .CrossTalkMaker import *
 
 from . import OptimalFilter
 __all__.extend(OptimalFilter.__all__)
 from .OptimalFilter import *
-
-from . import ConstrainedOptimalFilter
-__all__.extend(ConstrainedOptimalFilter.__all__)
-from .ConstrainedOptimalFilter import *
 
 from . import CaloCellMaker
 __all__.extend(CaloCellMaker.__all__)

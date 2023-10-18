@@ -27,6 +27,7 @@ EventTape::~EventTape()
   delete m_p_isMain     ; 
   delete m_p_pdg_id     ;
   delete m_p_bc_id      ;
+  delete m_p_seed_id    ;
   delete m_p_e          ;  
   delete m_p_et         ;
   delete m_p_eta        ; 
@@ -60,6 +61,7 @@ StatusCode EventTape::initialize()
   m_p_isMain     = new std::vector<int>();
   m_p_pdg_id     = new std::vector<int>(); 
   m_p_bc_id      = new std::vector<int>(); 
+  m_p_seed_id    = new std::vector<int>(); 
   m_p_e          = new std::vector<float>();  
   m_p_et         = new std::vector<float>();
   m_p_eta        = new std::vector<float>(); 
@@ -82,6 +84,7 @@ StatusCode EventTape::initialize()
   m_tree->Branch("p_isMain"    , &m_p_isMain     );
   m_tree->Branch("p_pdg_id"    , &m_p_pdg_id     ); 
   m_tree->Branch("p_bc_id"     , &m_p_bc_id      ); 
+  m_tree->Branch("p_seed_id"   , &m_p_seed_id    ); 
   m_tree->Branch("p_e"         , &m_p_e          );  
   m_tree->Branch("p_et"        , &m_p_et         );
   m_tree->Branch("p_eta"       , &m_p_eta        ); 
@@ -206,11 +209,13 @@ void EventTape::dump( Event &event )
 
   // Fill the seed
   // Main event is always in BC 0; pdg is = 0 to sign that this is a RoI
+  int seed_id = 0;
   for ( auto &seed : *event ) 
   {  
     // All cluster is a seed and should be pdg id equal zero
     m_p_isMain->push_back( 1 );
     m_p_bc_id->push_back( 0 ); 
+    m_p_seed_id->push_back( seed_id );
     m_p_pdg_id->push_back( 0 ); // Indicate to g4kernel that this is a seed
     m_p_px->push_back( 0 ); 
     m_p_py->push_back( 0 ); 
@@ -219,7 +224,7 @@ void EventTape::dump( Event &event )
     m_p_phi->push_back( seed.phi() );
     m_p_prod_x->push_back( 0 ); 
     m_p_prod_y->push_back( 0 ); 
-    m_p_prod_z->push_back( 0 ); 
+    m_p_prod_z->push_back( 0 );
     m_p_prod_t->push_back( 0 );
     m_p_e->push_back( seed.etot() ); 
     m_p_et->push_back( seed.ettot() );
@@ -234,6 +239,7 @@ void EventTape::dump( Event &event )
       // Obtain substruct data
       m_p_isMain->push_back( part.isMain );
       m_p_bc_id->push_back( part.bc_id ); 
+      m_p_seed_id->push_back( seed_id );
       m_p_pdg_id->push_back( part.pdg_id );
       m_p_px->push_back( part.px ); 
       m_p_py->push_back( part.py ); 
@@ -247,6 +253,8 @@ void EventTape::dump( Event &event )
       m_p_e->push_back( part.e ); 
       m_p_et->push_back( part.eT );
     }
+
+    seed_id++;
   }
 
   m_tree->Fill(); 

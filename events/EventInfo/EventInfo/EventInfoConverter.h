@@ -2,7 +2,7 @@
 #define EventInfoConverter_h
 
 /** simulator includes **/
-#include "EventInfo/EventInfo.h"
+#include "EventInfo/EventInfoContainer.h"
 
 namespace xAOD{
 
@@ -21,12 +21,10 @@ namespace xAOD{
             ~EventInfoConverter()=default;
 
             // convert a class object into a struct
-            bool convert(const EventInfo *, EventInfo_t & );
-            bool convert(const EventInfo_t &, EventInfo *& );
-        private:
+            bool convert(const EventInfo *truth, EventInfo_t &truth_t ) const;
+            bool convert(const EventInfo_t & , EventInfo *&) const;
 
     };
-
 }
 #endif
 

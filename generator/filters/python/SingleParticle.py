@@ -1,9 +1,9 @@
 __all__ = ["SingleParticle", "Particle"]
 
-from GaugiKernel import Logger, EnumStringification
+from GaugiKernel import Cpp, EnumStringification
+from GaugiKernel.constants import *
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
-
+from ROOT import generator
 
 
 class Particle(EnumStringification):
@@ -12,60 +12,43 @@ class Particle(EnumStringification):
   Pion = 211
 
 
+class SingleParticle( Cpp ):
 
+  def __init__( self, name, gen,  
+                Eta          : float=0.0,
+                Phi          : float=0.0,
+                Particle     : int=Particle.Electron,
+                Energy       : float=-1,
+                EnergyMin    : float=0.0*GeV,
+                EnergyMax    : float=100*GeV,
+                HasLifetime  : bool=False,
+                AtRest       : bool=False,
+                OutputLevel  : int=0,
+                DoRangedEta  : bool=False,
+                EtaMin       : float=-2.5,
+                EtaMax       : float=2.5,
+                DoRangedPhi  : bool=False,
+                PhiMin       : float=-3.14,
+                PhiMax       : float=3.14,
+              ):
 
-
-class SingleParticle( Logger ):
-
-  __allow_keys = [
-                "Eta",
-                "Phi",
-                "Particle",
-                "Energy",
-                "EnergyMin",
-                "EnergyMax",
-                "HasLifetime",
-                "AtRest",
-                "Seed",
-                "OutputLevel",
-                "DoRangedEta",
-                "EtaMin",
-                "EtaMax",
-                "DoRangedPhi",
-                "PhiMin",
-                "PhiMax",
-                ]
-
-  def __init__( self, name, gen, **kw ): 
-    
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import generator
+    Cpp.__init__(self, generator.SingleParticle(name, gen.core()) )
     self.__gen = gen
-    # Create the algorithm
-    self.__core = generator.SingleParticle(name, gen.core())
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+    self.setProperty( "Eta"         , Eta         )
+    self.setProperty( "Phi"         , Phi         )
+    self.setProperty( "Particle"    , Particle    )
+    self.setProperty( "Energy"      , Energy      )
+    self.setProperty( "EnergyMin"   , EnergyMin   )
+    self.setProperty( "EnergyMax"   , EnergyMax   )
+    self.setProperty( "HasLifetime" , HasLifetime )
+    self.setProperty( "AtRest"      , AtRest      )
+    #self.setProperty( "OutputLevel" , OutputLevel )
+    self.setProperty( "DoRangedEta" , DoRangedEta )
+    self.setProperty( "EtaMin"      , EtaMin      )
+    self.setProperty( "EtaMax"      , EtaMax      )
+    self.setProperty( "DoRangedPhi" , DoRangedPhi )
+    self.setProperty( "PhiMin"      , PhiMin      )
+    self.setProperty( "PhiMax"      , PhiMax      )
 
 
   def gun(self):

@@ -2,7 +2,7 @@
 from GaugiKernel   import LoggingLevel, Logger
 from GaugiKernel   import GeV
 import argparse
-import sys,os
+import sys,os,traceback
 
 
 mainLogger = Logger.getModuleLogger("pythia")
@@ -101,5 +101,6 @@ try:
 
   sys.exit(0)
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

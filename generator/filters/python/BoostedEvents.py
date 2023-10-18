@@ -1,54 +1,32 @@
 __all__ = ["BoostedEvents"]
 
-from GaugiKernel import Logger, EnumStringification
+from GaugiKernel import Cpp, EnumStringification
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+from GaugiKernel.constants import *
 
+from ROOT import generator
+from filters import Particle
 
+class BoostedEvents( Cpp ):
 
-class BoostedEvents( Logger ):
-
-  __allow_keys = [
-                "Particle",
-                "EnergyFactor",
-                "DeltaR",
-                "Sigma",
-                "HasLifetime",
-                "AtRest",
-                "Seed",
-                "OutputLevel",
-                ]
-
-  def __init__( self, name, gen, **kw ): 
+  def __init__( self, name, gen,
+                      Particle      : int=Particle.Electron, 
+                      Energy        : float=1*GeV,
+                      DeltaR        : float=0.2,
+                      HasLifetime   : bool=False,
+                      AtRest        : bool=False,
+                      Seed          : int=512,
+                      OutputLevel   : int=0   ): 
     
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import generator
-    # Create the algorithm
-    self.__gun = gen
-    self.__core = generator.BoostedEvents(name, gen)
-    for key, value in kw.items():
-      self.setProperty( key,value )
 
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+    Cpp.__init__(self, generator.BoostedEvents(name, gen))
+    self.__gun = gen 
+    self.setProperty( "Particle"    , Particle      )
+    self.setProperty( "Energy"      , Energy        )
+    self.setProperty( "DeltaR"      , DeltaR        )
+    self.setProperty( "HasLifetime" , HasLifetime   )
+    self.setProperty( "AtRest"      , AtRest        )
+    #self.setProperty( "OutputLevel" , OutputLevel   )
 
 
   def gun(self):

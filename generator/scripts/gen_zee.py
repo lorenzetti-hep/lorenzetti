@@ -3,7 +3,7 @@
 from GaugiKernel import LoggingLevel, Logger
 from GaugiKernel import GeV
 import argparse
-import sys,os
+import sys,os,traceback
 
 
 mainLogger = Logger.getModuleLogger("zee")
@@ -59,6 +59,13 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "The pythia seed (zero is the clock system)")
 
+#
+# Calibration parameters
+#
+parser.add_argument('--zeroVertexParticles', action='store_true', dest='zeroVertexParticles',required = False, 
+                    help = "Fix the z vertex position in simulation to zero for all selected particles. It is applied only at G4 step, not in generation.")
+
+
 
 if len(sys.argv)==1:
   parser.print_help()
@@ -83,8 +90,9 @@ try:
                     File=main_file, 
                     Seed=args.seed, 
                     EventNumber = args.eventNumber),
-            EtaMax      = 3.2,
-            MinPt       = 15*GeV,
+            EtaMax              = 3.2,
+            MinPt               = 15*GeV,
+            ZeroVertexParticles = args.zeroVertexParticles, #calibration use only.
             OutputLevel  = args.outputLevel
            )
   tape+=zee
@@ -114,5 +122,6 @@ try:
 
   sys.exit(0)
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

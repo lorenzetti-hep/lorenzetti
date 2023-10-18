@@ -32,7 +32,7 @@ void StoreGate::save()
   MSG_INFO( "Decorators will no be saved into the root file.")
   for( auto it : m_objs)
   {
-    MSG_INFO( it.first  << " " << it.second);
+    MSG_DEBUG( it.first  << " " << it.second);
     //it.second->Write();
   }
 
@@ -57,10 +57,10 @@ void StoreGate::cd( std::string path ){
 }
 
 
-bool StoreGate::add( TObject* obj){  
+bool StoreGate::add( TObject* obj, bool force){  
 	std::string feature(obj->GetName());
   std::string fullpath = m_currentPath + "/" + feature;
-  if( m_objs.find( fullpath ) != m_objs.end() ) 
+  if( (m_objs.find( fullpath ) != m_objs.end()) && !force ) 
   {
     MSG_WARNING("It's not possible to attach the histogram with name " << feature << " into this path " << m_currentPath);
 		return false;

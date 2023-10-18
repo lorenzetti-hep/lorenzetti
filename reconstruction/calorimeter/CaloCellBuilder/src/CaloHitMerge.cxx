@@ -20,9 +20,9 @@ CaloHitMerge::CaloHitMerge( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "CollectionKeys"   , m_collectionKeys={}           );
-  declareProperty( "HitsKey"          , m_hitsKey="Hits"              );
-  declareProperty( "OutputLevel"      , m_outputLevel=1               );
+  declareProperty( "InputCollectionKeys"    , m_collectionKeys={}           );
+  declareProperty( "OutputHitsKey"          , m_hitsKey="Hits"              );
+  declareProperty( "OutputLevel"            , m_outputLevel=1               );
 }
 
 //!=====================================================================
@@ -80,8 +80,6 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
 {
 
   MSG_DEBUG( "Starting collection merge algorithm..." );
-
-
   MSG_DEBUG( "Creating HIT containers with key " << m_hitsKey);
 
   SG::WriteHandle<xAOD::CaloHitContainer> container( m_hitsKey , ctx );
@@ -121,6 +119,9 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
       for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
       {
         hit->edep( bcid, const_hit->edep(bcid) ); // truth energy for each bunch crossing
+        hit->tof ( bcid, const_hit->tof(bcid) );  // truth time for each bunch crossing 
+                                                  // (in fact, this time is the time from the signal at the
+                                                  // moment its energy holds above 1*sigma noise threshold)
       }
       etot+=hit->edep();
 
@@ -129,7 +130,7 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
     }// Loop over all hits 
   }// Loop over all collections
   
-  MSG_INFO( "Total of energy is " << etot << " MeV");
+  MSG_DEBUG( "Total of energy is " << etot << " MeV");
   MSG_DEBUG( "All collections were merged into two CaloHitContainer" );
   return StatusCode::SUCCESS;
 }

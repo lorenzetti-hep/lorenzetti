@@ -44,8 +44,6 @@ class CaloCellMaker : public Gaugi::Algorithm
 
     /*! output collection key */
     std::string m_collectionKey;
-    /*! input event key */
-    std::string m_eventKey;
     /*! input hits key */
     std::string m_hitsKey;
     /*! Base histogram path */

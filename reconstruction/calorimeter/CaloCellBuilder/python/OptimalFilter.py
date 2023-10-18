@@ -1,47 +1,42 @@
-__all__ = ["OptimalFilter"]
+__all__ = ["OptimalFilter", "ConstrainedOptimalFilter"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+import ROOT
 
-
-class OptimalFilter(Logger):
-
-  __allow_keys = ["OutputLevel",
-                  "Weights",
-                  ]
+class OptimalFilter( Cpp ):
   
-  def __init__( self, name, **kw ):
+  def __init__( self, name    : str,
+                WeightsEnergy : list=[],
+                WeightsTime   : list=[],
+                OutputLevel   : int=LoggingLevel.toC('INFO'),
+              ):
 
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, OptimalFilter
-    self.__core = OptimalFilter(name)
-    for key, value in kw.items():
-      self.setProperty( key, value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+    Cpp.__init__(self, ROOT.OptimalFilter(name) )
+    self.setProperty( "OutputLevel"   , OutputLevel   )
+    self.setProperty( "WeightsEnergy" , WeightsEnergy )
+    self.setProperty( "WeightsTime"   , WeightsTime   )
 
  
 
+class ConstrainedOptimalFilter(Cpp):
 
+  def __init__( self, name,
+                OutputLevel       : int=0, 
+                NSamples          : float=0, 
+                PulsePath         : str="",
+                Threshold         : float=0,
+                SamplingRate      : float=0,
+                StartSamplingBC   : float=0,
+              ):
+
+    Cpp.__init__(self, ROOT.ConstrainedOptimalFilter(name) )
+    self.setProperty( "OutputLevel"     , OutputLevel       )
+    self.setProperty( "OutputLevel"     , OutputLevel       ) 
+    self.setProperty( "NSamples"        , NSamples          ) 
+    self.setProperty( "PulsePath"       , PulsePath         )
+    self.setProperty( "Threshold"       , Threshold         )
+    self.setProperty( "SamplingRate"    , SamplingRate      )
+    self.setProperty( "StartSamplingBC" , StartSamplingBC   )
 

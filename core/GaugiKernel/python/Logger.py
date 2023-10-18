@@ -30,6 +30,18 @@ class LoggingLevel(EnumStringification):
   FATAL    = logging.CRITICAL
   MUTE     = logging.CRITICAL # MUTE Still displays fatal messages.
 
+  @classmethod
+  def toC(cls, val):
+    val = LoggingLevel.retrieve( val ) 
+    if val == cls.VERBOSE:
+      val = 0
+    else:
+      val = val/10
+    return int(val + 1) # There is NIL at 0, DEBUG is 2 and so on.
+
+  
+
+
 
 logging.addLevelName(LoggingLevel.VERBOSE, "VERBOSE")
 logging.addLevelName(LoggingLevel.FATAL,    "FATAL" )

@@ -44,9 +44,6 @@ class CaloHitMaker : public Gaugi::Algorithm
 
     /*! collection key */
     std::string m_collectionKey; // output
-    /*! event key */
-    std::string m_eventKey; // input
-
 
     std::vector<float> m_etaBins; 
     std::vector<float> m_phiBins; 
@@ -54,6 +51,7 @@ class CaloHitMaker : public Gaugi::Algorithm
     float m_rMax; 
     float m_zMin;
     float m_zMax;
+    float m_noiseStd;
 
     /*! Sampling id for this reconstruction */
     int m_sampling;

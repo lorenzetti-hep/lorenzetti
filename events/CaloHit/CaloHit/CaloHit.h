@@ -40,6 +40,7 @@ namespace xAOD{
       
       /*! Fill the deposit energy into the Hit */
       void fill( const G4Step * );
+      void fill( const G4Step *, float sampNoiseStd ); // 
       /** Zeroize the pulse/sample vectors **/
       void clear();
 
@@ -79,7 +80,26 @@ namespace xAOD{
         m_edep[bc_id] += e;
       }
 
+      /*! Time of flight from simulated hits **/ //
+      float tof( int bc_id=0 ) const{
+        if (m_tof.count(bc_id)){
+          return m_tof.at(bc_id);
+        }else{// return zero case bc not exist
+          return 0;
+        }
+      }
 
+
+      void tof( int bc_id, float t ){ //setter
+        m_tof[bc_id] = t;
+        // if (m_tof[bc_id] == float(0)){
+        //   m_tof[bc_id] = t;
+        // }
+        // else{
+        //   m_tof[bc_id] = (m_tof[bc_id] + t)/2; //simple moving average with w=2
+        // }
+      }
+      
       /*
        * Bunch crossing information
        */
@@ -126,7 +146,9 @@ namespace xAOD{
       std::vector<float> m_time;
       /*! energy deposit between bcid_start and bcid_end */
       std::map< int, float> m_edep;
-     
+      /*!time of flight of a particle between bcid_start and bcid_end */
+      std::map< int, float> m_tof;
+      bool m_firstHit = false;
       /*! Access information unique ID number */
       unsigned long int m_hash;
 

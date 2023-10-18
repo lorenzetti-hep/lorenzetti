@@ -9,8 +9,6 @@ using namespace Pythia8;
 using namespace generator;
 
 
-using namespace generator;
-
 
 
 BoostedEvents::BoostedEvents(const std::string name, IGenerator *gen):

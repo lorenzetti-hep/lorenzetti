@@ -12,6 +12,7 @@ namespace xAOD{
     struct CaloCell_t{
         float e;
         float et;
+        float tau; 
         float eta;
         float phi;
         float deta;

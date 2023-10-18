@@ -34,6 +34,9 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
       /*! Tranverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
+     /*! Cell time delay of the pulse (Time of flight) **/
+      PRIMITIVE_SETTER_AND_GETTER( float, m_tau, setTau, tau );
+
 
 
       /*! Get the associated Raw information */ 
@@ -56,6 +59,9 @@ namespace xAOD{
       float m_e;
       /*! Transverse energy*/
       float m_et;
+      /*! Estimated Time of Flight */
+      float m_tau;
+
 
       /*! Associated raw information */
       const xAOD::CaloDetDescriptor *m_descriptor;

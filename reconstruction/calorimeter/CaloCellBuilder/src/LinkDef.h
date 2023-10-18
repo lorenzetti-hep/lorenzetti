@@ -3,7 +3,7 @@
 #include "src/CaloCellMerge.h"
 #include "src/PulseGenerator.h"
 #include "src/OptimalFilter.h"
-#include "src/CrossTalk.h"
+//#include "src/CrossTalkMaker.h"
 #include "src/CaloHitMaker.h"
 #include "src/CaloHitMerge.h"
 #include "src/PileupMerge.h"
@@ -19,7 +19,7 @@
 #pragma link C++ class CaloCellMerge+;
 #pragma link C++ class PulseGenerator+;
 #pragma link C++ class OptimalFilter+;
-#pragma link C++ class CrossTalk+;
+//#pragma link C++ class CrossTalkMaker+;
 #pragma link C++ class CaloHitMaker+;
 #pragma link C++ class CaloHitMerge+;
 #pragma link C++ class ConstrainedOptimalFilter++;

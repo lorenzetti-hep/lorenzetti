@@ -5,6 +5,7 @@
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "EventInfo/EventSeedConverter.h"
 #include "RootStreamESDReader.h"
 #include "GaugiKernel/EDM.h"
 
@@ -19,9 +20,11 @@ RootStreamESDReader::RootStreamESDReader( std::string name ) :
   Algorithm()
 {
   declareProperty( "InputFile"          , m_inputFile=""                    );
-  declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"           , m_truthKey="Particles"            );
-  declareProperty( "CellsKey"           , m_cellsKey="Cells"                );
+  declareProperty( "OutputEventKey"     , m_eventKey="EventInfo"            );
+  declareProperty( "OutputTruthKey"     , m_truthKey="Particles"            );
+  declareProperty( "OutputCellsKey"     , m_cellsKey="Cells"                );
+  declareProperty( "OutputSeedsKey"     , m_seedsKey="Seeds"                );
+
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
 }
@@ -99,6 +102,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t > *collection_descriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *collection_cells      = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
+  std::vector<xAOD::EventSeed_t         > *collection_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
@@ -108,6 +112,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
   InitBranch( tree, ("EventInfoContainer_"         + m_eventKey).c_str() , &collection_event     );
+  InitBranch( tree, ("EventSeedContainer_"         + m_seedsKey).c_str() , &collection_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"     + m_truthKey).c_str() , &collection_truth     );
   InitBranch( tree, ("CaloCellContainer_"          + m_cellsKey).c_str() , &collection_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_cellsKey).c_str() , &collection_descriptor);
@@ -115,6 +120,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   tree->GetEntry( evt );
 
 
+  MSG_DEBUG("Deserialize TruthParticle...");
   { // deserialize EventInfo
     SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
     container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
@@ -124,13 +130,13 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
     {
       xAOD::TruthParticle  *par=nullptr;
       cnv.convert(par_t, par);
-      MSG_INFO( "Particle seeded in eta = " << par->eta() << ", phi = " << par->phi());
+      MSG_DEBUG( "Particle in eta = " << par->eta() << ", phi = " << par->phi());
       container->push_back(par);
     }
   }
 
 
-
+  MSG_DEBUG("Deserialize EventInfo...");
   { // deserialize EventInfo
 
     SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
@@ -138,20 +144,34 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
     xAOD::EventInfo  *event=nullptr;
     xAOD::EventInfoConverter cnv;
     cnv.convert(  collection_event->at(0), event);
-    MSG_INFO( "EventNumber = " << event->eventNumber() << ", Avgmu = " << event->avgmu());
+    MSG_DEBUG( "EventNumber = " << event->eventNumber() << ", Avgmu = " << event->avgmu());
     container->push_back(event);
   }
   
 
+  MSG_DEBUG("Deserialize EventSeed...");
+  { // deserialize EventSeed
+    SG::WriteHandle<xAOD::EventSeedContainer> container(m_seedsKey, ctx);
+    container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
 
+    xAOD::EventSeedConverter cnv;
+    for( auto& seed_t : *collection_seeds)
+    {
+      xAOD::EventSeed  *seed=nullptr;
+      cnv.convert(seed_t, seed);
+      MSG_DEBUG( "Seed in eta = " << seed->eta() << ", phi = " << seed->phi());
+      container->push_back(seed);
+    }
+  }
 
+  MSG_DEBUG("Deserialize CaloDetDescriptor... ");
   {
-    
     std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
-
     int link=0;
+    MSG_DEBUG(collection_descriptor->size());
     for (auto &descriptor_t : *collection_descriptor )
     {
+      //MSG_DEBUG(descriptor_t.hash);
       xAOD::CaloDetDescriptor *descriptor = nullptr;
       xAOD::CaloDetDescriptorConverter cnv;
       cnv.convert(descriptor_t, descriptor); // alloc memory
@@ -174,6 +194,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
 
   delete collection_descriptor;
+  delete collection_seeds     ;
   delete collection_cells     ;
   delete collection_event     ;
   delete collection_truth     ;

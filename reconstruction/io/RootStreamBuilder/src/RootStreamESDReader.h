@@ -4,6 +4,8 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventSeed.h"
+
 #include "TruthParticle/TruthParticle.h"
 
 
@@ -44,6 +46,7 @@ class RootStreamESDReader : public Gaugi::Algorithm
     std::string m_cellsKey;
     std::string m_eventKey;
     std::string m_truthKey;
+    std::string m_seedsKey;
     std::string m_inputFile;
     std::string m_ntupleName;
 

@@ -1,53 +1,39 @@
 
 __all__ = ["PulseGenerator"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+import ROOT
+
+class PulseGenerator( Cpp ):
 
 
-class PulseGenerator( Logger ):
+  def __init__( self, name      : str,
+                OutputLevel     : int=LoggingLevel.toC('INFO'), 
+                NSamples        : int=0, 
+                ShaperFile      : str="",
+                Pedestal        : float=0,
+                DeformationMean : float=0,
+                DeformationStd  : float=0,
+                NoiseMean       : float=0,
+                NoiseStd        : float=0,
+                SamplingRate    : float=0,
+                StartSamplingBC : float=0
+              ):
+                
+    Cpp.__init__(self, ROOT.PulseGenerator(name) )
+    self.setProperty( "OutputLevel"     , OutputLevel       )
+    self.setProperty( "NSamples"        , NSamples          ) 
+    self.setProperty( "ShaperFile"      , ShaperFile        )
+    self.setProperty( "Pedestal"        , Pedestal          )
+    self.setProperty( "DeformationMean" , DeformationMean   )
+    self.setProperty( "DeformationStd"  , DeformationStd    )
+    self.setProperty( "NoiseMean"       , NoiseMean         )
+    self.setProperty( "NoiseStd"        , NoiseStd          )
+    self.setProperty( "SamplingRate"    , SamplingRate      )
+    self.setProperty( "StartSamplingBC" , StartSamplingBC   )
 
-  __allow_keys = ["OutputLevel", 
-                  "NSamples", 
-                  "ShaperFile",
-                  "Pedestal",
-                  "DeformationMean",
-                  "DeformationStd",
-                  "NoiseMean",
-                  "NoiseStd",
-                  "SamplingRate",
-                  "StartSamplingBC",
-                  ]
-
-  def __init__( self, name, **kw ):
-
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, PulseGenerator
-    self.__core = PulseGenerator(name)
-    for key, value in kw.items():
-      self.__core.setProperty( key, value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, value )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
  
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
      
 

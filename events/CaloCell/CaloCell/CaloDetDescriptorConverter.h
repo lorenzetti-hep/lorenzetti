@@ -18,12 +18,14 @@ namespace xAOD{
         float deta;
         float dphi;
         float e;
+        float tau;
         float edep;
         int bcid_start;
         int bcid_end;
         float bc_duration;
         std::vector<float> pulse;
         std::vector<float> edep_per_bunch;
+        std::vector<float> tof;
         unsigned long int hash;
         int cell_link;
     };

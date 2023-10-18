@@ -3,69 +3,49 @@
 __all__ = ["CaloHitMaker"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+import ROOT
 
 
+class CaloHitMaker( Cpp ):
 
-class CaloHitMaker( Logger ):
 
-  __allow_keys = [
-                  "EventKey"          ,
-                  "CollectionKey"     ,
-                  "EtaBins"           ,
-                  "PhiBins"           ,
-                  "RMin"              ,
-                  "RMax"              ,
-                  "ZMin"              ,
-                  "ZMax"              ,
-                  "Sampling"          ,
-                  "Segment"           ,
-                  "Detector"          ,
-                  "BunchIdStart"      ,
-                  "BunchIdEnd"        ,
-                  "BunchDuration"     ,
-                  "OutputLevel"       ,
-                  "DetailedHistograms",
-                  "HistogramPath"     ,
-                  ]
-
-  def __init__( self, name, **kw ): 
-
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloHitMaker
-    # Create the algorithm
-    self.__core = CaloHitMaker(name)
+  def __init__( self, name, sampling,
+                OutputCollectionKey  : str    = "Hits",
+                OutputLevel          : int    = LoggingLevel.toC('INFO'),
+                DetailedHistograms   : bool   = False,
+                HistogramPath        : str    = "/CaloHitMaker",
+                SamplingNoiseStd     : float  = 0,
+              ):
+                    
+    Cpp.__init__(self, ROOT.CaloHitMaker(name) )
     self.Tools = []
+    self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )
+    self.setProperty( "EtaBins"                 , sampling.sensitive().EtaBins)
+    self.setProperty( "PhiBins"                 , sampling.sensitive().PhiBins)
+    self.setProperty( "RMin"                    , sampling.volume().RMin      )
+    self.setProperty( "RMax"                    , sampling.volume().RMax      )
+    self.setProperty( "ZMin"                    , sampling.volume().ZMin      )
+    self.setProperty( "ZMax"                    , sampling.volume().ZMax      )
+    self.setProperty( "Sampling"                , sampling.Sampling           )
+    self.setProperty( "Segment"                 , sampling.sensitive().Segment)
+    self.setProperty( "Detector"                , sampling.Detector           )
+    self.setProperty( "BunchIdStart"            , sampling.BunchIdStart       )
+    self.setProperty( "BunchIdEnd"              , sampling.BunchIdEnd         )
+    self.setProperty( "BunchDuration"           , 25                          )
+    self.setProperty( "SamplingNoiseStd"        , SamplingNoiseStd            )
+    self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
+    self.setProperty( "HistogramPath"           , HistogramPath               )
+    self.setProperty( "OutputLevel"             , OutputLevel                 )
 
-    for key, value in kw.items():
-      self.setProperty( key, value )
-
+ 
 
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      self.__core.push_back(tool.core())
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.__core.setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
+      self._core.push_back(tool.core())
+    return self._core
 
 
   def __add__( self, tool ):

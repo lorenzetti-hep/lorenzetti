@@ -21,6 +21,7 @@ namespace xAOD{
         int bcid_end;
         float bc_duration;
         std::vector<float> edep;
+        std::vector<float> tof;
         unsigned long int hash;
     };
 
@@ -32,10 +33,8 @@ namespace xAOD{
 
             // convert a class object into a struct
             bool convert(const CaloHit *, CaloHit_t & );
-
             bool convert( const CaloHit_t &, CaloHit *& );
             
-        private:
 
     };
 
