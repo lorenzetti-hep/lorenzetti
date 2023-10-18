@@ -75,9 +75,19 @@ try:
   gun.merge(acc)
   calorimeter.merge(acc)
 
-  from RootStreamBuilder import RootStreamHITMaker
-  acc += RootStreamHITMaker( "RootStreamHITMaker", OutputLevel = outputLevel, OnlyRoI=False)
+  
+  from RootStreamBuilder import RootStreamHITMaker, recordable
 
+  HIT = RootStreamHITMaker( "RootStreamHITMaker",
+                             # input from context
+                             InputHitsKey    = recordable("Hits"),
+                             InputEventKey   = recordable("Events"),
+                             InputTruthKey   = recordable("Particles"),
+                             # output to file
+                             OutputHitsKey   = recordable("Hits"),
+                             OutputEventKey  = recordable("EventInfo"),
+                             OutputTruthKey  = recordable("Particles"),
+                             OutputLevel     = outputLevel)
 
   acc.run(args.numberOfEvents)
 

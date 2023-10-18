@@ -80,7 +80,7 @@ StatusCode PileupMerge::execute( EventContext &ctx, int /*evt*/ ) const
 StatusCode PileupMerge::post_execute( EventContext &ctx ) const
 {
 
-
+  /* 
   SG::ReadHandle<xAOD::CaloHitContainer> container(m_inputHitsKey, ctx);
   if( !container.isValid() )
   {
@@ -182,6 +182,7 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
   
   delete collection_hits;
   delete collection_events;
+  */
   return StatusCode::SUCCESS;
  
 }

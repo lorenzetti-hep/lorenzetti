@@ -1,22 +1,24 @@
-#ifndef RootStreamReader_h
-#define RootStreamReader_h
+#ifndef RootStreamESDMaker_h
+#define RootStreamESDMaker_h
 
+#include "CaloCell/enumeration.h"
+#include "EventInfo/EventInfo.h"
+#include "TruthParticle/TruthParticle.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
 #include "GaugiKernel/DataHandle.h"
-#include "RootStreamConverter.h"
 
 
 
-class RootStreamReader : public Gaugi::Algorithm
+class RootStreamESDMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    RootStreamReader( std::string );
+    RootStreamESDMaker( std::string );
     
-    virtual ~RootStreamReader();
+    virtual ~RootStreamESDMaker();
     
     virtual StatusCode initialize() override;
 
@@ -34,17 +36,24 @@ class RootStreamReader : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
-   void push_back( RootStreamConverter *converter ){m_converters.push_back(converter);};
 
 
   private:
  
 
-    StatusCode deserialize( int evt, SG::EventContext &ctx ) const;
+    StatusCode serialize( SG::EventContext &ctx ) const;
+
+    template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
-    std::string m_inputFile;
-    std::vector<std::string> m_containers;
-    std::vector<RootStreamConverter*> m_converters;
+    std::string m_ntupleName;
+    std::string m_inputCellsKey;
+    std::string m_inputEventKey;
+    std::string m_inputTruthKey;
+    std::string m_outputCellsKey;
+    std::string m_outputEventKey;
+    std::string m_outputTruthKey;
+    
+    float m_etaWindow, m_phiWindow;
 
     int m_outputLevel;
 };

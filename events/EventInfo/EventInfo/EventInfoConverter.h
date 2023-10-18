@@ -22,9 +22,6 @@ namespace xAOD{
 
             bool convert(const EventInfo *truth, EventInfo_t &truth_t ) const;
             bool convert(const EventInfo_t & , EventInfo *&) const;
-            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
-            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
-
   
     };
 }

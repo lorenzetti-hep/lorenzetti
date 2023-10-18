@@ -1,7 +1,6 @@
 
 file(GLOB SOURCES src/*.cxx)
 file(GLOB_RECURSE HEADERS src/RootStreamMaker.h )
-file(GLOB_RECURSE HEADERS src/RootStreamReader.h )
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../events/CaloCluster)

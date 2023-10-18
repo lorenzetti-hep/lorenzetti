@@ -1,24 +1,24 @@
-#ifndef PileupMerge_h
-#define PileupMerge_h
+#ifndef RootStreamNTUPLEMaker_h
+#define RootStreamNTUPLEMaker_h
 
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
-#include "CaloHit/CaloHitContainer.h"
-#include "EventInfo/EventInfoContainer.h"
-#include "TruthParticle/TruthParticleContainer.h"
-//#include "CaloHit/CaloHitConverter.h"
-//#include "EventInfo/EventInfoConverter.h"
-#include "TRandom3.h"
+#include "EventInfo/EventInfo.h"
+#include "TruthParticle/TruthParticle.h"
+#include "CaloCluster/CaloCluster.h"
+#include "CaloRings/CaloRings.h"
 
 
-class PileupMerge : public Gaugi::Algorithm
+
+
+class RootStreamNTUPLEMaker : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    PileupMerge( std::string );
+    RootStreamNTUPLEMaker( std::string );
     
-    virtual ~PileupMerge();
+    virtual ~RootStreamNTUPLEMaker();
 
     virtual StatusCode initialize() override;
 
@@ -28,7 +28,7 @@ class PileupMerge : public Gaugi::Algorithm
     
     virtual StatusCode execute( SG::EventContext &ctx , const G4Step *step) const override;
     
-    virtual StatusCode execute( SG::EventContext &/*ctx*/ , int /*evt*/) const override;
+    virtual StatusCode execute( SG::EventContext &ctx , int evt ) const override;
 
     virtual StatusCode post_execute( SG::EventContext &ctx ) const override;
     
@@ -39,23 +39,23 @@ class PileupMerge : public Gaugi::Algorithm
 
   private:
  
-
+    StatusCode deserialize( int evt, SG::EventContext &ctx ) const;
 
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
-    std::string m_inputHitsKey;
-    std::string m_outputHitsKey;
-    std::string m_inputEventKey;
-    std::string m_outputEventKey;
-
+    std::string m_cellsKey;
+    std::string m_eventKey;
+    std::string m_truthKey;
+    std::string m_clusterKey;
+    std::string m_ringerKey;
     std::string m_inputFile;
     std::string m_ntupleName;
+    std::string m_outputNtupleName;
+
 
     int m_outputLevel;
-
-    mutable TRandom3 m_rng;
-    float m_seed;
 
 };
 
 #endif
+

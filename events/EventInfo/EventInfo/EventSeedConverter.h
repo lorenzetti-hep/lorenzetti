@@ -24,8 +24,6 @@ namespace xAOD{
             EventSeedConverter()=default;
             ~EventSeedConverter()=default;
 
-            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
-            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
             bool convert(const EventSeed *truth, EventSeed_t &truth_t ) const;
             bool convert(const EventSeed_t & , EventSeed *&) const;
 
