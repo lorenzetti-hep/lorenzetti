@@ -3,10 +3,9 @@ __all__ = ["CaloHitBuilder"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
-from RootStreamBuilder import recordable
+from CaloCellBuilder import CaloHitMaker
+from CaloCellBuilder import CaloHitMerge
 
-import os
 
 
 #
@@ -30,14 +29,10 @@ class CaloHitBuilder( Logger ):
     self.OutputCollectionKeys = []
 
 
-  #
-  # Configure 
-  #
   def configure(self):
 
     MSG_INFO(self, "Configure CaloHitBuilder.")
     
-    from CaloCellBuilder import CaloHitMaker, CaloHitMerge
 
     for samp in self.__detector.samplings:
 

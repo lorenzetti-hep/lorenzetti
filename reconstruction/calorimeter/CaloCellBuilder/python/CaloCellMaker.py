@@ -3,13 +3,12 @@
 __all__ = ["CaloCellMaker"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
 
-class CaloCellMaker( Logger ):
+class CaloCellMaker( Cpp ):
 
   def __init__( self, name, sampling, 
                 InputHitsKey        : str="Hits",
@@ -18,12 +17,7 @@ class CaloCellMaker( Logger ):
                 DetailedHistograms  : bool=False,
                 HistogramPath       : str="/Hists/Cells" ): 
 
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloCellMaker as core
-    # Create the algorithm
-    self.__core = core(name)
+    Cpp.__init__(self, name, "ROOT.CaloCellMaker", OutputLevel=OutputLevel)
     self.Tools = []
     self.PulseGenerator = None
 
@@ -39,7 +33,6 @@ class CaloCellMaker( Logger ):
     self.setProperty( "BunchIdStart"            , sampling.BunchIdStart       )
     self.setProperty( "BunchIdEnd"              , sampling.BunchIdEnd         )
     self.setProperty( "BunchDuration"           , 25                          )
-    self.setProperty( "OutputLevel"             , OutputLevel                 )
     self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
     self.setProperty( "HistogramPath"           , HistogramPath               )
  
@@ -50,24 +43,6 @@ class CaloCellMaker( Logger ):
       self.__core.push_back(tool.core())
     self.__core.setPulseGenerator(self.PulseGenerator.core())
     return self.__core
-
-
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
-
- 
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   def __add__( self, tool ):

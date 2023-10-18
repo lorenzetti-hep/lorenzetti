@@ -41,12 +41,9 @@ DetectorConstruction::DetectorConstruction(std::string name)
    G4VUserDetectorConstruction(),
    m_checkOverlaps(true)
 {
-
-  // magnetic field
   declareProperty( "UseMagneticField"           , m_useMagneticField=true     );
-  // visualization
   declareProperty( "CutOnPhi"                   , m_cutOnPhi=false            );
-  
+  declareProperty( "OutputLevel"                , m_outputLevel=0             ); 
 }
 
 

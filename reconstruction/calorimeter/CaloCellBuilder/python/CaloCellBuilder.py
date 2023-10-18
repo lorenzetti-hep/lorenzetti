@@ -3,11 +3,13 @@ __all__ = ["CaloCellBuilder"]
 
 from GaugiKernel        import Logger
 from GaugiKernel.macros import *
-from GaugiKernel        import GeV
-from G4Kernel           import treatPropertyValue
-from RootStreamBuilder  import recordable
-import os
 
+from CaloCellBuilder    import CaloCellMaker
+from CaloCellBuilder    import CaloCellMerge
+from CaloCellBuilder    import CrossTalkMaker
+from CaloCellBuilder    import PulseGenerator
+from CaloCellBuilder    import OptimalFilter
+from CaloCellBuilder    import CaloFlags
 
 #
 # Calo cell builder
@@ -30,24 +32,15 @@ class CaloCellBuilder( Logger ):
     self.InputHitsKey        = InputHitsKey
     self.OutputCellsKey      = OutputCellsKey
     self.OutputTruthCellsKey = OutputTruthCellsKey
-    self.__detector          = detector
+    self.Detector            = detector
     self.OutputCollectionKeys= []
 
     
-
-
-  #
-  # Configure 
-  #
   def configure(self):
 
     MSG_INFO(self, "Configure CaloCellBuilder.")
-
-    from CaloCellBuilder import CaloCellMaker, CaloCellMerge, CrossTalkMaker, PulseGenerator, OptimalFilter, CaloFlags
-
- 
   
-    for samp in self.__detector.samplings:
+    for samp in self.Detector.samplings:
 
       DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EM2) else False
 
@@ -120,8 +113,6 @@ class CaloCellBuilder( Logger ):
                               OutputLevel           = self.OutputLevel )
 
     self.__recoAlgs.append( mergeAlg )
-
-   
 
 
   def merge( self, acc ):

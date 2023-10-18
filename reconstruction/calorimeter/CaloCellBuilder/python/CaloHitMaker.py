@@ -3,13 +3,12 @@
 __all__ = ["CaloHitMaker"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
 
-class CaloHitMaker( Logger ):
+class CaloHitMaker( Cpp ):
 
 
   def __init__( self, name, sampling,
@@ -20,14 +19,8 @@ class CaloHitMaker( Logger ):
                 SamplingNoiseStd     : float  = 0,
               ):
 
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloHitMaker
-    # Create the algorithm
+    Cpp.__init__(self, name, "ROOT.CaloHitMaker", OutputLevel=OutputLevel)
     self.Tools = []
-
-    self.__core = CaloHitMaker(name)
     self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )
     self.setProperty( "EtaBins"                 , sampling.sensitive().EtaBins)
     self.setProperty( "PhiBins"                 , sampling.sensitive().PhiBins)
@@ -42,35 +35,15 @@ class CaloHitMaker( Logger ):
     self.setProperty( "BunchIdEnd"              , sampling.BunchIdEnd         )
     self.setProperty( "BunchDuration"           , 25                          )
     self.setProperty( "SamplingNoiseStd"        , SamplingNoiseStd            )
-    self.setProperty( "OutputLevel"             , OutputLevel                 )
     self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
     self.setProperty( "HistogramPath"           , HistogramPath               )
  
-    
 
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
       self.__core.push_back(tool.core())
     return self.__core
-
-
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
-
-
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 
 
   def __add__( self, tool ):

@@ -2,7 +2,7 @@
 #define TruthParticleConverter_h
 
 #include "TruthParticle/TruthParticle.h"
-#include "GaugiKernel/DataHandle.h"
+
 
 
 namespace xAOD{
@@ -29,10 +29,9 @@ namespace xAOD{
             TruthParticleConverter()=default;
             ~TruthParticleConverter()=default;
 
-            bool serialize(  std::string &, SG::EventContext &/*ctx*/, TTree *) const;
-            bool deserialize( std::string &, int &, TTree *, SG::EventContext &/*ctx*/) const;
             bool convert(const TruthParticle *truth, TruthParticle_t &truth_t ) const;
             bool convert(const TruthParticle_t & , TruthParticle *&) const;
+       
     };
 }
 #endif

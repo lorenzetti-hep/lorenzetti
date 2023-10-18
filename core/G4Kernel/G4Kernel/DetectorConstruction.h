@@ -118,6 +118,7 @@ class DetectorConstruction : public G4VUserDetectorConstruction, public MsgServi
     bool m_checkOverlaps; // option to activate checking of volumes overlaps
     bool m_useMagneticField;
     bool m_cutOnPhi;
+    int m_outputLevel;
 
     static G4ThreadLocal G4GlobalMagFieldMessenger*  m_magFieldMessenger;
 };

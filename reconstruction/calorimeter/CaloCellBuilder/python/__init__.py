@@ -21,10 +21,6 @@ from . import OptimalFilter
 __all__.extend(OptimalFilter.__all__)
 from .OptimalFilter import *
 
-from . import ConstrainedOptimalFilter
-__all__.extend(ConstrainedOptimalFilter.__all__)
-from .ConstrainedOptimalFilter import *
-
 from . import CaloCellMaker
 __all__.extend(CaloCellMaker.__all__)
 from .CaloCellMaker import *

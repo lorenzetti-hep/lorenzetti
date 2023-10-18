@@ -12,6 +12,10 @@ from . import Logger
 __all__.extend(Logger.__all__)
 from .Logger import *
 
+from . import Cpp
+__all__.extend(Cpp.__all__)
+from .Cpp import *
+
 from . import constants
 __all__.extend(constants.__all__)
 from .constants import *

@@ -29,4 +29,3 @@ bool EventSeedConverter::convert( const EventSeed_t &seed_t , EventSeed *&seed )
                              );
   return true;
 }
-

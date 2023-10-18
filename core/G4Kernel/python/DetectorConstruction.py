@@ -8,10 +8,10 @@ __all__ = [
 
 
 from GaugiKernel.constants import *
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
 from GaugiKernel import EnumStringification
-from G4Kernel import treatPropertyValue
+
 from prettytable import PrettyTable
 from tqdm import tqdm
 import numpy as np
@@ -24,24 +24,25 @@ class Plates(EnumStringification):
   Vertical   = 1
 
 
-class DetectorConstruction(Logger):
+class DetectorConstruction( Cpp ):
 
-  def __init__( self, name, vis_path, samplings=[], trackings=[], UseMagneticField : bool=False, CutOnPhi : bool=False ):
+  def __init__( self, 
+                name              : str, 
+                vis_path          : str, 
+                samplings         : list=[], 
+                trackings         : list=[], 
+                UseMagneticField  : bool=False, 
+                CutOnPhi          : bool=False ):
 
-    Logger.__init__(self)
+    Cpp.__init__(self, name, "ROOT.DetectorConstruction")
+    
+    self.setProperty( "UseMagneticField", UseMagneticField  )
+    self.setProperty( "CutOnPhi"        , CutOnPhi          )
 
     self.VisMac = vis_path
     self.samplings = samplings
     self.trackings = trackings
     self.__volumes = collections.OrderedDict({})
-
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager
-    from ROOT import DetectorConstruction as DetectorConstructionCore
-    self.__core = DetectorConstructionCore(self.getLoggerName())
-    self.setProperty( "UseMagneticField", UseMagneticField  )
-    self.setProperty( "CutOnPhi"        , CutOnPhi          )
 
     # add all volumes from samplings
     for samp in self.samplings:
@@ -72,30 +73,8 @@ class DetectorConstruction(Logger):
                              )
     create_vis_mac(self.__volumes.values(), self.VisMac)
 
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
-
- 
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
 
   def summary(self):
-
 
       samp_vol_names = []
 

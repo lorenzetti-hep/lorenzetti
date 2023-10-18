@@ -6,7 +6,6 @@
 #include "GaugiKernel/macros.h"
 #include "G4Step.hh"
 #include "globals.hh"
-#include <iostream>
 
 
 
@@ -81,7 +80,6 @@ namespace xAOD{
         m_edep[bc_id] += e;
       }
 
-
       /*! Time of flight from simulated hits **/ //
       float tof( int bc_id=0 ) const{
         if (m_tof.count(bc_id)){
@@ -90,6 +88,7 @@ namespace xAOD{
           return 0;
         }
       }
+
 
       void tof( int bc_id, float t ){ //setter
         m_tof[bc_id] = t;
@@ -100,8 +99,7 @@ namespace xAOD{
         //   m_tof[bc_id] = (m_tof[bc_id] + t)/2; //simple moving average with w=2
         // }
       }
-
-
+      
       /*
        * Bunch crossing information
        */
@@ -148,11 +146,9 @@ namespace xAOD{
       std::vector<float> m_time;
       /*! energy deposit between bcid_start and bcid_end */
       std::map< int, float> m_edep;
-
       /*!time of flight of a particle between bcid_start and bcid_end */
       std::map< int, float> m_tof;
       bool m_firstHit = false;
-     
       /*! Access information unique ID number */
       unsigned long int m_hash;
 

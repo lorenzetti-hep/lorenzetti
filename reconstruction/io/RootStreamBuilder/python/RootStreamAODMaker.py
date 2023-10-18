@@ -5,7 +5,7 @@ from GaugiKernel.macros import *
 from G4Kernel import treatPropertyValue
 
 
-class RootStreamAODMaker( Logger ):
+class RootStreamAODMaker(  ):
 
   __allow_keys = [
                   "InputEventKey",

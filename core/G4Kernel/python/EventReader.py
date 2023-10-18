@@ -1,34 +1,31 @@
 __all__ = ["EventReader"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+from ROOT import TFile, TTree
 
 
-class EventReader( Logger ):
+class EventReader( Cpp ):
 
   def __init__( self, name,  
                 InputFileName  : str = "", 
                 OutputEventKey : str = "EventInfo",
                 OutputTruthKey : str = "Particles",
                 OutputSeedKey  : str = "Seeds",
-                BunchDuration  : int = 25 
+                BunchDuration  : int = 25,
+                OutputLevel    : int = 0 
               ): 
     
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import generator
-    # Create the algorithm
-    self.__core = generator.EventReader(name)
+    Cpp.__init__(self, name, "ROOT.generator.EventReader", OutputLevel=OutputLevel)
     self.setProperty( "InputFileName"  , InputFileName  )
     self.setProperty( "OutputEventKey" , OutputEventKey )
     self.setProperty( "OutputSeedKey"  , OutputSeedKey  )
     self.setProperty( "OutputTruthKey" , OutputTruthKey )
     self.setProperty( "BunchDuration"  , BunchDuration  )
 
-    if InputFileName != "":
-      from ROOT import TFile, TTree
+    if self.InputFileName != "":
+      if not os.path.exists(self.InputFileName):
+        MSG_FATAL(self, f"Input file not found into the system: {self.InputFileName}")
       f = TFile( InputFileName )
       t = f.Get("particles")
       self.__entries = t.GetEntries()
@@ -36,28 +33,7 @@ class EventReader( Logger ):
     else:
       self.__entries = 0
 
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
-
  
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
   def merge( self, acc ):
     acc.setGenerator( self )
   

@@ -42,8 +42,8 @@ CaloDetDescriptor::CaloDetDescriptor(
   }
 }
 
-CaloDetDescriptor * CaloDetDescriptor::copy(){
-
+CaloDetDescriptor * CaloDetDescriptor::copy()
+{
   auto det = new CaloDetDescriptor( m_eta, 
                                     m_phi, 
                                     m_deta, 
@@ -55,8 +55,13 @@ CaloDetDescriptor * CaloDetDescriptor::copy(){
                                     m_bcid_start,
                                     m_bcid_end );
 
-  
-
+  det->setE(e()); // estimated energy from OF
+  det->setPulse( pulse() ); // pulse from generator
+  det->setTau( tau() );
+  for ( int bcid = bcid_start();  bcid <= bcid_end(); ++bcid )
+  {
+    det->edep( bcid, edep(bcid) ); // truth energy for each bunch crossing
+    det->tof ( bcid, tof(bcid)  ); // truth time of flight (it takes the last hit in the simulation order. Need to evaluate which strategy is the best.)
+  }
+  return det;
 }
-
-

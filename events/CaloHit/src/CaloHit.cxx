@@ -2,13 +2,8 @@
 #include "CaloHit/CaloHit.h"
 #include "G4PhysicalConstants.hh"
 #include "G4SystemOfUnits.hh"
-
-// #include "GaugiKernel/MsgStream.h" //
-#include <iostream>//
-using namespace std;//
-
 using namespace xAOD;
-using namespace Gaugi;
+
 
 
 CaloHit::CaloHit(     float eta, 
@@ -35,10 +30,9 @@ CaloHit::CaloHit(     float eta,
   m_bcid_start(bcid_start),
   m_bcid_end(bcid_end),
   m_bc_duration(bc_duration),
-  m_hash(hash)
-
+  m_hash(hash),
+  m_firstHit(false)
 {
-  // setMsgLevel( (MSG::Level)1 ); //
   // Initalize the time vector using the bunch crossing informations
   float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
   float step  = m_bc_duration;
@@ -51,8 +45,8 @@ CaloHit::CaloHit(     float eta,
 void CaloHit::clear()
 {
   m_edep.clear(); // zeroize deposit energy for all bunchs
-  m_tof.clear(); //
 }
+
 
 
 void CaloHit::fill( const G4Step* step )
@@ -106,6 +100,7 @@ void CaloHit::fill( const G4Step* step , float sampNoiseStd)
     // }
   }
 }
+
 
 
 

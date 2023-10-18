@@ -1,6 +1,7 @@
 
 
 #include "CaloCell/CaloCellConverter.h"
+#include "CaloCell/CaloDetDescriptorConverter.h"
 
 
 #ifdef __CINT__

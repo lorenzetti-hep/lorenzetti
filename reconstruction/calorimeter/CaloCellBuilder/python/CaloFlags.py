@@ -1,6 +1,7 @@
 
 __all__ = ["CaloFlags"]
 
+
 from GaugiKernel import EnumStringification
 from GaugiKernel.constants import *
 

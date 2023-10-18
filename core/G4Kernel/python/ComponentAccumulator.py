@@ -1,14 +1,12 @@
 
 __all__ = ["ComponentAccumulator"]
 
-from GaugiKernel.constants import *
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 import os, time, gc
 
 
-class ComponentAccumulator( Logger ):
+class ComponentAccumulator( Cpp ):
 
   def __init__( self, name , detector, 
                 OutputFile      : str="output.root",
@@ -16,14 +14,10 @@ class ComponentAccumulator( Logger ):
                 NumberOfThreads : int=1,
                 RunVis          : bool=False,
                 Timeout         : int=120*MINUTES,
+                OutputLevel     : int=0
               ):
 
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager
-    self.__core = RunManager(name)
-
+    Cpp.__init__(self, name, "ROOT.RunManager", OutputLevel=OutputLevel)
     # convert python to geant4
     self.__detector = detector
     self.__detector.compile()
@@ -56,34 +50,12 @@ class ComponentAccumulator( Logger ):
     self.__core.run(evt)
 
 
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
-
- 
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
   def __add__( self, algs ):
     if type(algs) is not list:
       algs =[algs]
     for alg in algs:
       self.__core.push_back( alg.core() )
     return self
-
-  
-  def core(self):
-    return self.__core
 
 
   #

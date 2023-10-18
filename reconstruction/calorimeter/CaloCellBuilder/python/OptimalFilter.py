@@ -1,12 +1,11 @@
-__all__ = ["OptimalFilter"]
+__all__ = ["OptimalFilter", "ConstrainedOptimalFilter"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
-class OptimalFilter(Logger):
+class OptimalFilter( Cpp ):
   
   def __init__( self, name,
                 WeightsEnergy : list=[],
@@ -14,37 +13,28 @@ class OptimalFilter(Logger):
                 OutputLevel   : int=0 
               ):
 
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, OptimalFilter
-    self.__core = OptimalFilter(name)
-    self.setProperty( "OutputLevel"   , OutputLevel   )
+    Cpp.__init__(self, name, "ROOT.OptimalFilter", OutputLevel=OutputLevel)
     self.setProperty( "WeightsEnergy" , WeightsEnergy )
     self.setProperty( "WeightsTime"   , WeightsTime   )
 
  
-  def core(self):
-    return self.__core
 
+class ConstrainedOptimalFilter(Cpp):
 
-  def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
-      setattr( self, key , value )
-      try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
-      except:
-        MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
-    else:
-      MSG_FATAL( self, f"Property with name {key} is not allow for this object")
+  def __init__( self, name,
+                OutputLevel       : int=0, 
+                NSamples          : float=0, 
+                PulsePath         : str="",
+                Threshold         : float=0,
+                SamplingRate      : float=0,
+                StartSamplingBC   : float=0,
+              ):
 
- 
-  def getProperty( self, key ):
-    if hasattr(self, key):
-      return getattr( self, key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
-
+    Cpp.__init__(self, name, "ROOT.ConstrainedOptimalFilter", OutputLevel=OutputLevel)
+    self.setProperty( "OutputLevel"     , OutputLevel       ) 
+    self.setProperty( "NSamples"        , NSamples          ) 
+    self.setProperty( "PulsePath"       , PulsePath         )
+    self.setProperty( "Threshold"       , Threshold         )
+    self.setProperty( "SamplingRate"    , SamplingRate      )
+    self.setProperty( "StartSamplingBC" , StartSamplingBC   )
 

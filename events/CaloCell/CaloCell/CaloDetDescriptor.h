@@ -55,15 +55,14 @@ namespace xAOD{
      
 
       /*
-      * Energy values
-      */
+       * Energy values
+       */
 
 
       /*! Estimated energy from OF **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
       /*! Estimated time of flight from OF **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_tau, setTau, tau );
-
 
       /*! Energy deposity from simulated hits **/
       float edep( int bc_id=0 ) const{
@@ -79,8 +78,8 @@ namespace xAOD{
       }
 
       /*
-      * Time of flight (Global time from G4)
-      */
+       * Time of flight (Global time from G4)
+       */
 
       /*! Time of flight from simulated hits **/
       float tof( int bc_id=0 ) const{
@@ -95,9 +94,10 @@ namespace xAOD{
       }
 
 
+
       /*
-      * Bunch crossing information
-      */
+       * Bunch crossing information
+       */
 
       /*! Bunch crossing id start */
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_start  , set_bcid_start  , bcid_start    );
@@ -129,7 +129,6 @@ namespace xAOD{
       void setPulse( int bc_id , std::vector<float> pulse ){ 
         m_pulsePerBunch[bc_id] = pulse;
       };
-
 
       CaloDetDescriptor * copy();
 

@@ -3,7 +3,6 @@
 
 /** simulator includes **/
 #include "EventInfo/EventSeedContainer.h"
-#include "GaugiKernel/DataHandle.h"
 
 
 
@@ -24,9 +23,10 @@ namespace xAOD{
             EventSeedConverter()=default;
             ~EventSeedConverter()=default;
 
+            // convert a class object into a struct
             bool convert(const EventSeed *truth, EventSeed_t &truth_t ) const;
             bool convert(const EventSeed_t & , EventSeed *&) const;
-
+          
     };
 
 }
