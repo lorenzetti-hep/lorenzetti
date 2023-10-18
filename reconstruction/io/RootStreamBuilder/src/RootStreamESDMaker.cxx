@@ -5,6 +5,7 @@
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
+#include "EventInfo/EventSeedConverter.h"
 #include "TTree.h"
 #include "RootStreamESDMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -24,9 +25,13 @@ RootStreamESDMaker::RootStreamESDMaker( std::string name ) :
   declareProperty( "InputEventKey"      , m_inputEventKey="EventInfo"       );
   declareProperty( "InputTruthKey"      , m_inputTruthKey="Particles"       );
   declareProperty( "InputCellsKey"      , m_inputCellsKey="Cells"           );
+  declareProperty( "InputSeedsKey"      , m_inputSeedsKey="Seeds"           );
+
+
   declareProperty( "OutputEventKey"     , m_outputEventKey="EventInfo"      );
   declareProperty( "OutputTruthKey"     , m_outputTruthKey="Particles"      );
   declareProperty( "OutputCellsKey"     , m_outputCellsKey="Cells"          );
+  declareProperty( "OutputSeedsKey"     , m_outputSeedsKey="Seeds"          );
 
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
@@ -59,11 +64,13 @@ StatusCode RootStreamESDMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloCell_t            > container_cells;
   std::vector<xAOD::CaloDetDescriptor_t   > container_descriptor;
   std::vector<xAOD::EventInfo_t           > container_event;
+  std::vector<xAOD::EventSeed_t           > container_seeds;
   std::vector<xAOD::TruthParticle_t       > container_truth;
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   tree->Branch( ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
+  tree->Branch( ("EventSeedContainer_"         + m_outputSeedsKey).c_str() , &container_seeds     );
   tree->Branch( ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
   tree->Branch( ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
   tree->Branch( ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
@@ -147,11 +154,13 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t > *container_descriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *container_cells      = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event      = nullptr;
+  std::vector<xAOD::EventSeed_t         > *container_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
+  InitBranch( tree, ("EventSeedContainer_"         + m_outputSeedsKey).c_str() , &container_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
   InitBranch( tree, ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
@@ -170,6 +179,23 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
     container_event->push_back(event_t);
   }
   
+
+  { // Serialize Seed
+    MSG_DEBUG("Serialize Seed..");
+    SG::ReadHandle<xAOD::EventSeedContainer> container( m_inputSeedsKey, ctx );
+
+    if( !container.isValid() )
+    {
+      MSG_FATAL("It's not possible to read the xAOD::EventSeedContainer from this Context using this key " << m_inputSeedsKey );
+    }
+
+    for (const auto seed : **container.ptr() ){
+      xAOD::EventSeed_t seed_t;
+      xAOD::EventSeedConverter cnv;
+      cnv.convert( seed, seed_t );
+      container_seeds->push_back(seed_t);
+    }
+  }
 
 
   {
@@ -256,6 +282,7 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
   delete container_descriptor ;
   delete container_cells      ;
+  delete container_seeds      ;
   delete container_event      ;
   delete container_truth      ;
 

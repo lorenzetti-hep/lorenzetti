@@ -11,9 +11,11 @@ class RootStreamHITMaker( Cpp ):
                 InputEventKey    : str,
                 InputTruthKey    : str,
                 InputHitsKey     : str,
+                InputSeedsKey    : str,               
                 OutputEventKey   : str=None,
                 OutputTruthKey   : str=None,
                 OutputHitsKey    : str=None,
+                OutputSeedsKey   : str=None,
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
                 OnlyRoI          : bool=flags.OnlyRoI,
@@ -26,11 +28,13 @@ class RootStreamHITMaker( Cpp ):
     self.setProperty( "InputEventKey"   , InputEventKey   )
     self.setProperty( "InputTruthKey"   , InputTruthKey   )
     self.setProperty( "InputHitsKey"    , InputHitsKey    )
-    
+    self.setProperty( "InputSeedsKey"   , InputSeedsKey   )
+
     self.setProperty( "OutputEventKey"  , OutputEventKey if OutputEventKey else InputEventKey  )
     self.setProperty( "OutputTruthKey"  , OutputTruthKey if OutputTruthKey else InputTruthKey  )
     self.setProperty( "OutputHitsKey"   , OutputHitsKey if OutputHitsKey else InputHitsKey     )
-    
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey       )
+
     self.setProperty( "OutputLevel"     , OutputLevel     ) 
     self.setProperty( "NtupleName"      , NtupleName      )
     self.setProperty( "OnlyRoI"         , OnlyRoI         )

@@ -9,6 +9,7 @@ valid_keys = [
             "TruthCells",
             # CaloClusterMaker
             "Events",
+            "Seeds",
             "Clusters",
             "TruthClusters",
             "Particles",

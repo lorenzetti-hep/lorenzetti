@@ -11,6 +11,7 @@ class RootStreamHITReader( Cpp ):
                 OutputEventKey   : str,
                 OutputTruthKey   : str,
                 OutputHitsKey    : str,
+                OutputSeedsKey   : str,
                 InputFile        : str,
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
@@ -20,6 +21,7 @@ class RootStreamHITReader( Cpp ):
     self.setProperty( "OutputEventKey"  , OutputEventKey  )
     self.setProperty( "OutputTruthKey"  , OutputTruthKey  )
     self.setProperty( "OutputHitsKey"   , OutputHitsKey   )
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey  )
     self.setProperty( "OutputLevel"     , OutputLevel     ) 
     self.setProperty( "NtupleName"      , NtupleName      )
     self.setProperty( "InputFile"       , InputFile       )

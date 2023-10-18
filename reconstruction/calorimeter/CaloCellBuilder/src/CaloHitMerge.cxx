@@ -35,7 +35,7 @@ CaloHitMerge::~CaloHitMerge()
 StatusCode CaloHitMerge::initialize()
 {
   CHECK_INIT();
-  //setMsgLevel( m_outputLevel );
+  setMsgLevel( m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -79,8 +79,8 @@ StatusCode CaloHitMerge::execute( EventContext &ctx, int /*evt*/ ) const
 StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
 {
 
-  MSG_INFO( "Starting collection merge algorithm..." );
-  MSG_INFO( "Creating HIT containers with key " << m_hitsKey);
+  MSG_DEBUG( "Starting collection merge algorithm..." );
+  MSG_DEBUG( "Creating HIT containers with key " << m_hitsKey);
 
   SG::WriteHandle<xAOD::CaloHitContainer> container( m_hitsKey , ctx );
   container.record( std::unique_ptr<xAOD::CaloHitContainer>(new xAOD::CaloHitContainer()) );
@@ -88,7 +88,7 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
 
   for ( auto key : m_collectionKeys ){
 
-    MSG_INFO( "Reading all hits from collection with key " << key );
+    MSG_DEBUG( "Reading all hits from collection with key " << key );
     SG::ReadHandle<xAOD::CaloHitCollection> collection( key, ctx );
     
     if( !collection.isValid() ){
@@ -96,7 +96,7 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
       continue;
     }
 
-    MSG_INFO( "Creating new cells and attach the object into the container" );
+    MSG_DEBUG( "Creating new cells and attach the object into the container" );
 
     for (const auto &pair : **collection.ptr() )
     {
@@ -130,8 +130,8 @@ StatusCode CaloHitMerge::post_execute( EventContext &ctx ) const
     }// Loop over all hits 
   }// Loop over all collections
   
-  MSG_INFO( "Total of energy is " << etot << " MeV");
-  MSG_INFO( "All collections were merged into two CaloHitContainer" );
+  MSG_DEBUG( "Total of energy is " << etot << " MeV");
+  MSG_DEBUG( "All collections were merged into two CaloHitContainer" );
   return StatusCode::SUCCESS;
 }
 

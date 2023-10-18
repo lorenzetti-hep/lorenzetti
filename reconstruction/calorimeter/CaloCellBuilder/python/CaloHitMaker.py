@@ -3,7 +3,7 @@
 __all__ = ["CaloHitMaker"]
 
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -13,12 +13,12 @@ class CaloHitMaker( Cpp ):
 
   def __init__( self, name, sampling,
                 OutputCollectionKey  : str    = "Hits",
-                OutputLevel          : int    = 0,
+                OutputLevel          : int    = LoggingLevel.toC('INFO'),
                 DetailedHistograms   : bool   = False,
                 HistogramPath        : str    = "/CaloHitMaker",
                 SamplingNoiseStd     : float  = 0,
               ):
-
+                    
     Cpp.__init__(self, ROOT.CaloHitMaker(name) )
     self.Tools = []
     self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )

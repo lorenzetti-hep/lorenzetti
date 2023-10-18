@@ -29,18 +29,16 @@ parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', r
 parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
                     help = "The preexec command")
 
-pi = np.pi
 
 if len(sys.argv)==1:
   parser.print_help()
   sys.exit(1)
 
 args = parser.parse_args()
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
-
+outputLevel = LoggingLevel.toC(args.outputLevel)
 try:
 
-  eval(args.command)
+  exec(args.command)
 
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
@@ -52,6 +50,7 @@ try:
                                 OutputHitsKey   = recordable("Hits"),
                                 OutputEventKey  = recordable("Events"),
                                 OutputTruthKey  = recordable("Particles"),
+                                OutputSeedsKey  = recordable("Seeds"),
                                 OutputLevel     = outputLevel,
                               )
 
@@ -74,7 +73,8 @@ try:
   ESD = RootStreamESDMaker( "RootStreamESDMaker",
                              InputCellsKey   = recordable("Cells"),
                              InputEventKey   = recordable("Events"),
-                             InputTruthKey   = recordable("Particles"),           
+                             InputTruthKey   = recordable("Particles"),
+                             InputSeedsKey   = recordable("Seeds"),          
                              OutputLevel     = outputLevel)
   acc += ESD
   

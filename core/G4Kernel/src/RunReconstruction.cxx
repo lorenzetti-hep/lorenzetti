@@ -30,7 +30,7 @@ RunReconstruction::RunReconstruction( int numberOfThreads, int timeout,
 
   // Pre execution of all tools in sequence
   for( auto &toolHandle : m_toolHandles){
-    MSG_INFO( "Booking histograms for " << toolHandle->name() );
+    MSG_DEBUG( "Booking histograms for " << toolHandle->name() );
     if (toolHandle->bookHistograms( m_ctx ).isFailure() ){
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }

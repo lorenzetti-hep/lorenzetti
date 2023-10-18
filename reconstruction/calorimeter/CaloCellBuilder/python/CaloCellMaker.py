@@ -3,7 +3,7 @@
 __all__ = ["CaloCellMaker"]
 
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -13,7 +13,7 @@ class CaloCellMaker( Cpp ):
   def __init__( self, name, sampling, 
                 InputHitsKey        : str="Hits",
                 OutputCollectionKey : str="Collection",
-                OutputLevel         : int=0,
+                OutputLevel         : int=LoggingLevel.toC('INFO'),
                 DetailedHistograms  : bool=False,
                 HistogramPath       : str="/Hists/Cells" ): 
 

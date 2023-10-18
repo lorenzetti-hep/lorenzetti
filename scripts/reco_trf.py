@@ -3,10 +3,8 @@
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
 from G4Kernel             import *
-import numpy as np
 import argparse
-import sys,os
-pi = np.pi
+import sys,os, traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -26,7 +24,8 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
-
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
 
 if len(sys.argv)==1:
@@ -35,10 +34,11 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
+outputLevel = LoggingLevel.toC(args.outputLevel)
 
 try:
 
+  exec(args.command)
 
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
@@ -48,9 +48,10 @@ try:
   ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
                             OutputCellsKey  = recordable("Cells"),
-                            OutputEventKey  = recordable("EventInfo"),
+                            OutputEventKey  = recordable("Events"),
                             OutputTruthKey  = recordable("Particles"),
                             OutputSeedsKey  = recordable("Seeds"),
+                            OutputLevel     = outputLevel
                           )
   ESD.merge(acc)
 
@@ -70,16 +71,20 @@ try:
   rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
                                 InputClusterKey    = recordable("Clusters"),  
                                 OutputRingerKey    = recordable("Rings"),
-                                HistogramPath = "Expert/Rings",
-                                OutputLevel   = outputLevel)
+                                HistogramPath      = "Expert/Rings",
+                                OutputLevel        = outputLevel)
 
 
 
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
-                            DumpCells             = args.dumpCells,
-                            DoCrosstalk           = args.simulateCrossTalk,
-                            OutputLevel           = outputLevel)
+                            InputEventKey    = recordable("Events"),
+                            InputSeedsKey    = recordable("Seeds"),
+                            InputTruthKey    = recordable("Particles"),
+                            InputCellsKey    = recordable("Cells"),
+                            InputClusterKey  = recordable("Clusters"),
+                            InputRingerKey   = recordable("Rings"),
+                            OutputLevel      = outputLevel)
 
   # sequence
   acc+= cluster
@@ -92,6 +97,7 @@ try:
   sys.exit(0)
   
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)
 

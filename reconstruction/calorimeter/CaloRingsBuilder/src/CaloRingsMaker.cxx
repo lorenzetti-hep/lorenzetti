@@ -16,8 +16,8 @@ CaloRingsMaker::CaloRingsMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "RingerKey"      , m_ringerKey="Rings"     );
-  declareProperty( "ClusterKey"     , m_clusterKey="Clusters" );
+  declareProperty( "OutputRingerKey", m_ringerKey="Rings"     );
+  declareProperty( "InputClusterKey", m_clusterKey="Clusters" );
   declareProperty( "DeltaEtaRings"  , m_detaRings={}          );
   declareProperty( "DeltaPhiRings"  , m_dphiRings={}          );
   declareProperty( "NRings"         , m_nRings={}             );

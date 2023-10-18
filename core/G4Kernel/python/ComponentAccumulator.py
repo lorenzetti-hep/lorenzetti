@@ -1,7 +1,7 @@
 
 __all__ = ["ComponentAccumulator"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.constants import *
 from GaugiKernel.macros import *
 import os, time, gc
@@ -15,7 +15,7 @@ class ComponentAccumulator( Cpp ):
                 NumberOfThreads : int=1,
                 RunVis          : bool=False,
                 Timeout         : int=120*MINUTES,
-                OutputLevel     : int=0
+                OutputLevel     : int=LoggingLevel.toC('INFO'),
               ):
 
     Cpp.__init__(self, ROOT.RunManager(name) )

@@ -1,11 +1,12 @@
 __all__ = ["CaloRingsMaker", "CaloRingsMakerCfg"]
 
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
 from CaloCell.CaloDefs import CaloSampling
 import ROOT
-
+import numpy as np
+pi = np.pi
 
 
 class CaloRingsMaker( Cpp ):
@@ -58,6 +59,7 @@ def CaloRingsMakerCfg( name             : str,
                               ],
                               HistogramPath = HistogramPath,
                               OutputLevel   = OutputLevel)
+  return rings
 
 
 

@@ -20,7 +20,7 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
 {
   // Key inputs
   declareProperty( "InputCellsKey"       , m_cellsKey="Cells"                );
-  declareProperty( "InputSeedKey"        , m_seedKey="Seeds"                 );
+  declareProperty( "InputSeedsKey"       , m_seedKey="Seeds"                 );
   // Key outputs
   declareProperty( "OutputClusterKey"    , m_clusterKey="Clusters"           );
   // Algorithm configuration

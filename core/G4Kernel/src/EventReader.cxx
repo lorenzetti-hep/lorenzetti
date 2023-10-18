@@ -240,20 +240,22 @@ int EventReader::Load( G4Event* g4event )
  
   float totalEnergy=0;
   int num_of_seeds = 0;
-  
-  
+  int seed_id = -1;
+
   // Add all particles into the Geant event
   for ( unsigned int i=0; i < m_p_e->size(); ++i )
   {
     int bc_id = m_p_bc_id->at(i);
     if(m_p_pdg_id->at(i)==0){ // is seed?
-      xAOD::EventSeed *seed = new xAOD::EventSeed( m_p_e->at(i)*MeV, 
+      seed_id++;
+      xAOD::EventSeed *seed = new xAOD::EventSeed( seed_id,
+                                                   m_p_e->at(i)*MeV, 
                                                    m_p_et->at(i)*MeV, 
                                                    m_p_eta->at(i), 
-                                                   m_p_phi->at(i), 
-                                                   m_p_seed_id->at(i) );
+                                                   m_p_phi->at(i)
+                                                    );
 
-      MSG_INFO( "Particle seeded in eta = " << seed->eta() << ", phi = " << seed->phi());
+      MSG_INFO( "Seed " << seed_id << " in eta = " << seed->eta() << ", phi = " << seed->phi());
       seeds->push_back(seed);
       num_of_seeds++;
       continue; 
@@ -266,7 +268,7 @@ int EventReader::Load( G4Event* g4event )
             totalEnergy+= m_p_et->at(i);
             xAOD::TruthParticle *par = new xAOD::TruthParticle( 
                                                                 m_p_pdg_id->at(i),
-                                                                m_p_seed_id->at(i) ,
+                                                                seed_id,
                                                                 m_p_e->at(i)*MeV, 
                                                                 m_p_et->at(i)*MeV, 
                                                                 m_p_eta->at(i), 

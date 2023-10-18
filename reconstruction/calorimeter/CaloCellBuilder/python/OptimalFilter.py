@@ -1,7 +1,7 @@
 __all__ = ["OptimalFilter", "ConstrainedOptimalFilter"]
 
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -10,7 +10,7 @@ class OptimalFilter( Cpp ):
   def __init__( self, name    : str,
                 WeightsEnergy : list=[],
                 WeightsTime   : list=[],
-                OutputLevel   : int=0 
+                OutputLevel   : int=LoggingLevel.toC('INFO'),
               ):
 
     Cpp.__init__(self, ROOT.OptimalFilter(name) )

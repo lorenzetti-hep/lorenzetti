@@ -1,6 +1,6 @@
 __all__ = ["EventReader"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT, os
 
@@ -12,7 +12,7 @@ class EventReader( Cpp ):
                 OutputTruthKey : str = "Particles",
                 OutputSeedKey  : str = "Seeds",
                 BunchDuration  : int = 25,
-                OutputLevel    : int = 0 
+                OutputLevel    : int = LoggingLevel.toC('INFO'), 
               ): 
     
     Cpp.__init__(self, ROOT.generator.EventReader(name) )

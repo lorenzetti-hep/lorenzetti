@@ -61,7 +61,7 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
   for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
   {
     descriptor->edep( bcid, descriptor_t.edep_per_bunch[bcid] ); // truth energy for each bunch crossing
-    descriptor->tof ( bcid, descriptor_t.tof.at(bcid)  ); // truth time of flight (it takes the last hit in the simulation order. Need to evaluate which strategy is the best.)
+    descriptor->tof ( bcid, descriptor_t.tof[bcid]  ); // truth time of flight (it takes the last hit in the simulation order. Need to evaluate which strategy is the best.)
   }
   return true;
 }

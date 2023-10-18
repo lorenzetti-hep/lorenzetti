@@ -1,6 +1,6 @@
 __all__ = ["CaloCellMerge"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -11,7 +11,7 @@ class CaloCellMerge( Cpp ):
                 InputCollectionKeys : str="Collection" ,
                 OutputCellsKey      : str="Cells",
                 OutputTruthCellsKey : str="TruthCells",
-                OutputLevel         : int=0 
+                OutputLevel         : int=LoggingLevel.toC('INFO'), 
                 ): 
     
     Cpp.__init__(self, ROOT.CaloCellMerge(name) )

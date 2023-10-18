@@ -5,7 +5,6 @@ from GaugiKernel           import LoggingLevel, Logger
 from G4Kernel              import *
 from CaloCell.CaloDefs     import CaloSampling
 from RootStreamBuilder     import recordable
-import numpy as np
 import argparse
 import sys,os,gc,traceback
 
@@ -71,6 +70,7 @@ try:
   calorimeter = CaloHitBuilder("CaloHitBuilder",
                                 HistogramPath = "Expert/Hits",
                                 OutputLevel   = outputLevel,
+                                InputEventKey = recordable("Events"),
                                 OutputHitsKey = recordable("Hits")
                                 )
   gun.merge(acc)
@@ -84,6 +84,7 @@ try:
                              InputHitsKey    = recordable("Hits"),
                              InputEventKey   = recordable("Events"),
                              InputTruthKey   = recordable("Particles"),
+                             InputSeedsKey   = recordable("Seeds"),
                              )
   acc += HIT
   acc.run(args.numberOfEvents)

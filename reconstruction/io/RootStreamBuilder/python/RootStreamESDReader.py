@@ -10,6 +10,7 @@ class RootStreamESDReader( Cpp ):
                 OutputEventKey   : str,
                 OutputTruthKey   : str,
                 OutputCellsKey   : str,
+                OutputSeedsKey   : str,
                 InputFile        : str,
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
@@ -19,6 +20,7 @@ class RootStreamESDReader( Cpp ):
     self.setProperty( "OutputEventKey"  , OutputEventKey   )
     self.setProperty( "OutputTruthKey"  , OutputTruthKey   )
     self.setProperty( "OutputCellsKey"  , OutputCellsKey   )
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey   )
     self.setProperty( "OutputLevel"     , OutputLevel      ) 
     self.setProperty( "NtupleName"      , NtupleName       )
     self.setProperty( "InputFile"       , InputFile        )

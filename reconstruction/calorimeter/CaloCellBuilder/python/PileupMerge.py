@@ -1,6 +1,6 @@
 __all__ = ["PileupMerge"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -12,7 +12,7 @@ class PileupMerge( Cpp ):
                 OutputHitsKey   : str="Hits_Merged",
                 InputEventKey   : str="EventInfo",
                 OutputEventKey  : str="EventInfo_Merged",
-                OutputLevel     : int=0,
+                OutputLevel     : int=LoggingLevel.toC('INFO'),
                 NtupleName      : str="CollectionTree"
               ): 
     

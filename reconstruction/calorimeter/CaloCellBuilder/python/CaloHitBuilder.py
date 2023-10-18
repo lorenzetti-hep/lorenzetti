@@ -1,7 +1,7 @@
 
 __all__ = ["CaloHitBuilder"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Logger, LoggingLevel
 from GaugiKernel.macros import *
 from CaloCellBuilder import CaloHitMaker
 from CaloCellBuilder import CaloHitMerge
@@ -15,11 +15,11 @@ class CaloHitBuilder( Logger ):
 
 
   def __init__( self, name, 
-                      HistogramPath  = "Expert", 
-                      OutputLevel    = 1,
-                      InputEventKey  = "EventInfo",
-                      OutputHitsKey  = "Hits",
-                      ):
+                InputEventKey  : str,
+                OutputHitsKey  : str,
+                HistogramPath  : str="Expert", 
+                OutputLevel    : int=LoggingLevel.toC('INFO'),
+              ):
 
     Logger.__init__(self)
     self.__recoAlgs = []

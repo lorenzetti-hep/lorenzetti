@@ -32,7 +32,7 @@ void StoreGate::save()
   MSG_INFO( "Decorators will no be saved into the root file.")
   for( auto it : m_objs)
   {
-    MSG_INFO( it.first  << " " << it.second);
+    MSG_DEBUG( it.first  << " " << it.second);
     //it.second->Write();
   }
 

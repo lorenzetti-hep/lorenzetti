@@ -56,7 +56,7 @@ StatusCode CaloHitMaker::initialize()
   MSG_INFO("1 Initialize..." << m_outputLevel);
 
   CHECK_INIT();
-  //setMsgLevel( (MSG::Level)m_outputLevel );
+  setMsgLevel( (MSG::Level)m_outputLevel );
   m_nEtaBins = m_etaBins.size() - 1;
   m_nPhiBins = m_phiBins.size() - 1;
 

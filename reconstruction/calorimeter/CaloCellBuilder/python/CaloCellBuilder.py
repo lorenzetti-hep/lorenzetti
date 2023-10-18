@@ -1,9 +1,10 @@
 
 __all__ = ["CaloCellBuilder"]
 
-from GaugiKernel        import Logger
+from GaugiKernel        import Logger, LoggingLevel
 from GaugiKernel.macros import *
 
+from CaloCell           import CaloSampling
 from CaloCellBuilder    import CaloCellMaker
 from CaloCellBuilder    import CaloCellMerge
 from CaloCellBuilder    import CrossTalkMaker
@@ -22,7 +23,7 @@ class CaloCellBuilder( Logger ):
                       InputHitsKey         = "Hits",
                       OutputCellsKey       = "Cells",
                       OutputTruthCellsKey  = "TruthCells",
-                      OutputLevel          = 1,
+                      OutputLevel          = LoggingLevel.toC('INFO'),
                       ):
 
     Logger.__init__(self)
@@ -42,7 +43,7 @@ class CaloCellBuilder( Logger ):
   
     for samp in self.Detector.samplings:
 
-      DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EM2) else False
+      DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EMB2) else False
 
 
 
@@ -83,14 +84,14 @@ class CaloCellBuilder( Logger ):
 
       if DoCrosstalk:
           cx = CrossTalkMaker( "CrossTalkMaker_" + samp.CollectionKey,
-                                InputCellsKey    = samp.CollectionKey + "_Aux",
-                                OutputCellsKey   = samp.CollectionKey,
-                                MinEnergy        = CaloFlags.XTMinEnergy,
-                                XTAmpCapacitive  = CaloFlags.XTAmpCapacitive,
-                                XTAmpInductive   = CaloFlags.XTAmpInductive,
-                                XTAmpResistive   = CaloFlags.XTAmpResistive,
-                                HistogramPath    = self.HistogramPath + '/CrossTalk',
-                                OutputLevel      = self.OutputLevel
+                                InputCollectionKey    = samp.CollectionKey + "_Aux",
+                                OutputCollectionKey   = samp.CollectionKey,
+                                MinEnergy             = CaloFlags.XTMinEnergy,
+                                XTAmpCapacitive       = CaloFlags.XTAmpCapacitive,
+                                XTAmpInductive        = CaloFlags.XTAmpInductive,
+                                XTAmpResistive        = CaloFlags.XTAmpResistive,
+                                HistogramPath         = self.HistogramPath + '/CrossTalk',
+                                OutputLevel           = self.OutputLevel
                              )
           cx.Tools = [of]
           self.__recoAlgs.append( cx )

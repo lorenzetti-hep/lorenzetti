@@ -1,6 +1,6 @@
 __all__ = ["CrossTalkMaker"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 from CaloCellBuilder import CaloFlags as flags
 import ROOT
@@ -15,7 +15,7 @@ class CrossTalkMaker( Cpp ):
                 XTAmpInductive      : float=flags.XTAmpInductive,
                 XTAmpResistive      : float=flags.XTAmpResistive,
                 HistogramPath       : str="/CrossTalkMaker",
-                OutputLevel         : int=0,
+                OutputLevel         : int=LoggingLevel.toC('INFO'),
                 ):
 
     Cpp.__init__(self, ROOT.CrossTalkMaker(name) )

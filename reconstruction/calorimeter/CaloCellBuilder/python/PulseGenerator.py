@@ -1,7 +1,7 @@
 
 __all__ = ["PulseGenerator"]
 
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
 
@@ -9,7 +9,7 @@ class PulseGenerator( Cpp ):
 
 
   def __init__( self, name      : str,
-                OutputLevel     : int=0, 
+                OutputLevel     : int=LoggingLevel.toC('INFO'), 
                 NSamples        : int=0, 
                 ShaperFile      : str="",
                 Pedestal        : float=0,
