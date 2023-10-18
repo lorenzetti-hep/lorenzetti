@@ -78,7 +78,6 @@ try:
 
   
   from RootStreamBuilder import RootStreamHITMaker, recordable
-
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              OutputLevel     = outputLevel,
                              # input from context

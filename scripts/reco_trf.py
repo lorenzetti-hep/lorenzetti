@@ -2,9 +2,6 @@
 
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
-from CaloClusterBuilder   import CaloClusterMaker
-from CaloRingsBuilder     import CaloRingsMaker
-from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
 import numpy as np
 import argparse
@@ -50,47 +47,31 @@ try:
   from RootStreamBuilder import RootStreamESDReader, recordable
   ESD = RootStreamESDReader("ESDReader", 
                             InputFile       = args.inputFile,
-                            CellsKey        = recordable("Cells"),
-                            XTCellsKey      = recordable("XTCells"),
-                            EventKey        = recordable("EventInfo"),
-                            TruthKey        = recordable("Particles"),
-                            SeedsKey        = recordable("Seeds"),
-                            NtupleName      = "CollectionTree",
-                            DoCrosstalk     = args.simulateCrossTalk,
+                            OutputCellsKey  = recordable("Cells"),
+                            OutputEventKey  = recordable("EventInfo"),
+                            OutputTruthKey  = recordable("Particles"),
+                            OutputSeedsKey  = recordable("Seeds"),
                           )
   ESD.merge(acc)
 
 
   # build cluster for all seeds
+  from CaloClusterBuilder import CaloClusterMaker
   cluster = CaloClusterMaker( "CaloClusterMaker",
                               InputCellsKey        = recordable("Cells"),
-                              InputEventKey        = recordable("EventInfo"),
-                              InputTruthKey        = recordable("Particles"),
                               InputSeedsKey        = recordable("Seeds"),
+                              # output as
                               OutputClusterKey     = recordable("Clusters"),
-                              EtaWindow            = 0.4,
-                              PhiWindow            = 0.4,
-                              MinCenterEnergy      = 1*GeV, 
+                              # other configs
                               HistogramPath        = "Expert/Clusters",
                               OutputLevel          = outputLevel )
 
-  rings   = CaloRingsMaker(   "CaloRingsMaker",
-                              InputClusterKey    = recordable("Clusters"),  
-                              OutputRingerKey    = recordable("Rings"),
-                              DeltaEtaRings      = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
-                              DeltaPhiRings      = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
-                              NRings             = [8, 64, 8, 8, 4, 4, 4],
-                              LayerRings         = [
-                                [CaloSampling.PSB, CaloSampling.PSE],
-                                [CaloSampling.EMB1, CaloSampling.EMEC1],
-                                [CaloSampling.EMB2, CaloSampling.EMEC2],
-                                [CaloSampling.EMB3, CaloSampling.EMEC3],
-                                [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
-                                [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
-                                [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
-                              ],
-                              HistogramPath = "Expert/Rings",
-                              OutputLevel   = outputLevel)
+  from CaloRingsBuilder import CaloRingsMakerCfg
+  rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
+                                InputClusterKey    = recordable("Clusters"),  
+                                OutputRingerKey    = recordable("Rings"),
+                                HistogramPath = "Expert/Rings",
+                                OutputLevel   = outputLevel)
 
 
 

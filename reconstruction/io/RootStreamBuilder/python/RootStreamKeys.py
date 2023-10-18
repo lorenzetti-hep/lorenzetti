@@ -2,24 +2,13 @@
 
 __all__ = ['recordable']
 
-
-
-def recordable( key ):
-
-  keys = [
-            # CaloCellMaker
-            "Collection_EM1",
-            "Collection_EM2",
-            "Collection_EM3",
-            "Collection_HAD1",
-            "Collection_HAD2",
-            "Collection_HAD3",
+valid_keys = [
             "Hits",
             # CaloCellMerge
             "Cells",
             "TruthCells",
             # CaloClusterMaker
-            "EventInfo",
+            "Events",
             "Clusters",
             "TruthClusters",
             "Particles",
@@ -29,4 +18,7 @@ def recordable( key ):
             "TruthRings",
             ]
 
+def recordable( key ):
+  if key not in valid_keys:
+    raise RuntimeError(f"Key {key} not allow to be recorded.")
   return key

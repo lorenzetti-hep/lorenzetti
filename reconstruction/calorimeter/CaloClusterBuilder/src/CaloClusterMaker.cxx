@@ -19,12 +19,10 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   Algorithm()
 {
   // Key inputs
-  declareProperty( "CellsKey"       , m_cellsKey="Cells"                );
-  declareProperty( "EventKey"       , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"       , m_truthKey="Particles"            );
-  declareProperty( "SeedKey"        , m_seedKey="Seeds"                );
+  declareProperty( "InputCellsKey"       , m_cellsKey="Cells"                );
+  declareProperty( "InputSeedKey"        , m_seedKey="Seeds"                 );
   // Key outputs
-  declareProperty( "ClusterKey"     , m_clusterKey="Clusters"           );
+  declareProperty( "OutputClusterKey"    , m_clusterKey="Clusters"           );
   // Algorithm configuration
   declareProperty( "EtaWindow"      , m_etaWindow=0.4                   );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
@@ -46,7 +44,7 @@ CaloClusterMaker::~CaloClusterMaker()
 StatusCode CaloClusterMaker::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   m_showerShapes = new ShowerShapes( "ShowerShapes" );
   return StatusCode::SUCCESS;
 }
@@ -69,7 +67,6 @@ StatusCode CaloClusterMaker::bookHistograms( SG::EventContext &ctx ) const
   store->add( new TH1F("cl_rphi" , ";Count;R_{#phi};"    , 200, 0.45 , 1.05) );
   store->add( new TH1F("cl_rhad" , ";Count;R_{had};"     , 200, -0.05, 0.05) );
   store->add( new TH1F("cl_eratio", ";Count;E_{ratio};"  , 100, 0.0  , 1.05) );
-
   store->add( new TH1F("res_eta", "#eta_{Cluster}-#eta_{Truth};res_{#eta};Count",100,-1.5,1.5 ) );
   store->add( new TH1F("res_phi", "#phi_{Cluster}-#phi_{Truth};res_{#phi};Count",100,-1.5,1.5 ) );
   store->add( new TH1F("res_e"  , "E_{Cluster}-E_{Truth};res_{e} [MeV];Count",100,-10*GeV,10*GeV ) );
@@ -116,14 +113,9 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   clusters.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()) );
   
   // Event info
-  SG::ReadHandle<xAOD::EventInfoContainer> event(m_eventKey, ctx);
-  SG::ReadHandle<xAOD::SeedContainer>      seeds(m_seedKey,  ctx);
+  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey,  ctx);
   SG::ReadHandle<xAOD::CaloCellContainer>  container(m_cellsKey, ctx);
-  
 
-  if( !event.isValid() ){
-    MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
-  }
 
   if( !seeds.isValid() ){
     MSG_FATAL( "It's not possible to read the xAOD::SeedContainer from this Context" );
@@ -215,7 +207,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
 
   // SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  SG::ReadHandle<xAOD::SeedContainer> seeds(m_seedKey, ctx);
+  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey, ctx);
   if( !seeds.isValid() ){
     MSG_FATAL( "It's not possible to read the xAOD::SeedContainer from this Context" );
   }
@@ -226,7 +218,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   
     
     // const xAOD::TruthParticle *particle=nullptr;
-    const xAOD::Seed *seed=nullptr;
+    const xAOD::EventSeed *seed=nullptr;
 
     // TODO: Probably some c++ expert can reduce this **var.ptr(), too verbose...
     // Try to find the associated truth particle
@@ -245,8 +237,8 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
     if(seed){
       store->hist1("res_eta")->Fill( (clus->eta() - seed->eta()) );
       store->hist1("res_phi")->Fill( (clus->phi() - seed->phi()) );
-      store->hist1("res_et")->Fill( (clus->et() - seed->ettot() ) );
-      store->hist1("res_e")->Fill( (clus->e() - seed->etot()) );
+      store->hist1("res_et")->Fill( (clus->et() - seed->et() ) );
+      store->hist1("res_e")->Fill( (clus->e() - seed->e()) );
 
       MSG_DEBUG( "Seed information:" );
       MSG_DEBUG( "E        : " << seed->e()   );

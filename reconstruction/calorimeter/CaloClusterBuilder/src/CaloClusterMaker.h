@@ -7,9 +7,7 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "TruthParticle/TruthParticleContainer.h"
-#include "TruthParticle/ParticleSeedContainer.h"
-#include "EventInfo/EventInfoContainer.h"
+#include "EventInfo/EventSeedContainer.h"
 #include "ShowerShapes.h"
 
 
@@ -52,12 +50,9 @@ class CaloClusterMaker : public Gaugi::Algorithm
     
       
     // input keys
-    std::string m_cellsKey;
-    std::string m_eventKey;
-    
-    // output keys
-    std::string m_truthKey;
+    std::string m_cellsKey; 
     std::string m_seedKey;
+    // output keys
     std::string m_clusterKey;
 
     float m_etaWindow;
