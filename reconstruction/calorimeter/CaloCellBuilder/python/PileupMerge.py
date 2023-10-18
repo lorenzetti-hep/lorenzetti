@@ -2,11 +2,11 @@ __all__ = ["PileupMerge"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-
+import ROOT
 
 class PileupMerge( Cpp ):
 
-  def __init__( self, name, 
+  def __init__( self, name      : str, 
                 InputFile       : str,
                 InputHitsKey    : str="Hits",
                 OutputHitsKey   : str="Hits_Merged",
@@ -16,7 +16,8 @@ class PileupMerge( Cpp ):
                 NtupleName      : str="CollectionTree"
               ): 
     
-    Cpp.__init__(self, name, "ROOT.PileupMerge", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.PileupMerge(name) )
+    self.setProperty( "OutputLevel"   , OutputLevel    )
     self.setProperty( "InputHitsKey"  , InputHitsKey   )  
     self.setProperty( "OutputHitsKey" , OutputHitsKey  )
     self.setProperty( "InputEventKey" , InputEventKey  )

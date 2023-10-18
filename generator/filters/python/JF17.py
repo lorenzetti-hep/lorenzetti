@@ -1,53 +1,30 @@
 __all__ = ["JF17"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
-class JF17( Logger ):
+class JF17( Cpp ):
 
-  __allow_keys = [
-                  "EtaMax",
-                  "EtaMin",
-                  "MinPt",
-                  "Select",
-                  "Seed",
-                  "OutputLevel",
-                  "EtaWindow",
-                  "PhiWindow",
-                ]
+  def __init__( self, name, gen,
+                EtaMax      : float=1.4,
+                EtaMin      : float=0.0,
+                MinPt       : float=0.0, 
+                Select      : int=2,
+                OutputLevel : int=0, 
+                EtaWindow   : float=0.4, 
+                PhiWindow   : float=0.4, 
+              ): 
 
-  def __init__( self, name, gen, **kw ): 
-    
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import generator
-    # Create the algorithm
+    Cpp.__init__(self, generator.JF17(name, gen.core()))
     self.__gen = gen
-    self.__core = generator.JF17(name, gen.core())
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
+    self.setProperty( "EtaMax"      , EtaMax      )
+    self.setProperty( "EtaMin"      , EtaMin      )
+    self.setProperty( "MinPt"       , MinPt       )
+    self.setProperty( "Select"      , Select      )
+    #self.setProperty( "OutputLevel" , OutputLevel )
+    self.setProperty( "EtaWindow"   , EtaWindow   )
+    self.setProperty( "PhiWindow"   , PhiWindow   )
 
 
   def gun(self):

@@ -1,55 +1,34 @@
 __all__ = ["RootStreamESDMaker"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+from RootStreamBuilder import RootStreamESDFlags as flags
+import ROOT
 
+class RootStreamESDMaker( Cpp ):
 
-class RootStreamESDMaker( Logger ):
-
-  __allow_keys = [
-                  "InputEventKey",
-                  "InputTruthKey",
-                  "InputCellsKey",
-                  "OutputEventKey",
-                  "OutputTruthKey",
-                  "OutputCellsKey",                 
-                  "OutputLevel", 
-                  "NtupleName",
-                  "EtaWindow",
-                  "PhiWindow",
-                  ]
-
-
-  def __init__( self, name, **kw ): 
+  def __init__( self, name,
+                InputEventKey    : str,
+                InputTruthKey    : str,
+                InputCellsKey    : str,
+                OutputEventKey   : str=None,
+                OutputTruthKey   : str=None,
+                OutputCellsKey   : str=None,
+                OutputLevel      : int=0, 
+                NtupleName       : str="CollectionTree",
+                EtaWindow        : float=flags.EtaWindow,
+                PhiWindow        : float=flags.PhiWindow,
+              ): 
     
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RootStreamESDMaker
-    self.__core = RootStreamESDMaker(name)
-
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-  def core(self):
-    return self.__core
-
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
-
+    Cpp.__init__(self, ROOT.RootStreamESDMaker(name))
+    self.setProperty( "InputEventKey"   , InputEventKey   )
+    self.setProperty( "InputTruthKey"   , InputTruthKey   )
+    self.setProperty( "InputCellsKey"   , InputCellsKey   )
+    self.setProperty( "OutputEventKey"  , OutputEventKey if OutputEventKey else InputEventKey )
+    self.setProperty( "OutputTruthKey"  , OutputTruthKey if OutputTruthKey else InputTruthKey )
+    self.setProperty( "OutputCellsKey"  , OutputCellsKey if OutputCellsKey else InputCellsKey )
+    self.setProperty( "OutputLevel"     , OutputLevel     ) 
+    self.setProperty( "NtupleName"      , NtupleName      )
+    self.setProperty( "EtaWindow"       , EtaWindow       )
+    self.setProperty( "PhiWindow"       , PhiWindow       )
 

@@ -19,7 +19,6 @@ class ComponentAccumulator( Logger ):
     from ROOT import RunManager
     from ROOT import Gaugi as GK
     self.__acc = GK.ComponentAccumulator( name )
-
     from ROOT import SG
     self.__ctx = SG.EventContext("EventContext")
     self.__store = SG.StoreGate(output)

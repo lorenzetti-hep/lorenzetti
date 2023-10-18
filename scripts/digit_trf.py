@@ -6,7 +6,7 @@ from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
 import numpy as np
 import argparse
-import sys,os
+import sys,os,gc,traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -47,10 +47,13 @@ try:
 
   # the reader must be first in sequence
   from RootStreamBuilder import RootStreamHITReader, recordable
-  reader = RootStreamHITReader("HITReader",
-                               InputFile       = args.inputFile,
-                               OutputLevel     = outputLevel 
-                               )
+  reader = RootStreamHITReader("HITReader", 
+                                InputFile       = args.inputFile,
+                                OutputHitsKey   = recordable("Hits"),
+                                OutputEventKey  = recordable("Events"),
+                                OutputTruthKey  = recordable("Particles"),
+                                OutputLevel     = outputLevel,
+                              )
 
   reader.merge(acc)
   
@@ -68,15 +71,18 @@ try:
   calorimeter.merge(acc)
 
   from RootStreamBuilder import RootStreamESDMaker
-  stream = RootStreamESDMaker( "RootStreamESDMaker",
-                                OutputLevel        = outputLevel,
-                              )
-  acc += stream
+  ESD = RootStreamESDMaker( "RootStreamESDMaker",
+                             InputCellsKey   = recordable("Cells"),
+                             InputEventKey   = recordable("Events"),
+                             InputTruthKey   = recordable("Particles"),           
+                             OutputLevel     = outputLevel)
+  acc += ESD
   
 
   acc.run(args.numberOfEvents)
   sys.exit(0)
   
 except Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

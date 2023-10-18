@@ -1,5 +1,10 @@
 __all__ = []
 
+import ROOT
+ROOT.gSystem.Load('liblorenzetti')
+from ROOT import RunManager
+
+
 from . import utils
 __all__.extend(utils.__all__)
 from .utils import *

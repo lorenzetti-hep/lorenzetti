@@ -7,7 +7,7 @@ from CaloCell.CaloDefs     import CaloSampling
 from RootStreamBuilder     import recordable
 import numpy as np
 import argparse
-import sys,os,gc
+import sys,os,gc,traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -48,6 +48,7 @@ args = parser.parse_args()
 outputLevel = LoggingLevel.fromstring(args.outputLevel)
 
 try:
+  
   eval(args.command)
 
   from ATLAS import ATLASConstruction as ATLAS
@@ -61,7 +62,7 @@ try:
   
   gun = EventReader( "EventReader", args.inputFile,
                      # outputs
-                     OutputEventKey   = recordable("EventInfo"),
+                     OutputEventKey   = recordable("Events"   ),
                      OutputTruthKey   = recordable("Particles"),
                      OutputSeedKey    = recordable("Seeds"    ),
                      )
@@ -79,20 +80,18 @@ try:
   from RootStreamBuilder import RootStreamHITMaker, recordable
 
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
+                             OutputLevel     = outputLevel,
                              # input from context
                              InputHitsKey    = recordable("Hits"),
                              InputEventKey   = recordable("Events"),
                              InputTruthKey   = recordable("Particles"),
-                             # output to file
-                             OutputHitsKey   = recordable("Hits"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),
-                             OutputLevel     = outputLevel)
-
+                             )
+  acc += HIT
   acc.run(args.numberOfEvents)
 
   sys.exit(0)
   
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

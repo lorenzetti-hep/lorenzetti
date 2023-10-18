@@ -2,8 +2,7 @@ __all__ = ["EventReader"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from ROOT import TFile, TTree
-
+import ROOT, os
 
 class EventReader( Cpp ):
 
@@ -16,17 +15,19 @@ class EventReader( Cpp ):
                 OutputLevel    : int = 0 
               ): 
     
-    Cpp.__init__(self, name, "ROOT.generator.EventReader", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.generator.EventReader(name) )
+
     self.setProperty( "InputFileName"  , InputFileName  )
     self.setProperty( "OutputEventKey" , OutputEventKey )
     self.setProperty( "OutputSeedKey"  , OutputSeedKey  )
     self.setProperty( "OutputTruthKey" , OutputTruthKey )
     self.setProperty( "BunchDuration"  , BunchDuration  )
+    #self.setProperty( "OutputLevel"    , OutputLevel    )
 
     if self.InputFileName != "":
       if not os.path.exists(self.InputFileName):
         MSG_FATAL(self, f"Input file not found into the system: {self.InputFileName}")
-      f = TFile( InputFileName )
+      f = ROOT.TFile( InputFileName )
       t = f.Get("particles")
       self.__entries = t.GetEntries()
       f.Close()

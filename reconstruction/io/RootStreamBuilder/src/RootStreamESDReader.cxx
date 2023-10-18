@@ -19,9 +19,9 @@ RootStreamESDReader::RootStreamESDReader( std::string name ) :
   Algorithm()
 {
   declareProperty( "InputFile"          , m_inputFile=""                    );
-  declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"           , m_truthKey="Particles"            );
-  declareProperty( "CellsKey"           , m_cellsKey="Cells"                );
+  declareProperty( "OutputEventKey"     , m_eventKey="EventInfo"            );
+  declareProperty( "OutputTruthKey"     , m_truthKey="Particles"            );
+  declareProperty( "OutputCellsKey"     , m_cellsKey="Cells"                );
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
 }

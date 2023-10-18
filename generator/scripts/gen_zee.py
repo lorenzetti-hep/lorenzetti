@@ -3,7 +3,7 @@
 from GaugiKernel import LoggingLevel, Logger
 from GaugiKernel import GeV
 import argparse
-import sys,os
+import sys,os,traceback
 
 
 mainLogger = Logger.getModuleLogger("zee")
@@ -92,7 +92,7 @@ try:
                     EventNumber = args.eventNumber),
             EtaMax              = 3.2,
             MinPt               = 15*GeV,
-            zeroVertexParticles = args.zeroVertexParticles, #calibration use only.
+            ZeroVertexParticles = args.zeroVertexParticles, #calibration use only.
             OutputLevel  = args.outputLevel
            )
   tape+=zee
@@ -122,5 +122,6 @@ try:
 
   sys.exit(0)
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

@@ -5,7 +5,7 @@ __all__ = ["CaloHitMaker"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-
+import ROOT
 
 
 class CaloHitMaker( Cpp ):
@@ -19,7 +19,7 @@ class CaloHitMaker( Cpp ):
                 SamplingNoiseStd     : float  = 0,
               ):
 
-    Cpp.__init__(self, name, "ROOT.CaloHitMaker", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.CaloHitMaker(name) )
     self.Tools = []
     self.setProperty( "OutputCollectionKey"     , OutputCollectionKey         )
     self.setProperty( "EtaBins"                 , sampling.sensitive().EtaBins)
@@ -37,13 +37,15 @@ class CaloHitMaker( Cpp ):
     self.setProperty( "SamplingNoiseStd"        , SamplingNoiseStd            )
     self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
     self.setProperty( "HistogramPath"           , HistogramPath               )
+    self.setProperty( "OutputLevel"             , OutputLevel                 )
+
  
 
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      self.__core.push_back(tool.core())
-    return self.__core
+      self._core.push_back(tool.core())
+    return self._core
 
 
   def __add__( self, tool ):

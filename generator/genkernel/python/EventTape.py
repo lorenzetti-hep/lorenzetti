@@ -1,34 +1,22 @@
 __all__ = ["EventTape"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
+from ROOT import generator
 
+class EventTape( Cpp ):
 
-class EventTape( Logger ):
+  def __init__( self, name           : str, 
+                      OutputFile     : str,
+                      RunNumber      : int=0,
+                      NumberOfEvents : int=1,
+                      OutputLevel    : int=0 ): 
 
-  __allow_keys = [
-                        "RunNumber"         ,
-                        "NumberOfEvents"    ,
-                        "OutputFile"        , 
-                        "OutputLevel"       ,
-                      ]
-
-
-  def __init__( self, name, **kw ): 
-    
-    Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import RunManager, generator
-    # Create the algorithm
-    self.__core = generator.EventTape()
-    for key, value in kw.items():
-      self.setProperty( key,value )
-
-
-  def core(self):
-    return self.__core
+    Cpp.__init__(self, generator.EventTape())   
+    self.setProperty("RunNumber"      , RunNumber       )
+    self.setProperty("NumberOfEvents" , NumberOfEvents  )
+    self.setProperty("OutputFile"     , OutputFile      )
+    self.setProperty("OutputLevel"    , OutputLevel     )
 
 
   def run( self, evt):
@@ -38,9 +26,9 @@ class EventTape( Logger ):
     else:
       MSG_FATAL(self, "input argument type not supported. Should be int value")
 
-    self.core().initialize()
-    self.core().execute()
-    self.core().finalize()
+    self._core.initialize()
+    self._core.execute()
+    self._core.finalize()
 
 
   def __add__(self, tool):
@@ -49,20 +37,6 @@ class EventTape( Logger ):
 
 
   def push_back( self, tool ):
-    self.__core.push_back( tool.core() )
+    self._core.push_back( tool.core() )
 
-
-  def setProperty( self, key, value ):
-    if key in self.__allow_keys:
-      setattr( self, '__' + key , value )
-      self.core().setProperty( key, treatPropertyValue(value) )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
-
- 
-  def getProperty( self, key ):
-    if key in self.__allow_keys:
-      return getattr( self, '__' + key )
-    else:
-      MSG_FATAL( self, "Property with name %s is not allow for %s object", key, self.__class__.__name__)
 

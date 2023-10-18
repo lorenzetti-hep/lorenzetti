@@ -11,7 +11,7 @@ Zee::Zee(const std::string name, IGenerator *gen):
 {
   declareProperty( "EtaMax"               , m_etaMax=1.4                );
   declareProperty( "MinPt"                , m_minPt=0.0                 );
-  declareProperty( "zeroVertexParticles"  , m_zeroVertexParticles=false );
+  declareProperty( "ZeroVertexParticles"  , m_zeroVertexParticles=false );
 }
 
 

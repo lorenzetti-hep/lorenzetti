@@ -1,10 +1,8 @@
-__all__ = ["CaloCellMerge", "treatPropertyValue"]
+__all__ = ["Cpp", "treatPropertyValue"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
 from GaugiKernel import list2stdvector
-
-import importlib
 
 
 
@@ -31,25 +29,22 @@ def treatPropertyValue( value ):
 
 class Cpp( Logger ):
 
-  def __init__( self, name : str, import_path : str, OutputLevel : int=0 ): 
-    
+  def __init__( self, core ): 
     Logger.__init__(self)
-    import ROOT
-    ROOT.gSystem.Load('liblorenzetti')
-    from ROOT import CaloCellMerge
-    cpp = importlib.import_module(import_path)
-    self.__core = cpp(name)
+    self._core = core
   
+  def __del__(self):
+    del self._core
 
   def core(self):
-    return self.__core
+    return self._core
 
 
   def setProperty( self, key, value ):
-    if self.__core.hasProperty(key):
+    if self._core.hasProperty(key):
       setattr( self, key , value )
       try:
-        self.__core.setProperty( key, treatPropertyValue(value) )
+        self._core.setProperty( key, treatPropertyValue(value) )
       except:
         MSG_FATAL( self, f"Exception in property with name {key} and value: {value}")
     else:

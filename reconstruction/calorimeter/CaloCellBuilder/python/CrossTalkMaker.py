@@ -3,10 +3,11 @@ __all__ = ["CrossTalkMaker"]
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
 from CaloCellBuilder import CaloFlags as flags
+import ROOT
 
-class CrossTalkMaker( Logger ):
+class CrossTalkMaker( Cpp ):
 
-  def __init__( self, name, 
+  def __init__( self, name          : str, 
                 InputCollectionKey  : str="Cells",
                 OutputCollectionKey : str="XTCells",
                 MinEnergy           : float=flags.XTMinEnergy,
@@ -17,8 +18,9 @@ class CrossTalkMaker( Logger ):
                 OutputLevel         : int=0,
                 ):
 
-    Cpp.__init__(self, name, "ROOT.CrossTalkMaker", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.CrossTalkMaker(name) )
     self.Tools = []
+    self.setProperty( "OutputLevel"           , OutputLevel         )
     self.setProperty( "InputCollectionKey"    , InputCollectionKey  )
     self.setProperty( "OutputCollectionKey"   , OutputCollectionKey )
     self.setProperty( "MinEnergy"             , MinEnergy           )
@@ -31,8 +33,8 @@ class CrossTalkMaker( Logger ):
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      self.__core.push_back(tool.core())
-    return self.__core
+      self._core.push_back(tool.core())
+    return self._core
 
 
   def __add__( self, tool ):

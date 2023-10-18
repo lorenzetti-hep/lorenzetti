@@ -2,9 +2,10 @@
 __all__ = ["ComponentAccumulator"]
 
 from GaugiKernel import Cpp
+from GaugiKernel.constants import *
 from GaugiKernel.macros import *
 import os, time, gc
-
+import ROOT
 
 class ComponentAccumulator( Cpp ):
 
@@ -17,24 +18,25 @@ class ComponentAccumulator( Cpp ):
                 OutputLevel     : int=0
               ):
 
-    Cpp.__init__(self, name, "ROOT.RunManager", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.RunManager(name) )
     # convert python to geant4
     self.__detector = detector
     self.__detector.compile()
     # set the geant detector into the geant 
-    self.__core.setDetectorConstruction( self.__detector.core()   )
+    self._core.setDetectorConstruction( self.__detector.core()   )
     self.setProperty( "OutputFile"      , OutputFile              )
     self.setProperty( "VisMac"          , self.__detector.VisMac  )
     self.setProperty( "NumberOfThreads" , NumberOfThreads         )
     self.setProperty( "Timeout"         , Timeout                 )
     self.setProperty( "RunVis"          , RunVis                  )
     self.setProperty( "Seed"            , Seed                    )
+    #self.setProperty( "OutputLevel"     , OutputLevel             )
     # Set the vis mac file into the manager core
     self.outputFiles = [ (self.OutputFile+".%d"%thread) for thread in range(self.NumberOfThreads)]
 
 
   def __del__(self):
-    del self.__core
+    del self._core
     gc.collect()
     time.sleep(2)
     self.merge()
@@ -47,14 +49,14 @@ class ComponentAccumulator( Cpp ):
       evt = self.__numberOfEvents
     elif evt > self.__numberOfEvents:
       evt = self.__numberOfEvents
-    self.__core.run(evt)
+    self._core.run(evt)
 
 
   def __add__( self, algs ):
     if type(algs) is not list:
       algs =[algs]
     for alg in algs:
-      self.__core.push_back( alg.core() )
+      self._core.push_back( alg.core() )
     return self
 
 
@@ -63,7 +65,7 @@ class ComponentAccumulator( Cpp ):
   #
   def setGenerator( self, gen ):
     self.__numberOfEvents = gen.GetEntries()
-    self.core().setGenerator( gen.core() )
+    self._core.setGenerator( gen.core() )
 
 
   #

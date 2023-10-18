@@ -16,10 +16,6 @@ from . import SingleParticle
 __all__.extend(SingleParticle.__all__)
 from .SingleParticle import *
 
-#from . import LLPGun
-#__all__.extend(LLPGun.__all__)
-#from .LLPGun import *
-#
 from . import Pileup
 __all__.extend(Pileup.__all__)
 from .Pileup import *

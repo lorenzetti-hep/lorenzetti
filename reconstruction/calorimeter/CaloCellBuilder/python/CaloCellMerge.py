@@ -1,21 +1,20 @@
 __all__ = ["CaloCellMerge"]
 
-from GaugiKernel import Logger
+from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
-
+import ROOT
 
 class CaloCellMerge( Cpp ):
 
 
-  def __init__( self, name, 
+  def __init__( self, name          : str, 
                 InputCollectionKeys : str="Collection" ,
                 OutputCellsKey      : str="Cells",
                 OutputTruthCellsKey : str="TruthCells",
                 OutputLevel         : int=0 
                 ): 
     
-    Cpp.__init__(self, name, "Root.CaloCellMerge", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.CaloCellMerge(name) )
     # Create the algorithm
     self.setProperty( "InputCollectionKeys" , InputCollectionKeys ) 
     self.setProperty( "OutputCellsKey"      , OutputCellsKey      ) 

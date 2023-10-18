@@ -2,7 +2,6 @@ __all__ = ["CaloPhiRange"]
 
 from GaugiKernel import Logger
 from GaugiKernel.macros import *
-from G4Kernel import treatPropertyValue
 
 
 class CaloPhiRange( Logger ):

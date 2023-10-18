@@ -16,6 +16,9 @@ class Calorimeter(Logger):
                   ]
 
   def __init__(self, sv, bunch_start, bunch_end, sampling_start, **kw):
+                    
+
+
 
     Logger.__init__(self)
     for key, value in kw.items():

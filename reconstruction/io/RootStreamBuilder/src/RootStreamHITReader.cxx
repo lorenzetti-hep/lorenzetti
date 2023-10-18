@@ -22,9 +22,9 @@ RootStreamHITReader::RootStreamHITReader( std::string name ) :
   Algorithm()
 {
   declareProperty( "InputFile"          , m_inputFile=""                    );
-  declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"           , m_truthKey="Particles"            );
-  declareProperty( "HitsKey"            , m_hitsKey="Hits"                  );
+  declareProperty( "OutputEventKey"     , m_eventKey="EventInfo"            );
+  declareProperty( "OutputTruthKey"     , m_truthKey="Particles"            );
+  declareProperty( "OutputHitsKey"      , m_hitsKey="Hits"                  );
   declareProperty( "OutputLevel"        , m_outputLevel=1                   );
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
 }
@@ -39,7 +39,7 @@ RootStreamHITReader::~RootStreamHITReader()
 StatusCode RootStreamHITReader::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 

@@ -5,7 +5,7 @@ __all__ = ["CaloCellMaker"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-
+import ROOT
 
 
 class CaloCellMaker( Cpp ):
@@ -17,7 +17,7 @@ class CaloCellMaker( Cpp ):
                 DetailedHistograms  : bool=False,
                 HistogramPath       : str="/Hists/Cells" ): 
 
-    Cpp.__init__(self, name, "ROOT.CaloCellMaker", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.CaloCellMaker(name) )
     self.Tools = []
     self.PulseGenerator = None
 
@@ -35,14 +35,15 @@ class CaloCellMaker( Cpp ):
     self.setProperty( "BunchDuration"           , 25                          )
     self.setProperty( "DetailedHistograms"      , DetailedHistograms          )
     self.setProperty( "HistogramPath"           , HistogramPath               )
- 
+    self.setProperty( "OutputLevel"             , OutputLevel                 )
+
 
   def core(self):
     # Attach all tools before return the core
     for tool in self.Tools:
-      self.__core.push_back(tool.core())
-    self.__core.setPulseGenerator(self.PulseGenerator.core())
-    return self.__core
+      self._core.push_back(tool.core())
+    self._core.setPulseGenerator(self.PulseGenerator.core())
+    return self._core
 
 
   def __add__( self, tool ):

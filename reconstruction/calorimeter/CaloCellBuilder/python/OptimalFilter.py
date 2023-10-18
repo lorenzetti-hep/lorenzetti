@@ -3,17 +3,18 @@ __all__ = ["OptimalFilter", "ConstrainedOptimalFilter"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-
+import ROOT
 
 class OptimalFilter( Cpp ):
   
-  def __init__( self, name,
+  def __init__( self, name    : str,
                 WeightsEnergy : list=[],
                 WeightsTime   : list=[],
                 OutputLevel   : int=0 
               ):
 
-    Cpp.__init__(self, name, "ROOT.OptimalFilter", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.OptimalFilter(name) )
+    self.setProperty( "OutputLevel"   , OutputLevel   )
     self.setProperty( "WeightsEnergy" , WeightsEnergy )
     self.setProperty( "WeightsTime"   , WeightsTime   )
 
@@ -30,7 +31,8 @@ class ConstrainedOptimalFilter(Cpp):
                 StartSamplingBC   : float=0,
               ):
 
-    Cpp.__init__(self, name, "ROOT.ConstrainedOptimalFilter", OutputLevel=OutputLevel)
+    Cpp.__init__(self, ROOT.ConstrainedOptimalFilter(name) )
+    self.setProperty( "OutputLevel"     , OutputLevel       )
     self.setProperty( "OutputLevel"     , OutputLevel       ) 
     self.setProperty( "NSamples"        , NSamples          ) 
     self.setProperty( "PulsePath"       , PulsePath         )

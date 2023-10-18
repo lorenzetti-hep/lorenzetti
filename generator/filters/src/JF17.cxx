@@ -21,8 +21,6 @@ JF17::JF17(const std::string name , IGenerator *gen):
   declareProperty( "Select"         , m_select=2                  );
   declareProperty( "EtaWindow"      , m_etaWindow=0.4             );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4             );
-
-
 }
 
 JF17::~JF17()

@@ -43,7 +43,7 @@ RootStreamHITMaker::~RootStreamHITMaker()
 StatusCode RootStreamHITMaker::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 

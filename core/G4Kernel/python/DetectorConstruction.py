@@ -8,7 +8,7 @@ __all__ = [
 
 
 from GaugiKernel.constants import *
-from GaugiKernel import Cpp
+from GaugiKernel import Cpp, Logger
 from GaugiKernel.macros import *
 from GaugiKernel import EnumStringification
 
@@ -17,7 +17,7 @@ from tqdm import tqdm
 import numpy as np
 import collections
 
-
+import ROOT
 
 class Plates(EnumStringification):
   Horizontal = 0
@@ -34,7 +34,7 @@ class DetectorConstruction( Cpp ):
                 UseMagneticField  : bool=False, 
                 CutOnPhi          : bool=False ):
 
-    Cpp.__init__(self, name, "ROOT.DetectorConstruction")
+    Cpp.__init__(self, ROOT.DetectorConstruction(name) ) 
     
     self.setProperty( "UseMagneticField", UseMagneticField  )
     self.setProperty( "CutOnPhi"        , CutOnPhi          )
@@ -63,7 +63,7 @@ class DetectorConstruction( Cpp ):
   def compile(self):
     # Create all volumes inside of the detector
     for pv in tqdm( self.__volumes.values(), desc="Compiling...", ncols=70):
-      self.__core.AddVolume( pv.name(), pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
+      self._core.AddVolume( pv.name(), pv.Plates, pv.AbsorberMaterial, pv.GapMaterial, 
                              # layer
                              pv.NofLayers, pv.AbsorberThickness, pv.GapThickness,
                              # dimensions
