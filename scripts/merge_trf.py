@@ -6,8 +6,7 @@ from CaloCell.CaloDefs    import CaloSampling
 from G4Kernel             import *
 import numpy as np
 import argparse
-import sys,os
-pi = np.pi
+import sys,os, traceback
 
 
 mainLogger = Logger.getModuleLogger("job")
@@ -30,6 +29,8 @@ parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEv
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
+parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
+                    help = "The preexec command")
 
 
 if len(sys.argv)==1:
@@ -39,23 +40,26 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
+outputLevel = LoggingLevel.toC(args.outputLevel)
 
 try:
 
-  
+  exec(args.command)
+
   from GaugiKernel import ComponentAccumulator
   acc = ComponentAccumulator("ComponentAccumulator", args.outputFile)
 
 
   # the reader must be first in sequence
   from RootStreamBuilder import RootStreamHITReader, recordable
+  
   reader = RootStreamHITReader("HITReader", 
                                 InputFile       = args.inputFile,
-                                HitsKey         = recordable("Hits"),
-                                EventKey        = recordable("EventInfo"),
-                                TruthKey        = recordable("Particles"),
-                                NtupleName      = "CollectionTree",
+                                OutputHitsKey   = recordable("Hits"),
+                                OutputEventKey  = recordable("Events"),
+                                OutputTruthKey  = recordable("Particles"),
+                                OutputSeedsKey  = recordable("Seeds"),
+                                OutputLevel     = outputLevel,
                               )
   reader.merge(acc)
 
@@ -65,10 +69,9 @@ try:
   pileup = PileupMerge( "PileupMerge", 
                         InputFile       = args.pileupFile,
                         InputHitsKey    = recordable("Hits"),
-                        InputEventKey   = recordable("EventInfo"),
-                        OutputHitsKey   = recordable("Hits") + "_Merged",
-                        OutputEventKey  = recordable("EventInfo") + "_Merged",
-                        NtupleName      = "CollectionTree",
+                        InputEventKey   = recordable("Events"),
+                        OutputHitsKey   = "Hits_Merged",
+                        OutputEventKey  = "Events_Merged",
                         OutputLevel     = outputLevel
                       )
   acc += pileup
@@ -79,18 +82,19 @@ try:
   from RootStreamBuilder import RootStreamHITMaker
   HIT = RootStreamHITMaker( "RootStreamHITMaker",
                              # input from context
-                             InputHitsKey    = recordable("Hits")+"_Merged",
-                             InputEventKey   = recordable("EventInfo")+"_Merged",
+                             InputHitsKey    = "Hits_Merged",
+                             InputEventKey   = "Events_Merged",
                              InputTruthKey   = recordable("Particles"),
+                             InputSeedsKey   = recordable("Seeds"),
                              # output to file
                              OutputHitsKey   = recordable("Hits"),
-                             OutputEventKey  = recordable("EventInfo"),
-                             OutputTruthKey  = recordable("Particles"),
+                             OutputEventKey  = recordable("Events"),
                              OutputLevel     = outputLevel)
   acc += HIT
   acc.run(args.numberOfEvents)
   sys.exit(0)
   
 except  Exception as e:
-  print(e)
+  traceback.print_exc()
+  mainLogger.error(e)
   sys.exit(1)

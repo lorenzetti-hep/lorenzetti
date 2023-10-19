@@ -1,1 +1,1 @@
-gen_jets.py --nov 10 -o test_jets.EVT.root
+gen_jets.py --nov 2 -o jets.EVT.root

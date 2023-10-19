@@ -1,1 +1,1 @@
-gen_zee.py --nov 10 -o test_zee.EVT.root
+gen_zee.py --nov 2 -o Zee.EVT.root
