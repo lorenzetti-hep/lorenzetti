@@ -31,9 +31,9 @@ It is possible, by using Geant4 modules to change the geometry, the layers and t
 
 ## Manual:
 
-- [Getting Started](doc/Getting_Started.md)
-- [Reconstruction](doc/Reconstruction.md)
-- [Visualization](doc/Visualization.md)
+- [Getting Started](docs/Getting_Started.md)
+- [Reconstruction](docs/Reconstruction.md)
+- [Visualization](docs/Visualization.md)
 
 
 ## Software considerations:

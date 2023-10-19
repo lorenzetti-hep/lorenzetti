@@ -71,10 +71,14 @@ After enter and setup all dependencies inside of the container, just follow thes
 
 ```
 git clone https://github.com/lorenzetti-hep/lorenzetti.git && cd lorenzetti
-mkdir build && cd build
-cmake .. && make -j4 && cd ..
+make
 source setup.sh
 ```
 
 This will setup everything you need for running the Lorenzetti framework.
 
+## Test Stages Locally:
+
+```
+make test
+```
