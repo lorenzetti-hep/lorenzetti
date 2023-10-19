@@ -2,7 +2,7 @@ __all__ = ["JF17"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
-
+from ROOT import generator
 
 class JF17( Cpp ):
 
