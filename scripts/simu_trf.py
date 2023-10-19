@@ -44,11 +44,11 @@ if len(sys.argv)==1:
 
 args = parser.parse_args()
 
-outputLevel = LoggingLevel.fromstring(args.outputLevel)
+outputLevel = LoggingLevel.toC(args.outputLevel)
 
 try:
   
-  eval(args.command)
+  exec(args.command)
 
   from ATLAS import ATLASConstruction as ATLAS
   # Build the ATLAS detector

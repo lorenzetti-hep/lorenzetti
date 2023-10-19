@@ -117,7 +117,7 @@ def _getFormatter():
     colors = {
                'VERBOSE':  gray,
                'DEBUG':    cyan,
-               'INFO':     green,
+               'INFO':     "",
                'WARNING':  bold_yellow,
                'ERROR':    red,
                'CRITICAL': bold_red,
@@ -144,7 +144,7 @@ def _getFormatter():
   import os, sys
 
   formatter = Formatter(
-                       "%(asctime)s | Py.%(name)-33.33s %(levelname)7.7s %(message)s",
+                       "Py.%(name)-33.33s %(levelname)7.7s %(message)s",
                        not(int(os.environ.get('RCM_NO_COLOR',1)) or not(sys.stdout.isatty()))
                        )
   return formatter

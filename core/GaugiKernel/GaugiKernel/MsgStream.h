@@ -163,7 +163,7 @@ class MsgStreamMirror
                                                 GAUGI_WHITE,
                                                 GAUGI_GRAY,
                                                 GAUGI_CYAN,
-                                                GAUGI_GREEN,
+                                                GAUGI_NORMAL,
                                                 GAUGI_YELLOW,
                                                 GAUGI_RED,
                                                 GAUGI_BOLDRED,
