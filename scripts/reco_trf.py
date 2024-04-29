@@ -26,6 +26,9 @@ parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', r
 
 parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
                     help = "The preexec command")
+                  
+parser.add_argument('-f', '--doForward', action='store', dest='doForward', required = False, type=bool, default=False,
+                    help = "Build forward rings?")
 
 
 if len(sys.argv)==1:
@@ -33,6 +36,8 @@ if len(sys.argv)==1:
   sys.exit(1)
 
 args = parser.parse_args()
+
+doForward = args.doForward
 
 outputLevel = LoggingLevel.toC(args.outputLevel)
 
@@ -52,7 +57,7 @@ try:
                             OutputTruthKey  = recordable("Particles"),
                             OutputSeedsKey  = recordable("Seeds"),
                             OutputLevel     = outputLevel
-                          )
+                            )
   ESD.merge(acc)
 
 
@@ -67,8 +72,17 @@ try:
                               HistogramPath        = "Expert/Clusters",
                               OutputLevel          = outputLevel )
 
-  from CaloRingsBuilder import CaloRingsMakerCfg
-  rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
+  # build rings for forward electron candidates (2.5<|eta|<3.2) only if -f True
+  if(doForward == True):
+    from CaloRingsBuilder import CaloFwdRingsMakerCfg
+    rings   = CaloFwdRingsMakerCfg(   "CaloRingsMaker",
+                                InputClusterKey    = recordable("Clusters"),  
+                                OutputRingerKey    = recordable("Rings"),
+                                HistogramPath      = "Expert/Rings",
+                                OutputLevel        = outputLevel)
+  else:
+    from CaloRingsBuilder import CaloRingsMakerCfg
+    rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
                                 InputClusterKey    = recordable("Clusters"),  
                                 OutputRingerKey    = recordable("Rings"),
                                 HistogramPath      = "Expert/Rings",
