@@ -88,7 +88,7 @@ bool CaloClusterConverter::convert( const CaloCluster_t &cluster_t, CaloCluster 
   cluster->setSecondR(cluster_t.secondR);
   cluster->setLambdaCenter(cluster_t.lambdaCenter);
   cluster->setSecondLambda(cluster_t.secondLambda);
-  cluster->setFracMax(cluster_t.fMax);
+  cluster->setFracMax(cluster_t.fracMax);
   cluster->setLateralMom(cluster_t.lateralMom);
   cluster->setLongitudinalMom(cluster_t.longitudinalMom);    
   return true;
