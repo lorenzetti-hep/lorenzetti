@@ -14,6 +14,7 @@ CaloDetDescriptor::CaloDetDescriptor(
                   float deta, 
                   float dphi, 
                   unsigned long int hash,
+                  float detZ,
                   CaloSampling sampling, 
                   Detector detector,
                   float bc_duration,
@@ -31,7 +32,8 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_bcid_start( bcid_start ),
   m_bcid_end( bcid_end ),
   m_bc_duration( bc_duration ),
-  m_hash(hash)
+  m_hash(hash),
+  m_z(detZ)
 {
   // Initalize the time vector using the bunch crossing informations
   float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
@@ -49,6 +51,7 @@ CaloDetDescriptor * CaloDetDescriptor::copy()
                                     m_deta, 
                                     m_dphi, 
                                     m_hash,
+                                    m_z,
                                     m_sampling, 
                                     m_detector,
                                     m_bc_duration,
