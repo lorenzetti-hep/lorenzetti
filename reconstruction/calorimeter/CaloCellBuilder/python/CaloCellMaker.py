@@ -27,6 +27,7 @@ class CaloCellMaker( Cpp ):
     self.setProperty( "PhiBins"                 , sampling.sensitive().PhiBins)
     self.setProperty( "ZMin"                    , sampling.volume().ZMin      )
     self.setProperty( "ZMax"                    , sampling.volume().ZMax      )
+    self.setProperty( "Z"                       , sampling.sv.pv.Z            )
     self.setProperty( "Sampling"                , sampling.Sampling           )
     self.setProperty( "Segment"                 , sampling.sensitive().Segment)
     self.setProperty( "Detector"                , sampling.Detector           )
