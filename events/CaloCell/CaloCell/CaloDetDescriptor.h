@@ -52,7 +52,6 @@ namespace xAOD{
 
       PRIMITIVE_SETTER_AND_GETTER( float  , m_z  , setZ    , z   );
       /*! Cell sampling id */
-      PRIMITIVE_SETTER_AND_GETTER( float  , m_z  , setZ    , z   );
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
       /*! Cell layer id */
       PRIMITIVE_SETTER_AND_GETTER( Detector  , m_detector  , setDetector    , detector   );

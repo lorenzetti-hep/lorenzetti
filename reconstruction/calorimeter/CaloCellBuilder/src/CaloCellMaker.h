@@ -66,11 +66,7 @@ class CaloCellMaker : public Gaugi::Algorithm
     std::vector<float> m_etaBins; 
     std::vector<float> m_phiBins; 
     float m_zMin;
-<<<<<<< HEAD
     float m_zMax; 
-=======
-    float m_zMax;
->>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
     float m_z;
     
 
