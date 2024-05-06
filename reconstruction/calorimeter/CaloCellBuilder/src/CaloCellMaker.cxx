@@ -154,7 +154,11 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 
       // Create the calorimeter cell
       auto *descriptor = new xAOD::CaloDetDescriptor( etaCenter, phiCenter, deltaEta, deltaPhi, 
+<<<<<<< HEAD
                                                       hash(bin), 
+=======
+                                                      hash(bin),
+>>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
                                                       m_z,
                                                       (CaloSampling)m_sampling,
                                                       (Detector)m_detector,

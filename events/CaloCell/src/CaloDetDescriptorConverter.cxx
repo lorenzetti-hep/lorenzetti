@@ -25,7 +25,10 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
     descriptor_t.cell_link   = link; // cross link to cell
+<<<<<<< HEAD
     // std::cout<< z << std::endl;
+=======
+>>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
     descriptor_t.z           = descriptor->z();
 
 

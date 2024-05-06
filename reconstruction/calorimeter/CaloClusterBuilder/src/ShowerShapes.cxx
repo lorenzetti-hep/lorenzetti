@@ -242,6 +242,18 @@ std::vector<TVector3> ShowerShapes::calculateShowerAxis(xAOD::CaloCluster * clus
     float eta = cell->eta();
     float phi = cell->phi();
     float energy = cell->e();
+<<<<<<< HEAD
+=======
+	// gets the 2 highest cell energies in the cluster
+	  if (energy > emax2){
+		  emax2 = energy;
+    }
+		if (energy > emax2){
+			emax2 = emax1;
+			emax1 = energy;
+		}
+	}
+>>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
     float thetaCell = 2*atan(pow(2.718281828, -eta));
     float zCell = cell->descriptor()->z();
     float rCell = zCell/cos(thetaCell);
@@ -307,6 +319,54 @@ std::vector<TVector3> ShowerShapes::calculateShowerAxis(xAOD::CaloCluster * clus
     std::vector<TVector3> axis = {showerAxis, showerCenter};
     return axis;
 }
+<<<<<<< HEAD
+=======
+
+float ShowerShapes::calculateLambdaCenter ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
+  float LambdaCenter = 0;
+  float factor = 0;
+	auto showerAxis = axis.at(0);
+	auto z_showerAxis = axis.at(0).Z();
+	auto showerCenter = axis.at(1);
+	auto z_showerCenter = axis.at(1).Z();
+	auto z_emec1 = axis.at(3).Z();
+
+	if (z_showerCenter > 0) {
+		float factor = (z_showerCenter - z_emec1)/z_showerAxis;
+	}
+	else {
+		float factor = (z_showerCenter - z_emec1)/z_showerAxis;
+	}
+	LambdaCenter = (factor*showerAxis).Mag();
+	
+	return LambdaCenter;
+}
+
+float ShowerShapes::calculateSecondLambda ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
+  	float secondLambda = 0;
+	auto showerAxis = axis.at(0);
+	auto showerCenter = axis.at(1);
+	auto totalE = axis.at(2).X();
+    
+	for ( auto& cell : clus->cells() ){
+    	float eta = cell->eta();
+      	float phi = cell->phi();
+      	float energy = cell->e();
+      	float thetaCell = 2*atan(pow(2.718281828, -eta));
+      	float zCell = cell->descriptor()->z();
+      	float rCell = zCell/cos(thetaCell);
+      	float xCell = rCell*sin(thetaCell)*cos(phi);
+      	float yCell = rCell*sin(thetaCell)*sin(phi);
+      	TVector3 currentCell(xCell,yCell,zCell);
+      	float r = ((currentCell-showerCenter).Dot(showerAxis)).Mag();
+      	// if (cell->e() < 0) continue;
+      	secondLambda+=energy*r*r;
+  	}
+	
+	return secondLambda/totalE;
+}
+
+>>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
 float ShowerShapes::calculateSecondR ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
   float secondR = 0;
   // float xc = 0;
@@ -334,6 +394,7 @@ float ShowerShapes::calculateSecondR ( xAOD::CaloCluster *clus, std::vector<TVec
   // TVector3 showerCenter(xc/totalE,yc/totalE,zc/totalE);
   // showerAxis.SetMag(1.0);
 
+<<<<<<< HEAD
   // TMatrixD C(3,3);
   // for ( auto& cell : clus->cells() ){
   //   float energy = cell->e();
@@ -401,3 +462,77 @@ float ShowerShapes::calculateSecondR ( xAOD::CaloCluster *clus, std::vector<TVec
   }
   return secondR/total_energy;
 }
+=======
+float ShowerShapes::calculateFracMax ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
+	auto totalE = axis.at(2).X();
+	auto emax1 = axis.at(2).Y();
+	float FracMax = emax1/totalE;
+	return FracMax;
+}
+
+float ShowerShapes::calculateLateralMom ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
+	float lateralMom = 0;
+  float r = 0;
+  float r_2 = 0;
+  float r_max = 0;
+	auto showerAxis = axis.at(0);
+	auto showerCenter = axis.at(1);
+	auto totalE = axis.at(2).X();
+	auto emax1 = axis.at(2).Y();
+	auto emax2 = axis.at(2).Z();
+  
+  for ( auto& cell : clus->cells() ){
+      	float eta = cell->eta();
+      	float phi = cell->phi();
+      	float energy = cell->e();
+      	float thetaCell = 2*atan(pow(2.718281828, -eta));
+      	float zCell = cell->descriptor()->z();
+      	float rCell = zCell/cos(thetaCell);
+      	float xCell = rCell*sin(thetaCell)*cos(phi);
+      	float yCell = rCell*sin(thetaCell)*sin(phi);
+      	TVector3 currentCell(xCell,yCell,zCell);
+	  	if (energy != emax1 && energy != emax2){
+	  		r = ((currentCell-showerCenter).Cross(showerAxis)).Mag();
+			  r_2 += energy*pow(r,2)/totalE;
+	  	}
+	  	else {
+			r_max += energy*pow(40,2)/totalE;
+      }
+	}
+  lateralMom = r_2/(r_2+r_max);
+  return lateralMom;
+}
+
+float ShowerShapes::calculateLongitudinalMom ( xAOD::CaloCluster *clus, std::vector<TVector3> axis ) const{
+	float longitudinalMom = 0;
+  float l = 0;
+  float l_2 = 0;
+  float l_max = 0;
+	auto showerAxis = axis.at(0);
+	auto showerCenter = axis.at(1);
+	auto totalE = axis.at(2).X();
+	auto emax1 = axis.at(2).Y();
+	auto emax2 = axis.at(2).Z();
+  
+    for ( auto& cell : clus->cells() ){
+      	float eta = cell->eta();
+      	float phi = cell->phi();
+      	float energy = cell->e();
+      	float thetaCell = 2*atan(pow(2.718281828, -eta));
+      	float zCell = cell->descriptor()->z();
+      	float rCell = zCell/cos(thetaCell);
+      	float xCell = rCell*sin(thetaCell)*cos(phi);
+      	float yCell = rCell*sin(thetaCell)*sin(phi);
+      	TVector3 currentCell(xCell,yCell,zCell);
+	  	if (energy != emax1 && energy != emax2){
+	  		float l = ((currentCell-showerCenter).Dot(showerAxis)).Mag();
+			float l_2 += energy*pow(l,2)/totalE;
+	  	}
+	  	else {
+			float l_max += energy*pow(100,2)/totalE;
+	  	}
+  	}
+    	longitudinalMom = l_2/(l_2+l_max);
+  	return longitudinalMom;
+}
+>>>>>>> 4835d05a5df47faeded22371cec6f48ee9955dce
