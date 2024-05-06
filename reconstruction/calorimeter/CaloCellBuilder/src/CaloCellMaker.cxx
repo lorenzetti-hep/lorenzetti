@@ -31,6 +31,7 @@ CaloCellMaker::CaloCellMaker( std::string name ) :
   declareProperty( "PhiBins"                  , m_phiBins                             );
   declareProperty( "ZMin"                     , m_zMin                                );
   declareProperty( "ZMax"                     , m_zMax                                );
+  declareProperty( "Z"                        , m_z                                   );
   declareProperty( "Sampling"                 , m_sampling                            );
   declareProperty( "Segment"                  , m_segment                             );
   declareProperty( "Detector"                 , m_detector                            );
@@ -153,7 +154,8 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
 
       // Create the calorimeter cell
       auto *descriptor = new xAOD::CaloDetDescriptor( etaCenter, phiCenter, deltaEta, deltaPhi, 
-                                                      hash(bin), 
+                                                      hash(bin),
+                                                      m_z,
                                                       (CaloSampling)m_sampling,
                                                       (Detector)m_detector,
                                                       m_bc_duration, m_bcid_start, m_bcid_end );
