@@ -14,11 +14,12 @@ CaloDetDescriptor::CaloDetDescriptor(
                   float deta, 
                   float dphi, 
                   unsigned long int hash,
+                  float detZ,
                   CaloSampling sampling, 
                   Detector detector,
                   float bc_duration,
                   int bcid_start,
-                  int bcid_end ):
+                  int bcid_end):
   EDM(),
   m_sampling(sampling),
   m_detector(detector),
@@ -31,9 +32,11 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_bcid_start( bcid_start ),
   m_bcid_end( bcid_end ),
   m_bc_duration( bc_duration ),
-  m_hash(hash)
+  m_hash(hash),
+  m_z(detZ)
 {
   // Initalize the time vector using the bunch crossing informations
+  // setZ(detZ);
   float start = ( m_bcid_start - 0.5 ) * m_bc_duration;
   float step  = m_bc_duration;
   int total   = (m_bcid_end - m_bcid_start+1) + 1;
@@ -49,11 +52,12 @@ CaloDetDescriptor * CaloDetDescriptor::copy()
                                     m_deta, 
                                     m_dphi, 
                                     m_hash,
+                                    m_z,
                                     m_sampling, 
                                     m_detector,
                                     m_bc_duration,
                                     m_bcid_start,
-                                    m_bcid_end );
+                                    m_bcid_end);
 
   det->setE(e()); // estimated energy from OF
   det->setPulse( pulse() ); // pulse from generator

@@ -25,6 +25,8 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
     descriptor_t.cell_link   = link; // cross link to cell
+    // std::cout<< z << std::endl;
+    descriptor_t.z           = descriptor->z();
 
 
     for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
@@ -49,11 +51,12 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             descriptor_t.deta,
                                             descriptor_t.dphi,
                                             descriptor_t.hash,
+                                            descriptor_t.z,
                                             (CaloSampling)descriptor_t.sampling, 
                                             (Detector)descriptor_t.detector,
                                             descriptor_t.bc_duration,
                                             descriptor_t.bcid_start,
-                                            descriptor_t.bcid_end );
+                                            descriptor_t.bcid_end);
 
   descriptor->setE(descriptor_t.e); // estimated energy from OF
   descriptor->setPulse( descriptor_t.pulse); // pulse from generator

@@ -47,14 +47,14 @@ try:
   from RootStreamBuilder import RootStreamNTUPLEMaker, recordable
   NTUPLE = RootStreamNTUPLEMaker("NTUPLEMaker", 
                             InputFile       = args.inputFile,
-                            CellsKey        = recordable("Cells"),
-                            EventKey        = recordable("EventInfo"),
-                            TruthKey        = recordable("Particles"),
-                            ClusterKey      = recordable("Clusters"),
-                            RingerKey       = recordable("Rings"),
-                            NtupleName      = "physics",
-                            OutputLevel     = outputLevel,
-                            OutputNtupleName = "events",
+                            InputCellsKey        = recordable("Cells"),
+                            InputEventKey        = recordable("EventInfo"),
+                            InputTruthKey        = recordable("Particles"),
+                            InputClusterKey      = recordable("Clusters"),
+                            InputRingerKey       = recordable("Rings"),
+                            NtupleName           = "CollectionTree",
+                            OutputLevel          = outputLevel,
+                            OutputNtupleName     = "events",
                           )
   
 

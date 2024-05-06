@@ -3,6 +3,7 @@
 __all__ = ['recordable']
 
 valid_keys = [
+            "EventInfo",
             "Hits",
             # CaloCellMerge
             "Cells",
