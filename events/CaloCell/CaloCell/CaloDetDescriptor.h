@@ -21,13 +21,14 @@ namespace xAOD{
                float eta, float phi, float deta, float dphi,
                // Hash
                unsigned long int hash,
+               float m_z,
                // cell identification
                CaloSampling sampling, 
                Detector detector,
                // bunch crossing information
                float bc_duration, 
                int bcid_start, 
-               int bcid_end );
+               int bcid_end);
 
       /** Destructor **/
       ~CaloDetDescriptor()=default;
@@ -49,6 +50,7 @@ namespace xAOD{
       /*! Cell hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
       /*! Cell sampling id */
+      PRIMITIVE_SETTER_AND_GETTER( float  , m_z  , setZ    , z   );
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
       /*! Cell layer id */
       PRIMITIVE_SETTER_AND_GETTER( Detector  , m_detector  , setDetector    , detector   );
@@ -181,6 +183,7 @@ namespace xAOD{
 
       /*! Access information unique ID number */
       unsigned long int m_hash;
+      float m_z;
 
   };
 
