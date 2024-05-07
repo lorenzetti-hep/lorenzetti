@@ -16,6 +16,12 @@ class RootStreamNTUPLEMaker( Cpp ):
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
                 OutputNtupleName : str="events",
+                SecondLambdaCuts  :list=[], #[loose,medium,tight]
+                LateralMomCuts   : list=[],
+                LongMomCuts      : list=[],
+                FracMaxCuts      : list=[],
+                SecondRCuts      : list=[],
+                LambdaCenterCuts : list=[],
               ): 
     
     Cpp.__init__(self, ROOT.RootStreamNTUPLEMaker(name))
@@ -24,7 +30,13 @@ class RootStreamNTUPLEMaker( Cpp ):
     self.setProperty( "InputCellsKey"   , InputCellsKey   )
     self.setProperty( "InputClusterKey" , InputClusterKey )
     self.setProperty( "InputRingerKey"  , InputRingerKey  )
-    self.setProperty( "InputFile"       , InputFile        )
+    self.setProperty( "InputFile"       , InputFile       )
+    self.setProperty( "SecondLambdaCuts", SecondLambdaCuts )
+    self.setProperty( "LateralMomCuts"  , LateralMomCuts)
+    self.setProperty( "LongMomCuts"     , LongMomCuts)
+    self.setProperty( "FracMaxCuts"     , FracMaxCuts)
+    self.setProperty( "SecondRCuts"     , SecondRCuts)
+    self.setProperty( "LambdaCenterCuts", LambdaCenterCuts)
 
 
     # self.setProperty( "OutputEventKey"  , OutputEventKey if OutputEventKey else InputEventKey       )
