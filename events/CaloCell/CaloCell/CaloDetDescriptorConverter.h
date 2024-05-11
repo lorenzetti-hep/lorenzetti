@@ -28,6 +28,7 @@ namespace xAOD{
         std::vector<float> tof;
         unsigned long int hash;
         int cell_link;
+        float z;
     };
 
     class CaloDetDescriptorConverter{
@@ -37,7 +38,7 @@ namespace xAOD{
             ~CaloDetDescriptorConverter()=default;
 
             // convert a class object into a struct
-            bool convert(const CaloDetDescriptor *, CaloDetDescriptor_t &, int link );
+            bool convert(const CaloDetDescriptor *, CaloDetDescriptor_t &, int link);
 
             bool convert( const CaloDetDescriptor_t &, CaloDetDescriptor *& );
             

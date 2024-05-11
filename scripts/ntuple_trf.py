@@ -23,7 +23,7 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
 
-parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
+parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='DEBUG',
                     help = "The output level messenger.")
 
 
@@ -47,14 +47,20 @@ try:
   from RootStreamBuilder import RootStreamNTUPLEMaker, recordable
   NTUPLE = RootStreamNTUPLEMaker("NTUPLEMaker", 
                             InputFile       = args.inputFile,
-                            CellsKey        = recordable("Cells"),
-                            EventKey        = recordable("EventInfo"),
-                            TruthKey        = recordable("Particles"),
-                            ClusterKey      = recordable("Clusters"),
-                            RingerKey       = recordable("Rings"),
-                            NtupleName      = "physics",
-                            OutputLevel     = outputLevel,
-                            OutputNtupleName = "events",
+                            InputCellsKey        = recordable("Cells"),
+                            InputEventKey        = recordable("EventInfo"),
+                            InputTruthKey        = recordable("Particles"),
+                            InputClusterKey      = recordable("Clusters"),
+                            InputRingerKey       = recordable("Rings"),
+                            NtupleName           = "CollectionTree",
+                            OutputLevel          = outputLevel,
+                            OutputNtupleName     = "events",
+                            SecondLambdaCuts     = [4500,4500,2800],
+                            LateralMomCuts       = [0.69,0.64,0.64],
+                            LongMomCuts          = [0.55,0.29,0.24],
+                            FracMaxCuts          = [0.22,0.23,0.39],
+                            SecondRCuts          = [3900,3300,3000],
+                            LambdaCenterCuts     = [255,255,250],
                           )
   
 

@@ -12,6 +12,7 @@ Zee::Zee(const std::string name, IGenerator *gen):
   declareProperty( "EtaMax"               , m_etaMax=1.4                );
   declareProperty( "MinPt"                , m_minPt=0.0                 );
   declareProperty( "ZeroVertexParticles"  , m_zeroVertexParticles=false );
+  declareProperty( "ForceForwardElectron" , m_forceForwardElectron=false );
 }
 
 
@@ -74,6 +75,20 @@ StatusCode Zee::execute( generator::Event &ctx )
   if ( zee.empty() ){
     MSG_DEBUG( "There is not Zee event inside of this event");
     throw NotInterestingEvent();
+  }
+
+  if (m_forceForwardElectron){
+    int fwdElectronCounter = 0;
+    for ( auto& e : zee ){
+      float eta = e->momentum().eta();
+      if (std::abs(eta) > 2.5 && std::abs(eta) < 3.2){
+        fwdElectronCounter++;
+      }
+    }
+    if (fwdElectronCounter == 0 || fwdElectronCounter > 1){
+      MSG_INFO("No forward electrons or two forward electrons");
+      throw NotInterestingEvent();
+    }
   }
 
   MSG_INFO("Filling Zee events into the context...");

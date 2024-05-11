@@ -1,12 +1,7 @@
 
 #include "CaloCluster/CaloClusterConverter.h"
 //#include "G4Kernel/macros.h"
-
-
 using namespace xAOD;
-
-
-
 bool CaloClusterConverter::convert( const CaloCluster *clus, CaloCluster_t &clus_t , cell_links_t &cell_links )
 {
   if(clus){
@@ -40,19 +35,24 @@ bool CaloClusterConverter::convert( const CaloCluster *clus, CaloCluster_t &clus
       clus_t.f2          = clus->f2();
       clus_t.f3          = clus->f3();
       clus_t.weta2       = clus->weta2();
+      clus_t.secondR     = clus->secondR();
+	  clus_t.lambdaCenter = clus->lambdaCenter();
+	  clus_t.secondLambda = clus->secondLambda();
+	  clus_t.fracMax     = clus->fracMax();
+	  clus_t.lateralMom  = clus->lateralMom();
+	  clus_t.longitudinalMom = clus->longitudinalMom();
 
-      
+
+
       for(auto &cell : clus->cells())
       {
         clus_t.cell_links.push_back( cell_links[cell] );
       }
       
-
       return true;
   }
   return false;
 }
-
 bool CaloClusterConverter::convert( const CaloCluster_t &cluster_t, CaloCluster *&cluster )
 {
   cluster = new xAOD::CaloCluster( cluster_t.emaxs2,
@@ -85,5 +85,11 @@ bool CaloClusterConverter::convert( const CaloCluster_t &cluster_t, CaloCluster 
   cluster->setF3(cluster_t.f3);
   cluster->setRhad(cluster_t.rhad);
   cluster->setRhad1(cluster_t.rhad1);
+  cluster->setSecondR(cluster_t.secondR);
+  cluster->setLambdaCenter(cluster_t.lambdaCenter);
+  cluster->setSecondLambda(cluster_t.secondLambda);
+  cluster->setFracMax(cluster_t.fracMax);
+  cluster->setLateralMom(cluster_t.lateralMom);
+  cluster->setLongitudinalMom(cluster_t.longitudinalMom);    
   return true;
 }

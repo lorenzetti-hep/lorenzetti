@@ -36,7 +36,7 @@ void StoreGate::save()
     //it.second->Write();
   }
 
-  m_file->Write();
+  m_file->Write(0,TObject::kOverwrite);
   m_file->Close();
 }
 

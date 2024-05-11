@@ -59,6 +59,9 @@ parser.add_argument('--outputLevel', action='store', dest='outputLevel', require
 parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                     help = "The pythia seed (zero is the clock system)")
 
+parser.add_argument('--forceForwardElectron', action='store_true', dest='forceForwardElectron',required = False, 
+                    help = "Force at least one electron into forward region.")
+
 #
 # Calibration parameters
 #
@@ -93,6 +96,7 @@ try:
             EtaMax              = 3.2,
             MinPt               = 15*GeV,
             ZeroVertexParticles = args.zeroVertexParticles, #calibration use only.
+            ForceForwardElectron = args.forceForwardElectron,
             OutputLevel  = args.outputLevel
            )
   tape+=zee

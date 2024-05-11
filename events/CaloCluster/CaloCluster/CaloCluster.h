@@ -1,19 +1,13 @@
 #ifndef CaloCluster_h
 #define CaloCluster_h
-
-
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
 #include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
-
 /** geant 4 includes **/
 #include "globals.hh"
-
 /** standard includes **/
 #include <vector>
-
-
 // Event Object Data
 namespace xAOD{
   
@@ -89,6 +83,17 @@ namespace xAOD{
       /*! Weta2 */
       PRIMITIVE_SETTER_AND_GETTER( float, m_weta2, setWeta2, weta2 );
 
+      PRIMITIVE_SETTER_AND_GETTER( float, m_secondR, setSecondR, secondR );
+	  
+	  /* new moments------------------------------------------------------------*/
+	  PRIMITIVE_SETTER_AND_GETTER( float, m_lambdaCenter, setLambdaCenter, lambdaCenter );
+	  PRIMITIVE_SETTER_AND_GETTER( float, m_secondLambda, setSecondLambda, secondLambda );
+	  PRIMITIVE_SETTER_AND_GETTER( float, m_fracMax, setFracMax, fracMax );
+	  PRIMITIVE_SETTER_AND_GETTER( float, m_lateralMom, setLateralMom, lateralMom );
+	  PRIMITIVE_SETTER_AND_GETTER( float, m_longitudinalMom, setLongitudinalMom, longitudinalMom );
+	  
+
+
 
       /*! Add the calorimeter cell into the RoI collection */
       void push_back( const xAOD::CaloCell * );
@@ -98,10 +103,7 @@ namespace xAOD{
       void clear();
       /*! Get all cells **/
       const std::vector<const xAOD::CaloCell*>& cells() const;
-
-
     private:
-
       float m_e;
       float m_et;
       float m_e0;
@@ -132,8 +134,14 @@ namespace xAOD{
       float m_phi;
       float m_deta;
       float m_dphi;
+      float m_secondR;
+	  float m_lambdaCenter;
+	  float m_secondLambda;
+	  float m_fracMax;
+	  float m_lateralMom;
+	  float m_longitudinalMom;
 
-      
+
       /* All calo cells into the roi window */
       std::vector<const xAOD::CaloCell*> m_container;
   };

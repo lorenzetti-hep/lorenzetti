@@ -36,6 +36,7 @@ class RootStreamNTUPLEMaker : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
+    bool computeForwardDecision(xAOD::CaloCluster* cluster, std::string workingpoint) const;
 
   private:
  
@@ -51,7 +52,12 @@ class RootStreamNTUPLEMaker : public Gaugi::Algorithm
     std::string m_inputFile;
     std::string m_ntupleName;
     std::string m_outputNtupleName;
-
+    std::vector<float> m_secondLambdaCuts;
+    std::vector<float> m_lateralMomCuts;
+    std::vector<float> m_longMomCuts;
+    std::vector<float> m_fracMaxCuts;
+    std::vector<float> m_secondRCuts;
+    std::vector<float> m_lambdaCenterCuts;
 
     int m_outputLevel;
 

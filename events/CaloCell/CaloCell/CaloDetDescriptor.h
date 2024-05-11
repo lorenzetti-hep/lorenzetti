@@ -21,13 +21,14 @@ namespace xAOD{
                float eta, float phi, float deta, float dphi,
                // Hash
                unsigned long int hash,
+               float m_z,
                // cell identification
                CaloSampling sampling, 
                Detector detector,
                // bunch crossing information
                float bc_duration, 
                int bcid_start, 
-               int bcid_end );
+               int bcid_end);
 
       /** Destructor **/
       ~CaloDetDescriptor()=default;
@@ -48,6 +49,8 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_dphi, setDeltaPhi, deltaPhi );
       /*! Cell hash */
       PRIMITIVE_SETTER_AND_GETTER( unsigned long int, m_hash, setHash, hash );
+
+      PRIMITIVE_SETTER_AND_GETTER( float  , m_z  , setZ    , z   );
       /*! Cell sampling id */
       PRIMITIVE_SETTER_AND_GETTER( CaloSampling  , m_sampling , setSampling   , sampling  );
       /*! Cell layer id */
@@ -76,6 +79,14 @@ namespace xAOD{
       void edep( int bc_id, float e ){
         m_edep[bc_id] += e;
       }
+      // float getZ()const 
+      // {
+      //   return m_z;
+      // }
+      // void setZ(float detZ)
+      // {
+      //   m_z = detZ;
+      // }
 
       /*
        * Time of flight (Global time from G4)
@@ -106,7 +117,7 @@ namespace xAOD{
       /* Time space (in ns) between two bunch crossings */
       PRIMITIVE_SETTER_AND_GETTER( float, m_bc_duration , set_bc_duration , bc_duration );
       
-      
+
       /*! Integrated pulse in bunch crossing zero */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_pulse, setPulse, pulse );
       /*! Time (in ns) for each bunch crossing */
@@ -181,6 +192,7 @@ namespace xAOD{
 
       /*! Access information unique ID number */
       unsigned long int m_hash;
+      float m_z;
 
   };
 

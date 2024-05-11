@@ -22,15 +22,23 @@ RootStreamNTUPLEMaker::RootStreamNTUPLEMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "InputFile"          , m_inputFile=""                    );
-  declareProperty( "EventKey"           , m_eventKey="EventInfo"            );
-  declareProperty( "TruthKey"           , m_truthKey="Particles"            );
-  declareProperty( "CellsKey"           , m_cellsKey="Cells"                );
-  declareProperty( "ClusterKey"         , m_clusterKey="Clusters"           );
-  declareProperty( "RingerKey"          , m_ringerKey="Rings"               );
-  declareProperty( "OutputLevel"        , m_outputLevel=1                   );
-  declareProperty( "NtupleName"         , m_ntupleName="physics"            );
-  declareProperty( "OutputNtupleName"   , m_outputNtupleName="events"       );
+  declareProperty( "InputFile"          , m_inputFile=""                  );
+  declareProperty( "InputEventKey"      , m_eventKey="EventInfo"          );
+  declareProperty( "InputTruthKey"      , m_truthKey="Particles"          );
+  declareProperty( "InputCellsKey"      , m_cellsKey="Cells"              );
+  declareProperty( "InputClusterKey"    , m_clusterKey="Clusters"         );
+  declareProperty( "InputRingerKey"     , m_ringerKey="Rings"             );
+  declareProperty( "OutputLevel"        , m_outputLevel=1                 );
+  declareProperty( "NtupleName"         , m_ntupleName="physics"          );
+  declareProperty( "OutputNtupleName"   , m_outputNtupleName="events"     );
+  declareProperty( "SecondLambdaCuts"   , m_secondLambdaCuts={}           );
+  declareProperty( "LateralMomCuts"     , m_lateralMomCuts={}             );
+  declareProperty( "LongMomCuts"        , m_longMomCuts={}                );
+  declareProperty( "FracMaxCuts"        , m_fracMaxCuts={}                );
+  declareProperty( "SecondRCuts"        , m_secondRCuts={}                );
+  declareProperty( "LambdaCenterCuts"   , m_lambdaCenterCuts={}           );
+
+
 }
 
 //!=====================================================================
@@ -95,6 +103,15 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   float f3           = 0;
   float weta2        = 0;
   std::vector<float>*rings        = nullptr;
+  float secondR      = 0;
+  float lambdaCenter = 0;
+  float secondLambda = 0;
+  float fracMax      = 0;
+  float lateralMom   = 0;
+  float longitudinalMom = 0;
+  bool el_fwdTight = false;
+  bool el_fwdMedium = false;
+  bool el_fwdLoose = false;
 
 
   TTree *outputTree = new TTree(m_outputNtupleName.c_str(), "");
@@ -129,6 +146,15 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   outputTree->Branch("cluster_f3"     , &f3);
   outputTree->Branch("cluster_weta2"  , &weta2);
   outputTree->Branch("rings"          , &rings);
+  outputTree->Branch("cluster_secondR", &secondR);
+  outputTree->Branch("cluster_lambdaCenter", &lambdaCenter);
+  outputTree->Branch("cluster_secondLambda", &secondLambda);
+  outputTree->Branch("cluster_fracMax", &fracMax);
+  outputTree->Branch("cluster_lateralMom", &lateralMom);
+  outputTree->Branch("cluster_longitudinalMom", &longitudinalMom);
+  outputTree->Branch("el_fwdTight",             &el_fwdTight);
+  outputTree->Branch("el_fwdMedium",             &el_fwdMedium);
+  outputTree->Branch("el_fwdLoose",             &el_fwdLoose);
 
   store->add(outputTree);
   return StatusCode::SUCCESS; 
@@ -155,7 +181,7 @@ StatusCode RootStreamNTUPLEMaker::execute( EventContext &ctx, int evt ) const
   return deserialize( evt, ctx );
 }
 
-//!=====================================================================
+//!===================================    ==================================
 
 StatusCode RootStreamNTUPLEMaker::post_execute( EventContext &/*ctx*/ ) const
 {
@@ -229,6 +255,15 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   float f3           = 0;
   float weta2        = 0;
   std::vector<float> *rings = nullptr;
+  float secondR      = 0;
+  float lambdaCenter = 0;
+  float secondLambda = 0;
+  float fracMax      = 0;
+  float lateralMom   = 0;
+  float longitudinalMom = 0;
+  bool  el_fwdTight = false;
+  bool  el_fwdMedium = false;
+  bool  el_fwdLoose = false;
   
   InitBranch( outputTree, "cluster_eta" , &eta);
   InitBranch( outputTree, "cluster_phi" , &phi);
@@ -260,6 +295,15 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   InitBranch( outputTree,"cluster_f2"     , &f2);
   InitBranch( outputTree,"cluster_f3"     , &f3);
   InitBranch( outputTree,"cluster_weta2"  , &weta2);
+  InitBranch( outputTree,"cluster_secondR"  , &secondR);
+  InitBranch( outputTree,"cluster_lambdaCenter"  , &lambdaCenter);
+  InitBranch( outputTree,"cluster_secondLambda"  , &secondLambda);
+  InitBranch( outputTree,"cluster_fracMax"  , &fracMax);
+  InitBranch( outputTree,"cluster_lateralMom"  , &lateralMom);
+  InitBranch( outputTree,"cluster_longitudinalMom"  , &longitudinalMom);
+  InitBranch( outputTree,"el_fwdTight", &el_fwdTight);
+  InitBranch( outputTree,"el_fwdMedium", &el_fwdMedium);
+  InitBranch( outputTree,"el_fwdLoose", &el_fwdLoose);
   
 
   { //main loop (from cluster to truth)
@@ -312,6 +356,16 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
           f2      = cluster->f2();
           f3      = cluster->f3();
           weta2   = cluster->weta2();
+
+          secondR = cluster->secondR();
+          lambdaCenter = cluster->lambdaCenter();
+          secondLambda = cluster->secondLambda();
+          fracMax      = cluster->fracMax();
+          lateralMom   = cluster->lateralMom();
+          longitudinalMom = cluster->longitudinalMom();
+          el_fwdTight = computeForwardDecision(cluster,"tight");
+          el_fwdMedium = computeForwardDecision(cluster,"medium");
+          el_fwdLoose = computeForwardDecision(cluster,"loose");
           
         }
         break;
@@ -351,6 +405,15 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   f2           = 0;
   f3           = 0;
   weta2        = 0;
+  secondR      = 0;
+  lambdaCenter = 0;
+  secondLambda = 0;
+  fracMax      = 0;
+  lateralMom   = 0;
+  longitudinalMom = 0;
+  el_fwdTight = false;
+  el_fwdMedium = false;
+  el_fwdLoose = false;
   delete rings        ;
 
   delete collection_descriptor;
@@ -378,4 +441,37 @@ void RootStreamNTUPLEMaker::InitBranch(TTree* fChain, std::string branch_name, T
   }
   fChain->SetBranchStatus(bname.c_str(), 1.);
   fChain->SetBranchAddress(bname.c_str(), param);
+}
+
+bool RootStreamNTUPLEMaker::computeForwardDecision(xAOD::CaloCluster* cluster, std::string workingpoint) const {
+  if (workingpoint == "loose"){
+    if (cluster->secondLambda() > m_secondLambdaCuts[0]) return false;
+    if (cluster->lateralMom() > m_lateralMomCuts[0]) return false;
+    if (cluster->longitudinalMom() > m_longMomCuts[0]) return false;
+    if (cluster->fracMax() < m_fracMaxCuts[0]) return false;
+    if (cluster->secondR() > m_secondRCuts[0]) return false;
+    if (cluster->lambdaCenter() > m_lambdaCenterCuts[0]) return false;
+  return true;
+  }
+
+  if (workingpoint == "medium"){
+    if (cluster->secondLambda() > m_secondLambdaCuts[1]) return false;
+    if (cluster->lateralMom() > m_lateralMomCuts[1]) return false;
+    if (cluster->longitudinalMom() > m_longMomCuts[1]) return false;
+    if (cluster->fracMax() < m_fracMaxCuts[1]) return false;
+    if (cluster->secondR() > m_secondRCuts[1]) return false;
+    if (cluster->lambdaCenter() > m_lambdaCenterCuts[1]) return false;
+    return true;
+  }
+
+  if (workingpoint == "tight"){
+    if (cluster->secondLambda() > m_secondLambdaCuts[2]) return false;
+    if (cluster->lateralMom() > m_lateralMomCuts[2]) return false;
+    if (cluster->longitudinalMom() > m_longMomCuts[2]) return false;
+    if (cluster->fracMax() < m_fracMaxCuts[2]) return false;
+    if (cluster->secondR() > m_secondRCuts[2]) return false;
+    if (cluster->lambdaCenter() > m_lambdaCenterCuts[2]) return false;
+    return true;
+  }
+
 }

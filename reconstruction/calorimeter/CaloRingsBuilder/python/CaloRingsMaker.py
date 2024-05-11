@@ -1,4 +1,4 @@
-__all__ = ["CaloRingsMaker", "CaloRingsMakerCfg"]
+__all__ = ["CaloRingsMaker", "CaloRingsMakerCfg", "CaloFwdRingsMakerCfg"]
 
 
 from GaugiKernel import Cpp
@@ -56,6 +56,31 @@ def CaloRingsMakerCfg( name             : str,
                                 [CaloSampling.HEC1, CaloSampling.TileCal1, CaloSampling.TileExt1],
                                 [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
                                 [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
+                              ],
+                              HistogramPath = HistogramPath,
+                              OutputLevel   = OutputLevel)
+  return rings
+
+def CaloFwdRingsMakerCfg( name             : str, 
+                          InputClusterKey  : str, 
+                          OutputRingerKey  : str, 
+                          OutputLevel       : int=0, 
+                          HistogramPath    : str="Expert/Rings"
+                          ):
+
+  rings   = CaloRingsMaker(   "CaloRingsMaker",
+                              InputClusterKey    = InputClusterKey,  
+                              OutputRingerKey    = OutputRingerKey,
+                              DeltaEtaRings = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2],
+                              DeltaPhiRings = [pi/32, pi/32, pi/32, pi/16, pi/16, pi/16],
+                              NRings        = [4, 4, 4, 2, 2, 2],
+                              LayerRings = [
+                                [CaloSampling.EMEC1],
+                                [CaloSampling.EMEC2],
+                                [CaloSampling.EMEC3],
+                                [CaloSampling.HEC1],
+                                [CaloSampling.HEC2],
+                                [CaloSampling.HEC3],
                               ],
                               HistogramPath = HistogramPath,
                               OutputLevel   = OutputLevel)
