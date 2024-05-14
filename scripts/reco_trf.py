@@ -89,7 +89,11 @@ try:
                                 OutputLevel        = outputLevel)
 
 
+  from CaloCutBasedHypo import CaloCutBasedHypoCfg
+  hypo = CaloCutBasedHypoCfg( "CaloCutBasedHypo",
+                                OutputLevel         = outputLevel)
 
+  
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
                             InputEventKey    = recordable("Events"),
@@ -103,6 +107,7 @@ try:
   # sequence
   acc+= cluster
   acc+= rings
+  acc+= hypo
   acc+= AOD
 
   acc.run(args.numberOfEvents)

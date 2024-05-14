@@ -102,13 +102,13 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
   clus->setE(e0+e1+e2+e3);
-  clus->setSecondR(secondR);
+  // clus->setSecondR(secondR);
   
-  clus->setLambdaCenter(lambdaCenter);
-  clus->setSecondLambda(secondLambda);
-  clus->setFracMax(fracMax);
-  clus->setLateralMom(lateralMom);
-  clus->setLongitudinalMom(longitudinalMom);
+  // clus->setLambdaCenter(lambdaCenter);
+  // clus->setSecondLambda(secondLambda);
+  // clus->setFracMax(fracMax);
+  // clus->setLateralMom(lateralMom);
+  // clus->setLongitudinalMom(longitudinalMom);
   
   return StatusCode::SUCCESS;
 }
