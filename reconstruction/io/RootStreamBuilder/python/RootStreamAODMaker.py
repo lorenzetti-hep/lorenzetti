@@ -14,12 +14,14 @@ class RootStreamAODMaker( Cpp ):
                 InputClusterKey  : str,
                 InputRingerKey   : str,
                 InputSeedsKey    : str,
+                InputElectronKey : str,
                 OutputEventKey   : str=None,
                 OutputTruthKey   : str=None,
                 OutputCellsKey   : str=None,
                 OutputClusterKey : str=None,
                 OutputRingerKey  : str=None,
                 OutputSeedsKey   : str=None,
+                OutputElectronKey: str=None,
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
                 DumpCells        : bool=flags.DumpCells,
@@ -39,6 +41,7 @@ class RootStreamAODMaker( Cpp ):
     self.setProperty( "OutputClusterKey", OutputClusterKey if OutputClusterKey else InputClusterKey )
     self.setProperty( "OutputRingerKey" , OutputRingerKey if OutputRingerKey else InputRingerKey    )
     self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey       )
+    self.setProperty( "OutputElectronKey", OutputElectronKey if OutputElectronKey else InputElectronKey)
     
     self.setProperty( "OutputLevel"     , OutputLevel     ) 
     self.setProperty( "NtupleName"      , NtupleName      )

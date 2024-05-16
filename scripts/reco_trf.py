@@ -89,7 +89,13 @@ try:
                                 OutputLevel        = outputLevel)
 
 
+  from CaloCutBasedHypo import CaloCutBasedHypoCfg
+  hypo = CaloCutBasedHypoCfg( "CaloCutBasedHypo",
+                                InputClusterKey    = recordable("Clusters"),
+                                OutputElectronKey  = recordable("Electrons"),
+                                OutputLevel        = outputLevel)
 
+  
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
                             InputEventKey    = recordable("Events"),
@@ -98,16 +104,18 @@ try:
                             InputCellsKey    = recordable("Cells"),
                             InputClusterKey  = recordable("Clusters"),
                             InputRingerKey   = recordable("Rings"),
+                            InputElectronKey = recordable("Electrons"),
                             OutputLevel      = outputLevel)
 
   # sequence
   acc+= cluster
   acc+= rings
+  acc+= hypo
   acc+= AOD
 
   acc.run(args.numberOfEvents)
 
-  del acc
+  # del acc
   sys.exit(0)
   
 except  Exception as e:

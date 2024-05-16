@@ -56,13 +56,6 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
 
   float weta2 = calculateWeta2(clus, 3, 5);
 
-  std::vector<TVector3> axis = calculateShowerAxis(clus);
-  float secondR = calculateSecondR(clus, axis);
-  float lambdaCenter = calculateLambdaCenter(clus, axis);
-  float secondLambda = calculateSecondLambda(clus, axis);
-  float fracMax = calculateFracMax(clus, axis);
-  float lateralMom = calculateLateralMom(clus, axis);
-  float longitudinalMom = calculateLongitudinalMom(clus, axis);
   
   
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
@@ -102,13 +95,21 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
   clus->setE(e0+e1+e2+e3);
-  clus->setSecondR(secondR);
-  
-  clus->setLambdaCenter(lambdaCenter);
-  clus->setSecondLambda(secondLambda);
-  clus->setFracMax(fracMax);
-  clus->setLateralMom(lateralMom);
-  clus->setLongitudinalMom(longitudinalMom);
+  if(m_doForwardMoments){
+    std::vector<TVector3> axis = calculateShowerAxis(clus);
+    float secondR = calculateSecondR(clus, axis);
+    float lambdaCenter = calculateLambdaCenter(clus, axis);
+    float secondLambda = calculateSecondLambda(clus, axis);
+    float fracMax = calculateFracMax(clus, axis);
+    float lateralMom = calculateLateralMom(clus, axis);
+    float longitudinalMom = calculateLongitudinalMom(clus, axis);
+    clus->setSecondR(secondR);
+    clus->setLambdaCenter(lambdaCenter);
+    clus->setSecondLambda(secondLambda);
+    clus->setFracMax(fracMax);
+    clus->setLateralMom(lateralMom);
+    clus->setLongitudinalMom(longitudinalMom);
+  }
   
   return StatusCode::SUCCESS;
 }

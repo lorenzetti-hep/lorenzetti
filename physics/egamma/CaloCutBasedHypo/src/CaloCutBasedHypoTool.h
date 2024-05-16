@@ -1,5 +1,5 @@
-#ifndef CaloClusterMaker_h
-#define CaloClusterMaker_h
+#ifndef CaloCutBasedHypoTool_h
+#define CaloCutBasedHypoTool_h
 
 #include "CaloCell/enumeration.h"
 #include "GaugiKernel/StatusCode.h"
@@ -7,18 +7,19 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "EventInfo/EventSeedContainer.h"
-#include "ShowerShapes.h"
+#include "Particle/Electron.h"
+#include "Particle/ElectronContainer.h"
 
 
-class CaloClusterMaker : public Gaugi::Algorithm
+
+class CaloCutBasedHypoTool : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    CaloClusterMaker( std::string );
+    CaloCutBasedHypoTool( std::string );
     
-    virtual ~CaloClusterMaker();
+    virtual ~CaloCutBasedHypoTool();
     
     virtual StatusCode initialize() override;
 
@@ -38,33 +39,18 @@ class CaloClusterMaker : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
+    bool computeDecision(const xAOD::CaloCluster* cluster, std::string workingPoint) const;
 
 
   private:
- 
-    
-    void fillCluster( SG::EventContext &ctx,  xAOD::CaloCluster *clus, std::string key ) const;
-    
-    float dR( float eta1, float phi1, float eta2, float phi2 ) const;
- 
-    
-      
-    // input keys
-    std::string m_cellsKey; 
-    std::string m_seedKey;
-    // output keys
+
     std::string m_clusterKey;
-
-    float m_etaWindow;
-    float m_phiWindow;
-    bool m_doForwardMoments;
-    std::string m_histPath;
-
-    // Shower shaper calculator
-    ShowerShapes *m_showerShapes;
-
-    float m_minCenterEnergy;
-
+    std::string m_electronKey;
+    int m_outputLevel;  
+    std::vector<float> m_tightCuts;
+    std::vector<float> m_mediumCuts;
+    std::vector<float> m_looseCuts;
+    std::vector<float> m_vlooseCuts;
 
 };
 

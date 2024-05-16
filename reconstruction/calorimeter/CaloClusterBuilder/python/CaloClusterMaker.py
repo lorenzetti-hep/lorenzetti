@@ -15,6 +15,7 @@ class CaloClusterMaker( Cpp ):
                 EtaWindow        : float=flags.EtaWindow, 
                 PhiWindow        : float=flags.PhiWindow,
                 MinCenterEnergy  : float=flags.MinCenterEnergy,
+                doForwardMoments : bool=flags.doForwardMoments,
                 OutputLevel      : str=0, 
                 HistogramPath    : str="Expert/Clusters",
               ):
@@ -27,6 +28,7 @@ class CaloClusterMaker( Cpp ):
     self.setProperty( "EtaWindow"            , EtaWindow            ) 
     self.setProperty( "PhiWindow"            , PhiWindow            )
     self.setProperty( "MinCenterEnergy"      , MinCenterEnergy      )
+    self.setProperty( "DoForwardMoments"     , doForwardMoments     )
     self.setProperty( "OutputLevel"          , OutputLevel          ) 
     self.setProperty( "HistogramPath"        , HistogramPath        )
 
