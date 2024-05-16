@@ -7,6 +7,8 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
+#include "Particle/Electron.h"
+#include "Particle/ElectronContainer.h"
 
 
 
@@ -37,11 +39,18 @@ class CaloCutBasedHypoTool : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
+    bool computeDecision(const xAOD::CaloCluster* cluster, std::string workingPoint) const;
 
 
   private:
- 
-    
+
+    std::string m_clusterKey;
+    std::string m_electronKey;
+    int m_outputLevel;  
+    std::vector<float> m_tightCuts;
+    std::vector<float> m_mediumCuts;
+    std::vector<float> m_looseCuts;
+    std::vector<float> m_vlooseCuts;
 
 };
 

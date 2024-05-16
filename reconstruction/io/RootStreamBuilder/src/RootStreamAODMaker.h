@@ -6,6 +6,7 @@
 #include "EventInfo/EventSeed.h"
 #include "CaloRings/CaloRings.h"
 #include "CaloCluster/CaloCluster.h"
+#include "Particle/Electron.h"
 #include "TruthParticle/TruthParticle.h"
 
 #include "GaugiKernel/StatusCode.h"
@@ -57,6 +58,7 @@ class RootStreamAODMaker : public Gaugi::Algorithm
     std::string m_inputClusterKey;
     std::string m_inputRingerKey;
     std::string m_inputTruthKey;
+    std::string m_inputElectronKey;
 
     std::string m_outputCellsKey;
     std::string m_outputEventKey;
@@ -64,6 +66,7 @@ class RootStreamAODMaker : public Gaugi::Algorithm
     std::string m_outputClusterKey;
     std::string m_outputRingerKey;
     std::string m_outputTruthKey;
+    std::string m_outputElectronKey;
 
     bool m_dumpCells;
     int m_outputLevel;

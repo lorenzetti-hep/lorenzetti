@@ -24,13 +24,13 @@ CaloClusterMaker::CaloClusterMaker( std::string name ) :
   // Key outputs
   declareProperty( "OutputClusterKey"    , m_clusterKey="Clusters"           );
   // Algorithm configuration
-  declareProperty( "EtaWindow"      , m_etaWindow=0.4                   );
-  declareProperty( "PhiWindow"      , m_phiWindow=0.4                   );
-  declareProperty( "DoForwardMoments", m_doForwardMoments = false       );
-  declareProperty( "OutputLevel"    , m_outputLevel=1                   );
-  declareProperty( "HistogramPath"  , m_histPath="Clusters"             );
-  declareProperty( "MinCenterEnergy", m_minCenterEnergy=15*GeV          );
-  declareProperty( "OutputLevel"    , m_outputLevel=1                   );
+  declareProperty( "EtaWindow"           , m_etaWindow=0.4                   );
+  declareProperty( "PhiWindow"           , m_phiWindow=0.4                   );
+  declareProperty( "DoForwardMoments"    , m_doForwardMoments = false        );
+  declareProperty( "OutputLevel"         , m_outputLevel=1                   );
+  declareProperty( "HistogramPath"       , m_histPath="Clusters"             );
+  declareProperty( "MinCenterEnergy"     , m_minCenterEnergy=15*GeV          );
+  declareProperty( "OutputLevel"         , m_outputLevel=1                   );
 }
 
 //!=====================================================================

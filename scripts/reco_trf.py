@@ -91,7 +91,9 @@ try:
 
   from CaloCutBasedHypo import CaloCutBasedHypoCfg
   hypo = CaloCutBasedHypoCfg( "CaloCutBasedHypo",
-                                OutputLevel         = outputLevel)
+                                InputClusterKey    = recordable("Clusters"),
+                                OutputElectronKey  = recordable("Electrons"),
+                                OutputLevel        = outputLevel)
 
   
   from RootStreamBuilder import RootStreamAODMaker
@@ -102,6 +104,7 @@ try:
                             InputCellsKey    = recordable("Cells"),
                             InputClusterKey  = recordable("Clusters"),
                             InputRingerKey   = recordable("Rings"),
+                            InputElectronKey = recordable("Electrons"),
                             OutputLevel      = outputLevel)
 
   # sequence
@@ -112,7 +115,7 @@ try:
 
   acc.run(args.numberOfEvents)
 
-  del acc
+  # del acc
   sys.exit(0)
   
 except  Exception as e:

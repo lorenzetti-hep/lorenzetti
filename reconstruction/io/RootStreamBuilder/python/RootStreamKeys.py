@@ -18,6 +18,7 @@ valid_keys = [
             # CaloRingsBuilder
             "Rings",
             "TruthRings",
+            "Electrons",
             ]
 
 def recordable( key ):
