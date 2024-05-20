@@ -7,6 +7,7 @@
 #include "TruthParticle/TruthParticle.h"
 #include "CaloCluster/CaloCluster.h"
 #include "CaloRings/CaloRings.h"
+#include "Particle/Electron.h"
 
 
 
@@ -49,6 +50,7 @@ class RootStreamNTUPLEMaker : public Gaugi::Algorithm
     std::string m_truthKey;
     std::string m_clusterKey;
     std::string m_ringerKey;
+    std::string m_electronKey;
     std::string m_inputFile;
     std::string m_ntupleName;
     std::string m_outputNtupleName;
