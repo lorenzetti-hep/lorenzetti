@@ -12,6 +12,7 @@ class RootStreamNTUPLEMaker( Cpp ):
                 InputCellsKey    : str,
                 InputClusterKey  : str,
                 InputRingerKey   : str,
+                InputElectronKey : str,
                 InputFile        : str,
                 OutputLevel      : int=0, 
                 NtupleName       : str="CollectionTree",
@@ -30,6 +31,7 @@ class RootStreamNTUPLEMaker( Cpp ):
     self.setProperty( "InputCellsKey"   , InputCellsKey   )
     self.setProperty( "InputClusterKey" , InputClusterKey )
     self.setProperty( "InputRingerKey"  , InputRingerKey  )
+    self.setProperty( "InputElectronKey", InputElectronKey)
     self.setProperty( "InputFile"       , InputFile       )
     self.setProperty( "SecondLambdaCuts", SecondLambdaCuts )
     self.setProperty( "LateralMomCuts"  , LateralMomCuts)

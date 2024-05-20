@@ -52,6 +52,7 @@ try:
                             InputTruthKey        = recordable("Particles"),
                             InputClusterKey      = recordable("Clusters"),
                             InputRingerKey       = recordable("Rings"),
+                            InputElectronKey     = recordable("Electrons"),
                             NtupleName           = "CollectionTree",
                             OutputLevel          = outputLevel,
                             OutputNtupleName     = "events",
