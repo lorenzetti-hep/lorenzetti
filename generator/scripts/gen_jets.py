@@ -63,10 +63,13 @@ parser.add_argument('--maxEta', action='store', dest='maxEta', required = False,
                     help = "Maximum eta coordinate")
 
 parser.add_argument('--minEta', action='store', dest='minEta', required = False, type=float, default=0,
-                    help = "Maximum eta coordinate")
+                    help = "Minimum eta coordinate")
 
 parser.add_argument('--energy_min', action='store', dest='energy_min', required = False, type=float, default=17,
-                    help = "Maximum eta coordinate")
+                    help = "Minimum energy")
+
+parser.add_argument('--energy_max', action='store', dest='energy_max', required = False, type=float, default=13000,
+                    help = "Maximum energy")
 
 
 if len(sys.argv)==1:
@@ -96,6 +99,7 @@ try:
                EtaMax      = args.maxEta,
                EtaMin      = args.minEta,
                MinPt       = args.energy_min*GeV,
+               MaxPt       = args.energy_max*GeV,
                Select      = 2,
                EtaWindow   = 0.4,
                PhiWindow   = 0.4,

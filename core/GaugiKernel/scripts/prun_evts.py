@@ -47,8 +47,8 @@ parser.add_argument('--dry_run', action='store_true', dest='dry_run',
 
 import sys,os
 if len(sys.argv)==1:
-  parser.print_help()
-  sys.exit(1)
+    parser.print_help()
+    sys.exit(1)
 
 args = parser.parse_args()
 
@@ -57,18 +57,22 @@ inputs = list(range(args.nov))
 inputs = list(chunks(inputs, args.novPerJob))
 
 def func(event_numbers, outputfile):
-  seed = str(args.seed+event_numbers[0])
-  nov = str(len(event_numbers))
-  offset =  str(event_numbers[0])
-  command = args.command
-  command = command.replace('%OFFSET' , offset)
-  command+= f' -s {seed} -o {outputfile} --nov {nov}'
-  command = command.replace('  ', ' ') # remove double spaces
-  return command
+    seed = str(args.seed+event_numbers[0])
+    nov = str(len(event_numbers))
+    offset =  str(event_numbers[0])
+    output = args.output
+    command = args.command
+    command = command.replace('%OFFSET' , offset)
+    command = command.replace('%SEED' , seed)
+    command = command.replace('%NOV' , nov)
+    command = command.replace('%OUT' , outputfile)
+    #command+= f' -s {seed} -o {outputfile} --nov {int(nov)}'
+    command = command.replace('  ', ' ') # remove double spaces
+    return command
     
 
 
 prun = Pool( func, inputs, args.numberOfThreads, os.path.abspath(args.output), args.dry_run )
 prun.run()
 if args.merge:
-  prun.merge()
+    prun.merge()

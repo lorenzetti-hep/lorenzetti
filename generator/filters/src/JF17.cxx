@@ -17,7 +17,8 @@ JF17::JF17(const std::string name , IGenerator *gen):
 {
   declareProperty( "EtaMax"         , m_etaMax=1.4                );
   declareProperty( "EtaMin"         , m_etaMin=0                  );
-  declareProperty( "MinPt"          , m_minPt=0.0                 );
+  declareProperty( "MinPt"          , m_minPt=0.0                 );   
+  declareProperty( "MaxPt"          , m_maxPt=0.0                 );   
   declareProperty( "Select"         , m_select=2                  );
   declareProperty( "EtaWindow"      , m_etaWindow=0.4             );
   declareProperty( "PhiWindow"      , m_phiWindow=0.4             );
@@ -80,6 +81,7 @@ StatusCode JF17::execute( generator::Event &ctx )
   auto inclusive_jets = sorted_by_pt( clust_seq.inclusive_jets() );
   
   const float minPt=m_minPt/1.e3; 
+  const float maxPt=m_maxPt/1.e3; 
   const float etaMax=m_etaMax;
   const float etaMin=m_etaMin;
   inclusive_jets.erase(std::remove_if(inclusive_jets.begin(),
@@ -124,10 +126,9 @@ StatusCode JF17::execute( generator::Event &ctx )
       }
     }
 
-    
     // If the total cluster energy is higher than the cut, than we 
     // can include these particles to the jet cluster vector
-    if (etot > minPt){
+    if ((etot > minPt) && (etot < maxPt)){
 
 
       auto seed = generator::Seed( main_p->momentum().eta(), main_p->momentum().phi() );

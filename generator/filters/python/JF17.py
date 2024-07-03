@@ -10,6 +10,7 @@ class JF17( Cpp ):
                 EtaMax      : float=1.4,
                 EtaMin      : float=0.0,
                 MinPt       : float=0.0, 
+                MaxPt       : float=0.0, 
                 Select      : int=2,
                 OutputLevel : int=0, 
                 EtaWindow   : float=0.4, 
@@ -21,6 +22,7 @@ class JF17( Cpp ):
     self.setProperty( "EtaMax"      , EtaMax      )
     self.setProperty( "EtaMin"      , EtaMin      )
     self.setProperty( "MinPt"       , MinPt       )
+    self.setProperty( "MaxPt"       , MaxPt       )
     self.setProperty( "Select"      , Select      )
     #self.setProperty( "OutputLevel" , OutputLevel )
     self.setProperty( "EtaWindow"   , EtaWindow   )
