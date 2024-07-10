@@ -17,7 +17,7 @@ namespace generator{
   
       //virtual StatusCode execute( generator::Event &) override;
       virtual StatusCode initialize() override;
-      virtual StatusCode execute( generator::Event &) override;
+      virtual StatusCode execute( Event&) override;
       virtual StatusCode finalize() override;
     
     private:
