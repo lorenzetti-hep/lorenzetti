@@ -102,9 +102,9 @@ try:
         '/generator/evtgen/data/zee_config.cmnd'
 
     zee_gen = Pythia8("Generator",
-                  File=zee_file,
-                  Seed=args.seed,
-                  EventNumber=args.eventNumber)
+                      File=zee_file,
+                      Seed=args.seed,
+                      EventNumber=args.eventNumber)
 
     zee = Zee("Zee",
               zee_gen,
@@ -122,9 +122,9 @@ try:
         '/generator/evtgen/data/single_particle_config.cmnd'
 
     boosted_gen = Pythia8("Generator",
-                File=boosted_file,
-                Seed=args.seed,
-                EventNumber=args.eventNumber)
+                          File=boosted_file,
+                          Seed=args.seed,
+                          EventNumber=args.eventNumber)
     boostedElectron = BoostedEvents("ElectronBoosted",
                                     zee_gen,
                                     Particle=Particle.Electron,
