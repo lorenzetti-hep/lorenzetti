@@ -6,11 +6,11 @@
 #include "SingleParticle.h"
 #include "Pythia8/Pythia.h"
 
-// NOTE: Only works with Pythia generator
 namespace generator
 {
   /**
    * @brief Class for generating boosted electrons
+   * For now, this class ony works with Pythia generator
    * 
    */
   class BoostedEvents : public SingleParticle
