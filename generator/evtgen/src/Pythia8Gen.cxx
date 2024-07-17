@@ -2,7 +2,7 @@
 #include "Pythia8Gen.h"
 #include "Pythia8Plugins/HepMC3.h"
 #include "HepMC3/WriterRootTree.h"
-#include "TMath.h"
+#include <cmath>
 
 using namespace Pythia8;
 using namespace generator;
@@ -97,9 +97,7 @@ float Pythia8Gen::random_flat()
 
 float Pythia8Gen::random_gauss()
 {
-  //Pythia8 does not return a normalized value from the gauss call
-  //https://pythia.org/latest-manual/RandomNumbers.html
-  return m_gun.rndm.gauss()/TMath::Sqrt(TMath::TwoPi);
+  return m_gun.rndm.gauss()/sqrt(2*M_PI);
 }
 
 void Pythia8Gen::clear()

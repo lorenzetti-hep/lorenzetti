@@ -137,7 +137,7 @@ StatusCode SingleParticle::finalize()
 
 
 
-void SingleParticle::fill(Pythia8::Pythia *gun, int id, double energy, double etaIn, double phiIn, bool atRest=false, bool hasLifetime=false)
+int SingleParticle::fill(Pythia8::Pythia *gun, int id, double energy, double etaIn, double phiIn, bool atRest=false, bool hasLifetime=false)
 {
 
   MSG_INFO("Fill particle with ID " << id);
@@ -173,6 +173,7 @@ void SingleParticle::fill(Pythia8::Pythia *gun, int id, double energy, double et
   MSG_INFO("Particle stored with i = " << iNew);
   // Generate lifetime, to give decay away from primary vertex.
   if (hasLifetime) gun->event[iNew].tau(gun->event[iNew].tau0() * gun->rndm.exp());
+  return iNew;
 }
 
 

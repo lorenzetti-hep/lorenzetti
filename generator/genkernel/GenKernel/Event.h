@@ -170,7 +170,7 @@ namespace generator
     /**
      * @brief Add the seed into the current event
      *
-     * @param seed
+     * @param seed The seed to be inserted
      */
     void push_back(Seed seed) { m_seeds.push_back(seed); };
 
@@ -204,6 +204,8 @@ namespace generator
 
     std::vector<Seed> &operator*() { return m_seeds; };
     Seed &operator[](unsigned idx) { return m_seeds[idx]; }
+
+    int size() const { return m_seeds.size(); };
 
   protected:
     /**

@@ -22,7 +22,7 @@ namespace generator{
     protected:
     
 
-      void fill(Pythia8::Pythia *gun, int id, double energy, double etaIn, double phiIn, bool atRest, bool hasLifetime);
+      int fill(Pythia8::Pythia *gun, int id, double energy, double etaIn, double phiIn, bool atRest, bool hasLifetime);
 
       float m_eta;
       float m_phi;

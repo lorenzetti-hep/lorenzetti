@@ -55,6 +55,16 @@ namespace generator
      * 
      */
     int m_pdgid;
+    /**
+     * @brief Minimum seed energy percentage to generate a particle
+     * 
+     */
+    float m_relEnergyMin;
+    /**
+     * @brief Maximum seed energy percentage to generate a particle
+     * 
+     */
+    float m_relEnergyMax;
   };
 }
 #endif
