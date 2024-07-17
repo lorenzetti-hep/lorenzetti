@@ -26,11 +26,10 @@ namespace generator{
 
       virtual float random_flat() override;
       virtual float random_gauss() override;
-
       virtual void clear() override;
 
-
-      Pythia8::Pythia * core(){return &m_gun;};
+      Pythia8::Event *event(){return &m_gun.event;};
+      Pythia8::Pythia *core(){return &m_gun;};
       
 
     protected:

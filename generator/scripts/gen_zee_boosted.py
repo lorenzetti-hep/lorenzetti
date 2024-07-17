@@ -101,13 +101,11 @@ try:
     zee_file = os.environ['LZT_PATH'] + \
         '/generator/evtgen/data/zee_config.cmnd'
 
-    zee_gen = Pythia8("Generator",
+    zee = Zee("Zee",
+              Pythia8("Generator",
                       File=zee_file,
                       Seed=args.seed,
-                      EventNumber=args.eventNumber)
-
-    zee = Zee("Zee",
-              zee_gen,
+                      EventNumber=args.eventNumber),
               EtaMax=args.eta_max,
               MinPt=15*GeV,
               # calibration use only.
@@ -118,18 +116,12 @@ try:
 
     tape += zee
 
-    boosted_file = os.environ['LZT_PATH'] + \
-        '/generator/evtgen/data/single_particle_config.cmnd'
-
-    boosted_gen = Pythia8("Generator",
-                          File=boosted_file,
-                          Seed=args.seed,
-                          EventNumber=args.eventNumber)
-    boostedElectron = BoostedEvents("ElectronBoosted",
-                                    zee_gen,
+    boostedElectron = BoostedEvents("BoostedElectron",
+                                    Pythia8("BoostedGenerator",
+                                            Seed=args.seed,
+                                            EventNumber=args.eventNumber),
                                     Particle=Particle.Electron,
                                     DeltaR=0.5,
-                                    Seed=args.seed,
                                     OutputLevel=args.outputLevel
                                     )
 

@@ -16,7 +16,6 @@ class BoostedEvents(Cpp):
                  DeltaR: float = 0.2,
                  HasLifetime: bool = False,
                  AtRest: bool = False,
-                 Seed: int = 512,
                  OutputLevel: int = 0):
 
         Cpp.__init__(self, generator.BoostedEvents(name, gen.core()))
