@@ -69,7 +69,6 @@ StatusCode BoostedEvents::execute(generator::Event &ctx)
     const auto main_event_t = sample_t();
     const auto main_event_z = sample_z();
 
-    MSG_INFO("Fill particle: id = "<< m_pdgid << " eta = " << eta << " phi = " << phi << " energy = " << energy);
     int iparticle = fill(pythia, m_pdgid, energy, eta, phi, m_atRest, m_hasLifetime);
     auto *p = &pythia->event[iparticle];
     pythia->event.popBack();
