@@ -32,6 +32,7 @@ StatusCode BoostedEvents::initialize()
   if (generator()->initialize().isFailure())
   {
     MSG_FATAL("Its not possible to initialize the generator. Abort!");
+    return StatusCode::FAILURE;
   }
 
   return StatusCode::SUCCESS;
@@ -68,76 +69,18 @@ StatusCode BoostedEvents::execute(generator::Event &ctx)
     float energy = seed.etot() * (m_relEnergyMax + m_relEnergyMax * generator()->random_flat());
     const auto main_event_t = sample_t();
     const auto main_event_z = sample_z();
-
+  	// This is needed to obtain position vectors in respect to the pythia event
+    // Was not able to implement it with HepMC3 yet this is the reason
+    // for only working with Pythia8 as a generator
     int iparticle = fill(pythia, m_pdgid, energy, eta, phi, m_atRest, m_hasLifetime);
     auto *p = &pythia->event[iparticle];
     pythia->event.popBack();
     auto new_seed = generator::Seed(eta, phi);
     new_seed.emplace_back(1, 0, p->id(), p->px(), p->py(), p->pz(), p->eta(), p->phi(),
-                      p->xProd(), p->yProd(), p->zProd() + main_event_z, p->tProd() + main_event_t,
-                      p->e(), p->eT());
+                          p->xProd(), p->yProd(), p->zProd() + main_event_z, p->tProd() + main_event_t,
+                          p->e(), p->eT());
     ctx.push_back(new_seed);
   }
-
-
-  // // Generate main event. Quit if too many failures.
-  // if (!gun->next())
-  // {
-  //   if (m_iAbort++ > m_nAbort)
-  //   {
-  //     MSG_ERROR("Event generation aborted prematurely, owing to error in main event!");
-  //     throw AbortPrematurely();
-  //   }
-  // }
-
-  // double weight = gun->info.mergingWeight();
-  // double evtweight = gun->info.weight();
-  // weight *= evtweight;
-
-  // // Do not print zero-weight events.
-  // if (weight == 0.)
-  // {
-  //   MSG_WARNING("Pythia generation return weight zero.");
-  //   return StatusCode::FAILURE;
-  // }
-
-  // for (int i = 0; i < gun->event.size(); ++i)
-  // {
-
-  //   auto *p = &gun->event[i];
-  //   ParticleData *pdt = &gun->particleData;
-
-  //   // Find any unrecognized particle codes.
-  //   int id = p->id();
-
-  //   if (id == 0 || !pdt->isParticle(id))
-  //   {
-  //     MSG_WARNING("Unknown code id = " << id);
-  //     continue;
-  //   }
-
-  //   const auto main_event_t = sample_t();
-  //   const auto main_event_z = sample_z();
-
-  //   // Study final-state particles.
-  //   if (p->isFinal())
-  //   {
-  //     // Search for the associated seed into the event record
-  //     for (auto &seed : *ctx)
-  //     {
-  //       // Get the associated seed for this generated particle
-  //       // Add the particle into the seed particle list
-  //       if (dR(p->eta(), p->phi(), seed.eta(), seed.phi()) <= m_deltaR)
-  //       {
-  //         seed.emplace_back(1, 0, p->id(), p->px(), p->py(), p->pz(), p->eta(), p->phi(),
-  //                           p->xProd(), p->yProd(), p->zProd() + main_event_z, p->tProd() + main_event_t,
-  //                           p->e(), p->eT());
-  //         MSG_INFO("Adding particle: id = " << p->id() << " eta = " << p->eta() << " phi = " << p->phi() << " Et = " << p->eT());
-  //       } // delta R inside the limit
-  //     } // Loop over seeds
-  //   } // Is final
-  // } // Loop over particles
-
   return StatusCode::SUCCESS;
 }
 

@@ -97,7 +97,7 @@ float Pythia8Gen::random_flat()
 
 float Pythia8Gen::random_gauss()
 {
-  return m_gun.rndm.gauss()/sqrt(2*M_PI);
+  return m_gun.rndm.gauss() / sqrt(2 * M_PI);
 }
 
 void Pythia8Gen::clear()

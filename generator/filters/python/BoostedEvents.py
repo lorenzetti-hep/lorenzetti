@@ -25,7 +25,6 @@ class BoostedEvents(Cpp):
         self.setProperty("DeltaR", DeltaR)
         self.setProperty("HasLifetime", HasLifetime)
         self.setProperty("AtRest", AtRest)
-        # self.setProperty( "OutputLevel" , OutputLevel   )
 
     def gun(self):
         return self.__gen
