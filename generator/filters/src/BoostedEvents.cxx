@@ -66,7 +66,7 @@ StatusCode BoostedEvents::execute(generator::Event &ctx)
     } while (dR(eta, phi, seed.eta(), seed.phi()) > m_deltaR);
 
     // Generate the energy fraction desired to the new seed based on the original seed
-    float energy = seed.etot() * (m_relEnergyMax + m_relEnergyMax * generator()->random_flat());
+    float energy = seed.etot() * (m_relEnergyMin + m_relEnergyMax * generator()->random_flat());
     const auto main_event_t = sample_t();
     const auto main_event_z = sample_z();
   	// This is needed to obtain position vectors in respect to the pythia event
