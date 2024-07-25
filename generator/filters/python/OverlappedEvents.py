@@ -1,4 +1,4 @@
-__all__ = ["BoostedEvents"]
+__all__ = ["OverlappedEvents"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
@@ -8,7 +8,7 @@ from ROOT import generator
 from filters import Particle
 
 
-class BoostedEvents(Cpp):
+class OverlappedEvents(Cpp):
 
     def __init__(self, name, gen,
                  Particle: int = Particle.Electron,
@@ -18,7 +18,7 @@ class BoostedEvents(Cpp):
                  AtRest: bool = False,
                  OutputLevel: int = 0):
 
-        Cpp.__init__(self, generator.BoostedEvents(name, gen.core()))
+        Cpp.__init__(self, generator.OverlappedEvents(name, gen.core()))
         self.__gen = gen
         self.setProperty("Particle", Particle)
         self.setProperty("Energy", Energy)

@@ -92,7 +92,7 @@ args = parser.parse_args()
 
 try:
     from evtgen import Pythia8
-    from filters import Zee, BoostedEvents, Particle
+    from filters import Zee, OverlappedEvents, Particle
     from GenKernel import EventTape
 
     tape = EventTape("EventTape", OutputFile=args.outputFile,
@@ -116,7 +116,7 @@ try:
 
     tape += zee
 
-    boostedElectron = BoostedEvents("BoostedElectron",
+    boostedElectron = OverlappedEvents("BoostedElectron",
                                     Pythia8("BoostedGenerator",
                                             Seed=args.seed,
                                             EventNumber=args.eventNumber),

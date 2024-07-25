@@ -1,5 +1,5 @@
 
-#include "BoostedEvents.h"
+#include "OverlappedEvents.h"
 #include "helper.h"
 #include "TMath.h"
 #include "Pythia8/Pythia.h"
@@ -8,7 +8,7 @@
 using namespace Pythia8;
 using namespace generator;
 
-BoostedEvents::BoostedEvents(const std::string name, IGenerator *gen) : IMsgService(name),
+OverlappedEvents::OverlappedEvents(const std::string name, IGenerator *gen) : IMsgService(name),
                                                                         SingleParticle(name, gen)
 {
   declareProperty("Energy", m_energy = -1);
@@ -20,12 +20,12 @@ BoostedEvents::BoostedEvents(const std::string name, IGenerator *gen) : IMsgServ
   declareProperty("RelEnergyMax", m_relEnergyMax = 2.0); // 200%
 }
 
-BoostedEvents::~BoostedEvents()
+OverlappedEvents::~OverlappedEvents()
 {
   ;
 }
 
-StatusCode BoostedEvents::initialize()
+StatusCode OverlappedEvents::initialize()
 {
   setMsgLevel(m_outputLevel);
 
@@ -38,7 +38,7 @@ StatusCode BoostedEvents::initialize()
   return StatusCode::SUCCESS;
 }
 
-StatusCode BoostedEvents::execute(generator::Event &ctx)
+StatusCode OverlappedEvents::execute(generator::Event &ctx)
 {
 
   MSG_INFO("Start boosted gun...");
@@ -84,7 +84,7 @@ StatusCode BoostedEvents::execute(generator::Event &ctx)
   return StatusCode::SUCCESS;
 }
 
-float BoostedEvents::dR(float eta1, float phi1, float eta2, float phi2) const
+float OverlappedEvents::dR(float eta1, float phi1, float eta2, float phi2) const
 {
   float deta = fabs(eta1 - eta2);
   float dphi = fabs(phi1 - phi2);
@@ -95,7 +95,7 @@ float BoostedEvents::dR(float eta1, float phi1, float eta2, float phi2) const
   return sqrt(deta * deta + dphi * dphi);
 }
 
-StatusCode BoostedEvents::finalize()
+StatusCode OverlappedEvents::finalize()
 {
   return StatusCode::SUCCESS;
 }

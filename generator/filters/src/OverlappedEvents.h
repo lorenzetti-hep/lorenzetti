@@ -1,5 +1,5 @@
-#ifndef filters_BoostedEvents_h
-#define filters_BoostedEvents_h
+#ifndef filters_OverlappedEvents_h
+#define filters_OverlappedEvents_h
 
 #include "GenKernel/IAlgorithm.h"
 #include "GenKernel/IGenerator.h"
@@ -13,11 +13,11 @@ namespace generator
    * For now, this class ony works with Pythia generator
    * 
    */
-  class BoostedEvents : public SingleParticle
+  class OverlappedEvents : public SingleParticle
   {
   public:
-    BoostedEvents(const std::string, IGenerator *);
-    ~BoostedEvents();
+    OverlappedEvents(const std::string, IGenerator *);
+    ~OverlappedEvents();
 
     virtual StatusCode initialize() override;
     virtual StatusCode execute(Event &) override;
