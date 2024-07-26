@@ -19,7 +19,12 @@ public:
   virtual ~RootStreamNTUPLEMaker();
 
   virtual StatusCode initialize() override;
-
+  /**
+   * @brief Crates the ntuple TTree branches
+   * 
+   * @param ctx The event context
+   * @return StatusCode 
+   */
   virtual StatusCode bookHistograms(SG::EventContext &ctx) const override;
 
   virtual StatusCode pre_execute(SG::EventContext &ctx) const override;
@@ -37,20 +42,64 @@ public:
   bool computeForwardDecision(xAOD::CaloCluster *cluster, std::string workingpoint) const;
 
 private:
+  /**
+   * @brief Deserializes the AOD event to multiple rows to the ntuple TTree.
+   * 
+   * @param evt The event number
+   * @param ctx The event context
+   * @return StatusCode 
+   */
   StatusCode deserialize(int evt, SG::EventContext &ctx) const;
 
   template <class T>
   void InitBranch(TTree *fChain, std::string branch_name, T *param) const;
 
+  /**
+   * @brief The key to be added after the CaloCellContainer
+   * 
+   */
   std::string m_cellsKey;
+  /**
+   * @brief The key to be added after the EventInfoContainer
+   * 
+   */
   std::string m_eventKey;
+  /**
+   * @brief The key to be added after the TruthParticleContainer
+   * 
+   */
   std::string m_truthKey;
+  /**
+   * @brief The key to be added after the CaloClusterContainer
+   * 
+   */
   std::string m_clusterKey;
+  /**
+   * @brief The key to be added after the CaloRingsContainer
+   * 
+   */
   std::string m_ringerKey;
+  /**
+   * @brief The key to be added after the ElectronContainer
+   * 
+   */
   std::string m_electronKey;
+  /**
+   * @brief The AOD input file name
+   * 
+   */
   std::string m_inputFile;
+  /**
+   * @brief The NTuple output file name
+   * 
+   */
   std::string m_ntupleName;
+  /**
+   * @brief The NTuple TTree name
+   * 
+   */
   std::string m_outputNtupleName;
+  
   std::vector<float> m_secondLambdaCuts;
   std::vector<float> m_lateralMomCuts;
   std::vector<float> m_longMomCuts;
