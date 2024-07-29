@@ -29,3 +29,6 @@ build
 
 executables
 *.exe
+
+# data folders
+production/*

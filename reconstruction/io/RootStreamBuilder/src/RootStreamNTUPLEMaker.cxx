@@ -119,6 +119,8 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   bool el_fwdTight = false;
   bool el_fwdMedium = false;
   bool el_fwdLoose = false;
+  float avgmu        = 0;
+  int eventNumber    = 0;
 
 
   TTree *outputTree = new TTree(m_outputNtupleName.c_str(), "");
@@ -166,6 +168,8 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   outputTree->Branch("el_fwdTight",             &el_fwdTight);
   outputTree->Branch("el_fwdMedium",             &el_fwdMedium);
   outputTree->Branch("el_fwdLoose",             &el_fwdLoose);
+  outputTree->Branch("eventNumber"     , &eventNumber);
+  outputTree->Branch("avgmu"          , &avgmu);
 
   store->add(outputTree);
   return StatusCode::SUCCESS; 
@@ -281,6 +285,8 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   bool  el_fwdTight = false;
   bool  el_fwdMedium = false;
   bool  el_fwdLoose = false;
+  float avgmu        = 0;
+  int eventNumber    = 0;
   
   InitBranch( outputTree, "cluster_eta" , &eta);
   InitBranch( outputTree, "cluster_phi" , &phi);
@@ -412,10 +418,39 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
       }
     }
     
-    outputTree->Fill(); //each cluster should be 1 entry on ntulpe file
+    // outputTree->Fill(); //each cluster should be 1 entry on ntulpe fill, only fill ntuple tree once, after filling all branches
     cluster_link++;
     }
   } 
+
+  { // deserialize EventInfo
+    InitBranch(outputTree, "eventNumber", &eventNumber);
+    InitBranch(outputTree, "avgmu", &avgmu);
+
+    SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
+    container.record( std::unique_ptr<xAOD::EventInfoContainer>(new xAOD::EventInfoContainer()));
+    xAOD::EventInfo  *event=nullptr;
+    xAOD::EventInfoConverter cnv;
+    cnv.convert(collection_event->at(0), event);
+    std::cout<<"EventNumber = " << event->eventNumber() << ", AvgMu = " << event->avgmu()<<std::endl;
+    eventNumber = event->eventNumber();
+    avgmu = event->avgmu();    
+
+    // if (collection_event == nullptr){
+    //   std::cout<<"null pointer"<<std::endl;
+    // }
+    // else if (!collection_event->empty()){
+    //   for (auto &event_t: *collection_event){
+    //     std::cout<<event_t.eventNumber<<std::endl;
+    //   }
+    // }
+    // else{
+    //   std::cout<<"empty vector"<<std::endl;
+    // }
+
+    outputTree->Fill();  //each cluster should be 1 entry on ntulpe fill, only fill ntuple tree once, after filling all branches
+  }
+
 
   eta          = 0;
   phi          = 0;
@@ -460,6 +495,9 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   el_fwdTight  = false;
   el_fwdMedium = false;
   el_fwdLoose  = false;
+  avgmu        = 0;
+  eventNumber  = 0;
+  
   delete rings        ;
 
   delete collection_descriptor;
