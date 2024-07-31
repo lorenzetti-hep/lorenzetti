@@ -137,17 +137,17 @@ StatusCode SingleParticle::finalize()
 
 
 
-void SingleParticle::fill(Pythia8::Pythia *gun, int id, float energy, float etaIn, float phiIn, bool atRest=false, bool hasLifetime=false)
+int SingleParticle::fill(Pythia8::Pythia *gun, int id, double energy, double etaIn, double phiIn, bool atRest=false, bool hasLifetime=false)
 {
 
   MSG_INFO("Fill particle with ID " << id);
-  float thetaIn = acos( tanh(etaIn ) );
+  double thetaIn = acos( tanh(etaIn ) );
   ParticleData& pdt = gun->particleData;
   
   // Select particle mass; where relevant according to Breit-Wigner.
-  float ee = energy;
-  float mm = pdt.mSel(id);
-  float pp = sqrtpos(ee*ee - mm*mm);
+  double ee = energy;
+  double mm = pdt.mSel(id);
+  double pp = sqrtpos(ee*ee - mm*mm);
 
   // Special case when particle is supposed to be at rest.
   if (atRest) {
@@ -156,21 +156,25 @@ void SingleParticle::fill(Pythia8::Pythia *gun, int id, float energy, float etaI
   }
 
   // Angles as input or uniform in solid angle.
-  float cThe, sThe, phi;
-  cThe = cos(thetaIn);
-  sThe = sin(thetaIn);
-  phi  = phiIn;
+  double cThe = cos(thetaIn);
+  double sThe = sin(thetaIn);
+  double px = pp * sThe * cos(phiIn);
+  double py = pp * sThe * sin(phiIn);
+  double pz = pp * cThe;
 
   // Store the particle in the event record.
 
   MSG_INFO( "Storing particle into the event record..." );
+  MSG_INFO("id = " << id << " energy = " << ee << " mass = " << mm << " pp = " << pp << " eta = " << etaIn << " phi = " << phiIn << " at rest = " << atRest << " has lifetime = " << hasLifetime);
+  MSG_INFO("px = " << px << " py = " << py << " pz = " << pz);
 
-  int iNew = gun->event.append( id, 1, 0, 0, pp * sThe * cos(phi),
-    pp * sThe * sin(phi), pp * cThe, ee, mm);
+  int iNew = gun->event.append(id, 1, 0, 0, px, py, pz, ee, mm);
   
   MSG_INFO("Particle stored with i = " << iNew);
   // Generate lifetime, to give decay away from primary vertex.
-  if (hasLifetime) gun->event[iNew].tau( gun->event[iNew].tau0() * gun->rndm.exp() );
+  if (hasLifetime) gun->event[iNew].tau(gun->event[iNew].tau0() * gun->rndm.exp());
+  return iNew;
 }
+
 
 

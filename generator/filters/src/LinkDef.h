@@ -4,7 +4,7 @@
 #include "src/Pileup.h"
 #include "src/FixedRegion.h"
 #include "src/SingleParticle.h"
-#include "src/BoostedEvents.h"
+#include "src/OverlappedEvents.h"
 
 
 #ifdef __CINT__
@@ -19,7 +19,7 @@
 #pragma link C++ class generator::Pileup+;
 #pragma link C++ class generator::FixedRegion+;
 #pragma link C++ class generator::SingleParticle+;
-#pragma link C++ class generator::BoostedEvents+;
+#pragma link C++ class generator::OverlappedEvents+;
 
 
 #endif

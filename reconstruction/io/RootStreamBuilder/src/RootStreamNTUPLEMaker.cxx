@@ -120,7 +120,10 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   bool el_fwdMedium = false;
   bool el_fwdLoose = false;
   float avgmu        = 0;
-  int eventNumber    = 0;
+  int eventNumber = -9999;
+  float el_eta = -1;
+  float el_et = -1;
+  float el_phi = -1;
 
 
   TTree *outputTree = new TTree(m_outputNtupleName.c_str(), "");
@@ -170,6 +173,9 @@ StatusCode RootStreamNTUPLEMaker::bookHistograms( EventContext &ctx ) const
   outputTree->Branch("el_fwdLoose",             &el_fwdLoose);
   outputTree->Branch("eventNumber"     , &eventNumber);
   outputTree->Branch("avgmu"          , &avgmu);
+  outputTree->Branch("el_eta", &el_eta);
+  outputTree->Branch("el_et", &el_et);
+  outputTree->Branch("el_phi", &el_phi);
 
   store->add(outputTree);
   return StatusCode::SUCCESS; 
@@ -193,6 +199,7 @@ StatusCode RootStreamNTUPLEMaker::execute( EventContext &/*ctx*/, const G4Step *
 
 StatusCode RootStreamNTUPLEMaker::execute( EventContext &ctx, int evt ) const
 {
+  MSG_INFO("Called initialize");
   return deserialize( evt, ctx );
 }
 
@@ -222,7 +229,7 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   std::vector<xAOD::CaloRings_t         > *collection_rings      = nullptr;
   std::vector<xAOD::Electron_t          > *collection_electrons  = nullptr;
 
-  MSG_DEBUG( "Link all branches..." );
+  MSG_INFO( "Link all branches..." );
 
   auto store = ctx.getStoreGateSvc();
   TFile *file = (TFile*)store->decorator("events");
@@ -285,6 +292,9 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   bool  el_fwdTight = false;
   bool  el_fwdMedium = false;
   bool  el_fwdLoose = false;
+  float el_eta = -1;
+  float el_et = -1;
+  float el_phi = -1;
   float avgmu        = 0;
   int eventNumber    = 0;
   
@@ -332,6 +342,10 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
   InitBranch( outputTree,"el_fwdTight", &el_fwdTight);
   InitBranch( outputTree,"el_fwdMedium", &el_fwdMedium);
   InitBranch( outputTree,"el_fwdLoose", &el_fwdLoose);
+  InitBranch( outputTree, "el_eta", &el_eta);
+  InitBranch( outputTree, "el_et", &el_et);
+  InitBranch( outputTree, "el_phi", &el_phi);
+  InitBranch(outputTree, "event_number", &evt);
   
 
   { //main loop (from electron to rings)
@@ -347,78 +361,84 @@ StatusCode RootStreamNTUPLEMaker::deserialize( int evt, EventContext &ctx ) cons
     electronContainer.record( std::unique_ptr<xAOD::ElectronContainer>(new xAOD::ElectronContainer()));
 
     int cluster_link = 0;
+    xAOD::CaloCluster_t cluster_t;
     for (auto &electron_t: *collection_electrons){
-      for (auto &cluster_t: *collection_cluster){
-        for (auto &ringer_t : *collection_rings ){
-          if (ringer_t.cluster_link == cluster_link && electron_t.cluster_link == cluster_link){
-            MSG_DEBUG("Match between cluster and ringer");
-            
-            xAOD::CaloRings *ringer = nullptr;
-            xAOD::CaloRingsConverter cnv;
-            cnv.convert(ringer_t, ringer); // alloc memory
-            for (auto ring : ringer->rings()) rings->push_back(ring);
-            
-            xAOD::CaloCluster *cluster = nullptr;
-            xAOD::CaloClusterConverter clusterCnv;
-            clusterCnv.convert(cluster_t, cluster);
+      for (auto &ringer_t : *collection_rings ){
+        if (ringer_t.cluster_link == cluster_link && electron_t.cluster_link == cluster_link){
+          MSG_DEBUG("Match between cluster and ringer");
+          
+          xAOD::CaloRings *ringer = nullptr;
+          xAOD::CaloRingsConverter cnv;
+          cnv.convert(ringer_t, ringer); // alloc memory
+          for (auto ring : ringer->rings()) rings->push_back(ring);
+          
+          cluster_t = collection_cluster->at(cluster_link);
+          xAOD::CaloCluster *cluster = nullptr;
+          xAOD::CaloClusterConverter clusterCnv;
+          if (!clusterCnv.convert(cluster_t, cluster)){
+            MSG_INFO("Error converting cluster");
+            return StatusCode::FAILURE;
+          };
 
-            xAOD::Electron *electron = nullptr;
-            xAOD::ElectronConverter electronCnv;
-            electronCnv.convert(electron_t, electron);
+          xAOD::Electron *electron = nullptr;
+          xAOD::ElectronConverter electronCnv;
+          electronCnv.convert(electron_t, electron);
 
-            eta     = cluster->eta();
-            phi     = cluster->phi();
-            e       = cluster->e();
-            et      = cluster->et();
-            deta    = cluster->deltaEta();
-            dphi    = cluster->deltaPhi();
-            e0      = cluster->e0();
-            e1      = cluster->e1();
-            e2      = cluster->e2();
-            e3      = cluster->e3();
-            ehad1   = cluster->ehad1();
-            ehad2   = cluster->ehad2();
-            ehad3   = cluster->ehad3();
-            etot    = cluster->etot();
-            e233    = cluster->e233();
-            e237    = cluster->e237();
-            e277    = cluster->e277();
-            emaxs1  = cluster->emaxs1();
-            emaxs2  = cluster->emaxs2();
-            e2tsts1 = cluster->e2tsts1();
-            reta    = cluster->reta();
-            rphi    = cluster->rphi();
-            rhad    = cluster->rhad();
-            rhad1   = cluster->rhad1();
-            eratio  = cluster->eratio();
-            f0      = cluster->f0();
-            f1      = cluster->f1();
-            f2      = cluster->f2();
-            f3      = cluster->f3();
-            weta2   = cluster->weta2();
+          eta     = cluster->eta();
+          phi     = cluster->phi();
+          e       = cluster->e();
+          MSG_INFO("Cluster energy: " << e);
+          et      = cluster->et();
+          deta    = cluster->deltaEta();
+          dphi    = cluster->deltaPhi();
+          e0      = cluster->e0();
+          e1      = cluster->e1();
+          e2      = cluster->e2();
+          e3      = cluster->e3();
+          ehad1   = cluster->ehad1();
+          ehad2   = cluster->ehad2();
+          ehad3   = cluster->ehad3();
+          etot    = cluster->etot();
+          e233    = cluster->e233();
+          e237    = cluster->e237();
+          e277    = cluster->e277();
+          emaxs1  = cluster->emaxs1();
+          emaxs2  = cluster->emaxs2();
+          e2tsts1 = cluster->e2tsts1();
+          reta    = cluster->reta();
+          rphi    = cluster->rphi();
+          rhad    = cluster->rhad();
+          rhad1   = cluster->rhad1();
+          eratio  = cluster->eratio();
+          f0      = cluster->f0();
+          f1      = cluster->f1();
+          f2      = cluster->f2();
+          f3      = cluster->f3();
+          weta2   = cluster->weta2();
 
-            secondR = cluster->secondR();
-            lambdaCenter = cluster->lambdaCenter();
-            secondLambda = cluster->secondLambda();
-            fracMax      = cluster->fracMax();
-            lateralMom   = cluster->lateralMom();
-            longitudinalMom = cluster->longitudinalMom();
-            el_fwdTight = computeForwardDecision(cluster,"tight");
-            el_fwdMedium = computeForwardDecision(cluster,"medium");
-            el_fwdLoose = computeForwardDecision(cluster,"loose");
-            
-            el_tight = electron->getDecisions().at(0);
-            el_medium = electron->getDecisions().at(1);
-            el_loose = electron->getDecisions().at(2);
-            el_vloose = electron->getDecisions().at(3);
+          secondR = cluster->secondR();
+          lambdaCenter = cluster->lambdaCenter();
+          secondLambda = cluster->secondLambda();
+          fracMax      = cluster->fracMax();
+          lateralMom   = cluster->lateralMom();
+          longitudinalMom = cluster->longitudinalMom();
+          el_fwdTight = computeForwardDecision(cluster,"tight");
+          el_fwdMedium = computeForwardDecision(cluster,"medium");
+          el_fwdLoose = computeForwardDecision(cluster,"loose");
+          
+          el_tight = electron->getDecisions().at(0);
+          el_medium = electron->getDecisions().at(1);
+          el_loose = electron->getDecisions().at(2);
+          el_vloose = electron->getDecisions().at(3);
 
-            
-          }
-        break;
-      }
-    }
-    
-    // outputTree->Fill(); //each cluster should be 1 entry on ntulpe fill, only fill ntuple tree once, after filling all branches
+          el_et = electron->et();
+          el_eta = electron->eta();
+          el_phi = electron->phi();
+
+          // outputTree->Fill();
+          break;
+        }
+      } //each cluster should be 1 entry on ntuple file
     cluster_link++;
     }
   } 

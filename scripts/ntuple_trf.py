@@ -2,7 +2,6 @@
 
 from GaugiKernel          import LoggingLevel, Logger
 from GaugiKernel          import GeV
-from G4Kernel             import *
 import numpy as np
 import argparse
 import sys,os
