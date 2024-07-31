@@ -48,7 +48,8 @@ try:
   NTUPLE = RootStreamNTUPLEMaker("NTUPLEMaker", 
                             InputFile       = args.inputFile,
                             InputCellsKey        = recordable("Cells"),
-                            # InputEventKey        = recordable("EventInfo"),
+                            # in this version of the repo use 'Events' instead of 'EventInfo'
+                            # InputEventKey        = recordable("EventInfo"), 
                             InputEventKey        = recordable("Events"),
                             InputTruthKey        = recordable("Particles"),
                             InputClusterKey      = recordable("Clusters"),

@@ -20,6 +20,9 @@ class RootStreamESDMaker( Cpp ):
                 NtupleName       : str="CollectionTree",
                 EtaWindow        : float=flags.EtaWindow,
                 PhiWindow        : float=flags.PhiWindow,
+                doDefects        : bool=flags.doDefects,
+                cellHash         : int=flags.cellHash,
+                noiseBurst       : float=flags.noiseBurst,
               ): 
     
     Cpp.__init__(self, ROOT.RootStreamESDMaker(name))
@@ -30,9 +33,12 @@ class RootStreamESDMaker( Cpp ):
     self.setProperty( "OutputEventKey"  , OutputEventKey if OutputEventKey else InputEventKey )
     self.setProperty( "OutputTruthKey"  , OutputTruthKey if OutputTruthKey else InputTruthKey )
     self.setProperty( "OutputCellsKey"  , OutputCellsKey if OutputCellsKey else InputCellsKey )
-    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey       )
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey )
     self.setProperty( "OutputLevel"     , OutputLevel     ) 
     self.setProperty( "NtupleName"      , NtupleName      )
     self.setProperty( "EtaWindow"       , EtaWindow       )
     self.setProperty( "PhiWindow"       , PhiWindow       )
+    self.setProperty( "doDefects"       , doDefects       )
+    self.setProperty( "cellHash"        , cellHash        )
+    self.setProperty( "noiseBurst"      , noiseBurst      )
 
