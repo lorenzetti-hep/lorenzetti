@@ -6,7 +6,7 @@ file(GLOB_RECURSE HEADERS
                         src/Pileup.h
                         src/FixedRegion.h
                         src/SingleParticle.h
-                        src/BoostedEvents.h
+                        src/OverlappedEvents.h
                           )
 
 
