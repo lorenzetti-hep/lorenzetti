@@ -45,7 +45,7 @@ class CaloCellBuilder( Logger ):
 
       DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EMB2) else False
 
-
+      print('sampling noise: ', samp.Noise)
 
       MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", samp.CollectionKey)
       pulse = PulseGenerator( "PulseGenerator", 

@@ -77,7 +77,7 @@ StatusCode CaloCellMaker::initialize()
     MSG_DEBUG(tool->name());
     if (tool->initialize().isFailure() )
     {
-      MSG_FATAL( "It's not possible to iniatialize " << tool->name() << " tool." );
+      MSG_FATAL( "It's not possible to initialize " << tool->name() << " tool." );
     }
   }
 

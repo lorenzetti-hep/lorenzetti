@@ -17,9 +17,9 @@ class RootStreamESDFlags(EnumStringification):
     PhiWindow        = 0.4
 
     # new ESD flags
-    doDefects=False
-    cellHash=0  # need hash ID of noisy cells
-    noiseBurst=500
+    doDefects        = True
+    cellHash         = 440000107  # need hash ID of noisy cells
+    noiseBurst       = 5
 
 
 class RootStreamAODFlags(EnumStringification):

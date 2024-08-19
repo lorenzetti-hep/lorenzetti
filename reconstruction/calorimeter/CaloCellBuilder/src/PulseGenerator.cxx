@@ -24,6 +24,11 @@ PulseGenerator::PulseGenerator( std::string name ) :
   declareProperty( "NoiseStd"         , m_noiseStd=0            );
   declareProperty( "NSamples"         , m_nsamples=7            );
   declareProperty( "StartSamplingBC"  , m_startSamplingBC=0     );
+
+  // new for including cell defects
+  declareProperty( "doDefects"          , m_doDefects=false                 );
+  declareProperty( "cellHash"           , m_cellHash=0                      );
+  declareProperty( "noiseBurst"         , m_noiseBurst=0                    );
 }
 
 //!=====================================================================
@@ -73,8 +78,20 @@ StatusCode PulseGenerator::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm )
     cell->setPulse( bcid, pulse ); 
   }
 
+  // MSG_INFO(m_cellHash<<typeid(m_cellHash).name())
+  // TODO for certain cell hash numbers m_noiseMean and m_noiseStd should be non-zero
+  // if (std::any_of(m_cellHash.begin(), m_cellHash.end(), [](int x) { return x == actual_hash; })){
+  if ((cell->hash() == m_cellHash) and m_doDefects){
+    MSG_INFO("doDefects "<<m_doDefects<<" cell hash "<<m_cellHash<<" noise burst "<<m_noiseBurst)
+    std::cout<<"increasing noise for cell with hash id: "<<cell->hash()<<std::endl;
+    AddGaussianNoise(pulse_sum, m_noiseMean, 5*m_noiseStd);  
+  }
+  else{
+    AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
+  }
+  // std::cout<<cell->hash()<<"  "<<m_noiseMean<<"  "<<m_noiseStd<<std::endl;
   // Add gaussian noise
-  AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
+  // AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
 
 
   // Add the integrated pulse centered in the bunch crossing zero
