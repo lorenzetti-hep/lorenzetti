@@ -237,7 +237,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
         descriptor->edep( bcid, hit->edep(bcid) ); 
         descriptor->tof ( bcid, hit->tof(bcid)  );
       }  
-
+      
       if( m_pulseGenerator->execute(ctx, descriptor).isFailure() ){
           MSG_ERROR( "It's not possible to execute Pulse generator." );
           return StatusCode::FAILURE;

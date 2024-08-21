@@ -3,6 +3,8 @@
 #include "PulseGenerator.h"
 #include "Randomize.hh"
 #include "TRandom.h"
+#include "EventInfo/EventInfoContainer.h"
+#include "EventInfo/EventInfoConverter.h"
 
 using namespace Gaugi;
 
@@ -27,8 +29,10 @@ PulseGenerator::PulseGenerator( std::string name ) :
 
   // new for including cell defects
   declareProperty( "doDefects"          , m_doDefects=false                 );
-  declareProperty( "cellHash"           , m_cellHash=0                      );
-  declareProperty( "noiseBurst"         , m_noiseBurst=0                    );
+  declareProperty( "cellHash"           , m_cellHash={}                     );
+  declareProperty( "noiseFactor"        , m_noiseFactor=1                   );
+  declareProperty( "startNoise"         , m_startNoise=1                    );
+  declareProperty( "endNoise"           , m_endNoise=1                      );
 }
 
 //!=====================================================================
@@ -42,6 +46,7 @@ StatusCode PulseGenerator::initialize()
 {
   setMsgLevel( (MSG::Level)m_outputLevel );
   MSG_DEBUG( "Reading shaper values from: " << m_shaperFile << " and " << m_nsamples << " samples.");
+  MSG_DEBUG("doDefects "<<m_doDefects<<" cell hash "<<m_cellHash<<" noise factor "<<m_noiseFactor)
   ReadShaper( m_shaperFile );
   return StatusCode::SUCCESS;
 }
@@ -55,7 +60,7 @@ StatusCode PulseGenerator::finalize()
 
 //!=====================================================================
 
-StatusCode PulseGenerator::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) const
+StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) const
 {
   auto *cell = static_cast<xAOD::CaloDetDescriptor*>(edm);
 
@@ -78,20 +83,31 @@ StatusCode PulseGenerator::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm )
     cell->setPulse( bcid, pulse ); 
   }
 
-  // MSG_INFO(m_cellHash<<typeid(m_cellHash).name())
-  // TODO for certain cell hash numbers m_noiseMean and m_noiseStd should be non-zero
-  // if (std::any_of(m_cellHash.begin(), m_cellHash.end(), [](int x) { return x == actual_hash; })){
-  if ((cell->hash() == m_cellHash) and m_doDefects){
-    MSG_INFO("doDefects "<<m_doDefects<<" cell hash "<<m_cellHash<<" noise burst "<<m_noiseBurst)
-    std::cout<<"increasing noise for cell with hash id: "<<cell->hash()<<std::endl;
-    AddGaussianNoise(pulse_sum, m_noiseMean, 5*m_noiseStd);  
-  }
+  // MSG_INFO(cell->hash())
+  // access event number of this specific event
+  SG::ReadHandle<xAOD::EventInfoContainer> event("Events", ctx);
+  xAOD::EventInfo_t event_t;
+  xAOD::EventInfoConverter cnv;
+  cnv.convert( (**event.ptr()).front(), event_t);
+  int eventNumber = event_t.eventNumber;
+
+  // only introduce defects if it's for selected event number and m_doDefects is true
+  if ((eventNumber >= m_startNoise) and (eventNumber <= m_endNoise) and m_doDefects){  
+    for (auto hash : m_cellHash){
+      // only introduce defects for specific cells, check cell hash
+      if (cell->hash() == static_cast<unsigned long int>(hash)){
+        MSG_INFO("event number of perturbed event: "<<eventNumber)
+        MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
+        // Add gaussian noise with increased noiseStd
+        AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor*m_noiseStd);  
+      }
+    }
+  }  
   else{
+    // Add gaussian noise
     AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
   }
-  // std::cout<<cell->hash()<<"  "<<m_noiseMean<<"  "<<m_noiseStd<<std::endl;
-  // Add gaussian noise
-  // AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
+  
 
 
   // Add the integrated pulse centered in the bunch crossing zero

@@ -58,9 +58,6 @@ class RootStreamESDMaker : public Gaugi::Algorithm
        
     float m_etaWindow, m_phiWindow;
 
-    bool m_doDefects; 
-    int m_cellHash;
-    float m_noiseBurst;
 
     int m_outputLevel;
 };

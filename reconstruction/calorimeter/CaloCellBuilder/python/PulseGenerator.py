@@ -21,9 +21,11 @@ class PulseGenerator( Cpp ):
                 NoiseStd        : float=0,
                 SamplingRate    : float=0,
                 StartSamplingBC : float=0,
-                doDefects           : bool=flags.doDefects,
-                cellHash=flags.cellHash,  # idk how to declare the type here because should be list
-                noiseBurst          : float=flags.noiseBurst,
+                doDefects       : bool=flags.doDefects,
+                cellHash        : list=flags.cellHash,  # idk how to declare the type here because should be list
+                noiseFactor     : float=flags.noiseFactor,
+                startNoise      : int=flags.startNoise,
+                endNoise        : int=flags.endNoise,
               ):
                 
     Cpp.__init__(self, ROOT.PulseGenerator(name) )
@@ -41,8 +43,9 @@ class PulseGenerator( Cpp ):
     # new properties for including cell defects
     self.setProperty( "doDefects"       , doDefects       )
     self.setProperty( "cellHash"        , cellHash        )
-    self.setProperty( "noiseBurst"      , noiseBurst      )
-
+    self.setProperty( "noiseFactor"     , noiseFactor     )
+    self.setProperty( "startNoise"      , startNoise      )
+    self.setProperty( "endNoise"        , endNoise        )
 
  
      

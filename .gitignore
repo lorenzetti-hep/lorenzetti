@@ -23,6 +23,7 @@ build
 
 # vscode
 ./.vscode/*
+.vscode/*
 
 # configs cells
 ./lorenzet/share/json_files/

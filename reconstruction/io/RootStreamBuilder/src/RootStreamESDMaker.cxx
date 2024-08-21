@@ -37,9 +37,6 @@ RootStreamESDMaker::RootStreamESDMaker( std::string name ) :
   declareProperty( "NtupleName"         , m_ntupleName="CollectionTree"     );
   declareProperty( "EtaWindow"          , m_etaWindow=0.6                   );
   declareProperty( "PhiWindow"          , m_phiWindow=0.6                   );
-  declareProperty( "doDefects"          , m_doDefects=false                 );
-  declareProperty( "cellHash"           , m_cellHash=0                      );
-  declareProperty( "noiseBurst"         , m_noiseBurst=0                    );
 
 }
 
