@@ -30,9 +30,8 @@ PulseGenerator::PulseGenerator( std::string name ) :
   // new for including cell defects
   declareProperty( "doDefects"          , m_doDefects=false                 );
   declareProperty( "cellHash"           , m_cellHash={}                     );
-  declareProperty( "noiseFactor"        , m_noiseFactor=1                   );
-  declareProperty( "startNoise"         , m_startNoise=1                    );
-  declareProperty( "endNoise"           , m_endNoise=1                      );
+  declareProperty( "noiseFactor"        , m_noiseFactor={}                  );
+  declareProperty( "noisyEvents"        , m_noisyEvents={}                  );
 }
 
 //!=====================================================================
@@ -83,7 +82,6 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
     cell->setPulse( bcid, pulse ); 
   }
 
-  // MSG_INFO(cell->hash())
   // access event number of this specific event
   SG::ReadHandle<xAOD::EventInfoContainer> event("Events", ctx);
   xAOD::EventInfo_t event_t;
@@ -91,16 +89,24 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
   cnv.convert( (**event.ptr()).front(), event_t);
   int eventNumber = event_t.eventNumber;
 
-  // only introduce defects if it's for selected event number and m_doDefects is true
-  if ((eventNumber >= m_startNoise) and (eventNumber <= m_endNoise) and m_doDefects){  
-    for (auto hash : m_cellHash){
-      // only introduce defects for specific cells, check cell hash
-      if (cell->hash() == static_cast<unsigned long int>(hash)){
-        MSG_INFO("event number of perturbed event: "<<eventNumber)
-        MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
-        // Add gaussian noise with increased noiseStd
-        AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor*m_noiseStd);  
+  std::size_t index = 0;  // Initialize index
+
+  // if (cell->hash()/1e7 <=17){
+  // MSG_INFO(cell->hash())}
+  // only introduce defects if m_doDefects is true
+  if (m_doDefects){ 
+    for (auto group : m_cellHash ) {
+      for (auto hash : group){
+        // only introduce defects for specific cells and specific events
+        if ((cell->hash() == static_cast<unsigned long int>(hash)) and (eventNumber >= m_noisyEvents[index][0]) and (eventNumber <= m_noisyEvents[index][1])){
+          MSG_INFO("perturbed event: "<<eventNumber)
+          MSG_INFO("events concerned by noise: "<<m_noisyEvents[index])
+          MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
+          // Add gaussian noise with increased noiseStd
+          AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor[index]*m_noiseStd);  
+        }
       }
+      ++index;
     }
   }  
   else{
