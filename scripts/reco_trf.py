@@ -21,6 +21,9 @@ parser.add_argument('-o','--outputFile', action='store', dest='outputFile', requ
 parser.add_argument('--nov','--numberOfEvents', action='store', dest='numberOfEvents', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
 
+parser.add_argument('--idx','--index', action='store', dest='eventIndex', required = False, type=int, default=None,
+                    help = "The event index from which to start the reconstruction.")
+
 parser.add_argument('-l', '--outputLevel', action='store', dest='outputLevel', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
@@ -113,7 +116,7 @@ try:
   acc+= hypo
   acc+= AOD
 
-  acc.run(args.numberOfEvents)
+  acc.run(args.numberOfEvents, args.eventIndex)
 
   # del acc
   sys.exit(0)

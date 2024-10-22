@@ -60,7 +60,7 @@ class ComponentAccumulator( Logger ):
   #
   # Run events
   #
-  def run( self , nov=None ):
+  def run( self , nov=None , index=None ):
 
     self.configure()
 
@@ -70,8 +70,16 @@ class ComponentAccumulator( Logger ):
     elif nov > self.GetEntries():
       nov = self.GetEntries()
   
-    for evt in range(nov):
-      self.__acc.run(self.__ctx, evt)
+    if index is not None:
+      stop = nov + index
+      if stop > self.GetEntries():
+        stop = self.GetEntries()
+      for evt in range(index, stop, 1):
+        self.__acc.run(self.__ctx, evt)
+
+    else:
+      for evt in range(nov):
+        self.__acc.run(self.__ctx, evt)
 
     self.__acc.finalize()
     self.__ctx.getStoreGateSvc().save()
