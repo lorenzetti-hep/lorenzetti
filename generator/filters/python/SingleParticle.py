@@ -10,6 +10,7 @@ class Particle(EnumStringification):
   Electron = 11
   Photon = 22
   Pion = 211
+  Neutrino = 12
 
 
 class SingleParticle( Cpp ):
