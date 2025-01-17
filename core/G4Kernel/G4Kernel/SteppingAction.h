@@ -3,7 +3,7 @@
 
 #include "GaugiKernel/MsgStream.h"
 #include "G4UserSteppingAction.hh"
-#include "g4root.hh"
+//#include "g4root.hh"
 
 class DetectorConstruction;
 

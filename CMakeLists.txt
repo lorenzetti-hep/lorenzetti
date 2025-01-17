@@ -30,6 +30,7 @@ endif()
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 include(${Geant4_USE_FILE})
+include_directories(${CMAKE_SOURCE_DIR} ${Geant4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 #----------------------------------------------------------------------------
@@ -77,7 +78,7 @@ add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
 add_subdirectory( reconstruction/io/RootStreamBuilder )
-add_subdirectory( physics/egamma/CaloCutBasedHypo )
+add_subdirectory( reconstruction/physics/egamma/CaloCutBasedHypo )
 
 # detector definitions
 add_subdirectory( geometry/ATLAS )
