@@ -1,0 +1,13 @@
+setuptools 
+numpy
+pandas 
+scikit-learn
+seaborn 
+jupyterlab 
+tqdm 
+atlas-mpl-style 
+twine 
+pyhepmc 
+colorama 
+prettytable
+expand_folders

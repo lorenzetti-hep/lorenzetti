@@ -115,3 +115,108 @@ class Pool( Logger ):
 
 
 
+class Process:
+
+    def __init__(
+        self, 
+        func, 
+        args, 
+        kwargs, 
+        workarea     : str=tempfile.mktemp(),
+        logname      : str="output.log"
+    ):
+        
+        self.func           = func
+        self.args           = args
+        self.kwargs         = kwargs
+        self.workarea       = workarea
+        self.__proc         = None
+        self.__mon_thread   = None
+        self.__proc_stat    = None
+        self.resultval      = None
+        self.__broken       = False
+        self.__killed       = False
+        self.__pending      = True
+        os.makedirs(workarea, exist_ok=True)
+        self.log_path       = workarea+'/'+logname
+        self.__manager      = multiprocessing.Manager()
+        self.__returnval    = self.__manager.dict()
+
+    @property
+    def exitcode(self):
+        if self.__proc:
+            return self.__proc.exitcode
+        return None
+    
+
+
+
+    def run_async(self) -> int:
+
+        self.__pending=False
+        def run_proc( returnval, logpath, func, args, kwargs):
+          try:
+            val = func(*args, **kwargs)
+            returnval["result"]=val
+            sys.exit(0)
+          except Exception:
+            with open(logpath, "w") as f:
+              f.write(traceback.format_exc())
+            sys.exit(1)
+      
+        args            = (self.__returnval, self.log_path, self.func, self.args, self.kwargs)
+        self.__proc     = multiprocessing.Process(target=run_proc, args=args)
+        self.__proc.start()     
+        self.__mon_thread = Monitor(self.__proc)
+        self.__mon_thread.start()
+        self.__proc_stat = psutil.Process(self.__proc.pid)
+        logger.debug("starting process")
+        broken = self.status() == "failed"
+        self.__broken = broken
+        return not broken # Lets considering the first seconds as broken
+
+       
+    def join(self):
+        while self.is_alive():
+            sleep(1)
+
+
+    def result(self):
+        if not self.resultval:
+          self.resultval = self.__returnval["result"] if "result" in self.__returnval.keys() else None
+        return self.resultval
+
+
+    def is_alive(self):
+        return True if (self.__proc and self.__proc.is_alive()) else False
+
+
+    def kill(self):
+        if self.is_alive() and self.__proc:
+            children = self.__proc_stat.children(recursive=True)
+            for child in children:
+                p=psutil.Process(child.pid)
+                p.kill()
+            self.__proc.kill()
+            self.__killed=True
+        else:
+            self.__killed=True
+
+
+    def status(self):
+        if self.is_alive():
+            return "running"
+        elif self.__pending:
+            return "pending"
+        elif self.__killed:
+            return "killed"
+        elif self.__broken:
+            return "broken"
+        elif (self.exitcode and  self.exitcode>0):
+            return "failed"
+        else:
+            return "completed"
+
+    def traceback_print_exc(self):
+       with open(self.log_path,'r') as f:
+          print(f.read())

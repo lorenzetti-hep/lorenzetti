@@ -44,7 +44,8 @@ namespace SG
   {
     for(auto obj : m_data )
     {
-      if(obj) delete obj;
+      if(obj)
+        delete obj;
     }
   }
 

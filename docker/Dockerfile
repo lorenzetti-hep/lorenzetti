@@ -47,4 +47,7 @@ RUN rm /hep/*.sh
 COPY scripts/setup_hep.sh /hep
 RUN chmod 774 setup_hep.sh
 
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
 WORKDIR /home

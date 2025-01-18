@@ -2,7 +2,12 @@
 #include "GaugiKernel/ComponentAccumulator.h"
 #include <iostream>
 #include <time.h>
-
+#include "sys/types.h"
+#include "sys/sysinfo.h"
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <sys/resource.h>
 using namespace SG;
 using namespace Gaugi;
 
@@ -106,7 +111,6 @@ void ComponentAccumulator::run(SG::EventContext *ctx , int evt) const
 
   timer.start();
   ctx->clear();
-
   auto store = ctx->getStoreGateSvc();
 
   for( auto &toolHandle : m_toolHandles){
@@ -126,10 +130,7 @@ void ComponentAccumulator::run(SG::EventContext *ctx , int evt) const
   timer.stop();
   store->cd("Event");
   store->hist1( "Event" )->Fill( timer.resume() );
-
 }
-
-
 
 
 

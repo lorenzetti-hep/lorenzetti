@@ -23,6 +23,8 @@ EventContext::~EventContext()
 
 void EventContext::clear()
 {
+  //for (auto &it : m_storable_ptr)
+  //  std::cout << it.first << std::endl;
   m_storable_ptr.clear();
 }
 

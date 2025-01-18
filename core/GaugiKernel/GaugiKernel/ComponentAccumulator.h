@@ -45,6 +45,8 @@ namespace Gaugi{
       //SG::EventContext m_ctx;
       // list of alg tools to be executed in loop
       std::vector < Gaugi::Algorithm* > m_toolHandles;
+
+      long get_mem_usage() const;
   };
 
 }

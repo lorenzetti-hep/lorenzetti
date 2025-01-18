@@ -3,6 +3,7 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
+#include "CaloCell/CaloDetDescriptorCollection.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
 #include "EventInfo/EventSeedConverter.h"
@@ -121,6 +122,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
 
   MSG_DEBUG("Deserialize TruthParticle...");
+  
   { // deserialize EventInfo
     SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
     container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
@@ -134,9 +136,11 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       container->push_back(par);
     }
   }
-
+  
+  
 
   MSG_DEBUG("Deserialize EventInfo...");
+  
   { // deserialize EventInfo
 
     SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
@@ -150,6 +154,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   
 
   MSG_DEBUG("Deserialize EventSeed...");
+  
   { // deserialize EventSeed
     SG::WriteHandle<xAOD::EventSeedContainer> container(m_seedsKey, ctx);
     container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
@@ -163,9 +168,14 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       container->push_back(seed);
     }
   }
+  
 
   MSG_DEBUG("Deserialize CaloDetDescriptor... ");
+  
   {
+    SG::WriteHandle<xAOD::CaloDetDescriptorCollection> collection( m_cellsKey+"_Aux", ctx );
+    collection.record( std::unique_ptr<xAOD::CaloDetDescriptorCollection>(new xAOD::CaloDetDescriptorCollection()) );
+
     std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
     int link=0;
     MSG_DEBUG(collection_descriptor->size());
@@ -177,7 +187,11 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       cnv.convert(descriptor_t, descriptor); // alloc memory
       descriptor_links[link] = descriptor;
       link++;
+      if ( !collection->insert( descriptor->hash(), descriptor ) ){
+        MSG_FATAL( "It is not possible to include cell hash ("<< descriptor->hash() << ") into the collection. hash already exist.");
+      }
     }
+   
 
     SG::WriteHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
     container.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()));
@@ -191,7 +205,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       container->push_back(cell);
     }
   }
-
+  
 
   delete collection_descriptor;
   delete collection_seeds     ;

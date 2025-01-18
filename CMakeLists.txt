@@ -78,7 +78,7 @@ add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
 add_subdirectory( reconstruction/io/RootStreamBuilder )
-add_subdirectory( reconstruction/physics/egamma/CaloCutBasedHypo )
+add_subdirectory( physics/egamma/CaloCutBasedHypo )
 
 # detector definitions
 add_subdirectory( geometry/ATLAS )
