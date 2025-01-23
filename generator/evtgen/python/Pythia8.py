@@ -16,6 +16,8 @@ class Pythia8( Cpp ):
     
     Cpp.__init__(self, generator.Pythia8Gen())
     self.setProperty( "Seed"        , Seed        )
-    self.setProperty( "EventNumber" , EventNumber )
     #self.setProperty( "OutputLevel" , OutputLevel )
     self.setProperty( "File"        , File        )
+
+  def copy(self):
+    return Pythia8(self.name, Seed=self.Seed, EventNumber=self.EventNumber, File=self.File)

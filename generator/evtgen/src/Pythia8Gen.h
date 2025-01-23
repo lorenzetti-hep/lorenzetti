@@ -76,12 +76,6 @@ namespace generator
      *
      */
     int m_iAbort;
-
-    /**
-     * @brief Starting event number
-     *
-     */
-    int m_eventNumber;
     /**
      * @brief Number of events
      *

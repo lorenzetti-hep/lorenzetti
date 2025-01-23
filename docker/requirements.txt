@@ -11,3 +11,5 @@ pyhepmc
 colorama 
 prettytable
 expand_folders
+rich_argparse
+loguru

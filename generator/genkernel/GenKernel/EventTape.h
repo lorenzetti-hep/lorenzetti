@@ -51,6 +51,7 @@ namespace generator{
   
       /*! Ntuple output */
       int m_runNumber;
+      std::vector<int>  m_eventNumbers;
       int m_eventNumber;
       float m_avg_mu;
       std::vector<int>   *m_p_isMain    ;

@@ -14,17 +14,17 @@ class EventTape( Cpp ):
 
     Cpp.__init__(self, generator.EventTape())   
     self.setProperty("RunNumber"      , RunNumber       )
-    self.setProperty("NumberOfEvents" , NumberOfEvents  )
     self.setProperty("OutputFile"     , OutputFile      )
     self.setProperty("OutputLevel"    , OutputLevel     )
 
 
-  def run( self, evt):
-
+  def run( self, evt ):
     if type(evt) is int:
-      self.setProperty( "NumberOfEvents", evt )
+      self.setProperty( "EventNumbers", list(range(evt)) )
+    elif type(evt) is list:
+      self.setProperty( "EventNumbers" , evt)
     else:
-      MSG_FATAL(self, "input argument type not supported. Should be int value")
+      MSG_FATAL(self, "input argument type not supported. Should be int value or a list of ints")
 
     self._core.initialize()
     self._core.execute()
@@ -35,8 +35,8 @@ class EventTape( Cpp ):
     self.push_back(tool)
     return self
 
-
   def push_back( self, tool ):
     self._core.push_back( tool.core() )
 
+  
 

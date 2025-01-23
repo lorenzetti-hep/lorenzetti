@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import argparse
-from GaugiKernel import Slot, Pool, chunks, expand_folders
-from GaugiKernel import Logger
+from GaugiKernel import Pool, chunks
+from GaugiKernel import Logger, get_argparser_formatter
 from GaugiKernel.macros import *
+from expand_folders import expand_folders
 
 import time, os
 import ROOT
 
 mainLogger = Logger.getModuleLogger("prun_jobs")
-parser = argparse.ArgumentParser(description = '', add_help = False)
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description = '', formatter_class=get_argparser_formatter() )
+
 
 parser.add_argument('-o','--output', action='store', 
     dest='output', required = True,
@@ -31,7 +32,6 @@ parser.add_argument('-nt', '--numberOfThreads', action='store',
 parser.add_argument('-i', '--inputs', action='store', 
     dest='inputs', required = False, default = None, 
     help = "The input files. Use %%IN to replace in command")
-
 
 parser.add_argument('--dry_run', action='store_true', dest='dry_run', 
                     required = False, 

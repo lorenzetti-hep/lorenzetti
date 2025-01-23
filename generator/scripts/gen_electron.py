@@ -101,6 +101,7 @@ if len(sys.argv)==1:
 args = parser.parse_args()
 
 
+
 try:
 
   from evtgen import Pythia8 
@@ -114,10 +115,7 @@ try:
 
   # Create the seed
   electron = SingleParticle( "Electron",
-                             Pythia8("Generator", 
-                                   Seed=args.seed, 
-                                   EventNumber = args.eventNumber
-                                   ),
+                             Pythia8("Generator", Seed=args.seed),
                              Eta          = args.eta,
                              Phi          = args.phi,
                              EnergyMin    = args.energy_min*GeV,
