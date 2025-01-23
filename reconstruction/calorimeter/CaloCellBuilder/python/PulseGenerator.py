@@ -22,7 +22,7 @@ class PulseGenerator( Cpp ):
                 SamplingRate    : float=0,
                 StartSamplingBC : float=0,
                 doDefects       : bool=flags.doDefects,
-                cellHash        : list=flags.cellHash,  # idk how to declare the type here because should be list
+                cellHash        : list=flags.cellHash,
                 noiseFactor     : list=flags.noiseFactor,
                 noisyEvents     : list=flags.noisyEvents,
               ):
