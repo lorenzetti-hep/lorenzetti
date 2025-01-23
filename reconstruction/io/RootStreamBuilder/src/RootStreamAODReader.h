@@ -1,25 +1,24 @@
-#ifndef RootStreamNTUPLEMaker_h
-#define RootStreamNTUPLEMaker_h
+#ifndef RootStreamAODReader_h
+#define RootStreamAODReader_h
 
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
+#include "EventInfo/EventSeed.h"
+
 #include "TruthParticle/TruthParticle.h"
-#include "CaloCluster/CaloCluster.h"
-#include "CaloRings/CaloRings.h"
-#include "Particle/Electron.h"
 
 
 
 
-class RootStreamNTUPLEMaker : public Gaugi::Algorithm
+class RootStreamAODReader : public Gaugi::Algorithm
 {
 
   public:
     /** Constructor **/
-    RootStreamNTUPLEMaker( std::string );
+    RootStreamAODReader( std::string );
     
-    virtual ~RootStreamNTUPLEMaker();
+    virtual ~RootStreamAODReader();
 
     virtual StatusCode initialize() override;
 
@@ -37,7 +36,6 @@ class RootStreamNTUPLEMaker : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
-    bool computeForwardDecision(xAOD::CaloCluster* cluster, std::string workingpoint) const;
 
   private:
  
@@ -48,18 +46,12 @@ class RootStreamNTUPLEMaker : public Gaugi::Algorithm
     std::string m_cellsKey;
     std::string m_eventKey;
     std::string m_truthKey;
-    std::string m_clusterKey;
+    std::string m_seedsKey;
     std::string m_ringerKey;
+    std::string m_clusterKey;
     std::string m_electronKey;
     std::string m_inputFile;
     std::string m_ntupleName;
-    std::string m_outputNtupleName;
-    std::vector<float> m_secondLambdaCuts;
-    std::vector<float> m_lateralMomCuts;
-    std::vector<float> m_longMomCuts;
-    std::vector<float> m_fracMaxCuts;
-    std::vector<float> m_secondRCuts;
-    std::vector<float> m_lambdaCenterCuts;
 
     int m_outputLevel;
 

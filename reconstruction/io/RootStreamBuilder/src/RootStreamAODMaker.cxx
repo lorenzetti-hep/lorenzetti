@@ -185,6 +185,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   InitBranch( tree, ("CaloRingsContainer_"     + m_outputRingerKey).c_str()     , &container_rings       );
   InitBranch( tree, ("CaloClusterContainer_"   + m_outputClusterKey).c_str()     , &container_clus       );
   InitBranch( tree, ("ElectronContainer_"      + m_outputElectronKey).c_str()     , &container_electron  );
+  
   if(m_dumpCells){
     InitBranch( tree,  ("CaloCellContainer_"          + m_outputCellsKey).c_str()   , &container_cells      );
     InitBranch( tree,  ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str()   , &container_descriptor );

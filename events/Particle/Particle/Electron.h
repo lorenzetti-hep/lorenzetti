@@ -34,13 +34,23 @@ namespace xAOD{
       void setCaloCluster( const xAOD::CaloCluster *clus ){ m_caloCluster=clus; };
       const xAOD::CaloCluster* caloCluster() const { return m_caloCluster; };
 
+      bool isTight() const;
+      bool isMedium() const;
+      bool isLoose() const;
+      bool isVeryLoose() const;
+      void setIsTight(bool isTight);
+      void setIsMedium(bool isMedium);
+      void setIsLoose(bool isLoose);
+      void setIsVeryLoose(bool isVeryLoose);
+      bool isForward() const { return std::abs(m_eta) > 2.5; };
+
     private:
       float m_e;
       float m_et;
       float m_eta;
       float m_phi;
 
-      std::vector<bool> m_decisions;
+      std::vector<bool> m_isEM;
 
       const xAOD::CaloCluster *m_caloCluster;
   };

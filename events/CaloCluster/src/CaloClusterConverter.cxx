@@ -36,13 +36,11 @@ bool CaloClusterConverter::convert( const CaloCluster *clus, CaloCluster_t &clus
       clus_t.f3          = clus->f3();
       clus_t.weta2       = clus->weta2();
       clus_t.secondR     = clus->secondR();
-	  clus_t.lambdaCenter = clus->lambdaCenter();
-	  clus_t.secondLambda = clus->secondLambda();
-	  clus_t.fracMax     = clus->fracMax();
-	  clus_t.lateralMom  = clus->lateralMom();
-	  clus_t.longitudinalMom = clus->longitudinalMom();
-
-
+	    clus_t.lambdaCenter = clus->lambdaCenter();
+	    clus_t.secondLambda = clus->secondLambda();
+	    clus_t.fracMax     = clus->fracMax();
+	    clus_t.lateralMom  = clus->lateralMom();
+	    clus_t.longitudinalMom = clus->longitudinalMom();
 
       for(auto &cell : clus->cells())
       {

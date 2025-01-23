@@ -1,6 +1,7 @@
 
 file(GLOB SOURCES src/*.cxx)
-file(GLOB_RECURSE HEADERS src/CaloCutBasedHypo.h )
+file(GLOB_RECURSE HEADERS src/ElectronMaker.h )
+file(GLOB_RECURSE HEADERS src/PhotonMaker.h )
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../events/Particle)
@@ -12,10 +13,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../core/G4Kernel)
 
 
 
-ROOT_GENERATE_DICTIONARY(CaloCutBasedHypoDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE CaloCutBasedHypo)
+ROOT_GENERATE_DICTIONARY(EgammaBuilderDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE EgammaBuilder)
                                       
-add_library(CaloCutBasedHypo  OBJECT ${SOURCES} CaloCutBasedHypoDict.cxx)
-install(FILES ${HEADERS}  DESTINATION CaloCutBasedHypo)
+add_library(EgammaBuilder  OBJECT ${SOURCES} EgammaBuilderDict.cxx)
+install(FILES ${HEADERS}  DESTINATION EgammaBuilder)
 
 
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python CaloCutBasedHypo)
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python EgammaBuilder)
