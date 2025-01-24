@@ -90,6 +90,7 @@ class CaloRingsMaker : public Gaugi::Algorithm
     std::vector<std::vector<int>>    m_layerRings;
 
     int m_outputLevel;
+    bool m_doForward;
 };
 
 #endif

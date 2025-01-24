@@ -96,6 +96,7 @@ StatusCode ElectronMaker::post_execute( EventContext &ctx ) const
     el->setPhi(clus->phi());
     el->setEt(clus->et());
     el->setE(clus->e());
+    MSG_INFO("Cluster eta: " << el->eta() << " phi: " << el->phi() << " et: " << el->et() << " e: " << el->e());
     el->setCaloCluster( clus );
     el->setIsTight(compute(clus,"tight"));
     el->setIsMedium(compute(clus,"medium"));
@@ -116,7 +117,7 @@ StatusCode ElectronMaker::fillHistograms(EventContext &ctx ) const
 //!=====================================================================
 
 bool ElectronMaker::compute(const xAOD::CaloCluster* cluster, std::string pidname) const{
-  
+  MSG_INFO("Computing PID ("<<pidname<<") for cluster with eta: " << cluster->eta() << " phi: " << cluster->phi() << " et: " << cluster->et() << " e: " << cluster->e());
   if(cluster->isForward()) {
     if (pidname == "loose"){
       if (cluster->secondLambda() > m_secondLambdaCuts[0])  return false;

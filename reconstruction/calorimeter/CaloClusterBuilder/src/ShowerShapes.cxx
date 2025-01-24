@@ -41,15 +41,15 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
  
   
-  float e277 = sumEnergyEM( clus, 2, 7, 7 );
-  float e233 = sumEnergyEM( clus, 2, 3, 3 );
-  float e237 = sumEnergyEM( clus, 2, 3, 7 );
-  float reta = e237/e277;
-  float rphi = e233/e237;
-  float e0 = sumEnergyEM( clus, 0 );
-  float e1 = sumEnergyEM( clus, 1 );
-  float e2 = sumEnergyEM( clus, 2 );
-  float e3 = sumEnergyEM( clus, 3 );
+  float e277  = sumEnergyEM( clus, 2, 7, 7 );
+  float e233  = sumEnergyEM( clus, 2, 3, 3 );
+  float e237  = sumEnergyEM( clus, 2, 3, 7 );
+  float reta  = e237/e277;
+  float rphi  = e233/e237;
+  float e0    = sumEnergyEM( clus, 0 );
+  float e1    = sumEnergyEM( clus, 1 );
+  float e2    = sumEnergyEM( clus, 2 );
+  float e3    = sumEnergyEM( clus, 3 );
   float ehad1 = sumEnergyHAD( clus, 0 );
   float ehad2 = sumEnergyHAD( clus, 1 );
   float ehad3 = sumEnergyHAD( clus, 2 );
@@ -95,7 +95,9 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   // Only EM energy since this is a eletromagnetic cluster
   clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
   clus->setE(e0+e1+e2+e3);
-  if(m_doForwardMoments){
+
+
+  if(clus->isForward()){
     std::vector<TVector3> axis = calculateShowerAxis(clus);
     float secondR = calculateSecondR(clus, axis);
     float lambdaCenter = calculateLambdaCenter(clus, axis);

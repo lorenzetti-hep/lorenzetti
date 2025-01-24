@@ -71,21 +71,15 @@ try:
                               HistogramPath        = "Expert/Clusters",
                               OutputLevel          = outputLevel )
 
-  # build rings for forward electron candidates (2.5<|eta|<3.2) only if -f True
-  if(args.do_forward):
-    from CaloRingsBuilder import CaloFwdRingsMakerCfg
-    rings   = CaloFwdRingsMakerCfg(   "CaloRingsMaker",
-                                InputClusterKey    = recordable("Clusters"),  
-                                OutputRingerKey    = recordable("Rings"),
-                                HistogramPath      = "Expert/Rings",
-                                OutputLevel        = outputLevel)
-  else:
-    from CaloRingsBuilder import CaloRingsMakerCfg
-    rings   = CaloRingsMakerCfg(   "CaloRingsMaker",
-                                InputClusterKey    = recordable("Clusters"),  
-                                OutputRingerKey    = recordable("Rings"),
-                                HistogramPath      = "Expert/Rings",
-                                OutputLevel        = outputLevel)
+
+
+  from CaloRingsBuilder import CaloRingsBuilderCfg
+  rings = CaloRingsBuilderCfg( "CaloRingsBuilder",
+                              InputClusterKey    = recordable("Clusters"),
+                              OutputRingerKey    = recordable("Rings"),
+                              HistogramPath      = "Expert/Rings",
+                              OutputLevel        = outputLevel)
+  
 
 
   from EgammaBuilder import ElectronMakerCfg

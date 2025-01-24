@@ -24,6 +24,7 @@ CaloRingsMaker::CaloRingsMaker( std::string name ) :
   declareProperty( "LayerRings"     , m_layerRings={}         );
   declareProperty( "OutputLevel"    , m_outputLevel=1         );
   declareProperty( "HistogramPath"  , m_histPath=""           );
+  declareProperty( "DoForward"      , m_doForward=false       );
 }
 
 //!=====================================================================
@@ -108,6 +109,16 @@ StatusCode CaloRingsMaker::post_execute( EventContext &ctx ) const
   // Loop over all CaloClusters
   for( auto* clus : **clusters.ptr())
   {
+    if( !m_doForward && clus->isForward() ) {
+      MSG_INFO( "Skipping forward cluster..." ); 
+      continue;
+    }
+    if( m_doForward && !clus->isForward() ) {
+      MSG_INFO( "Skipping barrel cluster..." ); 
+      continue;
+    }
+
+
     MSG_DEBUG( "Creating the CaloRings for this cluster..." );
     // Create the CaloRings object
     auto rings = new xAOD::CaloRings();
