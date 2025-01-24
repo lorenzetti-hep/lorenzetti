@@ -41,16 +41,7 @@ RootStreamNtupleMaker::RootStreamNtupleMaker( std::string name ) :
   declareProperty( "InputRingerKey"     , m_ringerKey="Rings"             );
   declareProperty( "InputElectronKey"   , m_electronKey="Electrons"       );
   declareProperty( "OutputLevel"        , m_outputLevel=1                 );
-  declareProperty( "NtupleName"         , m_ntupleName="physics"          );
   declareProperty( "OutputNtupleName"   , m_outputNtupleName="events"     );
-  declareProperty( "SecondLambdaCuts"   , m_secondLambdaCuts={}           );
-  declareProperty( "LateralMomCuts"     , m_lateralMomCuts={}             );
-  declareProperty( "LongMomCuts"        , m_longMomCuts={}                );
-  declareProperty( "FracMaxCuts"        , m_fracMaxCuts={}                );
-  declareProperty( "SecondRCuts"        , m_secondRCuts={}                );
-  declareProperty( "LambdaCenterCuts"   , m_lambdaCenterCuts={}           );
-
-
 }
 
 //!=====================================================================
@@ -60,26 +51,6 @@ RootStreamNtupleMaker::~RootStreamNtupleMaker()
 
 //!=====================================================================
 
-/**
- * @brief Enumeration of status codes returned by functions.
- *
- * The StatusCode enumeration provides a set of predefined status codes that can be returned by functions.
- * These status codes are used to indicate the success or failure of a function call.
- */
-enum class StatusCode
-{
-  SUCCESS, /**< The function call was successful. */
-  FAILURE /**< The function call failed. */
-};
-
-/**
- * @brief Initializes the RootStreamNtupleMaker.
- *
- * This function initializes the RootStreamNtupleMaker by performing necessary setup and configuration.
- * It sets the message level to the value specified by the m_outputLevel member variable.
- *
- * @return The status code indicating the success or failure of the initialization.
- */
 StatusCode RootStreamNtupleMaker::initialize()
 {
   CHECK_INIT();
@@ -149,14 +120,16 @@ StatusCode RootStreamNtupleMaker::bookHistograms( EventContext &ctx ) const
   bool el_vloose              = false;
 
  
-  int eventNumber = -9999;
+  int eventNumber = -1;
+  int runNumber   = -1;
+  float avgmu     = -1;
 
 
   TTree *tree = new TTree(m_outputNtupleName.c_str(), "");
 
-  tree->Branch("event_number"           , &eventNumber);
-
-
+  tree->Branch("EventNumber"            , &eventNumber);
+  tree->Branch("RunNumber"              , &runNumber);  
+  tree->Branch("avgmu"                  , &avgmu);  
   tree->Branch("cl_eta"                 , &cl_eta);
   tree->Branch("cl_phi"                 , &cl_phi);
   tree->Branch("cl_e"                   , &cl_e);
@@ -194,7 +167,6 @@ StatusCode RootStreamNtupleMaker::bookHistograms( EventContext &ctx ) const
   tree->Branch("cl_fracMax"             , &cl_fracMax);
   tree->Branch("cl_lateralMom"          , &cl_lateralMom);
   tree->Branch("cl_longitudinalMom"     , &cl_longitudinalMom);
-
   tree->Branch("el_eta"                 , &el_eta);
   tree->Branch("el_et"                  , &el_et);
   tree->Branch("el_phi"                 , &el_phi);
@@ -225,8 +197,7 @@ StatusCode RootStreamNtupleMaker::execute( EventContext &/*ctx*/, const G4Step *
 
 StatusCode RootStreamNtupleMaker::execute( EventContext &ctx, int evt ) const
 {
-  MSG_INFO("Called initialize");
-  return deserialize( evt, ctx );
+  return StatusCode::SUCCESS;
 }
 
 //!===================================    ==================================
@@ -240,18 +211,17 @@ StatusCode RootStreamNtupleMaker::post_execute( EventContext &/*ctx*/ ) const
 
 StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
 {
-  return StatusCode::SUCCESS;
-}
 
-//!=====================================================================
-
-StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
-{
-
-  SG::ReadHandle<xAOD::EventInfoContainer> evt_container( m_eventKey, ctx );
-  if( !evt_container.isValid() )
+  SG::ReadHandle<xAOD::EventInfoContainer> event_container( m_eventKey, ctx );
+  if( !event_container.isValid() )
   {
     MSG_FATAL("It's not possible to read the xAOD::EventInfoContainer from this Context using this key " << m_eventKey );
+  }
+
+  SG::ReadHandle<xAOD::CaloRingsContainer> ringer_container( m_ringerKey, ctx );
+  if( !ringer_container.isValid() )
+  {
+    MSG_FATAL("It's not possible to read the xAOD::CaloRingsContainer from this Context using this key " << m_ringerKey );
   }
 
   SG::ReadHandle<xAOD::ElectronContainer> electron_container( m_electronKey, ctx );
@@ -265,8 +235,8 @@ StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
 
   MSG_INFO( "Link all branches..." );
 
-  int   run_number         = 0;
-  int   event_number       = 0;
+  int   runNumber          = 0;
+  int   eventNumber        = 0;
   float avgmu              = 0;  
   float cl_eta             = 0;
   float cl_phi             = 0;
@@ -314,8 +284,8 @@ StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
   std::vector<float> *cl_rings = nullptr;
 
   InitBranch( tree, "avgmu"                   , &avgmu             );
-  InitBranch( tree, "event_number"            , &event_number      );
-  InitBranch( tree, "run_number"              , &run_number        );
+  InitBranch( tree, "event_number"            , &eventNumber       );
+  InitBranch( tree, "run_number"              , &runNumber         );
   InitBranch( tree, "cl_eta"                  , &cl_eta            );
   InitBranch( tree, "cl_phi"                  , &cl_phi            );
   InitBranch( tree, "cl_e"                    , &cl_e              );
@@ -362,17 +332,39 @@ StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
   InitBranch( tree, "el_vloose"               , &el_vloose         );    
 
 
+  auto evt = (**event_container.ptr()).front();
 
 
-  for (auto el : **electron_container.ptr() ){
-   
+  for (auto el : **electron_container.ptr() )
+  
+  {
     auto clus = el->caloCluster();
-    auto rings = clus->rings();
 
+
+    const xAOD::CaloRings* cl_ringer = nullptr;
+    for (auto ring : **ringer_container.ptr() )
+    {
+      if (ring->caloCluster() == clus)
+      {
+        cl_ringer = ring;
+        break;
+      } 
+    }
+
+    if(!cl_ringer)
+    {
+      MSG_WARNING("No rings found for cluster");
+      continue;
+    }
+
+
+    avgmu              = evt->averageInteractionsPerCrossing();
+    runNumber          = evt->runNumber();
+    eventNumber        = evt->eventNumber();
     cl_eta             = clus->eta();
     cl_phi             = clus->phi();
     cl_e               = clus->e();
-    MSG_INFO("Cluster energy: " << e);
+    MSG_INFO("Cluster energy: " << cl_e);
     cl_et              = clus->et();
     cl_deta            = clus->deltaEta();
     cl_dphi            = clus->deltaPhi();
@@ -406,10 +398,11 @@ StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
     cl_fracMax         = clus->fracMax();
     cl_lateralMom      = clus->lateralMom();
     cl_longitudinalMom = clus->longitudinalMom();
-    el_tight           = el->getDecisions().at(0);
-    el_medium          = el->getDecisions().at(1);
-    el_loose           = el->getDecisions().at(2);
-    el_vloose          = el->getDecisions().at(3);
+    for (auto ring : cl_ringer->rings()) cl_rings->push_back(ring);
+    el_tight           = el->isTight();
+    el_medium          = el->isMedium();
+    el_loose           = el->isLoose();
+    el_vloose          = el->isVeryLoose(); 
     el_et              = el->et();
     el_eta             = el->eta();
     el_phi             = el->phi();
@@ -418,10 +411,7 @@ StatusCode RootStreamNtupleMaker::serialize( int evt, EventContext &ctx ) const
   } //each cluster should be 1 entry on ntuple file
    
 
-
-
   return StatusCode::SUCCESS;
- 
 }
 
 //!=====================================================================

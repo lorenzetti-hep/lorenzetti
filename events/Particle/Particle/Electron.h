@@ -27,9 +27,6 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_e, setE, e );
       /*! set/get transverse energy */
       PRIMITIVE_SETTER_AND_GETTER( float, m_et, setEt, et );
-
-      void setDecisions (std::vector<bool> decisions ){ for (auto dec : decisions) m_decisions.push_back(dec); }
-      std::vector<bool> getDecisions() const {return m_decisions;}
       
       void setCaloCluster( const xAOD::CaloCluster *clus ){ m_caloCluster=clus; };
       const xAOD::CaloCluster* caloCluster() const { return m_caloCluster; };

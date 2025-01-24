@@ -3,6 +3,7 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloRings/CaloRingsContainer.h"
+#include "Particle/ElectronContainer.h"
 
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
@@ -12,6 +13,7 @@
 #include "EventInfo/EventSeedConverter.h"
 #include "CaloCluster/CaloClusterConverter.h"
 #include "CaloRings/CaloRingsConverter.h"
+#include "Particle/ElectronConverter.h"
 #include "RootStreamAODReader.h"
 #include "GaugiKernel/EDM.h"
 
@@ -123,12 +125,12 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   TFile *file = (TFile*)store->decorator("events");
   TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
-  InitBranch( tree, ("EventInfoContainer_"     + m_eventKey).c_str()       , &container_event      );
-  InitBranch( tree, ("EventSeedContainer_"     + m_seedsKey).c_str()       , &container_seeds      );
-  InitBranch( tree, ("TruthParticleContainer_" + m_truthKey).c_str()       , &container_truth      );
-  InitBranch( tree, ("CaloRingsContainer_"     + m_ringerKey).c_str()      , &container_rings      );
-  InitBranch( tree, ("CaloClusterContainer_"   + m_clusterKey).c_str()     , &container_clus       );
-  InitBranch( tree, ("ElectronContainer_"      + m_electronKey).c_str()    , &container_el         );
+  InitBranch( tree, ("EventInfoContainer_"     + m_eventKey).c_str()       , &collection_event      );
+  InitBranch( tree, ("EventSeedContainer_"     + m_seedsKey).c_str()       , &collection_seeds      );
+  InitBranch( tree, ("TruthParticleContainer_" + m_truthKey).c_str()       , &collection_truth      );
+  InitBranch( tree, ("CaloRingsContainer_"     + m_ringerKey).c_str()      , &collection_rings      );
+  InitBranch( tree, ("CaloClusterContainer_"   + m_clusterKey).c_str()     , &collection_clus       );
+  InitBranch( tree, ("ElectronContainer_"      + m_electronKey).c_str()    , &collection_el         );
   
 
 
@@ -193,12 +195,14 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
     SG::WriteHandle<xAOD::CaloRingsContainer> container_rings(m_ringerKey, ctx);
     container_rings.record( std::unique_ptr<xAOD::CaloRingsContainer>(new xAOD::CaloRingsContainer()));
 
-    SG::WriteHandle<xAOD::ElectronRingsContainer> container_el(m_electronKey, ctx);
+    SG::WriteHandle<xAOD::ElectronContainer> container_el(m_electronKey, ctx);
     container_el.record( std::unique_ptr<xAOD::ElectronContainer>(new xAOD::ElectronContainer()));
 
 
     xAOD::CaloClusterConverter clus_cnv;
     xAOD::CaloRingsConverter rings_cnv;
+    xAOD::ElectronConverter el_cnv;
+    
     std::map<int, xAOD::CaloCluster*> clus_links;
     int link=0;
     for( auto& clus_t : *collection_clus)

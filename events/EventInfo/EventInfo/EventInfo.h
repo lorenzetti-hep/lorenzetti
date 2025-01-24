@@ -33,6 +33,8 @@ namespace xAOD{
       /** Average mu from the pythia generator **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_avgmu, setAvgmu, avgmu );
 
+      float averageInteractionsPerCrossing() const { return m_avgmu; };
+
     private:
       int   m_runNumber;
       int   m_eventNumber;

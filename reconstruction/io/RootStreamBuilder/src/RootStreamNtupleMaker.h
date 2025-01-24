@@ -37,12 +37,8 @@ class RootStreamNtupleMaker : public Gaugi::Algorithm
     
     virtual StatusCode finalize() override;
 
-    bool computeForwardDecision(xAOD::CaloCluster* cluster, std::string workingpoint) const;
-
   private:
  
-    StatusCode deserialize( int evt, SG::EventContext &ctx ) const;
-
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
     std::string m_cellsKey;
@@ -52,14 +48,8 @@ class RootStreamNtupleMaker : public Gaugi::Algorithm
     std::string m_ringerKey;
     std::string m_electronKey;
     std::string m_inputFile;
-    std::string m_NtupleName;
     std::string m_outputNtupleName;
-    std::vector<float> m_secondLambdaCuts;
-    std::vector<float> m_lateralMomCuts;
-    std::vector<float> m_longMomCuts;
-    std::vector<float> m_fracMaxCuts;
-    std::vector<float> m_secondRCuts;
-    std::vector<float> m_lambdaCenterCuts;
+  
 
     int m_outputLevel;
 

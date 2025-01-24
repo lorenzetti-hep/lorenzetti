@@ -37,18 +37,10 @@ namespace SG{
   template<class T>
   Collection<T>::~Collection<T>()
   {
-    int i=m_collection.size();
-    int j=0;
-    for(auto& p : m_collection)
-    {
-      if(p.second){
-        j++;
+    for(auto& p : m_collection){
+      if(p.second)
         delete p.second;
-      }
-      
     }
-   
-    std::cout << "released "<< j << "/" << i << std::endl;
     m_collection.clear();
   }
 

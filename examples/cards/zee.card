@@ -21,7 +21,6 @@
             "script" : "simu_trf.py",
             "extra_args"   : {
                 "timeout" : 30, 
-                "enable-magnetic-field" : null,
                 "number-of-threads" : "%CPU_CORES"
             },
             "input" : "%JOB_WORKAREA/step_1/Zee.EVT.root",

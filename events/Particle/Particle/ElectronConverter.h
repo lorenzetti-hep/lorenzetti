@@ -13,7 +13,7 @@ namespace xAOD{
         float et;
         float eta;
         float phi;
-        std::vector<bool> decisions;
+        std::vector<bool> isEM;
     };
 
     class ElectronConverter{

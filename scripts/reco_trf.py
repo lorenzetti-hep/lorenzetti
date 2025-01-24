@@ -88,12 +88,13 @@ try:
                                 OutputLevel        = outputLevel)
 
 
-  from CaloCutBasedHypo import CaloCutBasedHypoCfg
-  hypo = CaloCutBasedHypoCfg( "CaloCutBasedHypo",
-                                InputClusterKey    = recordable("Clusters"),
-                                OutputElectronKey  = recordable("Electrons"),
-                                OutputLevel        = outputLevel)
-
+  from EgammaBuilder import ElectronMakerCfg
+  hypo = ElectronMakerCfg( "ElectronMaker",
+                           InputClusterKey    = recordable("Clusters"),
+                           OutputElectronKey  = recordable("Electrons"),
+                           OutputLevel        = outputLevel) 
+  
+  
   
   from RootStreamBuilder import RootStreamAODMaker
   AOD = RootStreamAODMaker( "RootStreamAODMaker",
