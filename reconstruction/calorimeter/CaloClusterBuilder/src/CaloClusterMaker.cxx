@@ -115,7 +115,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
   clusters.record( std::unique_ptr<xAOD::CaloClusterContainer>(new xAOD::CaloClusterContainer()) );
   
   // Event info
-  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey,  ctx);
+  SG::ReadHandle<xAOD::SeedContainer> seeds(m_seedKey,  ctx);
   SG::ReadHandle<xAOD::CaloCellContainer>  container(m_cellsKey, ctx);
 
 
@@ -178,6 +178,7 @@ StatusCode CaloClusterMaker::post_execute( EventContext &ctx ) const
       if(etot >= m_minCenterEnergy ){
         MSG_INFO( "Creating one cluster since the center energy is higher than the energy cut" );
         xAOD::CaloCluster *clus = new xAOD::CaloCluster( hotcell->e(), hotcell->eta(), hotcell->phi(), m_etaWindow/2., m_phiWindow/2. );
+        clus->setSeed(part);
         fillCluster( ctx, clus, m_cellsKey );
         m_showerShapes->execute( ctx, clus );
         clusters->push_back( clus );
@@ -209,7 +210,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   MSG_DEBUG( "We found " << clusters->size() << " clusters (RoIs) inside of this event." );
 
   // SG::ReadHandle<xAOD::TruthParticleContainer> particles(m_truthKey, ctx);
-  SG::ReadHandle<xAOD::EventSeedContainer> seeds(m_seedKey, ctx);
+  SG::ReadHandle<xAOD::SeedContainer> seeds(m_seedKey, ctx);
   if( !seeds.isValid() ){
     MSG_FATAL( "It's not possible to read the xAOD::SeedContainer from this Context" );
   }
@@ -220,7 +221,7 @@ StatusCode CaloClusterMaker::fillHistograms(EventContext &ctx ) const
   
     
     // const xAOD::TruthParticle *particle=nullptr;
-    const xAOD::EventSeed *seed=nullptr;
+    const xAOD::Seed *seed=nullptr;
 
     // TODO: Probably some c++ expert can reduce this **var.ptr(), too verbose...
     // Try to find the associated truth particle

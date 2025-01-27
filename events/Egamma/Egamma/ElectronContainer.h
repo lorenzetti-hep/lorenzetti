@@ -2,7 +2,7 @@
 #define ElectronContainer_h
 
 /** simulator includes **/
-#include "Particle/Electron.h"
+#include "Egamma/Electron.h"
 #include "GaugiKernel/DataVector.h"
 
 namespace xAOD{

@@ -86,6 +86,7 @@ class CaloRingsMaker : public Gaugi::Algorithm
     std::vector<float>  m_detaRings;
     std::vector<float>  m_dphiRings;
     std::vector<int>    m_nRings;
+    std::vector<float>  m_etaRange;
 
     std::vector<std::vector<int>>    m_layerRings;
 

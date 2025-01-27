@@ -1,4 +1,4 @@
-#include "Particle/Electron.h"
+#include "Egamma/Electron.h"
 #include "G4Kernel/CaloPhiRange.h"
 
 using namespace xAOD;

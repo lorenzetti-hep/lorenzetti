@@ -1,6 +1,5 @@
 
-#include "CaloCell/CaloCellContainer.h"
-#include "CaloCell/CaloDetDescriptorCollection.h"
+#include "CaloRings/CaloRingsContainer.h"
 
 #include "CaloRingsMerge.h"
 #include "TVector3.h"
@@ -20,8 +19,8 @@ CaloRingsMerge::CaloRingsMerge( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "InputRingsKeys"         , m_collectionKeys={}           );
-  declareProperty( "OutputRingsKey"         , m_ringerKey="Rings"           );
+  declareProperty( "CollectionKeys"         , m_collectionKeys={}           );
+  declareProperty( "OutputRingerKey"        , m_ringerKey="Rings"           );
   declareProperty( "OutputLevel"            , m_outputLevel=1               );
 }
 
@@ -79,7 +78,7 @@ StatusCode CaloRingsMerge::execute( EventContext &ctx , int /*evt*/ ) const
 StatusCode CaloRingsMerge::post_execute( EventContext &ctx ) const
 {
 
-  MSG_DEBUG( "Starting collection merge algorithm..." );
+  MSG_INFO( "Starting collection merge algorithm..." );
 
   SG::WriteHandle<xAOD::CaloRingsContainer> ringsContainer( m_ringerKey , ctx );
   ringsContainer.record( std::unique_ptr<xAOD::CaloRingsContainer>(new xAOD::CaloRingsContainer()) );
@@ -98,7 +97,7 @@ StatusCode CaloRingsMerge::post_execute( EventContext &ctx ) const
     }
 
     MSG_DEBUG( "Creating new ring and attach the object into the container" ); 
-    for( auto ring : *collection ){
+    for( auto ring : **collection.ptr() ){
       xAOD::CaloRings* newRing = new xAOD::CaloRings();
       newRing->setRings( ring->rings() );
       newRing->setCaloCluster( ring->caloCluster() );

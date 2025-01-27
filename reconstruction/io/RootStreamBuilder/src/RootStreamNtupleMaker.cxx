@@ -12,14 +12,14 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloRings/CaloRingsContainer.h"
-#include "Particle/ElectronContainer.h"
+#include "Egamma/ElectronContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
 #include "CaloCluster/CaloClusterConverter.h"
 #include "CaloRings/CaloRingsConverter.h"
-#include "Particle/ElectronConverter.h"
+#include "Egamma/ElectronConverter.h"
 #include "RootStreamNtupleMaker.h"
 #include "GaugiKernel/EDM.h"
 
@@ -33,14 +33,13 @@ RootStreamNtupleMaker::RootStreamNtupleMaker( std::string name ) :
   IMsgService(name),
   Algorithm()
 {
-  declareProperty( "InputFile"          , m_inputFile=""                  );
   declareProperty( "InputEventKey"      , m_eventKey="EventInfo"          );
   declareProperty( "InputTruthKey"      , m_truthKey="Particles"          );
-  declareProperty( "InputCellsKey"      , m_cellsKey="Cells"              );
+  declareProperty( "InputSeedsKey"      , m_seedsKey="Seeds"              );
   declareProperty( "InputClusterKey"    , m_clusterKey="Clusters"         );
   declareProperty( "InputRingerKey"     , m_ringerKey="Rings"             );
   declareProperty( "InputElectronKey"   , m_electronKey="Electrons"       );
-  declareProperty( "OutputLevel"        , m_outputLevel=1                 );
+  declareProperty( "OutputLevel"        , m_outputLevel=0                 );
   declareProperty( "OutputNtupleName"   , m_outputNtupleName="events"     );
 }
 
@@ -54,7 +53,7 @@ RootStreamNtupleMaker::~RootStreamNtupleMaker()
 StatusCode RootStreamNtupleMaker::initialize()
 {
   CHECK_INIT();
-  setMsgLevel(m_outputLevel);
+  //setMsgLevel( (MSG::Level)m_outputLevel );
   return StatusCode::SUCCESS;
 }
 
@@ -69,11 +68,13 @@ StatusCode RootStreamNtupleMaker::finalize()
 
 StatusCode RootStreamNtupleMaker::bookHistograms( EventContext &ctx ) const
 {
+  MSG_INFO("Booking ttree...");
   auto store = ctx.getStoreGateSvc();
-  TFile *file = new TFile(m_inputFile.c_str(), "read");
-  store->decorate( "events", file );
   store->cd();
 
+  int eventNumber             = -1;
+  int runNumber               = -1;
+  float avgmu                 = -1;
   float cl_eta                = 0;
   float cl_phi                = 0;
   float cl_e                  = 0;
@@ -118,11 +119,14 @@ StatusCode RootStreamNtupleMaker::bookHistograms( EventContext &ctx ) const
   bool el_medium              = false;
   bool el_loose               = false;
   bool el_vloose              = false;
+  float seed_eta              = 0;
+  float seed_phi              = 0;
+  std::vector<float> *mc_pdgid= nullptr;
+  std::vector<float> *mc_eta= nullptr;
+  std::vector<float> *mc_phi= nullptr;  
+  std::vector<float> *mc_e= nullptr;  
+  std::vector<float> *mc_et= nullptr; 
 
- 
-  int eventNumber = -1;
-  int runNumber   = -1;
-  float avgmu     = -1;
 
 
   TTree *tree = new TTree(m_outputNtupleName.c_str(), "");
@@ -174,6 +178,14 @@ StatusCode RootStreamNtupleMaker::bookHistograms( EventContext &ctx ) const
   tree->Branch("el_medium"              , &el_medium);
   tree->Branch("el_loose"               , &el_loose);
   tree->Branch("el_vloose"              , &el_vloose);
+  tree->Branch("seed_eta"               , &seed_eta);
+  tree->Branch("seed_phi"               , &seed_phi);
+  tree->Branch("mc_pdgid"               , &mc_pdgid);
+  tree->Branch("mc_eta"                 , &mc_eta);
+  tree->Branch("mc_phi"                 , &mc_phi);
+  tree->Branch("mc_e"                   , &mc_e);
+  tree->Branch("mc_et"                  , &mc_et);
+  
 
   store->add(tree);
   return StatusCode::SUCCESS; 
@@ -211,6 +223,7 @@ StatusCode RootStreamNtupleMaker::post_execute( EventContext &/*ctx*/ ) const
 
 StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
 {
+  MSG_INFO("fill ttree...");
 
   SG::ReadHandle<xAOD::EventInfoContainer> event_container( m_eventKey, ctx );
   if( !event_container.isValid() )
@@ -230,10 +243,23 @@ StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
     MSG_FATAL("It's not possible to read the xAOD::ElectronContainer from this Context using this key " << m_electronKey );
   }
 
+  SG::ReadHandle<xAOD::SeedContainer> seed_container( m_seedsKey, ctx );
+  if( !seed_container.isValid() )
+  {
+    MSG_FATAL("It's not possible to read the xAOD::SeedContainer from this Context using this key " << m_seedsKey );
+  }
+
+  SG::ReadHandle<xAOD::TruthParticleContainer> truth_container( m_truthKey, ctx );
+  if( !truth_container.isValid() )
+  {
+    MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_truthKey );
+  }
+
   auto store = ctx.getStoreGateSvc();
+  store->cd();  
   TTree *tree = store->tree(m_outputNtupleName.c_str());
 
-  MSG_INFO( "Link all branches..." );
+  MSG_INFO( "Link all branches..." << tree );
 
   int   runNumber          = 0;
   int   eventNumber        = 0;
@@ -282,10 +308,18 @@ StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
   bool el_loose            = false;
   bool el_vloose           = false;
   std::vector<float> *cl_rings = nullptr;
+  float seed_eta           = 0;
+  float seed_phi           = 0;
+  std::vector<float> *mc_pdgid= nullptr;
+  std::vector<float> *mc_eta= nullptr;
+  std::vector<float> *mc_phi= nullptr;
+  std::vector<float> *mc_e= nullptr;
+  std::vector<float> *mc_et= nullptr;
 
+  
   InitBranch( tree, "avgmu"                   , &avgmu             );
-  InitBranch( tree, "event_number"            , &eventNumber       );
-  InitBranch( tree, "run_number"              , &runNumber         );
+  InitBranch( tree, "EventNumber"             , &eventNumber       );
+  InitBranch( tree, "RunNumber"               , &runNumber         );
   InitBranch( tree, "cl_eta"                  , &cl_eta            );
   InitBranch( tree, "cl_phi"                  , &cl_phi            );
   InitBranch( tree, "cl_e"                    , &cl_e              );
@@ -322,7 +356,7 @@ StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
   InitBranch( tree, "cl_fracMax"              , &cl_fracMax        );
   InitBranch( tree, "cl_lateralMom"           , &cl_lateralMom     );
   InitBranch( tree, "cl_longitudinalMom"      , &cl_longitudinalMom);
-  InitBranch( tree, "rings"                   , &cl_rings          );
+  InitBranch( tree, "cl_rings"                , &cl_rings          );
   InitBranch( tree, "el_eta"                  , &el_eta            );
   InitBranch( tree, "el_et"                   , &el_et             );
   InitBranch( tree, "el_phi"                  , &el_phi            );
@@ -330,6 +364,13 @@ StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
   InitBranch( tree, "el_medium"               , &el_medium         );
   InitBranch( tree, "el_loose"                , &el_loose          );
   InitBranch( tree, "el_vloose"               , &el_vloose         );    
+  InitBranch( tree, "seed_eta"                , &seed_eta          );
+  InitBranch( tree, "seed_phi"                , &seed_phi          );
+  InitBranch( tree, "mc_pdgid"                , &mc_pdgid          );
+  InitBranch( tree, "mc_eta"                  , &mc_eta            );
+  InitBranch( tree, "mc_phi"                  , &mc_phi            );
+  InitBranch( tree, "mc_e"                    , &mc_e              );
+  InitBranch( tree, "mc_et"                   , &mc_et             );
 
 
   auto evt = (**event_container.ptr()).front();
@@ -406,11 +447,33 @@ StatusCode RootStreamNtupleMaker::fillHistograms( EventContext &ctx ) const
     el_et              = el->et();
     el_eta             = el->eta();
     el_phi             = el->phi();
+
+
+    auto seed = clus->seed();
+
+    seed_eta = seed->eta();
+    seed_phi = seed->phi();
+    for (auto mc : **truth_container.ptr() )
+    {
+      if (mc->seedid() == seed->id())
+      {
+        MSG_INFO("Found mc particle with PDGID: " << mc->pdgid());
+        mc_pdgid->push_back(mc->pdgid());
+        mc_eta->push_back(mc->eta());
+        mc_phi->push_back(mc->phi());
+        mc_e->push_back(mc->e());
+        mc_et->push_back(mc->et());
+      }
+    }
+
+
+
+
     tree->Fill();
          
   } //each cluster should be 1 entry on ntuple file
    
-
+  
   return StatusCode::SUCCESS;
 }
 
@@ -430,4 +493,7 @@ void RootStreamNtupleMaker::InitBranch(TTree* fChain, std::string branch_name, T
   fChain->SetBranchStatus(bname.c_str(), 1.);
   fChain->SetBranchAddress(bname.c_str(), param);
 }
+
+//!=====================================================================
+
 

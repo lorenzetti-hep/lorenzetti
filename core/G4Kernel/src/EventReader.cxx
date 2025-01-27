@@ -1,6 +1,6 @@
 
 #include "EventInfo/EventInfoContainer.h"
-#include "EventInfo/EventSeedContainer.h"
+#include "EventInfo/SeedContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
 
 
@@ -235,8 +235,8 @@ int EventReader::Load( G4Event* g4event )
   SG::WriteHandle<xAOD::TruthParticleContainer>  particles(m_truthKey, reco->getContext());
   particles.record( std::unique_ptr<xAOD::TruthParticleContainer>( new xAOD::TruthParticleContainer() ) );
 
-  SG::WriteHandle<xAOD::EventSeedContainer>  seeds(m_seedKey, reco->getContext());
-  seeds.record( std::unique_ptr<xAOD::EventSeedContainer>( new xAOD::EventSeedContainer() ) );
+  SG::WriteHandle<xAOD::SeedContainer>  seeds(m_seedKey, reco->getContext());
+  seeds.record( std::unique_ptr<xAOD::SeedContainer>( new xAOD::SeedContainer() ) );
  
   float totalEnergy=0;
   int num_of_seeds = 0;
@@ -248,12 +248,12 @@ int EventReader::Load( G4Event* g4event )
     int bc_id = m_p_bc_id->at(i);
     if(m_p_pdg_id->at(i)==0){ // is seed?
       seed_id++;
-      xAOD::EventSeed *seed = new xAOD::EventSeed( seed_id,
-                                                   m_p_e->at(i)*MeV, 
-                                                   m_p_et->at(i)*MeV, 
-                                                   m_p_eta->at(i), 
-                                                   m_p_phi->at(i)
-                                                    );
+      xAOD::Seed *seed = new xAOD::Seed( seed_id,
+                                         m_p_e->at(i)*MeV, 
+                                         m_p_et->at(i)*MeV, 
+                                         m_p_eta->at(i), 
+                                         m_p_phi->at(i)
+                                          );
 
       MSG_INFO( "Seed " << seed_id << " in eta = " << seed->eta() << ", phi = " << seed->phi());
       seeds->push_back(seed);

@@ -71,7 +71,7 @@ add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
-add_subdirectory( events/Particle)
+add_subdirectory( events/Egamma)
 
 # reconstruction package
 add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
@@ -102,7 +102,7 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:Particle>
+  $<TARGET_OBJECTS:Egamma>
   $<TARGET_OBJECTS:SpacePoint>
   $<TARGET_OBJECTS:CaloCellBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>

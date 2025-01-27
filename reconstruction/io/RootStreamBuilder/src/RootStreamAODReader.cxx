@@ -3,17 +3,17 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
 #include "CaloRings/CaloRingsContainer.h"
-#include "Particle/ElectronContainer.h"
+#include "Egamma/ElectronContainer.h"
 
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "CaloCell/CaloDetDescriptorCollection.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "EventInfo/EventSeedConverter.h"
+#include "EventInfo/SeedConverter.h"
 #include "CaloCluster/CaloClusterConverter.h"
 #include "CaloRings/CaloRingsConverter.h"
-#include "Particle/ElectronConverter.h"
+#include "Egamma/ElectronConverter.h"
 #include "RootStreamAODReader.h"
 #include "GaugiKernel/EDM.h"
 
@@ -29,15 +29,15 @@ RootStreamAODReader::RootStreamAODReader( std::string name ) :
 {
 
 
-  declareProperty( "InputEventKey"          , m_eventKey="EventInfo"            );
-  declareProperty( "InputSeedsKey"          , m_seedsKey="Seeds"                );
-  declareProperty( "InputTruthKey"          , m_truthKey="Particles"            );
-  declareProperty( "InputCellsKey"          , m_cellsKey="Cells"                );
-  declareProperty( "InputClusterKey"        , m_clusterKey="Clusters"           );
-  declareProperty( "InputRingerKey"         , m_ringerKey="Rings"               );
-  declareProperty( "InputElectronKey"       , m_electronKey="Electrons"         );
+  declareProperty( "OutputEventKey"         , m_eventKey="EventInfo"            );
+  declareProperty( "OutputSeedsKey"         , m_seedsKey="Seeds"                );
+  declareProperty( "OutputTruthKey"         , m_truthKey="Particles"            );
+  declareProperty( "OutputClusterKey"       , m_clusterKey="Clusters"           );
+  declareProperty( "OutputRingerKey"        , m_ringerKey="Rings"               );
+  declareProperty( "OutputElectronKey"      , m_electronKey="Electrons"         );
   declareProperty( "OutputLevel"            , m_outputLevel=1                   );
   declareProperty( "NtupleName"             , m_ntupleName="CollectionTree"     );
+  declareProperty( "InputFile"              , m_inputFile=""                    );
 }
 
 //!=====================================================================
@@ -113,7 +113,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t > *collection_descriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *collection_cells      = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
-  std::vector<xAOD::EventSeed_t         > *collection_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *collection_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
   std::vector<xAOD::CaloRings_t         > *collection_rings      = nullptr;
   std::vector<xAOD::CaloCluster_t       > *collection_clus       = nullptr;
@@ -126,7 +126,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
   InitBranch( tree, ("EventInfoContainer_"     + m_eventKey).c_str()       , &collection_event      );
-  InitBranch( tree, ("EventSeedContainer_"     + m_seedsKey).c_str()       , &collection_seeds      );
+  InitBranch( tree, ("SeedContainer_"          + m_seedsKey).c_str()       , &collection_seeds      );
   InitBranch( tree, ("TruthParticleContainer_" + m_truthKey).c_str()       , &collection_truth      );
   InitBranch( tree, ("CaloRingsContainer_"     + m_ringerKey).c_str()      , &collection_rings      );
   InitBranch( tree, ("CaloClusterContainer_"   + m_clusterKey).c_str()     , &collection_clus       );
@@ -155,7 +155,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   
 
   MSG_DEBUG("Deserialize EventInfo...");
-  
+
   { // deserialize EventInfo
 
     SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
@@ -168,19 +168,23 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   }
   
 
-  MSG_DEBUG("Deserialize EventSeed...");
-  
-  { // deserialize EventSeed
-    SG::WriteHandle<xAOD::EventSeedContainer> container(m_seedsKey, ctx);
-    container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
+  MSG_DEBUG("Deserialize Seed...");
+  std::map<int, xAOD::Seed*> seed_links;
+  int seed_link=0;
 
-    xAOD::EventSeedConverter cnv;
+  { // deserialize Seed
+    SG::WriteHandle<xAOD::SeedContainer> container(m_seedsKey, ctx);
+    container.record( std::unique_ptr<xAOD::SeedContainer>(new xAOD::SeedContainer()));
+
+    xAOD::SeedConverter cnv;
     for( auto& seed_t : *collection_seeds)
     {
-      xAOD::EventSeed  *seed=nullptr;
+      xAOD::Seed  *seed=nullptr;
       cnv.convert(seed_t, seed);
       MSG_DEBUG( "Seed in eta = " << seed->eta() << ", phi = " << seed->phi());
       container->push_back(seed);
+      seed_links[seed_link]=seed;
+      seed_link++;
     }
   }
 
@@ -209,6 +213,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
     {
       xAOD::CaloCluster  *clus=nullptr;
       clus_cnv.convert(clus_t, clus);
+      clus->setSeed( seed_links[clus_t.seed_link] );
       container_clus->push_back(clus);
       clus_links[link] = clus;
       link++; 

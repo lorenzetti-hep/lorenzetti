@@ -3,6 +3,7 @@ __all__ = ["CaloRingsMaker"]
 
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
+from typing import List
 import ROOT
 import numpy as np
 pi = np.pi
@@ -19,7 +20,7 @@ class CaloRingsMaker( Cpp ):
                 LayerRings       : list,
                 OutputLevel      : int=0, 
                 HistogramPath    : str="Expert/Rings",
-                DoForward        : bool=False
+                EtaRange         : List[float] = [0, 2.5],
               ):
 
     Cpp.__init__(self, ROOT.CaloRingsMaker(name) )
@@ -32,7 +33,7 @@ class CaloRingsMaker( Cpp ):
     self.setProperty( "LayerRings"         , LayerRings       )
     self.setProperty( "HistogramPath"      , HistogramPath    )
     self.setProperty( "OutputLevel"        , OutputLevel      )
-    self.setProperty( "DoForward"          , DoForward        )
+    self.setProperty( "EtaRange"           , EtaRange         )
 
 
 

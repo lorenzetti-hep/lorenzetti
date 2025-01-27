@@ -81,12 +81,11 @@ try:
                               OutputLevel        = outputLevel)
   
 
-
-  from EgammaBuilder import ElectronMakerCfg
-  hypo = ElectronMakerCfg( "ElectronMaker",
-                           InputClusterKey    = recordable("Clusters"),
-                           OutputElectronKey  = recordable("Electrons"),
-                           OutputLevel        = outputLevel) 
+  from EgammaBuilder import ElectronBuilderCfg
+  hypo = ElectronBuilderCfg( "ElectronBuilder",
+                             InputClusterKey    = recordable("Clusters"),
+                             OutputElectronKey  = recordable("Electrons"),
+                             OutputLevel        = outputLevel) 
   
   
   

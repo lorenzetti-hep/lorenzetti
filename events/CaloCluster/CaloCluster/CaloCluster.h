@@ -2,6 +2,7 @@
 #define CaloCluster_h
 /** simulator includes **/
 #include "CaloCell/CaloCell.h"
+#include "EventInfo/Seed.h"
 #include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 /** geant 4 includes **/
@@ -107,8 +108,12 @@ namespace xAOD{
 
       bool isForward() const { return std::abs(m_eta) > 2.5; };
 
+      const xAOD::Seed* seed() const { return m_seed; };
+      void setSeed( const xAOD::Seed* seed ) { m_seed = seed; };
+
       /*! Get all cells **/
       const std::vector<const xAOD::CaloCell*>& cells() const;
+      
     private:
       float m_e;
       float m_et;
@@ -151,6 +156,8 @@ namespace xAOD{
 
       /* All calo cells into the roi window */
       std::vector<const xAOD::CaloCell*> m_container;
+
+      const xAOD::Seed* m_seed;
   };
 }
 #endif

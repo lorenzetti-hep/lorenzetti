@@ -1,4 +1,4 @@
-__all__ = ["CaloRingsMaker"]
+__all__ = ["CaloRingsMerge"]
 
 import ROOT
 

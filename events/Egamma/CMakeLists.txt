@@ -1,15 +1,16 @@
 
 file(GLOB SOURCES src/*.cxx )
-file(GLOB_RECURSE HEADERS Particle/*.h)
+file(GLOB_RECURSE HEADERS Egamma/*.h)
 
 include_directories(${CMAKE_SOURCE_DIR} ${ROOT_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/GaugiKernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../core/G4Kernel)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../CaloCell)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../CaloCluster)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../EventInfo)
 
-ROOT_GENERATE_DICTIONARY(ParticleDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE Particle)
+ROOT_GENERATE_DICTIONARY(EgammaDict ${HEADERS} LINKDEF ${CMAKE_CURRENT_SOURCE_DIR}/src/LinkDef.h  MODULE Egamma)
                                       
-add_library(Particle  OBJECT ${SOURCES} ParticleDict.cxx)
-install(FILES ${HEADERS}  DESTINATION Particle)
-gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python Particle)
+add_library(Egamma  OBJECT ${SOURCES} EgammaDict.cxx)
+install(FILES ${HEADERS}  DESTINATION Egamma)
+gaugi_install_python_modules( ${CMAKE_CURRENT_SOURCE_DIR}/python Egamma)

@@ -7,8 +7,8 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "Particle/Electron.h"
-#include "Particle/ElectronContainer.h"
+#include "Egamma/Electron.h"
+#include "Egamma/ElectronContainer.h"
 
 
 

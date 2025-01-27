@@ -3,16 +3,16 @@
 #include "CaloRings/CaloRingsContainer.h"
 #include "EventInfo/EventInfoContainer.h"
 #include "TruthParticle/TruthParticleContainer.h"
-#include "Particle/ElectronContainer.h"
+#include "Egamma/ElectronContainer.h"
 
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
 #include "CaloCluster/CaloClusterConverter.h"
 #include "CaloRings/CaloRingsConverter.h"
 #include "EventInfo/EventInfoConverter.h"
-#include "EventInfo/EventSeedConverter.h"
+#include "EventInfo/SeedConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "Particle/ElectronConverter.h"
+#include "Egamma/ElectronConverter.h"
 #include "TTree.h"
 #include "RootStreamAODMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -73,7 +73,7 @@ StatusCode RootStreamAODMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloCluster_t         > container_clus;
   std::vector<xAOD::CaloRings_t           > container_rings;
   std::vector<xAOD::EventInfo_t           > container_event;
-  std::vector<xAOD::EventSeed_t           > container_seeds;
+  std::vector<xAOD::Seed_t           > container_seeds;
   std::vector<xAOD::TruthParticle_t       > container_truth;
   std::vector<xAOD::Electron_t            > container_electron;
 
@@ -81,7 +81,7 @@ StatusCode RootStreamAODMaker::bookHistograms( SG::EventContext &ctx ) const
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
 
   tree->Branch( ("EventInfoContainer_"     + m_outputEventKey).c_str()       , &container_event      );
-  tree->Branch( ("EventSeedContainer_"     + m_outputSeedsKey).c_str()       , &container_seeds      );
+  tree->Branch( ("SeedContainer_"     + m_outputSeedsKey).c_str()       , &container_seeds      );
   tree->Branch( ("TruthParticleContainer_" + m_outputTruthKey).c_str()       , &container_truth      );
   tree->Branch( ("CaloRingsContainer_"     + m_outputRingerKey).c_str()      , &container_rings      );
   tree->Branch( ("CaloClusterContainer_"   + m_outputClusterKey).c_str()     , &container_clus       );
@@ -173,14 +173,14 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloCluster_t       > *container_clus       = nullptr;
   std::vector<xAOD::CaloRings_t         > *container_rings      = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event      = nullptr;
-  std::vector<xAOD::EventSeed_t         > *container_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *container_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth      = nullptr;
   std::vector<xAOD::Electron_t          > *container_electron   = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"     + m_outputEventKey).c_str()       , &container_event      );
-  InitBranch( tree, ("EventSeedContainer_"     + m_outputSeedsKey).c_str()       , &container_seeds      );
+  InitBranch( tree, ("SeedContainer_"     + m_outputSeedsKey).c_str()       , &container_seeds      );
   InitBranch( tree, ("TruthParticleContainer_" + m_outputTruthKey).c_str()       , &container_truth      );
   InitBranch( tree, ("CaloRingsContainer_"     + m_outputRingerKey).c_str()     , &container_rings       );
   InitBranch( tree, ("CaloClusterContainer_"   + m_outputClusterKey).c_str()     , &container_clus       );
@@ -209,6 +209,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
   xAOD::cell_links_t       cell_links;
   xAOD::descriptor_links_t descriptor_links;
   xAOD::cluster_links_t    cluster_links;
+  xAOD::seed_links_t       seed_links;
 
   { // Serialize Truth Particle
 
@@ -231,18 +232,21 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
 
   { // Serialize Seed
     MSG_DEBUG("Serialize Seed..");
-    SG::ReadHandle<xAOD::EventSeedContainer> container( m_inputSeedsKey, ctx );
+    SG::ReadHandle<xAOD::SeedContainer> container( m_inputSeedsKey, ctx );
 
     if( !container.isValid() )
     {
-      MSG_FATAL("It's not possible to read the xAOD::EventSeedContainer from this Context using this key " << m_inputSeedsKey );
+      MSG_FATAL("It's not possible to read the xAOD::SeedContainer from this Context using this key " << m_inputSeedsKey );
     }
 
+    int link=0;
     for (const auto seed : **container.ptr() ){
-      xAOD::EventSeed_t seed_t;
-      xAOD::EventSeedConverter cnv;
+      xAOD::Seed_t seed_t;
+      xAOD::SeedConverter cnv;
       cnv.convert( seed, seed_t );
       container_seeds->push_back(seed_t);
+      seed_links[seed]=link;
+      link++;
     }
   }
 
@@ -297,7 +301,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
       cluster_links[clus] = cluster_link; // decorate the cluster since is used by rings
       xAOD::CaloCluster_t clus_t;
       xAOD::CaloClusterConverter cnv;
-      cnv.convert( clus , clus_t , cell_links);
+      cnv.convert( clus , clus_t , cell_links, seed_links);
       container_clus->push_back(clus_t);
       cluster_link++;
     }

@@ -1,21 +1,21 @@
-#ifndef EventSeed_h
-#define EventSeed_h
+#ifndef Seed_h
+#define Seed_h
 
 #include "GaugiKernel/EDM.h"
 #include "GaugiKernel/macros.h"
 
 namespace xAOD{
   
-  class EventSeed: public Gaugi::EDM
+  class Seed: public Gaugi::EDM
   {  
     public:
 
       /*! Contructor */
-      EventSeed();
+      Seed();
       /*! Contructor */
-      EventSeed( int id, float e, float et, float eta, float phi );
+      Seed( int id, float e, float et, float eta, float phi );
       /*! Destructor */
-      ~EventSeed()=default;
+      ~Seed()=default;
       /*! The eta center of the cluster given by the simulation (RoI) */ 
       PRIMITIVE_SETTER_AND_GETTER( float, m_eta, setEta, eta );
       /*! The phi center of the cluster given by the simulation (RoI) */ 

@@ -13,9 +13,9 @@ def CaloRingsBuilderCfg( name             : str,
                          ):
     pi = np.pi
 
-    rings   = CaloRingsMaker( name + "_Central",
+    rings   = CaloRingsMaker( name,
                               InputClusterKey    = InputClusterKey,  
-                              OutputRingerKey    = OutputRingerKey+"_Central",
+                              OutputRingerKey    = OutputRingerKey+"_Aux",
                               DeltaEtaRings      = [0.025,0.00325, 0.025, 0.050, 0.1, 0.1, 0.2 ],
                               DeltaPhiRings      = [pi/32, pi/32, pi/128, pi/128, pi/128, pi/32, pi/32, pi/32],
                               NRings             = [8, 64, 8, 8, 4, 4, 4],
@@ -28,14 +28,14 @@ def CaloRingsBuilderCfg( name             : str,
                                 [CaloSampling.HEC2, CaloSampling.TileCal2, CaloSampling.TileExt2],
                                 [CaloSampling.HEC3, CaloSampling.TileCal3, CaloSampling.TileExt3],
                               ],
-                              HistogramPath = HistogramPath+"_Central",
-                              DoForward=False,
+                              HistogramPath = HistogramPath,
+                              EtaRange      = [0.0, 2.5],
                               OutputLevel   = OutputLevel)
  
 
-    fwd_rings   = CaloRingsMaker(name+"_Forward",
+    fwd_rings   = CaloRingsMaker(name+"_Fwd",
                                  InputClusterKey    = InputClusterKey,  
-                                 OutputRingerKey    = OutputRingerKey+"_Forward",
+                                 OutputRingerKey    = OutputRingerKey+"_Fwd_Aux",
                                  DeltaEtaRings = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2],
                                  DeltaPhiRings = [pi/32, pi/32, pi/32, pi/16, pi/16, pi/16],
                                  NRings        = [4, 4, 4, 2, 2, 2],
@@ -47,14 +47,14 @@ def CaloRingsBuilderCfg( name             : str,
                                    [CaloSampling.HEC2],
                                    [CaloSampling.HEC3],
                                  ],
-                                 HistogramPath = HistogramPath+"_Forward",
-                                 DoForward=True,
+                                 HistogramPath = HistogramPath+"_Fwd",
+                                 EtaRange      = [2.5, 4.9],
                                  OutputLevel   = OutputLevel)
   
     merge_rings = CaloRingsMerge( "CaloRingsMerge",   
-                                CollectionKeys = [rings.OutputRingerKey, fwd_rings.OutputRingerKey],
-                                OutputRingerKey = OutputRingerKey,  
-                                OutputLevel   = OutputLevel)
+                                  CollectionKeys = [rings.OutputRingerKey, fwd_rings.OutputRingerKey],
+                                  OutputRingerKey = OutputRingerKey,  
+                                  OutputLevel   = OutputLevel)
                                  
 
     return [rings, fwd_rings, merge_rings]

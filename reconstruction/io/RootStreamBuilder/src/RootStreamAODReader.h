@@ -4,7 +4,7 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
-#include "EventInfo/EventSeed.h"
+#include "EventInfo/Seed.h"
 
 #include "TruthParticle/TruthParticle.h"
 
@@ -43,15 +43,15 @@ class RootStreamAODReader : public Gaugi::Algorithm
 
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
-    std::string m_cellsKey;
+    //std::string m_cellsKey;
     std::string m_eventKey;
     std::string m_truthKey;
     std::string m_seedsKey;
     std::string m_ringerKey;
     std::string m_clusterKey;
     std::string m_electronKey;
-    std::string m_inputFile;
     std::string m_ntupleName;
+    std::string m_inputFile;
 
     int m_outputLevel;
 

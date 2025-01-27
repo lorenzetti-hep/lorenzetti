@@ -3,9 +3,11 @@
 /** simulator includes **/
 #include "CaloCluster/CaloCluster.h"
 #include "CaloCell/CaloCellConverter.h"
+#include "EventInfo/SeedConverter.h"
 #include <map>
 namespace xAOD{
     typedef std::map<const xAOD::CaloCluster*, int> cluster_links_t;
+
     struct CaloCluster_t{
         float e;
         float et;
@@ -44,6 +46,7 @@ namespace xAOD{
   	 	float lateralMom;
   	  	float longitudinalMom;
         std::vector<int> cell_links;
+        int seed_link;
     };
 
     class CaloClusterConverter{
@@ -51,7 +54,7 @@ namespace xAOD{
             CaloClusterConverter()=default;
             ~CaloClusterConverter()=default;
             // convert a class object into a struct
-            bool convert(const CaloCluster *, CaloCluster_t & , cell_links_t &);
+            bool convert(const CaloCluster *, CaloCluster_t & , cell_links_t &, seed_links_t &);
             bool convert( const CaloCluster_t &, CaloCluster *& );
         private:
     };

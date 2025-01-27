@@ -7,7 +7,7 @@
 #include "TruthParticle/TruthParticle.h"
 #include "CaloCluster/CaloCluster.h"
 #include "CaloRings/CaloRings.h"
-#include "Particle/Electron.h"
+#include "Egamma/Electron.h"
 
 
 
@@ -41,13 +41,13 @@ class RootStreamNtupleMaker : public Gaugi::Algorithm
  
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     
-    std::string m_cellsKey;
+
+    std::string m_seedsKey;
     std::string m_eventKey;
     std::string m_truthKey;
     std::string m_clusterKey;
     std::string m_ringerKey;
     std::string m_electronKey;
-    std::string m_inputFile;
     std::string m_outputNtupleName;
   
 

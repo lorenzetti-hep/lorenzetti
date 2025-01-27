@@ -74,7 +74,7 @@ void ComponentAccumulator::bookHistograms( SG::EventContext *ctx ) const
 
   for ( auto toolHandle : m_toolHandles )
   { 
-    MSG_DEBUG( "Booking histograms for " << toolHandle->name() );
+    MSG_INFO( "Booking histograms for " << toolHandle->name() );
     if (toolHandle->bookHistograms( *ctx ).isFailure() ){
       MSG_FATAL("It's not possible to book histograms for " << toolHandle->name());
     }

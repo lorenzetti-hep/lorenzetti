@@ -2,7 +2,7 @@
 #define ElectronConverter_h
 
 /** simulator includes **/
-#include "Particle/Electron.h"
+#include "Egamma/Electron.h"
 #include "CaloCluster/CaloClusterConverter.h"
 
 namespace xAOD{

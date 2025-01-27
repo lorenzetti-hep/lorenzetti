@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from GaugiKernel          import LoggingLevel, Logger
-from GaugiKernel          import GeV
 import numpy as np
 import argparse
 import sys,os
@@ -22,7 +21,7 @@ parser.add_argument('-o','--outputfile', action='store', dest='output_file', req
 parser.add_argument('--nov','--number-of-events', action='store', dest='number_of_events', required = False, type=int, default=-1,
                     help = "The number of events to apply the reconstruction.")
 
-parser.add_argument('-l', '--output-level', action='store', dest='output_level', required = False, type=str, default='DEBUG',
+parser.add_argument('-l', '--output-level', action='store', dest='output_level', required = False, type=str, default='INFO',
                     help = "The output level messenger.")
 
 
@@ -43,37 +42,37 @@ try:
   acc = ComponentAccumulator("ComponentAccumulator", args.output_file)
 
 
-  from RootStreamAODReader import RootStreamAODReader
+  from RootStreamBuilder import RootStreamAODReader, recordable
 
   aod = RootStreamAODReader("AODReader", 
+                            InputFile            = args.input_file,
                             OutputLevel          = outputLevel,
-                            InputCellsKey        = recordable("Cells"),
-                            InputEventKey        = recordable("EventInfo"),
-                            InputTruthKey        = recordable("Particles"),
-                            InputClusterKey      = recordable("Clusters"),
-                            InputRingerKey       = recordable("Rings"),
-                            InputElectronKey     = recordable("Electrons"),
+                            OutputEventKey       = recordable("Events"),
+                            OutputTruthKey       = recordable("Particles"),
+                            OutputClusterKey     = recordable("Clusters"),
+                            OutputRingerKey      = recordable("Rings"),
+                            OutputElectronKey    = recordable("Electrons"),
+                            OutputSeedsKey       = recordable("Seeds"),
                             NtupleName           = "CollectionTree",
-                            
-                            
                             )
 
-
-
-  from RootStreamBuilder import RootStreamNTUPLEMaker, recordable
-  NTUPLE = RootStreamNTUPLEMaker("NTUPLEMaker", 
-                            InputFile       = args.inputFile,
-                           
-                            OutputLevel          = outputLevel,
-                            OutputNtupleName     = "events",
-                            
-                          )
+  aod.merge(acc)
   
-
-
-  NTUPLE.merge(acc)
+  from RootStreamBuilder import RootStreamNtupleMaker 
+  ntuple = RootStreamNtupleMaker("NtupleMaker",
+                                OutputLevel          = outputLevel,
+                                InputEventKey        = recordable("Events"),
+                                InputTruthKey        = recordable("Particles"),
+                                InputClusterKey      = recordable("Clusters"),
+                                InputRingerKey       = recordable("Rings"),
+                                InputElectronKey     = recordable("Electrons"),
+                                InputSeedsKey        = recordable("Seeds"),
+                                OutputNtupleName     = "physics",
+                                )
   
-  acc.run(args.numberOfEvents)
+  acc+=ntuple
+  
+  acc.run(args.number_of_events)
 
   del acc
   sys.exit(0)

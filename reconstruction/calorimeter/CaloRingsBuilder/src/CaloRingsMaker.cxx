@@ -25,6 +25,7 @@ CaloRingsMaker::CaloRingsMaker( std::string name ) :
   declareProperty( "OutputLevel"    , m_outputLevel=1         );
   declareProperty( "HistogramPath"  , m_histPath=""           );
   declareProperty( "DoForward"      , m_doForward=false       );
+  declareProperty( "EtaRange"        , m_etaRange={0,2.5}       );
 }
 
 //!=====================================================================
@@ -109,17 +110,16 @@ StatusCode CaloRingsMaker::post_execute( EventContext &ctx ) const
   // Loop over all CaloClusters
   for( auto* clus : **clusters.ptr())
   {
-    if( !m_doForward && clus->isForward() ) {
-      MSG_INFO( "Skipping forward cluster..." ); 
-      continue;
-    }
-    if( m_doForward && !clus->isForward() ) {
-      MSG_INFO( "Skipping barrel cluster..." ); 
+    MSG_INFO( "Creating the CaloRings for this cluster..." );
+
+    
+
+    if( (abs(clus->eta()) < m_etaRange[0]) || (abs(clus->eta()) >= m_etaRange[1]) ){
+      MSG_INFO( "Skipping cluster outside of the eta range..." ); 
       continue;
     }
 
 
-    MSG_DEBUG( "Creating the CaloRings for this cluster..." );
     // Create the CaloRings object
     auto rings = new xAOD::CaloRings();
 
