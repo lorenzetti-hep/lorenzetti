@@ -23,7 +23,7 @@ namespace xAOD{
             ~ElectronConverter()=default;
 
             // convert a class object into a struct
-            bool convert( const Electron *, Electron_t & , cluster_links_t &) ;
+            bool convert( const Electron *, Electron_t & ) ;
             bool convert( const Electron_t &electron_t, Electron *&electron );
 
         private:

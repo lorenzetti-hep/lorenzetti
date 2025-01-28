@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import sys,os,traceback,json
+import sys,os,traceback
 
 
 from GaugiKernel import get_argparser_formatter
@@ -37,8 +37,6 @@ parser.add_argument('--force-forward-electron', action='store_true', dest='force
                     help = "Force at least one electron into forward region.")
 parser.add_argument('--zero-vertex-particles', action='store_true', dest='zero_vertex_particles',required = False, 
                     help = "Fix the z vertex position in simulation to zero for all selected particles. It is applied only at G4 step, not in generation.")
-
-
 parser.add_argument('--pileup-avg', action='store', dest='pileup_avg', required = False, type=int, default=0,
                     help = "The pileup average (default is zero).")
 parser.add_argument('--pileup-sigma', action='store', dest='pileup_sigma', required = False, type=int, default=0,

@@ -6,7 +6,7 @@
 
 namespace xAOD{
 
-    typedef std::map<const CaloDetDescriptor *, int> descriptor_links_t;
+    typedef std::map<unsigned long int, const CaloDetDescriptor *> descriptor_links_t;
 
 
     struct CaloDetDescriptor_t{
@@ -27,7 +27,6 @@ namespace xAOD{
         std::vector<float> edep_per_bunch;
         std::vector<float> tof;
         unsigned long int hash;
-        int cell_link;
         float z;
     };
 
@@ -38,7 +37,7 @@ namespace xAOD{
             ~CaloDetDescriptorConverter()=default;
 
             // convert a class object into a struct
-            bool convert(const CaloDetDescriptor *, CaloDetDescriptor_t &, int link);
+            bool convert(const CaloDetDescriptor *, CaloDetDescriptor_t &);
 
             bool convert( const CaloDetDescriptor_t &, CaloDetDescriptor *& );
             

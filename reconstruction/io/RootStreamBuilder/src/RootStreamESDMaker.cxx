@@ -154,13 +154,13 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t > *container_descriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *container_cells      = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event      = nullptr;
-  std::vector<xAOD::Seed_t         > *container_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *container_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"         + m_outputEventKey).c_str() , &container_event     );
-  InitBranch( tree, ("SeedContainer_"         + m_outputSeedsKey).c_str() , &container_seeds     );
+  InitBranch( tree, ("SeedContainer_"              + m_outputSeedsKey).c_str() , &container_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"     + m_outputTruthKey).c_str() , &container_truth     );
   InitBranch( tree, ("CaloCellContainer_"          + m_outputCellsKey).c_str() , &container_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_outputCellsKey).c_str() , &container_descriptor);
@@ -200,7 +200,6 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
   {
     MSG_DEBUG("Serialize CaloCells...");
-    xAOD::cell_links_t       cell_links;
 
     SG::ReadHandle<xAOD::CaloCellContainer> container(m_inputCellsKey, ctx);
     if( !container.isValid() )
@@ -214,8 +213,6 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
     {
       MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_inputTruthKey );
     }
-
-    int link = 0; // decorate all cells 
 
     for (const auto par : **particles.ptr() )
     {
@@ -233,17 +230,8 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
                 xAOD::CaloDetDescriptor_t descriptor_t;
                 xAOD::CaloDetDescriptorConverter descriptor_cnv;
 
-
-                if (cell_links.count(cell)){
-                    cell_cnv.convert(cell, cell_t, cell_links[cell]);
-                    descriptor_cnv.convert( descriptor, descriptor_t, cell_links[cell]);
-                }else{
-                    cell_links[cell] = link;
-                    cell_cnv.convert(cell, cell_t, link);
-                    descriptor_cnv.convert( descriptor, descriptor_t, link);
-                    link++;
-                }
-
+                cell_cnv.convert(cell, cell_t);
+                descriptor_cnv.convert( descriptor, descriptor_t);
                 container_cells->push_back(cell_t);
                 container_descriptor->push_back(descriptor_t);
 

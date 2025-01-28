@@ -169,8 +169,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
   
 
   MSG_DEBUG("Deserialize Seed...");
-  std::map<int, xAOD::Seed*> seed_links;
-  int seed_link=0;
+  xAOD::seed_links_t seed_links;
 
   { // deserialize Seed
     SG::WriteHandle<xAOD::SeedContainer> container(m_seedsKey, ctx);
@@ -183,8 +182,7 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
       cnv.convert(seed_t, seed);
       MSG_DEBUG( "Seed in eta = " << seed->eta() << ", phi = " << seed->phi());
       container->push_back(seed);
-      seed_links[seed_link]=seed;
-      seed_link++;
+      seed_links[seed->id()]=seed;
     }
   }
 
@@ -207,16 +205,15 @@ StatusCode RootStreamAODReader::deserialize( int evt, EventContext &ctx ) const
     xAOD::CaloRingsConverter rings_cnv;
     xAOD::ElectronConverter el_cnv;
     
-    std::map<int, xAOD::CaloCluster*> clus_links;
-    int link=0;
+    xAOD::cluster_links_t clus_links;
+
     for( auto& clus_t : *collection_clus)
     {
       xAOD::CaloCluster  *clus=nullptr;
       clus_cnv.convert(clus_t, clus);
       clus->setSeed( seed_links[clus_t.seed_link] );
       container_clus->push_back(clus);
-      clus_links[link] = clus;
-      link++; 
+      clus_links[clus->seed()->id()] = clus;
     }
 
     for( auto& rings_t : *collection_rings)

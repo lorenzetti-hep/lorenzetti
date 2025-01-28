@@ -7,7 +7,7 @@
 
 
 namespace xAOD{
-    typedef std::map<const xAOD::Seed*, int> seed_links_t;
+    typedef std::map<int ,const xAOD::Seed*> seed_links_t;
 
     struct Seed_t{
         int id;

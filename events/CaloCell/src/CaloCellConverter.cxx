@@ -6,7 +6,7 @@ using namespace xAOD;
 
 
 
-bool CaloCellConverter::convert( const CaloCell *cell, CaloCell_t &cell_t, int link)
+bool CaloCellConverter::convert( const CaloCell *cell, CaloCell_t &cell_t)
 {
   if(cell){
       cell_t.e       = cell->e();
@@ -16,7 +16,7 @@ bool CaloCellConverter::convert( const CaloCell *cell, CaloCell_t &cell_t, int l
       cell_t.deta    = cell->deltaEta();
       cell_t.dphi    = cell->deltaPhi();
       cell_t.tau     = cell->tau();
-      cell_t.descriptor_link = link;
+      cell_t.descriptor_link = cell->descriptor()->hash();
       return true;
   }
   return false;

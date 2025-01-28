@@ -7,7 +7,7 @@ using namespace xAOD;
 using namespace std;
 
 
-bool ElectronConverter::convert( const Electron *electron, Electron_t &electron_t, cluster_links_t &cluster_links )
+bool ElectronConverter::convert( const Electron *electron, Electron_t &electron_t )
 {
   if(electron){
     electron_t.eta = electron->eta();
@@ -18,7 +18,7 @@ bool ElectronConverter::convert( const Electron *electron, Electron_t &electron_
     electron_t.isEM.push_back(electron->isMedium());
     electron_t.isEM.push_back(electron->isLoose());
     electron_t.isEM.push_back(electron->isVeryLoose());
-    electron_t.cluster_link = cluster_links[electron->caloCluster()];
+    electron_t.cluster_link = electron->caloCluster()->seed()->id();
     return true;
   }
   return false;

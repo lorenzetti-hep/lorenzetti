@@ -206,10 +206,6 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
     container_event->push_back(event_t);
   }
   
-  xAOD::cell_links_t       cell_links;
-  xAOD::descriptor_links_t descriptor_links;
-  xAOD::cluster_links_t    cluster_links;
-  xAOD::seed_links_t       seed_links;
 
   { // Serialize Truth Particle
 
@@ -239,14 +235,11 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
       MSG_FATAL("It's not possible to read the xAOD::SeedContainer from this Context using this key " << m_inputSeedsKey );
     }
 
-    int link=0;
     for (const auto seed : **container.ptr() ){
       xAOD::Seed_t seed_t;
       xAOD::SeedConverter cnv;
       cnv.convert( seed, seed_t );
       container_seeds->push_back(seed_t);
-      seed_links[seed]=link;
-      link++;
     }
   }
 
@@ -263,47 +256,34 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
     }
 
 
-    int cluster_link = 0;
     for (const auto &clus : **container.ptr() )
     {
 
       if(m_dumpCells){
 
-        int cell_link=0;
         for(const auto&cell : clus->cells()){
-          if(!cell_links.count(cell))
+         
+          { // serialize cell
+            xAOD::CaloCell_t cell_t;
+            xAOD::CaloCellConverter cnv;
+            cnv.convert(cell, cell_t);
+            container_cells->push_back(cell_t);
+          }
           {
             const xAOD::CaloDetDescriptor *det = cell->descriptor();
-
-            cell_links[cell]=cell_link;
-            descriptor_links[det]=cell_link;
-
-
-            { // serialize cell
-              xAOD::CaloCell_t cell_t;
-              xAOD::CaloCellConverter cnv;
-              cnv.convert(cell, cell_t, cell_link);
-              container_cells->push_back(cell_t);
-            }
-
-            {
-              xAOD::CaloDetDescriptor_t det_t;
-              xAOD::CaloDetDescriptorConverter cnv;
-              cnv.convert(det, det_t, cell_link);
-              container_descriptor->push_back(det_t);
-            }
-
-            cell_link++;
+            xAOD::CaloDetDescriptor_t det_t;
+            xAOD::CaloDetDescriptorConverter cnv;
+            cnv.convert(det, det_t);
+            container_descriptor->push_back(det_t);
           }
+          
         }
       }
 
-      cluster_links[clus] = cluster_link; // decorate the cluster since is used by rings
       xAOD::CaloCluster_t clus_t;
       xAOD::CaloClusterConverter cnv;
-      cnv.convert( clus , clus_t , cell_links, seed_links);
+      cnv.convert( clus , clus_t );
       container_clus->push_back(clus_t);
-      cluster_link++;
     }
 
   }
@@ -324,7 +304,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
     for (const auto rings : **container.ptr() ){
       xAOD::CaloRings_t rings_t;
       xAOD::CaloRingsConverter cnv;
-      cnv.convert( rings , rings_t , cluster_links);
+      cnv.convert( rings , rings_t);
       container_rings->push_back(rings_t);  
     }
 
@@ -342,7 +322,7 @@ StatusCode RootStreamAODMaker::serialize( EventContext &ctx ) const
     for (const auto electron : **container.ptr() ){
       xAOD::Electron_t electron_t;
       xAOD::ElectronConverter cnv;
-      cnv.convert(electron, electron_t, cluster_links);
+      cnv.convert(electron, electron_t);
       container_electron->push_back(electron_t);
     }
   }

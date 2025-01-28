@@ -6,7 +6,7 @@ using namespace xAOD;
 
 
 
-bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, CaloDetDescriptor_t &descriptor_t, int link )
+bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, CaloDetDescriptor_t &descriptor_t )
 {
 
   if(descriptor){
@@ -24,8 +24,6 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.bc_duration = descriptor->bc_duration();
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
-    descriptor_t.cell_link   = link; // cross link to cell
-    // std::cout<< z << std::endl;
     descriptor_t.z           = descriptor->z();
 
 

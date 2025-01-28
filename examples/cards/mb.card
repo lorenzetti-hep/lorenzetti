@@ -1,0 +1,32 @@
+{
+    "run":{
+        "nov"         : 100,
+        "nov_per_job" : 10,
+        "run_number"  : 20250122,
+        "seed"        : 512
+    },
+    "stages" : [
+        {
+            "name"   : "step_1",
+            "script" : "gen_minbias.py",
+            "extra_args"        : {
+                "seed"          : "%SEED",
+                "run-number"    : "%RUN_NUMBER",
+                "event-numbers" : "%EVENT_NUMBERS",
+                "pileup-avg"    : 100,
+                "pileup-sigma"  : 10,
+            },
+            "output" : "%JOB_WORKAREA/step_1/MB.EVT.root"
+        },
+        {
+            "name"   : "step_2",
+            "script" : "simu_trf.py",
+            "extra_args"   : {
+                "timeout" : 30, 
+                "number-of-threads" : "%CPU_CORES"
+            },
+            "input" : "%JOB_WORKAREA/step_1/MB.EVT.root",
+            "output": "%JOB_WORKAREA/step_2/MB.HIT.root"
+        }
+    ]
+}

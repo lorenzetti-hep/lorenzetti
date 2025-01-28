@@ -3,7 +3,7 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
-#include "CaloCell/CaloDetDescriptorCollection.h"
+#include "CaloCell/CaloDetDescriptorContainer.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
 #include "EventInfo/SeedConverter.h"
@@ -154,7 +154,6 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   
 
   MSG_DEBUG("Deserialize Seed...");
-  
   { // deserialize Seed
     SG::WriteHandle<xAOD::SeedContainer> container(m_seedsKey, ctx);
     container.record( std::unique_ptr<xAOD::SeedContainer>(new xAOD::SeedContainer()));
@@ -171,13 +170,11 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   
 
   MSG_DEBUG("Deserialize CaloDetDescriptor... ");
-  
+  xAOD::descriptor_links_t descriptor_links;
   {
-    SG::WriteHandle<xAOD::CaloDetDescriptorCollection> collection( m_cellsKey+"_Aux", ctx );
-    collection.record( std::unique_ptr<xAOD::CaloDetDescriptorCollection>(new xAOD::CaloDetDescriptorCollection()) );
+    SG::WriteHandle<xAOD::CaloDetDescriptorContainer> container( m_cellsKey+"_Aux", ctx );
+    container.record( std::unique_ptr<xAOD::CaloDetDescriptorContainer>(new xAOD::CaloDetDescriptorContainer()) );
 
-    std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
-    int link=0;
     MSG_DEBUG(collection_descriptor->size());
     for (auto &descriptor_t : *collection_descriptor )
     {
@@ -185,13 +182,15 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       xAOD::CaloDetDescriptor *descriptor = nullptr;
       xAOD::CaloDetDescriptorConverter cnv;
       cnv.convert(descriptor_t, descriptor); // alloc memory
-      descriptor_links[link] = descriptor;
-      link++;
-      if ( !collection->insert( descriptor->hash(), descriptor ) ){
-        MSG_FATAL( "It is not possible to include cell hash ("<< descriptor->hash() << ") into the collection. hash already exist.");
-      }
+      descriptor_links[descriptor->hash()] = descriptor;
+      container->push_back(descriptor);
     }
-   
+
+  }
+  
+
+  MSG_DEBUG("Deserialize CaloCells... ");
+  {
 
     SG::WriteHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
     container.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()));
@@ -201,7 +200,10 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       xAOD::CaloCell *cell = nullptr;
       xAOD::CaloCellConverter cnv;
       cnv.convert(cell_t, cell); // alloc memory
-      cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
+      if ( descriptor_links.count(cell_t.descriptor_link)  )
+      {
+        cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
+      }
       container->push_back(cell);
     }
   }

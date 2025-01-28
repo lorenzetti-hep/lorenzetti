@@ -8,13 +8,13 @@
     "stages" : [
         {
             "name"   : "step_1",
-            "script" : "gen_zee.py",
+            "script" : "gen_jets.py",
             "extra_args"        : {
                 "seed"          : "%SEED",
                 "run-number"    : "%RUN_NUMBER",
                 "event-numbers" : "%EVENT_NUMBERS"
             },
-            "output" : "%JOB_WORKAREA/step_1/Zee.EVT.root"
+            "output" : "%JOB_WORKAREA/step_1/JF17.EVT.root"
         },
         {
             "name"   : "step_2",
@@ -23,29 +23,29 @@
                 "timeout" : 30, 
                 "number-of-threads" : "%CPU_CORES"
             },
-            "input" : "%JOB_WORKAREA/step_1/Zee.EVT.root",
-            "output": "%JOB_WORKAREA/step_2/Zee.HIT.root"
+            "input" : "%JOB_WORKAREA/step_1/JF17.EVT.root",
+            "output": "%JOB_WORKAREA/step_2/JF17.HIT.root"
         },
         {
             "name" : "step_3",
             "script" : "digit_trf.py",
             "extra_args":{},
-            "input" : "%JOB_WORKAREA/step_2/Zee.HIT.root",
-            "output": "%JOB_WORKAREA/step_3/Zee.ESD.root"
+            "input" : "%JOB_WORKAREA/step_2/JF17.HIT.root",
+            "output": "%JOB_WORKAREA/step_3/JF17.ESD.root"
         },
         {
             "name" : "step_4",
             "script" : "reco_trf.py",
             "extra_args":{},
-            "input" : "%JOB_WORKAREA/step_3/Zee.ESD.root",
-            "output": "%JOB_WORKAREA/step_4/Zee.AOD.root"
+            "input" : "%JOB_WORKAREA/step_3/JF17.ESD.root",
+            "output": "%JOB_WORKAREA/step_4/JF17.AOD.root"
         },
         {
             "name" : "step_5",
             "script" : "ntuple_trf.py",
             "extra_args" : {},
-            "input" : "%JOB_WORKAREA/step_4/Zee.AOD.root",
-            "output": "%JOB_WORKAREA/step_5/Zee.root"   
+            "input" : "%JOB_WORKAREA/step_4/JF17.AOD.root",
+            "output": "%JOB_WORKAREA/step_5/JF17.root"   
         }
 
     ]
