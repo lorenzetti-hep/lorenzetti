@@ -1,0 +1,67 @@
+{
+    "run": {
+        "nov": 100,
+        "nov_per_job": 10,
+        "run_number": 20250122,
+        "seed": 512
+    },
+    "stages": [
+        {
+            "name": "step_1",
+            "script": "gen_zee.py",
+            "extra_args": {
+                "seed": "%SEED",
+                "run-number": "%RUN_NUMBER",
+                "event-numbers": "%EVENT_NUMBERS"
+            },
+            "output": "%JOB_WORKAREA/step_1/Zee.EVT.%JOB_ID.root"
+        },
+        {
+            "name": "step_2",
+            "script": "simu_trf.py",
+            "extra_args": {
+                "timeout": 30,
+                "number-of-threads": "%CPU_CORES"
+            },
+            "input": "%JOB_WORKAREA/step_1/Zee.EVT.%JOB_ID.root",
+            "output": "%JOB_WORKAREA/step_2/Zee.HIT.%JOB_ID.root"
+        },
+        {
+            "name": "step_3",
+            "script": "digit_trf.py",
+            "extra_args": {},
+            "input": "%JOB_WORKAREA/step_2/Zee.HIT.%JOB_ID.root",
+            "output": "%JOB_WORKAREA/step_3/Zee.ESD.%JOB_ID.root"
+        },
+        {
+            "name": "step_4",
+            "script": "reco_trf.py",
+            "extra_args": {},
+            "input": "%JOB_WORKAREA/step_3/Zee.ESD.%JOB_ID.root",
+            "output": "%JOB_WORKAREA/step_4/Zee.AOD.%JOB_ID.root"
+        },
+        {
+            "name": "step_5",
+            "script": "ntuple_trf.py",
+            "extra_args": {},
+            "input": "%JOB_WORKAREA/step_4/Zee.AOD.%JOB_ID.root",
+            "output": "%JOB_WORKAREA/step_5/Zee.%JOB_ID.root"
+        }
+    ],
+    "job": {
+        "event_numbers": [
+            40,
+            41,
+            42,
+            43,
+            44,
+            45,
+            46,
+            47,
+            48,
+            49
+        ],
+        "seed": 2560,
+        "job_id": 4
+    }
+}

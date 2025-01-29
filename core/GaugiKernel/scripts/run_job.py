@@ -29,7 +29,7 @@ def build_argparser_run_job():
     
     parser.add_argument('--output-dir','-o', action='store', dest='output_dir',
                         required = False, type=str, default='job.json',
-                        help = "The production card")
+                        help = "The job output path.")
     
     parser.add_argument('-nt','--number-of-threads', action='store', dest='number_of_threads', required = False, type=int, 
                         default=multiprocessing.cpu_count(),
@@ -90,83 +90,33 @@ def run_job(args):
     sys.exit(0)
 
 
-
-
-
 def build_argparser():
-
-    from trf.digit_trf import build_argparser as digit_parser
-    from trf.merge_trf import build_argparser as merge_parser
-    from trf.reco_trf  import build_argparser as reco_parser
-    from trf.simu_trf  import build_argparser as simu_parser
-    from gen.gen_zee import build_argparser as build_argparser_zee
-    
     formatter_class = get_argparser_formatter()
-    
     parser    = argparse.ArgumentParser(formatter_class=formatter_class)
-    mode = parser.add_subparsers(dest='mode')
-
-
-    run_parent = argparse.ArgumentParser(formatter_class=formatter_class, add_help=False, )
-    option = run_parent.add_subparsers(dest='option')
-    option.add_parser("simu"   , parents = [simu_parser()]   ,help='Run as runner',formatter_class=formatter_class)
-    option.add_parser("digit"  , parents = [digit_parser()]  ,help='Run as runner',formatter_class=formatter_class)
-    option.add_parser("merge"  , parents = [merge_parser()]  ,help='Run as runner',formatter_class=formatter_class)
-    option.add_parser("reco"   , parents = [reco_parser()]   ,help='Run as runner',formatter_class=formatter_class) 
-    mode.add_parser( "run", parents=[run_parent], help="",formatter_class=formatter_class)
-    
-    job_parent = argparse.ArgumentParser(formatter_class=formatter_class, add_help=False, )
-    option = job_parent.add_subparsers(dest='option')
-    option.add_parser("run"   , parents = [build_argparser_run_job()]   ,help='Run as runner',formatter_class=formatter_class)
-    option.add_parser("create", parents = [build_argparser_create_jobs()]   ,help='Run as runner',formatter_class=formatter_class)
-    mode.add_parser( "job", parents=[job_parent], help="",formatter_class=formatter_class)
-    
-    gen_parent = argparse.ArgumentParser(formatter_class=formatter_class, add_help=False, )
-    option = gen_parent.add_subparsers(dest='option')
-    option.add_parser("zee"   , parents = [build_argparser_zee()]   ,help='Run as runner',formatter_class=formatter_class)
-    mode.add_parser( "gen", parents=[gen_parent], help="",formatter_class=formatter_class)
-    
+    option = parser.add_subparsers(dest='option')
+    option.add_parser("run"   , parents = [build_argparser_run_job()]   ,help='Run a job using trf scripts',formatter_class=formatter_class)
+    option.add_parser("create", parents = [build_argparser_create_jobs()]   ,help='Create jobs from a production card.',formatter_class=formatter_class)
     return parser
     
     
     
     
 def run_parser(args):
-    if args.mode == "run":
-        
-        if args.option == "simu":
-            from simu_trf import run
-            run(args)
-        elif args.option == "digit":
-            from digit_trf import run
-            run(args)
-        elif args.option == "merge":
-            from merge_trf import run
-            run(args)
-        elif args.option == "reco":
-            from reco_trf import run
-            run(args)
-        else:
-            print("Option not implemented")
-    elif args.mode == "job":
-        if args.option == "create":
-            run_create_jobs(args)
-        elif args.option == "run":  
-            run_job(args)
-        else:
-            print("Option not implemented")
+    if args.option == "create":
+        run_create_jobs(args)
+    elif args.option == "run":  
+        run_job(args)
+    else:
+        print("Option not implemented")
   
 
-def run():
-    parser = build_argparser()
-    if len(sys.argv)==1:
-        print(parser.print_help())
-        sys.exit(1)
-
-    args = parser.parse_args()
-    run_parser(args)
 
         
 
 if __name__ == "__main__":
-  run()
+    parser = build_argparser()
+    if len(sys.argv)==1:
+        print(parser.print_help())
+        sys.exit(1) 
+    args = parser.parse_args()
+    run_parser(args)    

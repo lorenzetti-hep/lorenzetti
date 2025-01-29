@@ -73,6 +73,6 @@ cd $LZT_PATH
 #
 export PATH=$PATH:$PWD/core/GaugiKernel/scripts
 export PATH=$PATH:$PWD/generator/scripts
-export PATH=$PATH:$PWD/geometry/DetectorATLASModel/scripts
-export PATH=$PATH:$PWD/scripts
+export PATH=$PATH:$PWD/geometry/ATLAS/scripts
+export PATH=$PATH:$PWD/reconstruction/scripts
 
