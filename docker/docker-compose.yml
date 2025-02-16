@@ -1,0 +1,31 @@
+name: lorenzetti
+services:
+  # dev-lorenzetti:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.dev
+  #   image: ${USERNAME}/lorenzetti:${OLD_TAG}
+  #   container_name: lorenzetti-${OLD_TAG}-container
+  #   # volumes:
+  #   #   - /home/${USERNAME}/data:/root/data
+  #   #   - /mnt/d/data:/root/ext_data
+  #   #   - /home/${USERNAME}/workspaces/lorenzetti:/root/workspaces/lorenzetti
+  #   #   - /home/${USERNAME}/logs:/root/logs
+  #   tty: true
+  #   # environment:
+  #   # - LZT_DATA=${LZT_DATA}
+  #   # - LZT_REPO=${LZT_REPO}
+  #   # # - PYTHONPATH=${PYTHONPATH}
+  lorenzetti:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        - GEANT4_VERSION=v11.2.2
+        - PYTHIA8_VERSION=8313
+        - FASTJET_VERSION=3.4.0
+        - HEPMC_VERSION=3.3.0
+        - ROOT_VERSION=6.34.00-ubuntu24.10
+    image: ${USERNAME}/lorenzetti:${TAG}
+    container_name: lorenzetti-container
+    tty: true
