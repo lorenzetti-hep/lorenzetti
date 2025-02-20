@@ -75,7 +75,10 @@ def run_job(args):
             command+= f" -i {input_path}"
         command += f" -o {output_path}"
         for key, value in params.get("extra_args",{}).items():
-            command += f" --{key} {value}" if value else f" --{key}"
+            if value is None:
+                command += f" --{key}"
+            else:
+                command += f" --{key} {value}"
         for key, value in envs.items():
             command = command.replace(key,value)
         print(command)
