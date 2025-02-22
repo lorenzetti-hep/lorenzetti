@@ -5,11 +5,11 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
       args:
-        - GEANT4_VERSION=v11.2.2
-        - PYTHIA8_VERSION=8313
-        - FASTJET_VERSION=3.4.0
-        - HEPMC_VERSION=3.3.0
-        - ROOT_VERSION=6.34.00-ubuntu24.10
+        - GEANT4_VERSION=${GEANT4_VERSION}
+        - PYTHIA8_VERSION=${PYTHIA8_VERSION}
+        - FASTJET_VERSION=${FASTJET_VERSION}
+        - HEPMC_VERSION=${HEPMC_VERSION}
+        - ROOT_VERSION=${ROOT_VERSION}
     image: ${USERNAME}/lorenzetti:base
     container_name: lorenzetti-base-container
     tty: true

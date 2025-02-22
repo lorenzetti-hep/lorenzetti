@@ -27,6 +27,8 @@ RUN apt install -y \
     qt5-qmake
 
 ARG GEANT4_VERSION
+LABEL GEANT4_VERSION=${GEANT4_VERSION}
+ENV GEANT4_VERSION=${GEANT4_VERSION}
 RUN git clone https://github.com/Geant4/geant4.git && \
     cd geant4 && \
     git config advice.detachedHead false && \
@@ -46,6 +48,8 @@ RUN git clone https://github.com/Geant4/geant4.git && \
 RUN apt install -y wget
 
 ARG PYTHIA8_VERSION
+LABEL PYTHIA8_VERSION=${PYTHIA8_VERSION}
+ENV PYTHIA8_VERSION=${PYTHIA8_VERSION}
 RUN wget https://pythia.org/download/pythia83/pythia$PYTHIA8_VERSION.tgz && \
     tar -vxf pythia$PYTHIA8_VERSION.tgz && rm -rf pythia$PYTHIA8_VERSION.tgz && mv pythia$PYTHIA8_VERSION pythia && \
     cd pythia && \
@@ -53,6 +57,8 @@ RUN wget https://pythia.org/download/pythia83/pythia$PYTHIA8_VERSION.tgz && \
     make -j$(nproc)
 
 ARG FASTJET_VERSION
+LABEL FASTJET_VERSION=${FASTJET_VERSION}
+ENV FASTJET_VERSION=${FASTJET_VERSION}
 RUN wget http://fastjet.fr/repo/fastjet-$FASTJET_VERSION.tar.gz && \
     tar zxvf fastjet-$FASTJET_VERSION.tar.gz && \
     rm fastjet-$FASTJET_VERSION.tar.gz && \
@@ -62,6 +68,8 @@ RUN wget http://fastjet.fr/repo/fastjet-$FASTJET_VERSION.tar.gz && \
     make -j$(nproc) && make install
 
 ARG HEPMC_VERSION
+LABEL HEPMC_VERSION=${HEPMC_VERSION}
+ENV HEPMC_VERSION=${HEPMC_VERSION}
 RUN wget http://hepmc.web.cern.ch/hepmc/releases/HepMC3-${HEPMC_VERSION}.tar.gz && \
     tar -xzf HepMC3-${HEPMC_VERSION}.tar.gz && \
     rm HepMC3-${HEPMC_VERSION}.tar.gz && \
