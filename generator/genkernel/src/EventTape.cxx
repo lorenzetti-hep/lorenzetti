@@ -1,4 +1,3 @@
-
 #include "GenKernel/EventTape.h"
 #include <algorithm>
 #include "TTree.h"
@@ -59,19 +58,19 @@ StatusCode EventTape::initialize()
   m_store = new SG::StoreGate(m_outputFile);
  
   m_p_isMain     = new std::vector<int>();
-  m_p_pdg_id     = new std::vector<int>(); 
-  m_p_bc_id      = new std::vector<int>(); 
-  m_p_seed_id    = new std::vector<int>(); 
-  m_p_e          = new std::vector<float>();  
+  m_p_pdg_id     = new std::vector<int>();
+  m_p_bc_id      = new std::vector<int>();
+  m_p_seed_id    = new std::vector<int>();
+  m_p_e          = new std::vector<float>();
   m_p_et         = new std::vector<float>();
-  m_p_eta        = new std::vector<float>(); 
+  m_p_eta        = new std::vector<float>();
   m_p_phi        = new std::vector<float>();
-  m_p_px         = new std::vector<float>(); 
-  m_p_py         = new std::vector<float>(); 
+  m_p_px         = new std::vector<float>();
+  m_p_py         = new std::vector<float>();
   m_p_pz         = new std::vector<float>();
-  m_p_prod_x     = new std::vector<float>(); 
-  m_p_prod_y     = new std::vector<float>(); 
-  m_p_prod_z     = new std::vector<float>();  
+  m_p_prod_x     = new std::vector<float>();
+  m_p_prod_y     = new std::vector<float>();
+  m_p_prod_z     = new std::vector<float>();
   m_p_prod_t     = new std::vector<float>();
 
 
@@ -81,21 +80,21 @@ StatusCode EventTape::initialize()
   m_tree->Branch("RunNumber"   , &m_runNumber   , "runNumber/I" );
   m_tree->Branch("EventNumber" , &m_eventNumber , "eventNumber/I" );
   m_tree->Branch("avg_mu"      , &m_avg_mu, "avg_mu/F");
-  m_tree->Branch("p_isMain"    , &m_p_isMain     );
-  m_tree->Branch("p_pdg_id"    , &m_p_pdg_id     ); 
-  m_tree->Branch("p_bc_id"     , &m_p_bc_id      ); 
-  m_tree->Branch("p_seed_id"   , &m_p_seed_id    ); 
-  m_tree->Branch("p_e"         , &m_p_e          );  
-  m_tree->Branch("p_et"        , &m_p_et         );
-  m_tree->Branch("p_eta"       , &m_p_eta        ); 
-  m_tree->Branch("p_phi"       , &m_p_phi        );
-  m_tree->Branch("p_px"        , &m_p_px         ); 
-  m_tree->Branch("p_py"        , &m_p_py         ); 
-  m_tree->Branch("p_pz"        , &m_p_pz         );
-  m_tree->Branch("p_prod_x"    , &m_p_prod_x     ); 
-  m_tree->Branch("p_prod_y"    , &m_p_prod_y     ); 
-  m_tree->Branch("p_prod_z"    , &m_p_prod_z     );  
-  m_tree->Branch("p_prod_t"    , &m_p_prod_t     );
+  m_tree->Branch("p_isMain"    , &m_p_isMain, "isMain/I"     );
+  m_tree->Branch("p_pdg_id"    , &m_p_pdg_id, "pdg_id/I"     ); 
+  m_tree->Branch("p_bc_id"     , &m_p_bc_id, "bc_id/I"      ); 
+  m_tree->Branch("p_seed_id"   , &m_p_seed_id, "seed_id/I"    ); 
+  m_tree->Branch("p_e"         , &m_p_e, "e/F"          );  
+  m_tree->Branch("p_et"        , &m_p_et, "et/F"         );
+  m_tree->Branch("p_eta"       , &m_p_eta, "eta/F"        ); 
+  m_tree->Branch("p_phi"       , &m_p_phi, "phi/F"        );
+  m_tree->Branch("p_px"        , &m_p_px, "px/F"         ); 
+  m_tree->Branch("p_py"        , &m_p_py, "py/F"         ); 
+  m_tree->Branch("p_pz"        , &m_p_pz, "pz/F"         );
+  m_tree->Branch("p_prod_x"    , &m_p_prod_x, "prod_x/F"     ); 
+  m_tree->Branch("p_prod_y"    , &m_p_prod_y, "prod_y/F"     ); 
+  m_tree->Branch("p_prod_z"    , &m_p_prod_z, "prod_z/F"     );  
+  m_tree->Branch("p_prod_t"    , &m_p_prod_t, "prod_t/F"     );
   m_store->cd();
   m_store->add( m_tree );
 
@@ -121,7 +120,6 @@ StatusCode EventTape::initialize()
 
 StatusCode EventTape::execute() 
 {
-
   for (int iEvent=0; iEvent<m_eventNumbers.size(); iEvent++) {
     
     int eventNumber = m_eventNumbers.at(iEvent);
@@ -134,8 +132,10 @@ StatusCode EventTape::execute()
     try {  
       // Loop over all physcis tools
       for (auto& alg : m_algs ){
+        MSG_INFO("Running algorithm " << alg->name() );
         if ( alg->execute(event).isFailure() )
         {
+          MSG_ERROR("Algorithm " << alg->name() << " failed to execute.");
           --iEvent; continue;
         }
       }
@@ -206,6 +206,7 @@ void EventTape::dump( Event &event )
 
   m_avg_mu      = event.avgmu();
   m_eventNumber = event.eventNumber();
+  m_runNumber = -1;
 
   m_store->hist1("avgmu")->Fill( m_avg_mu  );
 
@@ -258,7 +259,22 @@ void EventTape::dump( Event &event )
 
     seed_id++;
   }
+  
+  MSG_INFO( "Dumping event " << m_eventNumber << " with " << m_p_pdg_id->size() << " particles" );
 
+  // Print the current state of the event
+  MSG_INFO( "Event avg_mu: " << m_avg_mu << " Finished avg_mu");
+  MSG_INFO( "Event runNumber: " << m_runNumber << " Finished runNumber");
+  MSG_INFO( "Event eventNumber: " << m_eventNumber << " Finished eventNumber");
+  MSG_INFO( "Number of seeds: " << event.size() << " Finished seeds");
+  for ( auto &seed : *event ) {
+    MSG_INFO( "Seed: eta: " << seed.eta() << " phi: " << seed.phi() << " etot: " << seed.etot() << " ettot: " << seed.ettot() << " Finished Seed");
+    for (const auto& part : *seed) {
+      MSG_INFO( "  Particle pdg_id: " << part.pdg_id << " px: " << part.px << " py: " << part.py << " pz: " << part.pz << " eta: " << part.eta << " phi: " << part.phi << " e: " << part.e << " eT: " << part.eT << " Finished particle" );
+    }
+  }
+  MSG_INFO( "Filling event");
   m_tree->Fill(); 
+  MSG_INFO( "Event " << m_eventNumber << " dumped" );
 }
 
