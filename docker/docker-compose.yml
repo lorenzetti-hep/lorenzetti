@@ -1,4 +1,4 @@
-name: lorenzetti
+name: lorenzetti-base-${ROOT_VERSION}
 services:
   lorenzetti-base:
     build:
@@ -10,6 +10,6 @@ services:
         - FASTJET_VERSION=${FASTJET_VERSION}
         - HEPMC_VERSION=${HEPMC_VERSION}
         - ROOT_VERSION=${ROOT_VERSION}
-    image: ${USERNAME}/lorenzetti:base
-    container_name: lorenzetti-base-container
+    image: ${USERNAME}/lorenzetti:base-${ROOT_VERSION}
+    container_name: lzt-container-base-${ROOT_VERSION}
     tty: true

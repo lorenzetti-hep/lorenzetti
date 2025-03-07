@@ -4,7 +4,8 @@ FROM rootproject/root:${ROOT_VERSION}
 WORKDIR /opt
 
 # GEANT4 uses this
-RUN apt install -y \
+RUN apt-get update && \
+    apt install -y --fix-missing \
     libxerces-c-dev \
     libboost-python-dev \
     libavahi-compat-libdnssd-dev \
@@ -24,7 +25,8 @@ RUN apt install -y \
 RUN apt install -y \
     qtcreator \
     qtbase5-dev \
-    qt5-qmake
+    qt5-qmake \
+    git
 
 ARG GEANT4_VERSION
 LABEL GEANT4_VERSION=${GEANT4_VERSION}
@@ -70,13 +72,17 @@ RUN wget http://fastjet.fr/repo/fastjet-$FASTJET_VERSION.tar.gz && \
 ARG HEPMC_VERSION
 LABEL HEPMC_VERSION=${HEPMC_VERSION}
 ENV HEPMC_VERSION=${HEPMC_VERSION}
+
+# HepMC DHEPMC3_ENABLE_PROTOBUFIO=ON uses this
+RUN apt-get install -y protobuf-compiler libprotobuf-dev 
+
 RUN wget http://hepmc.web.cern.ch/hepmc/releases/HepMC3-${HEPMC_VERSION}.tar.gz && \
     tar -xzf HepMC3-${HEPMC_VERSION}.tar.gz && \
     rm HepMC3-${HEPMC_VERSION}.tar.gz && \
     mv HepMC3-${HEPMC_VERSION} hepmc && \
     cd hepmc && mkdir build && \
     cd build && \
-    cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON .. \
+    cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON .. && \
     make && \
     make install
 
@@ -88,7 +94,7 @@ RUN cd /opt/geant4/build/ && chmod 774 setup_geant.py && python setup_geant.py
 
 COPY docker/requirements.txt requirements.txt
 RUN apt-get update -y && \
-    apt install -y python3-pip python3.12-venv && \
+    apt install -y python3-pip python3-venv && \
     python -m venv /opt/lorenzetti-python && \
     /opt/lorenzetti-python/bin/pip install -r requirements.txt
 
