@@ -54,6 +54,8 @@ def run(args):
     from filters import Zee
     from GenKernel import EventTape
 
+    print(f"RECEIVED OUTPUT FILE {args.output_file}")
+
     tape = EventTape( "EventTape", OutputFile = args.output_file, RunNumber = args.run_number)
 
     main_file = os.environ['LZT_PATH']+'/generator/evtgen/data/zee_config.cmnd'

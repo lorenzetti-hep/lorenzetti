@@ -13,7 +13,9 @@ StoreGate::StoreGate( std::string outputfile):
 {
   // This must be used for multithreading root reader 
   ROOT::EnableThreadSafety();
-  m_file = std::unique_ptr<TFile>(new TFile( outputfile.c_str(), "recreate"));
+  MSG_INFO("outputfile: " << outputfile);
+  MSG_INFO("outputfile as c_str: " << outputfile.c_str());
+  m_file = std::unique_ptr<TFile>(new TFile( outputfile.c_str(), "RECREATE", "TEST FILE"));
   
 }
 
