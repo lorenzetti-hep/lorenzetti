@@ -13,8 +13,8 @@
                 "seed"          : "%SEED",
                 "run-number"    : "%RUN_NUMBER",
                 "event-numbers" : "%EVENT_NUMBERS",
-                "pileup-avg"    : 100,
-                "pileup-sigma"  : 10,
+                "pileup-avg"    : 10,
+                "pileup-sigma"  : 2
             },
             "output" : "%JOB_WORKAREA/step_1/MB.EVT.root"
         },

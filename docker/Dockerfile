@@ -51,3 +51,5 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 WORKDIR /home
+
+CMD ["/bin/bash", "-c", "source /hep/setup_hep.sh && /bin/bash"]

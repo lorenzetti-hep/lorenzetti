@@ -81,7 +81,7 @@ def run(args):
                                OutputEventKey  = recordable("Events"),
                                OutputLevel     = outputLevel)
     acc += HIT
-    acc.run(args.number_of_vents)
+    acc.run(args.number_of_events)
     sys.exit(0)
 
   except  Exception:
