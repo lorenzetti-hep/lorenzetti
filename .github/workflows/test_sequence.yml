@@ -15,7 +15,7 @@ jobs:
           rm -rf *
           git clone https://github.com/lorenzetti-hep/lorenzetti.git
           export CPU_N=$(grep -c ^processor /proc/cpuinfo)
-          source /setup_envs.sh
+          source /hep/setup_hep.sh
           cd lorenzetti && mkdir build && cd build && cmake .. && make -j$CPU_N && cd ..
           source setup.sh
           
@@ -30,7 +30,7 @@ jobs:
       - name: Event Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_generation.sh
           
@@ -44,7 +44,7 @@ jobs:
       - name: Event Simulation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_simu_trf.sh
 
@@ -57,7 +57,7 @@ jobs:
       - name: Merge Events
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_merge_trf.sh
 
@@ -70,7 +70,7 @@ jobs:
       - name: Digit Events
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_digit_trf.sh
               
@@ -83,7 +83,7 @@ jobs:
       - name: Reco Events
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_reco_trf.sh
 
@@ -102,7 +102,7 @@ jobs:
       - name: Event Zee Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_gen_zee.sh
 
@@ -115,7 +115,7 @@ jobs:
       - name: Event Jets Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_gen_jets.sh
 
@@ -128,6 +128,33 @@ jobs:
       - name: Event MB Generation
         shell: bash
         run: |
-          source /setup_envs.sh && cd lorenzetti && source setup.sh
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
           cd .github/workflows/tests
           source test_gen_minbias.sh
+
+
+  gen_single_particle:
+    runs-on: self-hosted
+    needs: build
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Event Single Particle Generation
+        shell: bash
+        run: |
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
+          cd .github/workflows/tests
+          source test_gen_single.sh
+
+  gen_overlapped_zee:
+    runs-on: self-hosted
+    needs: build
+    container:
+      image: docker://lorenzetti/lorenzetti:latest
+    steps:
+      - name: Event Overlapped Zee Generation
+        shell: bash
+        run: |
+          source /hep/setup_hep.sh && cd lorenzetti && source setup.sh
+          cd .github/workflows/tests
+          source test_gen_overlapped_zee.sh

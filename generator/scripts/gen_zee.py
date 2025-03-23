@@ -24,10 +24,10 @@ def build_argparser():
                       help = "The run number.")
   parser.add_argument('-s','--seed', action='store', dest='seed', required = False, type=int, default=0,
                       help = "The pythia seed (zero is the clock system)")
-  parser.add_argument('--eta-max', action='store', dest='eta_max', required = False, type=float, default=3.2,
-                      help = "The eta max used in generator.")
   parser.add_argument('--output-level', action='store', dest='output_level', required = False, type=str, default="INFO",
                       help = "The output level messenger.")
+  parser.add_argument('--eta-max', action='store', dest='eta_max', required = False, type=float, default=3.2,
+                      help = "The eta max used in generator.")
   parser.add_argument('--force-forward-electron', action='store_true', dest='force_forward_electron',required = False, 
                       help = "Force at least one electron into forward region.")
   parser.add_argument('--zero-vertex-particles', action='store_true', dest='zero_vertex_particles',required = False, 
@@ -93,7 +93,7 @@ def run(args):
       tape+=pileup
 
     # Run!
-    evts = [int(evt) for evt in args.event_numbers.split(",")] if args.event_numbers else args.nov
+    evts = [int(evt) for evt in args.event_numbers.split(",")] if args.event_numbers else args.number_of_events
     tape.run(evts)
 
     sys.exit(0)
