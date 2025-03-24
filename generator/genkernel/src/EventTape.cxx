@@ -56,8 +56,6 @@ StatusCode EventTape::initialize()
 
   setMsgLevel( m_outputLevel );
 
-  MSG_INFO("m_outputFile: " << m_outputFile);
-
   m_store = new SG::StoreGate(m_outputFile);
  
   m_p_isMain     = new std::vector<int>();
