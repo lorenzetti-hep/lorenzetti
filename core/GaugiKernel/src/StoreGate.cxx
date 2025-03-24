@@ -38,9 +38,7 @@ void StoreGate::save()
     //it.second->Write();
   }
 
-  MSG_INFO("Writing the ttree");
   m_file->Write(0,TObject::kOverwrite);
-  MSG_INFO("Closing the ttree");
   m_file->Close();
 }
 
