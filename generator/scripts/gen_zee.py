@@ -171,9 +171,10 @@ def get_job_params(args):
     splitted_output_filename = args.output_file.split(".")
     for i, events in enumerate(event_numbers):
         output_file = splitted_output_filename.copy()
-        output_file.insert(-2, str(i))
+        output_file.insert(-1, str(i))
         output_file = '.'.join(output_file)
         if os.path.exists(output_file):
+            print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
         yield events, output_file
 
