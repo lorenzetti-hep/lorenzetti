@@ -89,6 +89,10 @@ def parse_args():
                         dest='number_of_threads', required=False,
                         type=int, default=1,
                         help="The number of threads")
+    parser.add_argument('--events-per-job', action='store',
+                        dest='events_per_job', required=False,
+                        type=int, default=None,
+                        help="The number of events per job")
 
     if len(sys.argv) == 1:
         parser.print_help()
@@ -152,17 +156,24 @@ def main(events: List[int],
     tape.run(events)
 
 
+def get_events_per_job(args):
+    if args.events_per_job is None:
+        return ceil(args.number_of_events/args.number_of_threads)
+    else:
+        return args.events_per_job
+
+
 def get_job_params(args):
     if args.event_numbers:
         event_numbers_list = args.event_numbers.split(",")
         args.number_of_events = len(event_numbers_list)
-        events_per_job = ceil(args.number_of_events/args.number_of_threads)
+        events_per_job = get_events_per_job(args)
         event_numbers = (
             event_numbers_list[start:start+events_per_job]
             for start in range(0, args.number_of_events, events_per_job)
         )
     else:
-        events_per_job = ceil(args.number_of_events/args.number_of_threads)
+        events_per_job = get_events_per_job(args)
         event_numbers = (
             list(range(start, start+events_per_job))
             for start in range(0, args.number_of_events, events_per_job)
