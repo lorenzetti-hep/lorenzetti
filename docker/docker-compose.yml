@@ -1,0 +1,15 @@
+name: lorenzetti-base-${ROOT_VERSION}
+services:
+  lorenzetti-base:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        - GEANT4_VERSION=${GEANT4_VERSION}
+        - PYTHIA8_VERSION=${PYTHIA8_VERSION}
+        - FASTJET_VERSION=${FASTJET_VERSION}
+        - HEPMC_VERSION=${HEPMC_VERSION}
+        - ROOT_VERSION=${ROOT_VERSION}
+    image: ${USERNAME}/lorenzetti:base-${ROOT_VERSION}
+    container_name: lzt-container-base-${ROOT_VERSION}
+    tty: true
