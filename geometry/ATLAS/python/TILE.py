@@ -1,7 +1,7 @@
 
 __all__ = ["getTileBarrelCfg","getTileExtendedCfg"]
 
-from GaugiKernel.constants import *
+from GaugiKernel.constants import m,cm,mm,MeV,pi
 from G4Kernel.DetectorConstruction import *
 from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
@@ -17,7 +17,7 @@ import os
 
 def getTileBarrelCfg():
 
-    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+    basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
 
     # TileCal 
     endcap_start = 3704.*mm
@@ -137,8 +137,7 @@ def getTileExtendedCfg(left_side=False):
     endcap_start = 3.704*m
     extended_barrel_start = endcap_start
     extended_barrel_zsize = 2.83*m
-    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
-
+    basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
     sign = -1 if left_side else 1
     side_name = 'B' if left_side else 'A'
 

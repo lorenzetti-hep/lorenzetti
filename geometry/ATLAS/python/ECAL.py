@@ -5,7 +5,7 @@ __all__ = ["getLArBarrelCfg"]
 #
 # ATLAS Detector construction
 #
-from GaugiKernel.constants import *
+from GaugiKernel.constants import m,cm,mm,MeV,pi
 from G4Kernel.DetectorConstruction import *
 from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
@@ -18,7 +18,8 @@ import os
 
 def getLArBarrelCfg():
 
-  basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+
+  basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
 
   # ECal
   ecal_barrel_start = 0*m

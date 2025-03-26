@@ -1,7 +1,7 @@
 
 __all__ = ['getPixelBarrelCfg']
 
-from GaugiKernel.constants import *
+from GaugiKernel.constants import m,cm,mm
 from SpacePoint.TrackingDefs import *
 from G4Kernel.DetectorConstruction import *
 import numpy as np

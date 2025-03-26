@@ -2,12 +2,11 @@
 __all__ = ['list2stdvector', 'stdvector2list', "get_argparser_formatter", "get_attributes", "check_for_unused_vars"]
 
 
-import numpy as np
 import ROOT
 import inspect
+import argparse
 
 ROOT.gSystem.Load('liblorenzetti')
-from ROOT import RunManager
 from rich_argparse import RichHelpFormatter
 
 
@@ -88,7 +87,4 @@ from . import ComponentAccumulator
 __all__.extend(ComponentAccumulator.__all__)
 from .ComponentAccumulator import *
 
-from . import MultiProcessing
-__all__.extend(MultiProcessing.__all__)
-from .MultiProcessing import *
 

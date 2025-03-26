@@ -73,7 +73,6 @@ void RunManager::run( int evt )
 
   header();
   
-  std::string basepath(std::getenv("LZT_PATH"));
   int argc=1;
   char* argv[1] = {"app"};
   G4UIExecutive* ui = 0;
@@ -81,23 +80,33 @@ void RunManager::run( int evt )
     ui = new G4UIExecutive(argc,argv);
   }
 
-
-
+  MSG_INFO( "Create the random generator..." );
 
   // Choose the Random engine
   G4Random::setTheEngine(new CLHEP::RanecuEngine);
+  MSG_INFO( "set seed as " << m_seed );
 
   //G4long seed = abs(((time(NULL) * 181) * ((getpid() - 83) * 359)) % 104729);
   //G4long seed = abs(((time(NULL) * 181) * ((83) * 359)) % 104729);
   CLHEP::HepRandom::setTheSeed(m_seed);
+  MSG_INFO( "Building the manager+..." );
 
   // Construct the default run manager
-#ifdef G4MULTITHREADED
+#ifdef G4MULTITHREADED  
+  MSG_INFO( "Create MT Manager..." );
+
   G4MTRunManager * runManager = new G4MTRunManager;
+  MSG_INFO( "Create MT Manager... done" );
+
   if ( m_nThreads > 0 ) {
+    MSG_INFO( "Create MT Manager with " << m_nThreads << " threads..." );
+
     runManager->SetNumberOfThreads(m_nThreads);
+    MSG_INFO( "Create MT Manager with " << m_nThreads << " threads... done"  );
+
   }
 #else
+  MSG_INFO( "Create Manager" );
   G4RunManager * runManager = new G4RunManager;
 #endif
 
@@ -108,7 +117,6 @@ void RunManager::run( int evt )
   }else{
     runManager->SetUserInitialization(m_detector);
   }
-
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
@@ -164,7 +172,7 @@ void RunManager::header()
   std::cout << std::endl;
   std::cout << "Empowering Physics Performance and Analysis with Low-level Calorimetry Data." << std::endl;
   std::cout << std::endl;
-  std::cout << "Federal University of Rio de Janeiro (UFRJ/COPPE), Brazil" << std::endl;
+  std::cout << "Universidade Federal do Rio de Janeiro (UFRJ/COPPE), Brazil" << std::endl;
   //std::cout << "Authors: Joao Victor da Fonseca Pinto (jodafons@cern.ch), Werner Freund (wsfreund@cern.ch), ..." << std::endl;
   
 

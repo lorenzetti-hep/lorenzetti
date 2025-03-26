@@ -241,10 +241,12 @@ def get_job_params(args, force:bool=False):
         yield events, output_file
 
 
+
 def merge(args):
     files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
-    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
-    [os.remove(f) for f in files]
+    if args.merge or len(files)==1:
+        os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+        [os.remove(f) for f in files]
 
 
 def run(args):
@@ -275,8 +277,7 @@ def run(args):
     )
         for events, output_file in get_job_params(args))
     
-    if args.merge:
-        merge(args)
+    merge(args)
 
 
 

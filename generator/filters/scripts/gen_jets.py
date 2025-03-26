@@ -100,7 +100,7 @@ def parse_args():
     parser.add_argument('--jf17-file', action='store',
                         dest='jf17_file', required=False,
                         type=str, default=JF17_FILE,
-                        help="The pythia JF17 file configuration.")
+                        help="The pythia zee file configuration.")
     parser.add_argument('--pileup-file', action='store',
                         dest='pileup_file', required=False,
                         type=str, default=PILEUP_FILE,
@@ -108,7 +108,6 @@ def parse_args():
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
-
 
  
     return parser
@@ -210,8 +209,9 @@ def get_job_params(args, force:bool=False):
 
 def merge(args):
     files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
-    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
-    [os.remove(f) for f in files]
+    if args.merge or len(files)==1:
+        os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+        [os.remove(f) for f in files]
 
 
 
@@ -237,10 +237,9 @@ def run(args):
         bc_id_end=args.bc_id_end
     )
         for events, output_file in get_job_params(args))
-    
-    if args.merge:
-        merge(args)
-       
+
+    merge(args)
+
 
 
 if __name__ == "__main__":

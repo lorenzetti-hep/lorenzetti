@@ -3,7 +3,7 @@ __all__ = ["getCrackVolumesCfg", "getDMVolumesCfg"]
 
 from G4Kernel.DetectorConstruction import *
 from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
-from GaugiKernel.constants import *
+from GaugiKernel.constants import m,cm,mm
 from CaloCell.CaloDefs import Detector, CaloSampling
 from CaloCellBuilder import Calorimeter
 import numpy as np
