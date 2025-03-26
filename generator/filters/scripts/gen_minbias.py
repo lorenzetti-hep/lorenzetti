@@ -150,7 +150,7 @@ def get_events_per_job(args):
         return args.events_per_job
 
 
-def get_job_params(args):
+def get_job_params(args, force:bool=False):
     if args.event_numbers:
         event_numbers_list = args.event_numbers.split(",")
         args.number_of_events = len(event_numbers_list)
@@ -171,18 +171,19 @@ def get_job_params(args):
         output_file = splitted_output_filename.copy()
         output_file.insert(-1, str(i))
         output_file = '.'.join(output_file)
-        if os.path.exists(output_file):
+        if not force and os.path.exists(output_file):
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
         yield events, output_file
 
-
-
+def merge(args):
+    files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
+    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+    [os.remove(f) for f in files]
 
 
 def run(args):
 
-    print(list(get_job_params(args)))
     pool = Parallel(n_jobs=args.number_of_threads)
     pool(delayed(main)(
         events=events,
@@ -201,12 +202,9 @@ def run(args):
     )
         for events, output_file in get_job_params(args))
 
-    #if args.merge:
-    #
-    #    files = ' '.join(files)
-    #    os.system(f"hadd -f {args.output_file} {files}")
-    #    [os.system(f'rm -rf {f}') for f in files]
-
+    if args.merge:
+        merge(args)
+       
 
 
 if __name__ == "__main__":
