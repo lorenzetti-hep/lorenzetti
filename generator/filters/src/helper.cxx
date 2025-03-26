@@ -54,7 +54,7 @@ namespace generator{
 
       float et(const HepMC3::GenParticle *particle){
         float eta = particle->momentum().eta();
-        float et = eta != 0.0 ? (particle->momentum().e())/cosh(fabs(eta)) : 0.0;
+        float et = eta != 0.0 ? (particle->momentum().e())/cosh(std::abs(eta)) : 0.0;
         return et;
       }
 
@@ -77,8 +77,8 @@ namespace generator{
           if (m_select == 3 && !isCharged) continue;
           // Skip if too large pseudorapidity.
           float eta = p->momentum().eta();
-          if (abs(eta) > m_etaMax) continue;
-          if (abs(eta) < m_etaMin) continue;
+          if (std::abs(eta) > m_etaMax) continue;
+          if (std::abs(eta) < m_etaMin) continue;
           // Skip if too small pT.
           float pT = p->momentum().pt();
           if       (isCharged && pT < m_pTminCharged) continue;

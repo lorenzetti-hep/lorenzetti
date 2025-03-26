@@ -79,8 +79,8 @@ StatusCode Pileup::execute(  generator::Event &ctx )
 
         for ( auto &seed : *ctx ) {
 
-          const float deta = abs( part->momentum().eta() - seed.eta() );
-          const float dphi = abs( CaloPhiRange::diff( part->momentum().phi(), seed.phi() ) );
+          const float deta = std::abs( part->momentum().eta() - seed.eta() );
+          const float dphi = std::abs( CaloPhiRange::diff( part->momentum().phi(), seed.phi() ) );
           
           if ( ( deta < m_delta_eta ) && ( dphi < m_delta_phi ) ) 
           {
