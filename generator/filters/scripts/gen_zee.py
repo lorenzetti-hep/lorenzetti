@@ -7,18 +7,17 @@ from math import ceil
 from typing import List
 from joblib import Parallel, delayed
 from evtgen import Pythia8
-from filters import Zee
+from filters import Zee, Pileup
 
 from GenKernel import EventTape
 from GaugiKernel import get_argparser_formatter
 from GaugiKernel import LoggingLevel
 from GaugiKernel import GeV
 
-PILEUP_FILE = os.environ['LZT_PATH'] + \
-    '/generator/evtgen/data/minbias_config.cmnd'
 
-ZEE_FILE = os.environ['LZT_PATH'] + \
-    '/generator/evtgen/data/zee_config.cmnd'
+datapath    = os.environ["LORENZETTI_EVTGEN_DATA_DIR"]
+PILEUP_FILE = f'{datapath}/minbias_config.cmnd'
+ZEE_FILE    = f'{datapath}/zee_config.cmnd'
 
 
 def parse_args():
@@ -93,13 +92,19 @@ def parse_args():
                         dest='events_per_job', required=False,
                         type=int, default=None,
                         help="The number of events per job")
+    parser.add_argument('--zee-file', action='store',
+                        dest='zee_file', required=False,
+                        type=str, default=ZEE_FILE,
+                        help="The pythia zee file configuration.")
+    parser.add_argument('--pileup-file', action='store',
+                        dest='pileup_file', required=False,
+                        type=str, default=PILEUP_FILE,
+                        help="The pythia pileup file configuration.")
+    parser.add_argument('-m','--merge', action='store_true',
+                        dest='merge', required=False,
+                        help='Merge all files.')
 
-    if len(sys.argv) == 1:
-        parser.print_help()
-        sys.exit(1)
-
-    args = parser.parse_args()
-    return args
+    return parser
 
 
 def main(events: List[int],
@@ -125,7 +130,7 @@ def main(events: List[int],
     zee = Zee("Zee",
               Pythia8("Generator",
                       File=zee_file,
-                      Seed=args.seed),
+                      Seed=seed),
               EtaMax=eta_max,
               MinPt=15*GeV,
               # calibration use only.
@@ -137,11 +142,11 @@ def main(events: List[int],
 
     if args.pileup_avg > 0:
 
-        from filters import Pileup
         pileup = Pileup("Pileup",
-                        Pythia8("MBGenerator", File=mb_file,
+                        Pythia8("MBGenerator", 
+                                File=mb_file,
                                 Seed=seed),
-                        EtaMax=eta_max,
+                        EtaMax=3.2,
                         Select=2,
                         PileupAvg=pileup_avg,
                         PileupSigma=pileup_sigma,
@@ -163,7 +168,7 @@ def get_events_per_job(args):
         return args.events_per_job
 
 
-def get_job_params(args):
+def get_job_params(args, force:bool=False):
     if args.event_numbers:
         event_numbers_list = args.event_numbers.split(",")
         args.number_of_events = len(event_numbers_list)
@@ -184,14 +189,19 @@ def get_job_params(args):
         output_file = splitted_output_filename.copy()
         output_file.insert(-1, str(i))
         output_file = '.'.join(output_file)
-        if os.path.exists(output_file):
+        if not force and os.path.exists(output_file):
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
         yield events, output_file
 
 
-if __name__ == "__main__":
-    args = parse_args()
+def merge(args):
+    files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
+    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+    [os.remove(f) for f in files]
+
+
+def run(args):
     pool = Parallel(n_jobs=args.number_of_threads)
     pool(delayed(main)(
         events=events,
@@ -199,14 +209,28 @@ if __name__ == "__main__":
         output_file=output_file,
         run_number=args.run_number,
         seed=args.seed,
-        zee_file=ZEE_FILE,
+        zee_file=args.zee_file,
         zero_vertex_particles=args.zero_vertex_particles,
         force_forward_electron=args.force_forward_electron,
         eta_max=args.eta_max,
         pileup_avg=args.pileup_avg,
         pileup_sigma=args.pileup_sigma,
-        mb_file=PILEUP_FILE,
+        mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )
         for events, output_file in get_job_params(args))
+    
+    if args.merge:
+        merge(args)
+
+
+
+
+if __name__ == "__main__":
+    parser=parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args()
+    run(args)

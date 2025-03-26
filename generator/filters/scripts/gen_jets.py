@@ -100,12 +100,16 @@ def parse_args():
     parser.add_argument('--jf17-file', action='store',
                         dest='jf17_file', required=False,
                         type=str, default=JF17_FILE,
-                        help="The pythia zee file configuration.")
+                        help="The pythia JF17 file configuration.")
     parser.add_argument('--pileup-file', action='store',
                         dest='pileup_file', required=False,
                         type=str, default=PILEUP_FILE,
                         help="The pythia pileup file configuration.")
-    
+    parser.add_argument('-m','--merge', action='store_true',
+                        dest='merge', required=False,
+                        help='Merge all files.')
+
+
  
     return parser
 
@@ -178,7 +182,7 @@ def get_events_per_job(args):
         return args.events_per_job
 
 
-def get_job_params(args):
+def get_job_params(args, force:bool=False):
     if args.event_numbers:
         event_numbers_list = args.event_numbers.split(",")
         args.number_of_events = len(event_numbers_list)
@@ -199,11 +203,15 @@ def get_job_params(args):
         output_file = splitted_output_filename.copy()
         output_file.insert(-1, str(i))
         output_file = '.'.join(output_file)
-        if os.path.exists(output_file):
+        if not force and os.path.exists(output_file):
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
         yield events, output_file
 
+def merge(args):
+    files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
+    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+    [os.remove(f) for f in files]
 
 
 
@@ -229,7 +237,10 @@ def run(args):
         bc_id_end=args.bc_id_end
     )
         for events, output_file in get_job_params(args))
-
+    
+    if args.merge:
+        merge(args)
+       
 
 
 if __name__ == "__main__":
