@@ -1,8 +1,49 @@
-ARG ROOT_VERSION=6.34.00-ubuntu24.10
-FROM rootproject/root:${ROOT_VERSION}
-
+FROM ubuntu:22.04
 WORKDIR /opt
 
+
+ENV LC_ALL=C.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV TERM=screen
+ENV TZ=America/New_York
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+RUN apt-get update -y --fix-missing
+RUN apt-get install -y wget \
+                       build-essential \
+                       dpkg-dev \
+                       cmake \
+                       curl \
+                       dpkg-dev \
+                       g++ \
+                       gcc \
+                       binutils \
+                       libxpm-dev \
+                       python3 \
+                       python-dev-is-python3 \
+                       python3-pip \
+                       librange-v3-dev \
+                       libssl-dev \
+                       gfortran \
+                       libpcre3-dev \
+                       libglu1-mesa-dev \
+                       libglew-dev \
+                       libftgl-dev \
+                       libmysqlclient-dev \
+                       libfftw3-dev \
+                       libcfitsio-dev \
+                       libgraphviz-dev \
+                       libxml2-dev \
+                       libkrb5-dev \
+                       libgsl-dev \
+                       rsync\
+                       cmake \
+                       libxi-dev \
+                       protobuf-compiler \
+                       libprotobuf-dev
+       
 # GEANT4 uses this
 RUN apt-get update && \
     apt install -y --fix-missing \
@@ -25,8 +66,26 @@ RUN apt install -y \
 RUN apt install -y \
     qtcreator \
     qtbase5-dev \
-    qt5-qmake \
-    git
+    qt5-qmake 
+
+RUN apt install -y git
+
+ARG ROOT_VERSION
+LABEL ROOT_VERSION=${ROOT_VERSION}
+RUN git clone https://github.com/root-project/root.git
+RUN cd root && git checkout ${ROOT_VERSION}
+RUN cd root/ && \
+    mkdir build && \
+    cd build && \
+    cmake  -Dpython_version=3 -Dxrootd=OFF -Dbuiltin_xrootd=OFF .. && \
+    make -j$(nproc)
+
+
+ENV ROOTSYS=/opt/root/build/
+ENV PATH=$ROOTSYS/bin:$PATH
+ENV LD_LIBRARY_PATH=$ROOTSYS/lib:$LD_LIBRARY_PATH
+ENV PYTHONPATH=/opt/root/build/lib:$PYTHONPATH
+
 
 ARG GEANT4_VERSION
 LABEL GEANT4_VERSION=${GEANT4_VERSION}
@@ -83,24 +142,20 @@ RUN wget http://hepmc.web.cern.ch/hepmc/releases/HepMC3-${HEPMC_VERSION}.tar.gz 
     cd hepmc && mkdir build && \
     cd build && \
     cmake -DHEPMC3_ENABLE_ROOTIO=ON -DHEPMC3_INSTALL_INTERFACES=ON -DHEPMC3_ENABLE_PROTOBUFIO=ON .. && \
-    make && \
+    make -j$(nproc) && \
     make install
 
-COPY docker/scripts/setup_hep.sh setup_hep.sh
-RUN chmod 774 setup_hep.sh
-
-COPY docker/scripts/setup_geant.py /opt/geant4/build
-RUN cd /opt/geant4/build/ && chmod 774 setup_geant.py && python setup_geant.py
-
-COPY docker/requirements.txt requirements.txt
+COPY requirements.txt /requirements.txt
 RUN apt-get update -y && \
     apt install -y python3-pip python3-venv && \
     python -m venv /opt/lorenzetti-python && \
-    /opt/lorenzetti-python/bin/pip install -r requirements.txt
+    /opt/lorenzetti-python/bin/pip install -r /requirements.txt
 
-ENV PATH=/opt/lorenzetti-python/bin:/opt/geant4/build:/opt/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+
+ENV PATH=/opt/lorenzetti-python/bin:/opt/geant4/build:/opt/root/build/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ENV LD_LIBRARY_PATH=opt/geant4/build/BuildProducts/lib/libG4intercoms.so:/opt/geant4/build/BuildProducts/lib/libG4particles.so:/opt/geant4/build/BuildProducts/lib/libG4parmodels.so:/opt/geant4/build/BuildProducts/lib/libG4materials.so:/opt/geant4/build/BuildProducts/lib/libG4interfaces.so:/opt/geant4/build/BuildProducts/lib/libG4track.so:/opt/geant4/build/BuildProducts/lib/libG4graphics_reps.so:/opt/geant4/build/BuildProducts/lib/libG4FR.so:/opt/geant4/build/BuildProducts/lib/libG4tracking.so:/opt/geant4/build/BuildProducts/lib/libG4mctruth.so:/opt/geant4/build/BuildProducts/lib/libG4OpenGL.so:/opt/geant4/build/BuildProducts/lib/libG4geomtext.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so:/opt/geant4/build/BuildProducts/lib/libG4vis_management.so:/opt/geant4/build/BuildProducts/lib/libG4visHepRep.so:/opt/geant4/build/BuildProducts/lib/Linux-g++:/opt/geant4/build/BuildProducts/lib/libG4global.so:/opt/geant4/build/BuildProducts/lib/libG4clhep.so:/opt/geant4/build/BuildProducts/lib/libG4analysis.so:/opt/geant4/build/BuildProducts/lib/libG4Tree.so:/opt/geant4/build/BuildProducts/lib/libG4digits_hits.so:/opt/geant4/build/BuildProducts/lib/libG4modeling.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2.3.3:/opt/geant4/build/BuildProducts/lib/libG4geometry.so:/opt/geant4/build/BuildProducts/lib/libG4gdml.so:/opt/geant4/build/BuildProducts/lib/libG4ToolsSG.so:/opt/geant4/build/BuildProducts/lib/libG4event.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2:/opt/geant4/build/BuildProducts/lib/libG4GMocren.so:/opt/geant4/build/BuildProducts/lib/libG4physicslists.so:/opt/geant4/build/BuildProducts/lib/libG4readout.so:/opt/geant4/build/BuildProducts/lib/libG4processes.so:/opt/geant4/build/BuildProducts/lib/libG4run.so:/opt/geant4/build/BuildProducts/lib/libG4VRML.so:/opt/geant4/build/BuildProducts/lib/libG4error_propagation.so:/opt/geant4/build/BuildProducts/lib/libG4RayTracer.so:opt/geant4/build/BuildProducts/lib/libG4intercoms.so:/opt/geant4/build/BuildProducts/lib/libG4particles.so:/opt/geant4/build/BuildProducts/lib/libG4parmodels.so:/opt/geant4/build/BuildProducts/lib/libG4materials.so:/opt/geant4/build/BuildProducts/lib/libG4interfaces.so:/opt/geant4/build/BuildProducts/lib/libG4track.so:/opt/geant4/build/BuildProducts/lib/libG4graphics_reps.so:/opt/geant4/build/BuildProducts/lib/libG4FR.so:/opt/geant4/build/BuildProducts/lib/libG4tracking.so:/opt/geant4/build/BuildProducts/lib/libG4mctruth.so:/opt/geant4/build/BuildProducts/lib/libG4OpenGL.so:/opt/geant4/build/BuildProducts/lib/libG4geomtext.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so:/opt/geant4/build/BuildProducts/lib/libG4vis_management.so:/opt/geant4/build/BuildProducts/lib/libG4visHepRep.so:/opt/geant4/build/BuildProducts/lib/Linux-g++:/opt/geant4/build/BuildProducts/lib/libG4global.so:/opt/geant4/build/BuildProducts/lib/libG4clhep.so:/opt/geant4/build/BuildProducts/lib/libG4analysis.so:/opt/geant4/build/BuildProducts/lib/libG4Tree.so:/opt/geant4/build/BuildProducts/lib/libG4digits_hits.so:/opt/geant4/build/BuildProducts/lib/libG4modeling.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2.3.3:/opt/geant4/build/BuildProducts/lib/libG4geometry.so:/opt/geant4/build/BuildProducts/lib/libG4gdml.so:/opt/geant4/build/BuildProducts/lib/libG4ToolsSG.so:/opt/geant4/build/BuildProducts/lib/libG4event.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2:/opt/geant4/build/BuildProducts/lib/libG4GMocren.so:/opt/geant4/build/BuildProducts/lib/libG4physicslists.so:/opt/geant4/build/BuildProducts/lib/libG4readout.so:/opt/geant4/build/BuildProducts/lib/libG4processes.so:/opt/geant4/build/BuildProducts/lib/libG4run.so:/opt/geant4/build/BuildProducts/lib/libG4VRML.so:/opt/geant4/build/BuildProducts/lib/libG4error_propagation.so:/opt/geant4/build/BuildProducts/lib/libG4RayTracer.so:opt/geant4/build/BuildProducts/lib/libG4intercoms.so:/opt/geant4/build/BuildProducts/lib/libG4particles.so:/opt/geant4/build/BuildProducts/lib/libG4parmodels.so:/opt/geant4/build/BuildProducts/lib/libG4materials.so:/opt/geant4/build/BuildProducts/lib/libG4interfaces.so:/opt/geant4/build/BuildProducts/lib/libG4track.so:/opt/geant4/build/BuildProducts/lib/libG4graphics_reps.so:/opt/geant4/build/BuildProducts/lib/libG4FR.so:/opt/geant4/build/BuildProducts/lib/libG4tracking.so:/opt/geant4/build/BuildProducts/lib/libG4mctruth.so:/opt/geant4/build/BuildProducts/lib/libG4OpenGL.so:/opt/geant4/build/BuildProducts/lib/libG4geomtext.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so:/opt/geant4/build/BuildProducts/lib/libG4vis_management.so:/opt/geant4/build/BuildProducts/lib/libG4visHepRep.so:/opt/geant4/build/BuildProducts/lib/Linux-g++:/opt/geant4/build/BuildProducts/lib/libG4global.so:/opt/geant4/build/BuildProducts/lib/libG4clhep.so:/opt/geant4/build/BuildProducts/lib/libG4analysis.so:/opt/geant4/build/BuildProducts/lib/libG4Tree.so:/opt/geant4/build/BuildProducts/lib/libG4digits_hits.so:/opt/geant4/build/BuildProducts/lib/libG4modeling.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2.3.3:/opt/geant4/build/BuildProducts/lib/libG4geometry.so:/opt/geant4/build/BuildProducts/lib/libG4gdml.so:/opt/geant4/build/BuildProducts/lib/libG4ToolsSG.so:/opt/geant4/build/BuildProducts/lib/libG4event.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so.2:/opt/geant4/build/BuildProducts/lib/libG4GMocren.so:/opt/geant4/build/BuildProducts/lib/libG4physicslists.so:/opt/geant4/build/BuildProducts/lib/libG4readout.so:/opt/geant4/build/BuildProducts/lib/libG4processes.so:/opt/geant4/build/BuildProducts/lib/libG4run.so:/opt/geant4/build/BuildProducts/lib/libG4VRML.so:/opt/geant4/build/BuildProducts/lib/libG4error_propagation.so:/opt/geant4/build/BuildProducts/lib/libG4RayTracer.so:
-ENV PYTHONPATH=/opt/root/lib:/opt/pythia/lib
+ENV PYTHONPATH=/opt/root/build/lib:/opt/pythia/lib
 ENV G4NEUTRONHPDATA=/opt/geant4/build/data/G4NDL4.7.1
 ENV G4LEDATA=/opt/geant4/build/data/G4EMLOW8.5
 ENV G4LEVELGAMMADATA=/opt/geant4/build/data/PhotonEvaporation5.7
@@ -119,3 +174,7 @@ ENV FASTJET_LIBRARIES=/usr/local/lib
 ENV HEPMC_INCLUDE=/opt/optmc/include/
 ENV HEPMC_LIBRARIES=/usr/local/lib
 ENV LD_PRELOAD=/opt/geant4/build/BuildProducts/lib/libG4vis_management.so:/opt/geant4/build/BuildProducts/lib/libG4visHepRep.so:/opt/geant4/build/BuildProducts/lib/libG4tracking.so:/opt/geant4/build/BuildProducts/lib/libG4track.so:/opt/geant4/build/BuildProducts/lib/libG4run.so:/opt/geant4/build/BuildProducts/lib/libG4readout.so:/opt/geant4/build/BuildProducts/lib/libG4ptl.so:/opt/geant4/build/BuildProducts/lib/libG4processes.so:/opt/geant4/build/BuildProducts/lib/libG4physicslists.so:/opt/geant4/build/BuildProducts/lib/libG4particles.so:/opt/geant4/build/BuildProducts/lib/libG4parmodels.so:/opt/geant4/build/BuildProducts/lib/libG4modeling.so:/opt/geant4/build/BuildProducts/lib/libG4mctruth.so:/opt/geant4/build/BuildProducts/lib/libG4materials.so:/opt/geant4/build/BuildProducts/lib/libG4interfaces.so:/opt/geant4/build/BuildProducts/lib/libG4intercoms.so:/opt/geant4/build/BuildProducts/lib/libG4graphics_reps.so:/opt/geant4/build/BuildProducts/lib/libG4global.so:/opt/geant4/build/BuildProducts/lib/libG4geomtext.so:/opt/geant4/build/BuildProducts/lib/libG4geometry.so:/opt/geant4/build/BuildProducts/lib/libG4gdml.so:/opt/geant4/build/BuildProducts/lib/libG4event.so:/opt/geant4/build/BuildProducts/lib/libG4error_propagation.so:/opt/geant4/build/BuildProducts/lib/libG4digits_hits.so:/opt/geant4/build/BuildProducts/lib/libG4clhep.so:/opt/geant4/build/BuildProducts/lib/libG4analysis.so:/opt/geant4/build/BuildProducts/lib/libG4VRML.so:/opt/geant4/build/BuildProducts/lib/libG4Tree.so:/opt/geant4/build/BuildProducts/lib/libG4ToolsSG.so:/opt/geant4/build/BuildProducts/lib/libG4RayTracer.so:/opt/geant4/build/BuildProducts/lib/libG4OpenGL.so:/opt/geant4/build/BuildProducts/lib/libG4GMocren.so:/opt/geant4/build/BuildProducts/lib/libG4FR.so:
+
+#ARG LORENZETTI_BUILD_DIR=""
+#ENV LORENZETTI_BUILD_DIR=${LORENZETTI_BUILD_DIR}
+#COPY entrypoint.sh /opt/entrypoint.sh

@@ -196,7 +196,7 @@ def get_job_params(args, force:bool=False):
             list(range(start, start+events_per_job))
             for start in range(0, args.number_of_events, events_per_job)
         )
-
+    seed=args.seed 
     splitted_output_filename = args.output_file.split(".")
     for i, events in enumerate(event_numbers):
         output_file = splitted_output_filename.copy()
@@ -205,10 +205,10 @@ def get_job_params(args, force:bool=False):
         if not force and os.path.exists(output_file):
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
-        yield events, output_file
+        yield events, output_file, int(seed + seed*i*0.5)
 
 def merge(args):
-    files = [f"{os.getcwd()}/{f}" for _, f in list(get_job_params(args, force=True))]
+    files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_job_params(args, force=True))]
     if args.merge or len(files)==1:
         os.system(f"hadd -f {args.output_file} {' '.join(files)}")
         [os.remove(f) for f in files]
@@ -224,7 +224,7 @@ def run(args):
         logging_level=args.output_level,
         output_file=output_file,
         run_number=args.run_number,
-        seed=args.seed,
+        seed=seed,
         jf17_file=args.jf17_file,
         eta_min=args.eta_min,
         eta_max=args.eta_max,
@@ -236,7 +236,7 @@ def run(args):
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )
-        for events, output_file in get_job_params(args))
+        for events, output_file, seed in get_job_params(args))
 
     merge(args)
 

@@ -1,35 +1,4 @@
 #!/usr/bin/env python3
-
-from GaugiKernel          import LoggingLevel, get_argparser_formatter
-from G4Kernel             import *
-import argparse
-import sys,traceback
-
-
-
-def build_argparser():
-  parser = argparse.ArgumentParser(description = '', add_help = False, formatter_class = get_argparser_formatter() )
-
-  parser.add_argument('-i','--input-file', action='store', 
-                      dest='input_file', required = True,
-                      help = "The event input HIT file.")
-
-  parser.add_argument('-o','--output-file', action='store', 
-                      dest='output_file', required = True,
-                      help = "The reconstructed event HIT file merged with the pileup.")
-
-  parser.add_argument('--nov','--number-of-events', action='store', dest='number_of_events', required = False, type=int, default=-1,
-                      help = "The number of events to apply the reconstruction.")
-
-  parser.add_argument('-l', '--output-level', action='store', dest='output_level', required = False, type=str, default='INFO',
-                      help = "The output level messenger.")
-
-  parser.add_argument('-c','--command', action='store', dest='command', required = False, default="''",
-                      help = "The preexec command")
-
-
-
-#!/usr/bin/env python3
 import argparse
 import sys
 import os

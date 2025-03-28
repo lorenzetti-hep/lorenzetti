@@ -93,7 +93,7 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   clus->setRhad( rhad );
   clus->setRhad1( rhad1 );
   // Only EM energy since this is a eletromagnetic cluster
-  clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(fabs(clus->eta())) : 0.0 ); 
+  clus->setEt( clus->eta() != 0.0 ? (e0+e1+e2+e3)/cosh(std::abs(clus->eta())) : 0.0 ); 
   clus->setE(e0+e1+e2+e3);
 
 

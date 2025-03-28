@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
-import gc
 import sys
 import traceback
 
@@ -73,7 +71,6 @@ def main(logging_level: str,
         output_file = str(output_file)
 
     exec(command)
-
     outputLevel = LoggingLevel.toC(logging_level)
 
     # Build the ATLAS detector

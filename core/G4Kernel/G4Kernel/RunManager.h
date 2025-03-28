@@ -33,22 +33,16 @@ class RunManager: public MsgService,
   private:
 
     void header();
-
-    int m_nThreads;
-
-    bool m_runVis;
     
-    float m_seed;
-
-    int m_timeout;
-    
+    int         m_timeout;
+    int         m_nThreads;
+    bool        m_runVis;
+    float       m_seed;
     std::string m_vis_mac;
     std::string m_output;
 
-    std::vector< Gaugi::Algorithm* > m_acc;
-
-    PrimaryGenerator       *m_generator;
-
-    G4VUserDetectorConstruction *m_detector;
+    std::vector< Gaugi::Algorithm* >   m_acc;
+    PrimaryGenerator                  *m_generator;
+    G4VUserDetectorConstruction       *m_detector;
 };
 #endif

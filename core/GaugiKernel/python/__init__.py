@@ -7,6 +7,9 @@ import inspect
 import argparse
 
 ROOT.gSystem.Load('liblorenzetti')
+# NOTE: Do not remove this line, this will break eveything for some reason...
+from ROOT import RunManager
+
 from rich_argparse import RichHelpFormatter
 
 
