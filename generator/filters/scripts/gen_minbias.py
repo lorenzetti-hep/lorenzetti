@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import random
 import sys
 import os
 
@@ -12,7 +13,6 @@ from filters        import FixedRegion
 from GenKernel      import EventTape
 from GaugiKernel    import get_argparser_formatter
 from GaugiKernel    import LoggingLevel
-from GaugiKernel    import GeV
 
 
 
@@ -54,6 +54,8 @@ def parse_args():
                         dest='eta_max', required = False, 
                         type=float, default=3.2,
                         help = "Maximum Eta.")
+    
+
     parser.add_argument('--delta-eta', action='store', 
                         dest='delta_eta', required = False, 
                         type=float, default=999,
@@ -62,6 +64,8 @@ def parse_args():
                         dest='delta_phi', required = False, 
                         type=float, default=999,
                         help = "Minimum Phi.")
+    
+
     parser.add_argument('--pileup-avg', action='store',
                         dest='pileup_avg', required=False,
                         type=float, default=0,
@@ -70,6 +74,18 @@ def parse_args():
                         dest='pileup_sigma', required=False,
                         type=float, default=0,
                         help="The pileup sigma (default is zero).")
+    parser.add_argument('--pileup-avg-min', action='store',
+                        dest='pileup_avg_min', required=False,
+                        type=float, default=None,
+                        help="The pileup average lower bound.")
+    parser.add_argument('--pileup-avg-max', action='store',
+                        dest='pileup_avg_max', required=False,
+                        type=float, default=None,
+                        help="The pileup average upper bound.")
+
+
+
+
     parser.add_argument('--bc-id-start', action='store',
                         dest='bc_id_start', required=False,
                         type=int, default=-21,
@@ -129,7 +145,7 @@ def main(events: List[int],
                     Pythia8("MBGenerator", 
                             File=mb_file,
                             Seed=seed),
-                    EtaMax=eta_max,
+                    EtaMax=delta_eta,
                     Select=2,
                     PileupAvg=pileup_avg,
                     PileupSigma=pileup_sigma,
@@ -176,6 +192,11 @@ def get_job_params(args, force:bool=False):
             continue
         yield events, output_file, int(seed + seed*i*0.5)
 
+def get_pileup_avg(args):
+    if args.pileup_avg_min and args.pileup_avg_max:
+        return random.randint(args.pileup_avg_min, args.pileup_avg_max)
+    else:
+        return args.pileup_avg
 
 def merge(args):
     files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_job_params(args, force=True))]
@@ -184,8 +205,9 @@ def merge(args):
         [os.remove(f) for f in files]
 
 
-
 def run(args):
+
+    random.seed(args.seed)
 
     pool = Parallel(n_jobs=args.number_of_threads)
     pool(delayed(main)(
@@ -197,7 +219,7 @@ def run(args):
         eta_max=args.eta_max,
         delta_eta=args.delta_eta,
         delta_phi=args.delta_phi,
-        pileup_avg=args.pileup_avg,
+        pileup_avg=get_pileup_avg(args) ,
         pileup_sigma=args.pileup_sigma,
         mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,
