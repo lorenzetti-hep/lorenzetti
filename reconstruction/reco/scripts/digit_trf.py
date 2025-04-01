@@ -86,8 +86,7 @@ def main(logging_level: str,
                                   OutputLevel=outputLevel,
                                   InputHitsKey=recordable("Hits"),
                                   OutputCellsKey=recordable("Cells"),
-                                  OutputTruthCellsKey=recordable(
-        "TruthCells"),
+                                  OutputTruthCellsKey=recordable("TruthCells"),
     )
     calorimeter.merge(acc)
 

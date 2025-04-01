@@ -214,6 +214,8 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
       MSG_FATAL("It's not possible to read the xAOD::TruthParticleContainer from this Context using this key " << m_inputTruthKey );
     }
 
+    std::map<unsigned long int,const xAOD::CaloCell*> cell_map;
+
     for (const auto par : **particles.ptr() )
     {
         //MSG_DEBUG("New particle...");
@@ -225,6 +227,14 @@ StatusCode RootStreamESDMaker::serialize( EventContext &ctx ) const
 
             if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
             {
+
+                // NOTE: avoid cell duplication given RoI superposition
+                if ( cell_map.count(descriptor->hash())){
+                  continue;
+                }
+                cell_map.insert( std::make_pair( descriptor->hash(), cell ) );
+
+
                 xAOD::CaloCell_t cell_t;
                 xAOD::CaloCellConverter cell_cnv;
                 xAOD::CaloDetDescriptor_t descriptor_t;

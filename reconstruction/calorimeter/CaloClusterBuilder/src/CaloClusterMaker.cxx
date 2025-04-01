@@ -314,6 +314,10 @@ void CaloClusterMaker::fillCluster( EventContext &ctx, xAOD::CaloCluster *clus, 
     float deltaPhi = std::abs( CaloPhiRange::diff( clus->phi() , cell->phi() ));
     if( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 ){
         // Add the cell to the cluster
+        if ((cell->descriptor()->sampling() != CaloSampling::EMB1) && (cell->descriptor()->sampling() != CaloSampling::EMEC1) )
+        {
+          MSG_INFO("HASH = " << cell->descriptor()->hash() << " E = "<< cell->e() << " ETA= " << cell->eta() << " PHI = " << cell->phi() );
+        }
         clus->push_back(cell);
     }
   }// Loop over all cells

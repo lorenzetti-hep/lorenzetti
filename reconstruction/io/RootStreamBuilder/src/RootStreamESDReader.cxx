@@ -174,10 +174,16 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   {
     SG::WriteHandle<xAOD::CaloDetDescriptorContainer> container( m_cellsKey+"_Aux", ctx );
     container.record( std::unique_ptr<xAOD::CaloDetDescriptorContainer>(new xAOD::CaloDetDescriptorContainer()) );
-
+    std::map<unsigned long int,const xAOD::CaloDetDescriptor_t> descriptor_map;
     MSG_DEBUG(collection_descriptor->size());
     for (auto &descriptor_t : *collection_descriptor )
     {
+
+      // NOTE: avoid cell duplication given RoI superposition
+      if ( descriptor_map.count(descriptor_t.hash)){
+        continue;
+      }
+      descriptor_map.insert( std::make_pair( descriptor_t.hash, descriptor_t ) );
       //MSG_DEBUG(descriptor_t.hash);
       xAOD::CaloDetDescriptor *descriptor = nullptr;
       xAOD::CaloDetDescriptorConverter cnv;
@@ -194,18 +200,30 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
     SG::WriteHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
     container.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()));
-
+    std::map<unsigned long int,const xAOD::CaloDetDescriptor*> descriptor_map;
     for( auto &cell_t : *collection_cells )
     {
-      xAOD::CaloCell *cell = nullptr;
-      xAOD::CaloCellConverter cnv;
-      cnv.convert(cell_t, cell); // alloc memory
+
       if ( descriptor_links.count(cell_t.descriptor_link)  )
       {
-        cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
-      }
-      container->push_back(cell);
+        auto descriptor = descriptor_links[cell_t.descriptor_link];
+
+        // NOTE: avoid cell duplication given RoI superposition
+        if ( descriptor_map.count(descriptor->hash())){
+          MSG_FATAL("There is a cell duplication. Please check the code. Abort");
+          continue;
+        }
+
+        descriptor_map.insert( std::make_pair( descriptor->hash(), descriptor ) );
+        xAOD::CaloCell *cell = nullptr;
+        xAOD::CaloCellConverter cnv;
+        cnv.convert(cell_t, cell); // alloc memory
+        cell->setDescriptor( descriptor );
+        container->push_back(cell);
+      }  
+      
     }
+
   }
   
 
