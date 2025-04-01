@@ -32,40 +32,15 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
                   (c->descriptor()->sampling() != CaloSampling::EMB1) &&
                   (c->descriptor()->sampling() != CaloSampling::EMEC1) );}),
                 em1Cells.end());
-  
-  for (auto i=0 ; i<em1Cells.size(); ++i){
-    if (em1Cells[i]->e()>260)
-      MSG_INFO("em1Cells["<<i<<"] = " << em1Cells[i]->e() << " eta = " << em1Cells[i]->eta() << " phi = " << em1Cells[i]->phi() << " HASH = "<< em1Cells[i]->descriptor()->hash());
 
-  }
-
-  MSG_INFO("BEFORE");
   std::sort(em1Cells.begin(), em1Cells.end(),
             [](const xAOD::CaloCell* c1, const xAOD::CaloCell* c2){return c1->e() > c2->e();});
   
-  MSG_INFO("AFTER")
-  for (auto i=0 ; i<em1Cells.size(); ++i){
-    if (em1Cells[i]->e()>260)
-        MSG_INFO("em1Cells["<<i<<"] = " << em1Cells[i]->e() << " eta = " << em1Cells[i]->eta() << " phi = " << em1Cells[i]->phi() << " HASH = "<< em1Cells[i]->descriptor()->hash());
-
-  }
-    ///MSG_INFO("em1Cells["<<i<<"] = " << em1Cells[i]->e() << " eta = " << em1Cells[i]->eta() << " phi = " << em1Cells[i]->phi() << " HASH = "<< em1Cells[i]->descriptor()->hash());
-
+  
   float emaxs1  = (em1Cells.size()>=4)?(em1Cells[0]->e() + em1Cells[1]->e()):0;
   float e2tsts1 = (em1Cells.size()>=4)?(em1Cells[2]->e() + em1Cells[3]->e()):0;
   float eratio = (emaxs1 + e2tsts1)?((emaxs1 - e2tsts1)/(emaxs1 + e2tsts1)):0.;
 
-  MSG_INFO("emaxs1 " << emaxs1);
-  MSG_INFO("e2tsts1 " << e2tsts1);
-  MSG_INFO("em1Cells[0] = " << em1Cells[0]->e());
-  MSG_INFO("em1Cells[1] = " << em1Cells[1]->e());
-  MSG_INFO("em1Cells[2] = " << em1Cells[2]->e());
-  MSG_INFO("em1Cells[3] = " << em1Cells[3]->e());
-
-  MSG_INFO("AKI JOAO "<< em1Cells.size() << " ERATIO = " << eratio);
-
- 
-  
   float e277  = sumEnergyEM( clus, 2, 7, 7 );
   float e233  = sumEnergyEM( clus, 2, 3, 3 );
   float e237  = sumEnergyEM( clus, 2, 3, 7 );
@@ -78,11 +53,8 @@ StatusCode ShowerShapes::execute( SG::EventContext &/*ctx*/, Gaugi::EDM *edm ) c
   float ehad1 = sumEnergyHAD( clus, 0 );
   float ehad2 = sumEnergyHAD( clus, 1 );
   float ehad3 = sumEnergyHAD( clus, 2 );
-
   float weta2 = calculateWeta2(clus, 3, 5);
 
-  
-  
   float etot = e0+e1+e2+e3+ehad1+ehad2+ehad3;
   float emtot = e0+e1+e2+e3;
   // fraction of energy deposited in 1st sampling
