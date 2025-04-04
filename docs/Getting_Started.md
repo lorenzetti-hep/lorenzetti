@@ -39,30 +39,12 @@ To `run` using singularity engine:
 singularity run lorenzetti_latest.sif
 ```
 
-After `run` the container, you must execute this script to
-setup all simulation dependences:
-
-```
-source /setup_envs.sh
-```
-
-Singularity passforward the GUI interface by default. You just only need to have installed the xorg package 
-into you host linux machine.
-
-
 ### Docker:
 
 We recoment to use singularity, but if you dont have it:
 
 ```
 docker run -e DISPLAY=$DISPLAY -v ${HOME}:${HOME} -v /tmp/.X11-unix:/tmp/.X11-unix -v $XAUTHORITY:/tmp/.XAuthority -e XAUTHORITY=/tmp/.XAuthority  -it lorenzetti/lorenzetti:latest
-```
-
-After run the container, you must execute this script to
-setup all simulation dependences:
-
-```
-source /setup_envs.sh
 ```
 
 ## Installation
@@ -72,7 +54,7 @@ After enter and setup all dependencies inside of the container, just follow thes
 ```
 git clone https://github.com/lorenzetti-hep/lorenzetti.git && cd lorenzetti
 make
-source setup.sh
+source build/lzt_setup.sh
 ```
 
 This will setup everything you need for running the Lorenzetti framework.
