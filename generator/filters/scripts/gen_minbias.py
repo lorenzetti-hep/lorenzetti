@@ -55,6 +55,14 @@ def parse_args():
                         type=float, default=3.2,
                         help = "Maximum Eta.")
     
+    parser.add_argument('--eta', action='store', 
+                        dest='eta', required = False, 
+                        type=float, default=0.00,
+                        help = "Eta position.")
+    parser.add_argument('--phi', action='store', 
+                        dest='phi', required = False, 
+                        type=float, default=0.00,
+                        help = "Phi position.")
 
     parser.add_argument('--delta-eta', action='store', 
                         dest='delta_eta', required = False, 
@@ -124,6 +132,8 @@ def main(events: List[int],
          run_number: int,
          seed: int,
          eta_max: float,
+         eta : float,
+         phi : float,
          delta_eta: float,
          delta_phi: float,
          pileup_avg: float,
@@ -138,7 +148,7 @@ def main(events: List[int],
                      RunNumber=run_number)
 
     # dummy seed to store all pileup particles
-    tape+=FixedRegion("Seed", Eta=0, Phi=0 )
+    tape+=FixedRegion("Seed", Eta=eta, Phi=phi )
   
     from filters import Pileup
     pileup = Pileup("Pileup",
@@ -217,6 +227,8 @@ def run(args):
         run_number=args.run_number,
         seed=seed,
         eta_max=args.eta_max,
+        eta=args.eta,
+        phi=args.phi,
         delta_eta=args.delta_eta,
         delta_phi=args.delta_phi,
         pileup_avg=get_pileup_avg(args) ,
