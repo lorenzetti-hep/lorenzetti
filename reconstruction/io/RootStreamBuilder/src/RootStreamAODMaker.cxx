@@ -17,6 +17,7 @@
 #include "RootStreamAODMaker.h"
 #include "GaugiKernel/EDM.h"
 
+// ISTO É APENAS UM TESTE
 
 using namespace SG;
 using namespace Gaugi;
