@@ -132,8 +132,9 @@ def run(args):
     else:
         args.input_file = [args.input_file]
 
+    args.pileup_file = Path(args.pileup_file)
     if not args.pileup_file.exists():
-        raise FileNotFoundError(f"Pileup input file {args.input_file} not found.")
+        raise FileNotFoundError(f"Pileup input file {args.pileup_file} not found.")
 
 
     pool = Parallel(n_jobs=args.number_of_threads)
