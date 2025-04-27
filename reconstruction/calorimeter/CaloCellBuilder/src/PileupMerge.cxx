@@ -108,6 +108,8 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
                                   const_hit->bcid_end()
                                   );
 
+
+
     for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid )
     {
       hit->edep( bcid, const_hit->edep(bcid) ); // truth energy for each bunch crossing
@@ -138,6 +140,9 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
 
   float nPileup = collection_events->at(0).avgmu;
 
+  MSG_INFO("Pileup average with "<< nPileup);
+  MSG_INFO("Collection hits size = " << collection_hits->size());
+
   // merge the energy for each hit
   for (const auto& hit_t : *collection_hits )
   {
@@ -147,7 +152,12 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
       int pos=0;
       for ( int bcid = hit->bcid_start();  bcid <= hit->bcid_end(); ++bcid)
       {
+        MSG_INFO("HIT BEFORE "<< hit->hash() << " = " << hit->edep(bcid) << " BCID = " << bcid << " POS = " << pos);
+        MSG_INFO("HIT BEFORE "<<  hit_t.hash << " = " << hit_t.edep.at(pos));
+
         hit->edep( bcid, hit_t.edep.at(pos) ); // merge
+        MSG_INFO("HIT AFTER  "<< hit->hash() << " = " << hit->edep(bcid) << " BCID = " << bcid << " POS = " << pos);
+
         pos++;
       }
     }

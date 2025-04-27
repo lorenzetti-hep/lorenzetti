@@ -125,6 +125,7 @@ def get_job_params(args, force:bool=False):
 def run(args):
 
     args.input_file = Path(args.input_file)
+    args.pileup_file = Path(args.pileup_file)
     if not args.input_file.exists():
         raise FileNotFoundError(f"Input file {args.input_file} not found.")
     if args.input_file.is_dir():
