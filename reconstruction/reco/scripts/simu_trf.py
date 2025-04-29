@@ -15,6 +15,8 @@ from ATLAS                  import ATLASConstruction as ATLAS
 from CaloCellBuilder        import CaloHitBuilder
 from RootStreamBuilder      import RootStreamHITMaker
 
+from reco import merge_args, update_args
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -56,6 +58,7 @@ def parse_args():
                         dest='save_all_hits', required=False,
                         help="Save all hits into the output file.")
 
+    parser = merge_args(parser)
 
     return parser
 
@@ -176,4 +179,5 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
+    args = update_args(args)
     run(args)

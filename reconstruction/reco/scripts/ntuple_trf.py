@@ -12,6 +12,7 @@ from RootStreamBuilder  import RootStreamAODReader, recordable
 from GaugiKernel        import ComponentAccumulator
 from RootStreamBuilder  import RootStreamNtupleMaker 
 
+from reco import merge_args, update_args, merge, get_input_output_job_pairs
 
 def parse_args():
     # create the top-level parser
@@ -44,6 +45,7 @@ def parse_args():
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
+    parser = merge_args(parser)
 
     return parser
 
@@ -95,22 +97,6 @@ def main(logging_level: str,
     acc.run(number_of_events)
 
 
-
-
-
-def get_job_params(args, force:bool=False):
-    splitted_output_filename = args.output_file.split(".")
-    for i, input_file in enumerate(args.input_file):
-        output_file = splitted_output_filename.copy()
-        if len(args.input_file)>1:
-          output_file.insert(-1, str(i))
-        output_file = Path('.'.join(output_file))
-        if not force and output_file.exists():
-            print(f"{i} - Output file {output_file} already exists. Skipping.")
-            continue
-        yield input_file, output_file
-   
-
 def run(args):
 
     args.input_file = Path(args.input_file)
@@ -128,14 +114,12 @@ def run(args):
             output_file=output_file,
             number_of_events=args.number_of_events
     )
-        for input_file, output_file in get_job_params(args))
+        for input_file, output_file in get_input_output_job_pairs(args))
     
+    files = [f"{os.getcwd()}/{f}" for _, f in get_input_output_job_pairs(args, force=True)]
     if args.merge:
-      files = [f"{os.getcwd()}/{f}" for _, f in get_job_params(args, force=True)]
-      os.system(f"hadd -f {args.output_file} {' '.join(files)}")
-      [os.remove(f) for f in files]
+        merge(args, files)
        
-
 
 if __name__ == "__main__":
     parser=parse_args()
@@ -143,4 +127,6 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
+    args = update_args(args)
+
     run(args)
