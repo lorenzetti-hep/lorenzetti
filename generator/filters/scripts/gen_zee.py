@@ -128,6 +128,7 @@ def main(events: List[int],
          bc_id_start: int,
          bc_id_end: int):
 
+    print(seed)
     outputLevel = LoggingLevel.toC(logging_level)
 
     tape = EventTape("EventTape", OutputFile=output_file,

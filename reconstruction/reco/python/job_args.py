@@ -10,9 +10,11 @@ __all__  = [
 
 
 import argparse
+import random
 import json
 import sys
 import os
+
 from math        import ceil
 from typing      import List
 from pathlib     import Path
@@ -70,6 +72,8 @@ def get_events_per_job(args):
     else:
         return args.events_per_job
 
+def get_random_seed()->int:
+    return random.randint(1, 900000000 )
 
 def get_evt_job_params(args, force:bool=False):
     if args.event_numbers:
@@ -91,7 +95,7 @@ def get_evt_job_params(args, force:bool=False):
             for start in range(0, args.number_of_events, events_per_job)
         )
 
-    seed=args.seed
+    random.seed(args.seed)
     splitted_output_filename = args.output_file.split(".")
     for i, events in enumerate(event_numbers):
         output_file = splitted_output_filename.copy()
@@ -100,7 +104,7 @@ def get_evt_job_params(args, force:bool=False):
         if not force and os.path.exists(output_file):
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue
-        yield events, output_file, int(seed + seed*i*0.5)
+        yield events, output_file, get_random_seed()
 
 
 
