@@ -36,11 +36,6 @@ def merge_args( parser ):
                         dest='job_file', required=False,
                         type=str, default=None,
                         help='The JSON file used to configure this job automatically by overwritting some arguments.')
-    parser.add_argument('--job-key', action='store',
-                        dest='job_key', required=False,
-                        type=str, default=None,
-                        help='The key to open the dictionary inside of the JSON file to configure the job automatically by overwritting.')
-
 
     return parser
 
@@ -53,15 +48,11 @@ def update_args( args ):
             if not args.job_file.exists():
                 raise FileNotFoundError(f"Input job file {args.job_file} not found.")
             with open(str(args.job_file), 'r') as f:
-                dargs = json.load(f)
-                pprint(dargs)
-                if not args.job_key in dargs.keys():
-                    raise KeyError(f"key {args.job_key} not found into the file in {args.job_file}")
-                dargs = dargs[args.job_key]
+                d = json.load(f)
                 for argname, argvalue in args._get_kwargs():
-                    if argname in dargs.keys():
-                        setattr(args, argname, dargs[argname])
-                        print(f"overwritting {argname} with value {argvalue} to new value {dargs[argname]}")
+                    if argname in d.keys():
+                        setattr(args, argname, d[argname])
+                        print(f"overwritting {argname} with value {argvalue} to new value {d[argname]}")
     return args
 
 
