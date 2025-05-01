@@ -189,7 +189,7 @@ def run(args):
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )
-        for events, output_file, seed in get_job_params(args))
+        for events, output_file, seed in get_evt_job_params(args))
     
     files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_evt_job_params(args, force=True))]
     if args.merge or len(files)==1:
