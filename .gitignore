@@ -30,3 +30,6 @@ build
 executables
 *.exe
 **/.env
+
+# result folders
+2025_*/
