@@ -114,5 +114,7 @@ def get_input_output_job_pairs(args, force:bool=False):
 
 
 def merge( args, files : List[str]):
-    os.system(f"hadd -f {args.output_file} {' '.join(files)}")
+    command=f"hadd -f {args.output_file} {' '.join(files)}"
+    print(command)
+    os.system(command)
     [os.remove(f) for f in files]
