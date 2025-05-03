@@ -42,7 +42,7 @@ def merge_args( parser ):
 
 def update_args( args ):
 
-    if hasattr(args, "job_file") and hasattr(args, "job_key"):
+    if hasattr(args, "job_file"):
         if args.job_file: 
             args.job_file = Path(args.job_file)
             if not args.job_file.exists():
@@ -67,6 +67,7 @@ def get_random_seed()->int:
     return random.randint(1, 900000000 )
 
 def get_evt_job_params(args, force:bool=False):
+
     if args.event_numbers:
         if type(args.event_numbers) is str: # convert from str to a list of ints
             event_numbers_list = args.event_numbers.split(",")
