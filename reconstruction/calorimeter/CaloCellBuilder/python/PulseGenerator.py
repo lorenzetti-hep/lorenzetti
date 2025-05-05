@@ -4,6 +4,8 @@ __all__ = ["PulseGenerator"]
 from GaugiKernel import Cpp, LoggingLevel
 from GaugiKernel.macros import *
 import ROOT
+from RootStreamBuilder import RootStreamESDFlags as flags
+
 
 class PulseGenerator( Cpp ):
 
@@ -18,7 +20,11 @@ class PulseGenerator( Cpp ):
                 NoiseMean       : float=0,
                 NoiseStd        : float=0,
                 SamplingRate    : float=0,
-                StartSamplingBC : float=0
+                StartSamplingBC : float=0,
+                doDefects       : bool=flags.doDefects,
+                cellHash        : list=flags.cellHash,
+                noiseFactor     : list=flags.noiseFactor,
+                noisyEvents     : list=flags.noisyEvents,
               ):
                 
     Cpp.__init__(self, ROOT.PulseGenerator(name) )
@@ -33,6 +39,11 @@ class PulseGenerator( Cpp ):
     self.setProperty( "SamplingRate"    , SamplingRate      )
     self.setProperty( "StartSamplingBC" , StartSamplingBC   )
 
+    # new properties for including cell defects
+    self.setProperty( "doDefects"       , doDefects       )
+    self.setProperty( "cellHash"        , cellHash        )
+    self.setProperty( "noiseFactor"     , noiseFactor     )
+    self.setProperty( "noisyEvents"     , noisyEvents     )
 
  
      

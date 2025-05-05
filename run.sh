@@ -1,3 +1,4 @@
+# for local tests
 call_dir=$PWD
 n_workers=2 && \
 NOV=2000 && \

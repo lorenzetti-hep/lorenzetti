@@ -23,6 +23,7 @@ build
 
 # vscode
 ./.vscode/*
+.vscode/*
 
 # configs cells
 ./lorenzet/share/json_files/
@@ -33,3 +34,6 @@ executables
 
 # result folders
 2025_*/
+
+# data folders
+production/*
