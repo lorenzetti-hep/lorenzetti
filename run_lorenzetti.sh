@@ -8,7 +8,7 @@ cd $lzt_repo && (make -j4 |& tee $log_path) && rm -r build/lib
 echo "${PWD}"
 cd $call_dir
 
-n_workers=6 && \
+n_workers=4 && \
 NOV=2000 && \ls
 seed=3973534 && \
 base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_02_2k_jets" && \
@@ -21,7 +21,7 @@ cd "/sps/atlas/l/lboggia/lorenzetti/build" && source lzt_setup.sh
 # generate events with pythia
 mkdir -p $evt_dir && cd $evt_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started EVT sim" |& tee "${base_dir}/started_EVT.log" && \
-(gen_jets.py --output-file jets.EVT.root --nov $NOV --pileup-avg 0 --energy-max --seed $seed -nt $n_workers --events-per-job 500 |& tee "${base_dir}/jets.EVT.log") && \
+(gen_jets.py --output-file jets.EVT.root --nov $NOV --pileup-avg 0 --seed $seed -nt $n_workers --events-per-job 500 |& tee "${base_dir}/jets.EVT.log") && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished EVT sim" |& tee "${base_dir}/finished_EVT.log" && \
 # generate hits around the truth particle seed
 mkdir -p $hit_dir && cd $hit_dir && \

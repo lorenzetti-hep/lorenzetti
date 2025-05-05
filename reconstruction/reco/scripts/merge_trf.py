@@ -26,7 +26,7 @@ def parse_args():
     parser.add_argument('-o', '--output-file', action='store',
                         dest='output_file', required=False,
                         help="The reconstructed event HIT file merged with pileup.")
-    parser.add_argument('-p','--pileup-file', action='store', 
+    parser.add_argument('-p','--pileup-file', action='store', type=Path,
                         dest='pileup_file', required = True,
                         help = "The event HIT file to be merged (pileup).")
     parser.add_argument('--nov', '--number-of-events', action='store',
