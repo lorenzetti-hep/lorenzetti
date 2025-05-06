@@ -10,5 +10,5 @@ build_dir=$lzt_repo/build
 if [ -d "$build_dir" ] && [ "$1" == "overwrite" ]; then
     rm -r $build_dir
 fi
-cd $lzt_repo && (make |& tee $log_path) && rm -r build/lib
+cd $lzt_repo && (make -j4 |& tee $log_path) && rm -r build/lib
 cd $call_dir

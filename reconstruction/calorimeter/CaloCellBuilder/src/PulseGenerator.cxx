@@ -110,6 +110,7 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
     }
   }  
   else{
+    MSG_INFO("default noise")
     // Add gaussian noise
     AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
   }

@@ -1,17 +1,17 @@
 #!/bin/bash
 
-call_dir="${PWD}"
-echo "Loading Lorenzetti in $call_dir, print ${PWD}"
-lzt_repo="/sps/atlas/l/lboggia/lorenzetti"
-build_dir="/sps/atlas/l/lboggia/lorenzetti/build"
-cd $lzt_repo && (make -j4 |& tee $log_path) && rm -r build/lib
-echo "${PWD}"
-cd $call_dir
+# call_dir="${PWD}"
+# echo "Loading Lorenzetti in $call_dir, print ${PWD}"
+# lzt_repo="/sps/atlas/l/lboggia/lorenzetti"
+# build_dir="/sps/atlas/l/lboggia/lorenzetti/build"
+# cd $lzt_repo && (make -j4 |& tee $log_path) && rm -r build/lib
+# echo "${PWD}"
+# cd $call_dir
 
 n_workers=4 && \
-NOV=2000 && \ls
+NOV=100000 && \ls
 seed=3973534 && \
-base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_02_2k_jets" && \
+base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_06_100k_jets" && \
 evt_dir="${base_dir}/EVT" && \
 hit_dir="${base_dir}/HIT" && \
 esd_dir="${base_dir}/ESD" && \
@@ -36,12 +36,12 @@ echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished ESD sim" |& tee "${base
 # reconstruction
 mkdir -p $aod_dir && cd $aod_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started AOD sim" |& tee "${base_dir}/started_AOD.log" && \
-(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets.AOD.log" )  && \
+(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers -m |& tee "${base_dir}/jets.AOD.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished AOD sim" |& tee "${base_dir}/finished_AOD.log"
 # ntuple
 mkdir -p $ntuple_dir && cd $ntuple_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started NTUPLE sim" |& tee "${base_dir}/started_NTUPLE.log" && \
-(ntuple_trf.py -i $aod_dir -o "jets.NTUPLE.root" -nt $n_workers |& tee "${base_dir}/jets.NTUPLE.log" )  && \
+(ntuple_trf.py -i $aod_dir -o "jets.NTUPLE.root" -nt $n_workers -m |& tee "${base_dir}/jets.NTUPLE.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished NTUPLE sim" |& tee "${base_dir}/finished_NTUPLE.log"
 
 cd $call_dir

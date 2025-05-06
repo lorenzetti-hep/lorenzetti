@@ -35,12 +35,12 @@ echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished ESD with pileup sim" |&
 # reconstruction
 mkdir -p $aod_dir && cd $aod_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started AOD with pileup sim" |& tee "${base_dir}/started_AOD_wpileup.log" && \
-(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.AOD.log" )  && \
+(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers -m |& tee "${base_dir}/jets_wpileup.AOD.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished AOD with pileup sim" |& tee "${base_dir}/finished_AOD_wpileup.log"
 # ntuple
 mkdir -p $ntuple_dir && cd $ntuple_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started NTUPLE with pileup sim" |& tee "${base_dir}/started_NTUPLE_wpileup.log" && \
-(ntuple_trf.py -i $aod_dir -o "jets.NTUPLE.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.NTUPLE.log" )  && \
+(ntuple_trf.py -i $aod_dir -o "jets.NTUPLE.root" -nt $n_workers -m |& tee "${base_dir}/jets_wpileup.NTUPLE.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished NTUPLE with pileup sim" |& tee "${base_dir}/finished_NTUPLE_wpileup.log"
 
 cd $call_dir
