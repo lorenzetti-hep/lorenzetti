@@ -9,9 +9,9 @@ echo "${PWD}"
 cd $call_dir
 
 n_workers=4 && \
-NOV=2000 && \ls
+NOV=200 && \ls
 seed=3973534 && \
-base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_02_2k_jets" && \
+base_dir="/sps/atlas/l/lboggia/test_lorenzetti/lorenzetti/2025_05_02_2k_jets" && \
 evt_dir="${base_dir}/EVT" && \
 hit_dir="${base_dir}/HIT" && \
 mb_dir="${base_dir}/MB_wpileup" && \

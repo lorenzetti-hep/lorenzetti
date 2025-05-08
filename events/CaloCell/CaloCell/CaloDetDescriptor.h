@@ -141,6 +141,14 @@ namespace xAOD{
         m_pulsePerBunch[bc_id] = pulse;
       };
 
+      /*
+       * Anomalous behaviour information
+       */
+
+       /*! anomalous flag */
+       PRIMITIVE_SETTER_AND_GETTER( bool, m_anomalous , setAnomalous , anomalous );
+
+      
       CaloDetDescriptor * copy();
 
 
@@ -193,6 +201,8 @@ namespace xAOD{
       /*! Access information unique ID number */
       unsigned long int m_hash;
       float m_z;
+
+      bool m_anomalous;
 
   };
 
