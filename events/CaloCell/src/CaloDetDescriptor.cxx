@@ -33,7 +33,8 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_bcid_end( bcid_end ),
   m_bc_duration( bc_duration ),
   m_hash(hash),
-  m_z(detZ)
+  m_z(detZ),
+  m_anomalous(false)
 {
   // Initalize the time vector using the bunch crossing informations
   // setZ(detZ);

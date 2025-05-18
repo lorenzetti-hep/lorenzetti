@@ -25,6 +25,7 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
     descriptor_t.z           = descriptor->z();
+    descriptor_t.anomalous   = descriptor->anomalous();
 
 
     for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )

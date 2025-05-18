@@ -8,8 +8,8 @@
 # echo "${PWD}"
 # cd $call_dir
 
-n_workers=4 && \
-NOV=100000 && \ls
+n_workers=2 && \
+NOV=100 && \ls
 seed=3973534 && \
 base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_06_100k_jets" && \
 evt_dir="${base_dir}/EVT1" && \
@@ -24,6 +24,10 @@ cd "/sps/atlas/l/lboggia/lorenzetti/build" && source lzt_setup.sh
 # (gen_jets.py --output-file jets.EVT.root --nov $NOV --pileup-avg 0 --seed $seed -nt $n_workers --events-per-job 500 |& tee "${base_dir}/jets.EVT.log") && \
 # echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished EVT sim" |& tee "${base_dir}/finished_EVT.log" && \
 # generate hits around the truth particle seed
+# mkdir -p $hit_dir && cd $hit_dir && \
+# echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started HIT sim" |& tee "${base_dir}/started_HIT.log" && \
+# (simu_trf.py -i $evt_dir -o "jets.HIT.root" -nt $n_workers -t 5 |& tee "${base_dir}/jets.HIT.log") && \
+# echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished HIT sim" |& tee "${base_dir}/finished_HIT.log"
 # mkdir -p $hit_dir && cd $hit_dir && \
 # echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started HIT sim" |& tee "${base_dir}/started_HIT.log" && \
 # (simu_trf.py -i $evt_dir -o "jets.HIT.root" -nt $n_workers -t 5 |& tee "${base_dir}/jets.HIT.log") && \
@@ -47,6 +51,7 @@ done
 # reconstruction
 mkdir -p $aod_dir && cd $aod_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started AOD sim" |& tee "${base_dir}/started_AOD.log" && \
+(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets.AOD.log" )  && \
 (reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets.AOD.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished AOD sim" |& tee "${base_dir}/finished_AOD.log"
 # ntuple

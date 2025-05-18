@@ -104,6 +104,7 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
           MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
           // Add gaussian noise with increased noiseStd
           AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor[index]*m_noiseStd);  
+          cell->setAnomalous(true);
         }
       }
       ++index;
