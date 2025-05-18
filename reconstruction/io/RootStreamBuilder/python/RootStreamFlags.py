@@ -17,7 +17,7 @@ class RootStreamESDFlags(EnumStringification):
     PhiWindow        = 0.4
 
     # new ESD flags
-    doDefects        = True         # whether to simulate detector defects
+    doDefects        = False         # whether to simulate detector defects
     # list of hash IDs of noisy cells
     cellHash         = [
                         [ 20025610,  20025611,  20025612,  20025613], # center EMB1
