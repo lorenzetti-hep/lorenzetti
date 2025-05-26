@@ -11,6 +11,7 @@ from GaugiKernel import LoggingLevel, get_argparser_formatter
 from GaugiKernel import ComponentAccumulator
 from RootStreamBuilder import RootStreamHITReader, recordable
 from RootStreamBuilder import RootStreamESDMaker
+from RootStreamBuilder import RootStreamESDFlags as flags
 
 
 def parse_args():
@@ -47,6 +48,13 @@ def parse_args():
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
+    parser.add_argument('--doDefects', action='store_true',
+                        dest='doDefects', required=False,
+                        help='Whether to simulate detector defects.')
+    parser.add_argument('--noiseFactor', action='store',
+                        dest='noiseFactor', required=False,
+                        type=float, default=1.0,
+                        help='The noise factor to apply to the cells.')
 
     return parser
 
@@ -80,13 +88,16 @@ def main(logging_level: str,
     reader.merge(acc)
 
     # digitalization!
-
+    noisefactor = len(flags.noisyEvents)*[args.noiseFactor]
+    
     calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
                                   HistogramPath="Expert/Cells",
                                   OutputLevel=outputLevel,
                                   InputHitsKey=recordable("Hits"),
                                   OutputCellsKey=recordable("Cells"),
                                   OutputTruthCellsKey=recordable("TruthCells"),
+                                  doDefects=args.doDefects,
+                                  noiseFactor=noisefactor,
     )
     calorimeter.merge(acc)
 

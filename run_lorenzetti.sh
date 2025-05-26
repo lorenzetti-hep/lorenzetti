@@ -14,9 +14,9 @@ seed=3973534 && \
 base_dir="/sps/atlas/l/lboggia/lorenzetti/2025_05_06_100k_jets" && \
 evt_dir="${base_dir}/EVT1" && \
 hit_dir="${base_dir}/HIT1" && \
-esd_dir="${base_dir}/ESD1" && \
-aod_dir="${base_dir}/AOD1" && \
-ntuple_dir="${base_dir}/NTUPLE1" && \
+esd_dir="${base_dir}/ESD" && \
+aod_dir="${base_dir}/AOD" && \
+ntuple_dir="${base_dir}/NTUPLE" && \
 cd "/sps/atlas/l/lboggia/lorenzetti/build" && source lzt_setup.sh
 # generate events with pythia
 # mkdir -p $evt_dir && cd $evt_dir && \
@@ -40,18 +40,18 @@ cd "/sps/atlas/l/lboggia/lorenzetti/build" && source lzt_setup.sh
 n_files=131
 mkdir -p $esd_dir && cd $esd_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started ESD sim" |& tee "${base_dir}/started_ESD.log" && \
-for j in $(seq 0 $n_files)
+for j in $(seq 124 $n_files)
 do
     echo "$j"
     echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Processing file $j of $n_files" |& tee "${base_dir}/started_ESD.log" && \
     # run the digitization
-    (digit_trf.py -i $hit_dir -o "jets.ESD.$j.root" -nt $n_workers |& tee "${base_dir}/jets.ESD.log") && \
+    (digit_trf.py -i $hit_dir/jets.HIT.$j.root -o "jets.ESD.$j.root" -nt $n_workers |& tee "${base_dir}/jets.ESD.log") && \
     echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished file $j of $n_files" |& tee "${base_dir}/finished_ESD.log"
 done
+echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished ESD sim" |& tee "${base_dir}/finished_ESD.log"
 # reconstruction
 mkdir -p $aod_dir && cd $aod_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started AOD sim" |& tee "${base_dir}/started_AOD.log" && \
-(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets.AOD.log" )  && \
 (reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets.AOD.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished AOD sim" |& tee "${base_dir}/finished_AOD.log"
 # ntuple

@@ -46,6 +46,9 @@ StatusCode PulseGenerator::initialize()
   setMsgLevel( (MSG::Level)m_outputLevel );
   MSG_DEBUG( "Reading shaper values from: " << m_shaperFile << " and " << m_nsamples << " samples.");
   MSG_DEBUG("doDefects "<<m_doDefects<<" cell hash "<<m_cellHash<<" noise factor "<<m_noiseFactor)
+  if (m_doDefects){
+    MSG_INFO("artificial anomalies will be applied to some cell signals")
+  }
   ReadShaper( m_shaperFile );
   return StatusCode::SUCCESS;
 }

@@ -24,6 +24,8 @@ class CaloCellBuilder( Logger ):
                       OutputCellsKey       = "Cells",
                       OutputTruthCellsKey  = "TruthCells",
                       OutputLevel          = LoggingLevel.toC('INFO'),
+                      doDefects            = False,
+                      noiseFactor          = [1],
                       ):
 
     Logger.__init__(self)
@@ -35,6 +37,8 @@ class CaloCellBuilder( Logger ):
     self.OutputTruthCellsKey = OutputTruthCellsKey
     self.Detector            = detector
     self.OutputCollectionKeys= []
+    self.doDefects           = doDefects
+    self.noiseFactor         = noiseFactor
 
     
   def configure(self):
@@ -58,7 +62,10 @@ class CaloCellBuilder( Logger ):
                               DeformationStd  = 0.0,
                               NoiseMean       = 0.0,
                               NoiseStd        = samp.Noise,
-                              StartSamplingBC = samp.StartSamplingBC )
+                              StartSamplingBC = samp.StartSamplingBC, 
+                              doDefects       = self.doDefects,
+                              noiseFactor     = self.noiseFactor,
+                              )
      
 
       of= OptimalFilter("OptimalFilter",

@@ -24,7 +24,7 @@ mb_file_path="/sps/atlas/l/lboggia/lorenzetti/mb.HIT.9.root"
 # merge with minbias
 mkdir -p $mb_dir && cd $mb_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started MINBIAS sim" |& tee "${base_dir}/started_MINBIAS.log" && \
-(merge_trf.py -i $hit_dir/jets.HIT.131.root -o "jets.HIT.root" -p $mb_file_path -nt $n_workers |& tee "${base_dir}/jets.MB.log") && \
+(merge_trf.py -i $hit_dir/jets.HIT.131.root -o "jets.HIT.131.root" -p $mb_file_path -nt $n_workers |& tee "${base_dir}/jets.MB.log") && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished MINBIAS sim" |& tee "${base_dir}/finished_MINBIAS.log"
 # digitalization, loop over files to avoid memory issues
 mkdir -p $esd_dir && cd $esd_dir && \
@@ -37,17 +37,17 @@ echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started ESD with pileup sim" |& 
 #     (digit_trf.py -i ${mb_dir}/jets.HIT.$j.root -o "jets.ESD.$j.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.ESD.log") && \
 #     echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished file $j of $n_files" |& tee "${base_dir}/finished_ESD_wpileup.log"
 # done
-(digit_trf.py -i $mb_dir -o "jets.ESD.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.ESD.log") && \
+(digit_trf.py -i $mb_dir/jets.HIT.131.root -o "jets.ESD.131.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.ESD.log") && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished ESD with pileup sim" |& tee "${base_dir}/finished_ESD_wpileup.log"
 # reconstruction
 mkdir -p $aod_dir && cd $aod_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started AOD with pileup sim" |& tee "${base_dir}/started_AOD_wpileup.log" && \
-(reco_trf.py -i $esd_dir -o "jets.AOD.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.AOD.log" )  && \
+(reco_trf.py -i $esd_dir/jets.ESD.131.root -o "jets.AOD.131.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.AOD.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished AOD with pileup sim" |& tee "${base_dir}/finished_AOD_wpileup.log"
 # ntuple
 mkdir -p $ntuple_dir && cd $ntuple_dir && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Started NTUPLE with pileup sim" |& tee "${base_dir}/started_NTUPLE_wpileup.log" && \
-(ntuple_trf.py -i $aod_dir -o "jets.NTUPLE.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.NTUPLE.log" )  && \
+(ntuple_trf.py -i $aod_dir/jets.AOD.131.root -o "jets.NTUPLE.131.root" -nt $n_workers |& tee "${base_dir}/jets_wpileup.NTUPLE.log" )  && \
 echo "$(date -d "today" +"%Y/%m/%d %H-%M-%s") - Finished NTUPLE with pileup sim" |& tee "${base_dir}/finished_NTUPLE_wpileup.log"
 
 cd $call_dir

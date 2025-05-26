@@ -21,9 +21,9 @@ class PulseGenerator( Cpp ):
                 NoiseStd        : float=0,
                 SamplingRate    : float=0,
                 StartSamplingBC : float=0,
-                doDefects       : bool=flags.doDefects,
+                doDefects       : bool=False,
                 cellHash        : list=flags.cellHash,
-                noiseFactor     : list=flags.noiseFactor,
+                noiseFactor     : list=[1],
                 noisyEvents     : list=flags.noisyEvents,
               ):
                 

@@ -34,6 +34,7 @@ executables
 
 # result folders
 2025_*/
-
-# data folders
 production/*
+
+# scripts
+*.sh
