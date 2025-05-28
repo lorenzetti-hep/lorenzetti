@@ -56,6 +56,7 @@ namespace generator{
       TTree *m_ttree;
   
       float m_avgmu;
+      float m_totmu;
       int m_runNumber;
       int m_eventNumber;
       float m_bc_duration;

@@ -159,6 +159,7 @@ namespace generator
   public:
     /*! Constructor */
     Event() : m_avgmu(0),
+              m_totmu(0),
               m_eventNumber(-1)
     {
       ;
@@ -181,12 +182,18 @@ namespace generator
      */
     void setAvgmu(float avgmu) { m_avgmu = avgmu; };
 
+
+    void setTotmu(float totmu) { m_totmu = totmu; };
+
+
     /**
      * @brief Get the average mu/pileup
      *
      * @return float
      */
     float avgmu() const { return m_avgmu; };
+
+    float totmu() const { return m_totmu; };
 
     /**
      * @brief Set the Event Number
@@ -213,6 +220,7 @@ namespace generator
      *
      */
     float m_avgmu;
+    float m_totmu;
     /**
      * @brief Event number
      *

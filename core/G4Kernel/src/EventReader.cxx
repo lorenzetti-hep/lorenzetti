@@ -102,6 +102,7 @@ void EventReader::link(TTree *t)
   InitBranch( t, "RunNumber"  ,&m_runNumber   );
   InitBranch( t, "EventNumber",&m_eventNumber );
   InitBranch( t, "avg_mu"     ,&m_avgmu       );
+  InitBranch( t, "tot_mu"     ,&m_totmu       );
   InitBranch( t, "p_isMain"   ,&m_p_isMain    );
   InitBranch( t, "p_pdg_id"   ,&m_p_pdg_id    );
   InitBranch( t, "p_bc_id"    ,&m_p_bc_id     );  
@@ -123,6 +124,7 @@ void EventReader::link(TTree *t)
 void EventReader::clear()
 { 
   m_avgmu       = 0.0;
+  m_totmu       = 0.0;
   m_eventNumber = -1;
   m_p_isMain  ->clear();
   m_p_pdg_id  ->clear();
@@ -201,6 +203,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
       evt->setRunNumber( m_runNumber );
       evt->setEventNumber( m_eventNumber );
       evt->setAvgmu( m_avgmu );
+      evt->setTotmu( m_totmu );
       event->push_back(evt);
     }
 
@@ -208,6 +211,7 @@ void EventReader::GeneratePrimaryVertex( G4Event* anEvent )
     MSG_INFO( "RunNumber        : " << m_runNumber  );
     MSG_INFO( "EventNumber      : " << m_eventNumber);
     MSG_INFO( "Avgmu            : " << m_avgmu      );
+    MSG_INFO( "Total Mu         : " << m_totmu );
     MSG_INFO( "Number of seeds  : " << num_of_seeds );
 
   }else{

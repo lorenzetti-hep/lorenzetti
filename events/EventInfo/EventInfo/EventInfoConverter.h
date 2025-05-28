@@ -10,6 +10,7 @@ namespace xAOD{
         float runNumber;
         float eventNumber;
         float avgmu;
+        float totmu;
     };
 
 

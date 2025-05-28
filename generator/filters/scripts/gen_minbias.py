@@ -82,18 +82,10 @@ def parse_args():
                         dest='pileup_sigma', required=False,
                         type=float, default=0,
                         help="The pileup sigma (default is zero).")
-    parser.add_argument('--pileup-avg-min', action='store',
-                        dest='pileup_avg_min', required=False,
+    parser.add_argument('--pileup-per-bunch-crossing', action='store',
+                        dest='pileup_per_bunch_crossing', required=False,
                         type=float, default=None,
-                        help="The pileup average lower bound.")
-    parser.add_argument('--pileup-avg-max', action='store',
-                        dest='pileup_avg_max', required=False,
-                        type=float, default=None,
-                        help="The pileup average upper bound.")
-
-
-
-
+                        help="The fixed number of pileup for each bunch crossing.")
     parser.add_argument('--bc-id-start', action='store',
                         dest='bc_id_start', required=False,
                         type=int, default=-21,
@@ -138,6 +130,7 @@ def main(events: List[int],
          delta_phi: float,
          pileup_avg: float,
          pileup_sigma: float,
+         pileup_per_bunch_crossing : float,
          mb_file: str,
          bc_id_start: int,
          bc_id_end: int):
@@ -159,6 +152,7 @@ def main(events: List[int],
                     Select=2,
                     PileupAvg=pileup_avg,
                     PileupSigma=pileup_sigma,
+                    PileupPerBunch=pileup_per_bunch_crossing,
                     BunchIdStart=bc_id_start,
                     BunchIdEnd=bc_id_end,
                     OutputLevel=outputLevel,
@@ -202,11 +196,6 @@ def get_job_params(args, force:bool=False):
             continue
         yield events, output_file, int(seed + seed*i*0.5)
 
-def get_pileup_avg(args):
-    if args.pileup_avg_min and args.pileup_avg_max:
-        return random.randint(args.pileup_avg_min, args.pileup_avg_max)
-    else:
-        return args.pileup_avg
 
 def merge(args):
     files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_job_params(args, force=True))]
@@ -231,8 +220,9 @@ def run(args):
         phi=args.phi,
         delta_eta=args.delta_eta,
         delta_phi=args.delta_phi,
-        pileup_avg=get_pileup_avg(args) ,
+        pileup_avg=args.pileup_avg,
         pileup_sigma=args.pileup_sigma,
+        pileup_per_bunch_crossing=args.pileup_per_bunch_crossing,
         mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end

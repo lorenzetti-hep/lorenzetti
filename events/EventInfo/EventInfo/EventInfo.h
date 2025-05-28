@@ -32,14 +32,17 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( float, m_totalEnergy, setTotalEnergy, totalEnergy );
       /** Average mu from the pythia generator **/
       PRIMITIVE_SETTER_AND_GETTER( float, m_avgmu, setAvgmu, avgmu );
+      PRIMITIVE_SETTER_AND_GETTER( float, m_totmu, setTotmu, totmu );
 
       float averageInteractionsPerCrossing() const { return m_avgmu; };
+      float totalInteractionsPerCrossing() const { return m_totmu; };
 
     private:
       int   m_runNumber;
       int   m_eventNumber;
       float m_totalEnergy;
       float m_avgmu;
+      float m_totmu;
       
   };
 }
