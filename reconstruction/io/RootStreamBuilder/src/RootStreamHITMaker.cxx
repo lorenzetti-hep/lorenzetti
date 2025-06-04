@@ -35,6 +35,10 @@ RootStreamHITMaker::RootStreamHITMaker( std::string name ) :
   declareProperty( "OnlyRoI"                 , m_onlyRoI=false                         );
   declareProperty( "EtaWindow"               , m_etaWindow=0.6                         );
   declareProperty( "PhiWindow"               , m_phiWindow=0.6                         );
+  
+  // new for including cell defects
+  declareProperty( "doDefects"               , m_doDefects=false                       );
+  declareProperty( "cellHash"                , m_cellHash={}                           );                 
 }
 
 //!=====================================================================
@@ -219,7 +223,20 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
           {
             match=true;
             break;
-          }
+            }
+          //   else if (m_doDefects) 
+          //   {
+          //   // Check if hit->hash() is in any of the vectors inside m_cellHash
+          //   for (const auto& defectList : m_cellHash) {
+          //     if (std::find(defectList.begin(), defectList.end(), hit->hash()) != defectList.end()) {
+          //     match = true; // if hash is on list of defect cell, then we keep the hit
+          //     MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
+          //     break;
+          //     }
+          //   }
+          //   match=true; // if hash is on list of defect cell, then we keep the hit
+          //   MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
+          // }
         }
 
         if(!match) continue; // skip this hit

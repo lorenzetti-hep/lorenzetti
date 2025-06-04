@@ -3,6 +3,7 @@ __all__ = ["RootStreamHITMaker"]
 from GaugiKernel import Cpp
 from GaugiKernel.macros import *
 from RootStreamBuilder import RootStreamHITFlags as flags
+from RootStreamBuilder import RootStreamESDFlags as flags_ESD
 import ROOT
 
 class RootStreamHITMaker( Cpp ):
@@ -21,6 +22,8 @@ class RootStreamHITMaker( Cpp ):
                 OnlyRoI          : bool=flags.OnlyRoI,
                 EtaWindow        : float=flags.EtaWindow,
                 PhiWindow        : float=flags.PhiWindow,
+                doDefects        : bool=False,
+                cellHash         : list=flags_ESD.cellHash,
               ): 
     
     Cpp.__init__(self, ROOT.RootStreamHITMaker(name))
@@ -40,6 +43,9 @@ class RootStreamHITMaker( Cpp ):
     self.setProperty( "OnlyRoI"         , OnlyRoI         )
     self.setProperty( "EtaWindow"       , EtaWindow       )
     self.setProperty( "PhiWindow"       , PhiWindow       )
+
+    self.setProperty( "doDefects"       , flags_ESD.doDefects       )
+    self.setProperty( "cellHash"        , flags_ESD.cellHash        )
 
 
 

@@ -101,7 +101,11 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
     for (auto group : m_cellHash ) {
       for (auto hash : group){
         // only introduce defects for specific cells and specific events
-        if ((cell->hash() == static_cast<unsigned long int>(hash)) and (eventNumber >= m_noisyEvents[index][0]) and (eventNumber <= m_noisyEvents[index][1])){
+        if ((cell->hash() == static_cast<unsigned long int>(hash)) and 
+          (eventNumber >= m_noisyEvents[index][0]) and 
+          (eventNumber <= m_noisyEvents[index][1]))
+          // and (eventNumber % 100 == 0)) 
+          {
           MSG_INFO("perturbed event: "<<eventNumber)
           MSG_INFO("events concerned by noise: "<<m_noisyEvents[index])
           MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());

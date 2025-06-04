@@ -28,7 +28,9 @@ namespace xAOD{
                // bunch crossing information
                float bc_duration, 
                int bcid_start, 
-               int bcid_end);
+               int bcid_end, 
+               bool anomalous=false
+              );
 
       /** Destructor **/
       ~CaloDetDescriptor()=default;
