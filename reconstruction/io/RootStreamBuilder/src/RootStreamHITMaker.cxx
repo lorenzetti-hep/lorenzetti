@@ -51,7 +51,7 @@ RootStreamHITMaker::~RootStreamHITMaker()
 StatusCode RootStreamHITMaker::initialize()
 {
   CHECK_INIT();
-  //setMsgLevel(m_outputLevel);
+  setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 
@@ -222,25 +222,26 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
           if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
           {
             match=true;
-            break;
+            // break;
             }
-          //   else if (m_doDefects) 
-          //   {
-          //   // Check if hit->hash() is in any of the vectors inside m_cellHash
-          //   for (const auto& defectList : m_cellHash) {
-          //     if (std::find(defectList.begin(), defectList.end(), hit->hash()) != defectList.end()) {
-          //     match = true; // if hash is on list of defect cell, then we keep the hit
-          //     MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
-          //     break;
-          //     }
-          //   }
-          //   match=true; // if hash is on list of defect cell, then we keep the hit
-          //   MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
-          // }
-        }
+          else if (m_doDefects) 
+          {
+            // Check if hit->hash() is in any of the vectors inside m_cellHash
+            for (const auto& defectList : m_cellHash) {
+              if (std::find(defectList.begin(), defectList.end(), hit->hash()) != defectList.end()) {
+                match = true; // if hash is on list of defect cell, then we keep the hit
+                MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
+                // break;
+              }
+            }  
+          }
+          if (match) break;   // break if we found a match after checking the 2 conditions
+          
+        } 
 
         if(!match) continue; // skip this hit
-      }
+
+      } // end of if(m_onlyRoI)
 
       xAOD::CaloHit_t hit_t;
       xAOD::CaloHitConverter hit_cnv;
@@ -256,6 +257,9 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
     }// check if hit is inside of the window
 
     MSG_DEBUG("Container hit size is " << container_hits->size() << " and total energy " << etot << " MeV");
+    for (const auto hit : *container_hits) {
+      MSG_DEBUG("Hit hash: " << hit.hash );
+    }
 
   }
 

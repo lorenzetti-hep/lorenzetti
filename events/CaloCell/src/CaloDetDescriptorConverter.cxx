@@ -55,7 +55,8 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             (Detector)descriptor_t.detector,
                                             descriptor_t.bc_duration,
                                             descriptor_t.bcid_start,
-                                            descriptor_t.bcid_end);
+                                            descriptor_t.bcid_end,
+                                            descriptor_t.anomalous);
 
   descriptor->setE(descriptor_t.e); // estimated energy from OF
   descriptor->setPulse( descriptor_t.pulse); // pulse from generator

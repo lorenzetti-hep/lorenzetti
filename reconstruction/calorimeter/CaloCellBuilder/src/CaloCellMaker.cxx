@@ -158,7 +158,8 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
                                                       m_z,
                                                       (CaloSampling)m_sampling,
                                                       (Detector)m_detector,
-                                                      m_bc_duration, m_bcid_start, m_bcid_end);
+                                                      m_bc_duration, m_bcid_start, m_bcid_end,
+                                                      false);
 
       if ( !collection->insert( descriptor->hash(), descriptor ) ){
         MSG_FATAL( "It is not possible to include cell hash ("<< descriptor->hash() << ") into the collection. hash already exist.");

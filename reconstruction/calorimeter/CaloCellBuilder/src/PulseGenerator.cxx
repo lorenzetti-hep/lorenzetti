@@ -97,6 +97,7 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
   // if (cell->hash()/1e7 <=17){
   // MSG_INFO(cell->hash())}
   // only introduce defects if m_doDefects is true
+  bool anom_flag(false);
   if (m_doDefects){ 
     for (auto group : m_cellHash ) {
       for (auto hash : group){
@@ -111,7 +112,8 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
           MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
           // Add gaussian noise with increased noiseStd
           AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor[index]*m_noiseStd);  
-          cell->setAnomalous(true);
+          anom_flag = true;
+          // cell->setAnomalous(true);
         }
       }
       ++index;
@@ -122,12 +124,12 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
     // Add gaussian noise
     AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
   }
-  
-
+ 
+  cell->setAnomalous(anom_flag);
+  MSG_DEBUG("local anomalous flag "<< anom_flag << " vs cell anomalous flag " << cell->anomalous() );
 
   // Add the integrated pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );
-
 
   return StatusCode::SUCCESS;
 }

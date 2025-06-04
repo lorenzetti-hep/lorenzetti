@@ -104,7 +104,7 @@ def main(logging_level: str,
                                  )
     gun.merge(acc)
     calorimeter.merge(acc)
-    print('here')
+    print('here before HIT')
     HIT = RootStreamHITMaker("RootStreamHITMaker",
                              OutputLevel=outputLevel,
                              # input from context
@@ -114,6 +114,7 @@ def main(logging_level: str,
                              InputSeedsKey=recordable("Seeds"),
                              doDefects=args.doDefects,
                              )
+    print('here after HIT')
     acc += HIT
     acc.run(number_of_events)
 

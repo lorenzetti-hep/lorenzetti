@@ -44,8 +44,6 @@ class RootStreamHITMaker( Cpp ):
     self.setProperty( "EtaWindow"       , EtaWindow       )
     self.setProperty( "PhiWindow"       , PhiWindow       )
 
-    self.setProperty( "doDefects"       , flags_ESD.doDefects       )
-    self.setProperty( "cellHash"        , flags_ESD.cellHash        )
-
-
+    self.setProperty( "doDefects"       , doDefects       )
+    self.setProperty( "cellHash"        , cellHash        )
 
