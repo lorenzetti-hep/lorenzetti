@@ -9,7 +9,7 @@ from typing      import List
 from pathlib     import Path
 from joblib      import Parallel, delayed
 from evtgen      import Pythia8
-from filters     import Zee, Pileup
+from filters     import Zee
 from pprint      import pprint
 
 from GenKernel   import EventTape
@@ -20,7 +20,6 @@ from GaugiKernel import GeV
 from reco import merge_args, update_args, get_evt_job_params, get_events_per_job, merge
 
 datapath    = os.environ["LORENZETTI_EVTGEN_DATA_DIR"]
-PILEUP_FILE = f'{datapath}/minbias_config.cmnd'
 ZEE_FILE    = f'{datapath}/zee_config.cmnd'
 
 
@@ -69,14 +68,6 @@ def parse_args():
                         help="Fix the z vertex position in "
                         "simulation to zero for all selected particles. "
                         "It is applied only at G4 step, not in generation.")
-    parser.add_argument('--pileup-avg', action='store',
-                        dest='pileup_avg', required=False,
-                        type=float, default=0,
-                        help="The pileup average (default is zero).")
-    parser.add_argument('--pileup-sigma', action='store',
-                        dest='pileup_sigma', required=False,
-                        type=float, default=0,
-                        help="The pileup sigma (default is zero).")
     parser.add_argument('--bc-id-start', action='store',
                         dest='bc_id_start', required=False,
                         type=int, default=-21,
@@ -101,10 +92,6 @@ def parse_args():
                         dest='zee_file', required=False,
                         type=str, default=ZEE_FILE,
                         help="The pythia zee file configuration.")
-    parser.add_argument('--pileup-file', action='store',
-                        dest='pileup_file', required=False,
-                        type=str, default=PILEUP_FILE,
-                        help="The pythia pileup file configuration.")
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
@@ -122,9 +109,6 @@ def main(events: List[int],
          zero_vertex_particles: bool,
          force_forward_electron: bool,
          eta_max: float,
-         pileup_avg: float,
-         pileup_sigma: float,
-         mb_file: str,
          bc_id_start: int,
          bc_id_end: int):
 
@@ -147,24 +131,6 @@ def main(events: List[int],
               )
     tape += zee
 
-    if args.pileup_avg > 0:
-
-        pileup = Pileup("Pileup",
-                        Pythia8("MBGenerator", 
-                                File=mb_file,
-                                Seed=seed),
-                        EtaMax=3.2,
-                        Select=2,
-                        PileupAvg=pileup_avg,
-                        PileupSigma=pileup_sigma,
-                        BunchIdStart=bc_id_start,
-                        BunchIdEnd=bc_id_end,
-                        OutputLevel=outputLevel,
-                        DeltaEta=0.22,
-                        DeltaPhi=0.22,
-                        )
-
-        tape += pileup
     tape.run(events)
 
 
@@ -183,9 +149,6 @@ def run(args):
         zero_vertex_particles=args.zero_vertex_particles,
         force_forward_electron=args.force_forward_electron,
         eta_max=args.eta_max,
-        pileup_avg=args.pileup_avg,
-        pileup_sigma=args.pileup_sigma,
-        mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )

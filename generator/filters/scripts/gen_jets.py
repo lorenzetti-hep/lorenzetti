@@ -20,7 +20,6 @@ from reco import merge_args, update_args, get_evt_job_params, get_events_per_job
 
 
 datapath    = os.environ["LORENZETTI_EVTGEN_DATA_DIR"]
-PILEUP_FILE = f'{datapath}/minbias_config.cmnd'
 JF17_FILE   = f'{datapath}/jet_config.cmnd'
 
 
@@ -71,14 +70,6 @@ def parse_args():
                         dest='energy_max', required = False, 
                         type=float, default=13000, 
                         help = "Maximum energy")
-    parser.add_argument('--pileup-avg', action='store',
-                        dest='pileup_avg', required=False,
-                        type=float, default=0,
-                        help="The pileup average (default is zero).")
-    parser.add_argument('--pileup-sigma', action='store',
-                        dest='pileup_sigma', required=False,
-                        type=float, default=0,
-                        help="The pileup sigma (default is zero).")
     parser.add_argument('--bc-id-start', action='store',
                         dest='bc_id_start', required=False,
                         type=int, default=-21,
@@ -103,10 +94,6 @@ def parse_args():
                         dest='jf17_file', required=False,
                         type=str, default=JF17_FILE,
                         help="The pythia JF17 file configuration.")
-    parser.add_argument('--pileup-file', action='store',
-                        dest='pileup_file', required=False,
-                        type=str, default=PILEUP_FILE,
-                        help="The pythia pileup file configuration.")
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
@@ -126,9 +113,6 @@ def main(events: List[int],
          eta_max: float,
          energy_min: float,
          energy_max: float,
-         pileup_avg: float,
-         pileup_sigma: float,
-         mb_file: str,
          bc_id_start: int,
          bc_id_end: int):
 
@@ -156,25 +140,6 @@ def main(events: List[int],
 
 
     tape += jets
-
-    if args.pileup_avg > 0:
-
-        pileup = Pileup("Pileup",
-                        Pythia8("MBGenerator", 
-                                File=mb_file,
-                                Seed=seed),
-                        EtaMax=3.2,
-                        Select=2,
-                        PileupAvg=pileup_avg,
-                        PileupSigma=pileup_sigma,
-                        BunchIdStart=bc_id_start,
-                        BunchIdEnd=bc_id_end,
-                        OutputLevel=outputLevel,
-                        DeltaEta=0.22,
-                        DeltaPhi=0.22,
-                        )
-
-        tape += pileup
     tape.run(events)
 
 
@@ -193,17 +158,14 @@ def run(args):
         eta_max=args.eta_max,
         energy_min=args.energy_min,
         energy_max=args.energy_max,
-        pileup_avg=args.pileup_avg,
-        pileup_sigma=args.pileup_sigma,
-        mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )
         for events, output_file, seed in get_evt_job_params(args))
 
-    files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_evt_job_params(args, force=True))]
+    files = [f for _, f, _ in list(get_evt_job_params(args, force=True))]
     if args.merge or len(files)==1:
-        merge(args,files)
+        merge(args, files)
 
 
 

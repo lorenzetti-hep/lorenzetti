@@ -15,6 +15,13 @@ file(GLOB FASTJET_LIBRARIES $ENV{FASTJET_LIBRARIES}/*.dylib $ENV{FASTJET_LIBRARI
 file(GLOB PYTHIA8_LIBRARIES $ENV{PYTHIA8_LIBRARIES}/*.a $ENV{PYTHIA8_LIBRARIES}/*.so)
 
 
+find_package(OpenMP)
+if(OpenMP_FOUND)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
+
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default

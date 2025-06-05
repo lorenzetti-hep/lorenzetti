@@ -4,6 +4,7 @@ import sys
 import os
 
 from pathlib            import Path
+from typing             import List
 from joblib             import Parallel, delayed
 from expand_folders     import expand_folders
 from GaugiKernel        import LoggingLevel, get_argparser_formatter
@@ -29,9 +30,6 @@ def parse_args():
     parser.add_argument('-o', '--output-file', action='store',
                         dest='output_file', required=False,
                         help="The reconstructed event HIT file merged with pileup.")
-    parser.add_argument('-p','--pileup-file', action='store', 
-                        dest='pileup_file', required = True,
-                        help = "The event HIT file to be merged (pileup).")
     parser.add_argument('--nov', '--number-of-events', action='store',
                         dest='number_of_events', required=False,
                         type=int, default=-1,
@@ -51,6 +49,23 @@ def parse_args():
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
+
+
+    parser.add_argument('--low-pileup-files', action='store', 
+                        dest='low_pileup_files', required = True,
+                        help = "The event HIT file to be merged (pileup).")
+    parser.add_argument('--high-pileup-files', action='store', 
+                        dest='high_pileup_files', required = True,
+                        help = "The event HIT file to be merged (pileup).")
+    parser.add_argument('--pileup-avg', action='store',
+                        dest='pileup_avg', required=True,
+                        type=int,
+                        help="The pileup average.")
+    parser.add_argument('--pileup-sigma', action='store',
+                        dest='pileup_sigma', required=True,
+                        type=int,
+                        help="The pileup sigma.")
+
     parser = merge_args(parser)
 
     return parser
@@ -59,7 +74,10 @@ def parse_args():
 def main(logging_level: str,
          input_file: str | Path,
          output_file: str | Path,
-         pileup_file: str | Path,
+         low_pileup_files: List[str],
+         high_pileup_files: List[str],
+         pileup_avg : int,
+         pileup_sigma : int,
          command: str,
          number_of_events: int):
 
@@ -67,8 +85,6 @@ def main(logging_level: str,
         input_file = str(input_file)
     if isinstance(output_file, Path):
         output_file = str(output_file)
-    if isinstance(pileup_file, Path):
-        pileup_file = str(pileup_file)
 
     outputLevel = LoggingLevel.toC(logging_level)
 
@@ -87,12 +103,15 @@ def main(logging_level: str,
     reader.merge(acc)
 
     pileup = PileupMerge( "PileupMerge", 
-                          InputFile       = pileup_file,
-                          InputHitsKey    = recordable("Hits"),
-                          InputEventKey   = recordable("Events"),
-                          OutputHitsKey   = "Hits_Merged",
-                          OutputEventKey  = "Events_Merged",
-                          OutputLevel     = outputLevel
+                          LowPileupInputFiles = low_pileup_files,
+                          HighPileupInputFiles= high_pileup_files,
+                          PileupAvg           = pileup_avg,
+                          PileupSigma         = pileup_sigma,
+                          InputHitsKey        = recordable("Hits"),
+                          InputEventKey       = recordable("Events"),
+                          OutputHitsKey       = "Hits_Merged",
+                          OutputEventKey      = "Events_Merged",
+                          OutputLevel         = outputLevel
                         )
     acc += pileup
 
@@ -114,7 +133,6 @@ def main(logging_level: str,
 def run(args):
 
     args.input_file = Path(args.input_file)
-    args.pileup_file = Path(args.pileup_file)
     if not args.input_file.exists():
         raise FileNotFoundError(f"Input file {args.input_file} not found.")
     if args.input_file.is_dir():
@@ -122,9 +140,21 @@ def run(args):
     else:
         args.input_file = [args.input_file]
 
-    args.pileup_file = Path(args.pileup_file)
-    if not args.pileup_file.exists():
-        raise FileNotFoundError(f"Pileup input file {args.pileup_file} not found.")
+    args.low_pileup_files = Path(args.low_pileup_files)
+    if not args.low_pileup_files.exists():
+        raise FileNotFoundError(f"Low Pileup input files {args.low_pileup_files} not found.")
+    if args.low_pileup_files.is_dir():
+        args.low_pileup_files = expand_folders(os.path.abspath(args.low_pileup_files))
+    else:
+        args.low_pileup_files = [args.low_pileup_files]
+   
+    args.high_pileup_files = Path(args.high_pileup_files)
+    if not args.high_pileup_files.exists():
+        raise FileNotFoundError(f"High Pileup input files {args.high_pileup_files} not found.")
+    if args.high_pileup_files.is_dir():
+        args.high_pileup_files = expand_folders(os.path.abspath(args.high_pileup_files))
+    else:
+        args.high_pileup_files = [args.high_pileup_files]
 
 
     pool = Parallel(n_jobs=args.number_of_threads)
@@ -132,7 +162,10 @@ def run(args):
             logging_level=args.output_level,
             input_file=input_file,
             output_file=output_file,
-            pileup_file=args.pileup_file,
+            low_pileup_files=args.low_pileup_files,
+            high_pileup_files=args.high_pileup_files,
+            pileup_avg=args.pileup_avg,
+            pileup_sigma=args.pileup_sigma,
             command=args.command,
             number_of_events=args.number_of_events
     )

@@ -14,6 +14,7 @@ from GenKernel      import EventTape
 from GaugiKernel    import get_argparser_formatter
 from GaugiKernel    import LoggingLevel
 
+from reco import merge_args, update_args, get_evt_job_params, get_events_per_job, merge
 
 
 datapath    = os.environ["LORENZETTI_EVTGEN_DATA_DIR"]
@@ -54,7 +55,6 @@ def parse_args():
                         dest='eta_max', required = False, 
                         type=float, default=3.2,
                         help = "Maximum Eta.")
-    
     parser.add_argument('--eta', action='store', 
                         dest='eta', required = False, 
                         type=float, default=0.00,
@@ -63,7 +63,6 @@ def parse_args():
                         dest='phi', required = False, 
                         type=float, default=0.00,
                         help = "Phi position.")
-
     parser.add_argument('--delta-eta', action='store', 
                         dest='delta_eta', required = False, 
                         type=float, default=999,
@@ -72,8 +71,6 @@ def parse_args():
                         dest='delta_phi', required = False, 
                         type=float, default=999,
                         help = "Minimum Phi.")
-    
-
     parser.add_argument('--pileup-avg', action='store',
                         dest='pileup_avg', required=False,
                         type=float, default=0,
@@ -84,7 +81,7 @@ def parse_args():
                         help="The pileup sigma (default is zero).")
     parser.add_argument('--pileup-per-bunch-crossing', action='store',
                         dest='pileup_per_bunch_crossing', required=False,
-                        type=float, default=None,
+                        type=float, default=-1,
                         help="The fixed number of pileup for each bunch crossing.")
     parser.add_argument('--bc-id-start', action='store',
                         dest='bc_id_start', required=False,
@@ -114,6 +111,7 @@ def parse_args():
                         dest='merge', required=False,
                         help='Merge all files.')
 
+    parser = merge_args(parser)
 
     return parser
 
@@ -148,7 +146,7 @@ def main(events: List[int],
                     Pythia8("MBGenerator", 
                             File=mb_file,
                             Seed=seed),
-                    EtaMax=delta_eta,
+                    EtaMax=eta_max,
                     Select=2,
                     PileupAvg=pileup_avg,
                     PileupSigma=pileup_sigma,
@@ -163,45 +161,7 @@ def main(events: List[int],
     tape.run(events)
 
 
-def get_events_per_job(args):
-    if args.events_per_job is None:
-        return ceil(args.number_of_events/args.number_of_threads)
-    else:
-        return args.events_per_job
 
-
-def get_job_params(args, force:bool=False):
-    if args.event_numbers:
-        event_numbers_list = args.event_numbers.split(",")
-        args.number_of_events = len(event_numbers_list)
-        events_per_job = get_events_per_job(args)
-        event_numbers = (
-            event_numbers_list[start:start+events_per_job]
-            for start in range(0, args.number_of_events, events_per_job)
-        )
-    else:
-        events_per_job = get_events_per_job(args)
-        event_numbers = (
-            list(range(start, start+events_per_job))
-            for start in range(0, args.number_of_events, events_per_job)
-        )
-    seed=args.seed
-    splitted_output_filename = args.output_file.split(".")
-    for i, events in enumerate(event_numbers):
-        output_file = splitted_output_filename.copy()
-        output_file.insert(-1, str(i))
-        output_file = '.'.join(output_file)
-        if not force and os.path.exists(output_file):
-            print(f"{i} - Output file {output_file} already exists. Skipping.")
-            continue
-        yield events, output_file, int(seed + seed*i*0.5)
-
-
-def merge(args):
-    files = [f"{os.getcwd()}/{f}" for _, f, _ in list(get_job_params(args, force=True))]
-    if args.merge or len(files)==1:
-        os.system(f"hadd -f {args.output_file} {' '.join(files)}")
-        [os.remove(f) for f in files]
 
 
 def run(args):
@@ -227,9 +187,11 @@ def run(args):
         bc_id_start=args.bc_id_start,
         bc_id_end=args.bc_id_end
     )
-        for events, output_file, seed in get_job_params(args))
+        for events, output_file, seed in get_evt_job_params(args))
 
-    merge(args)
+    files = [f for _, f, _ in list(get_evt_job_params(args, force=True))]
+    if args.merge or len(files)==1:
+        merge(args, files)
        
 
 
@@ -239,4 +201,6 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
+    args = update_args(args)
+
     run(args)

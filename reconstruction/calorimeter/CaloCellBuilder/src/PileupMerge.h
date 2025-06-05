@@ -43,23 +43,27 @@ class PileupMerge : public Gaugi::Algorithm
 
     template <class T> void InitBranch(TTree* fChain, std::string branch_name, T* param) const;
     int poisson(double nAvg) const;
+    void Read( SG::EventContext &ctx, const std::vector<std::string> &paths, std::string name ) const;
 
     std::string m_inputHitsKey;
     std::string m_outputHitsKey;
     std::string m_inputEventKey;
     std::string m_outputEventKey;
 
-    std::string m_lowPileupInputFile;
-    std::string m_highPileupInputFile;
-    std::string m_ntupleName;
-
     int m_outputLevel;
-
     mutable TRandom3 m_rng;
     float m_pileupAvg;
     float m_pileupSigma;
     float m_seed;
     float m_trunc_mu;
+    /*! The start bunch crossing id for energy estimation */
+    int m_bcid_start;
+    /*! The end bunch crossing id for energy estimation */
+    int m_bcid_end;
+
+    std::vector<std::string> m_lowPileupInputFiles;
+    std::vector<std::string> m_highPileupInputFiles;
+    std::string m_ntupleName;
 
 };
 
