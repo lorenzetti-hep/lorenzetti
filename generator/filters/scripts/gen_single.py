@@ -3,13 +3,13 @@
 import argparse
 import sys
 import os
-from math import ceil
-from typing import List
-from joblib import Parallel, delayed
-from evtgen import Pythia8
-from filters import Pileup,Particle, SingleParticle
 
-from GenKernel import EventTape
+from math        import ceil
+from typing      import List
+from joblib      import Parallel, delayed
+from evtgen      import Pythia8
+from filters     import Particle, SingleParticle
+from GenKernel   import EventTape
 from GaugiKernel import get_argparser_formatter
 from GaugiKernel import LoggingLevel
 from GaugiKernel import GeV
@@ -100,26 +100,6 @@ def parse_args():
                         dest='phi_max', required = False, 
                         type=float, default=3.14,
                         help = "Maximum Phi.")
-    parser.add_argument('--pileup-avg', action='store',
-                        dest='pileup_avg', required=False,
-                        type=float, default=0,
-                        help="The pileup average (default is zero).")
-    parser.add_argument('--pileup-sigma', action='store',
-                        dest='pileup_sigma', required=False,
-                        type=float, default=0,
-                        help="The pileup sigma (default is zero).")
-    parser.add_argument('--bc-id-start', action='store',
-                        dest='bc_id_start', required=False,
-                        type=int, default=-21,
-                        help="The bunch crossing id start.")
-    parser.add_argument('--bc-id-end', action='store',
-                        dest='bc_id_end', required=False,
-                        type=int, default=4,
-                        help="The bunch crossing id end.")
-    parser.add_argument('--bc-duration', action='store',
-                        dest='bc_duration', required=False,
-                        type=int, default=25,
-                        help="The bunch crossing duration (in nanoseconds).")
     parser.add_argument('-nt', '--number-of-threads', action='store',
                         dest='number_of_threads', required=False,
                         type=int, default=1,
@@ -128,10 +108,6 @@ def parse_args():
                         dest='events_per_job', required=False,
                         type=int, default=None,
                         help="The number of events per job")
-    parser.add_argument('--pileup-file', action='store',
-                        dest='pileup_file', required=False,
-                        type=str, default=PILEUP_FILE,
-                        help="The pythia pileup file configuration.")
     parser.add_argument('-m','--merge', action='store_true',
                         dest='merge', required=False,
                         help='Merge all files.')
@@ -155,12 +131,7 @@ def main(events: List[int],
          energy_min:float,
          energy_max:float,
          do_eta_ranged: bool,
-         do_phi_ranged: bool,
-         pileup_avg: float,
-         pileup_sigma: float,
-         mb_file: str,
-         bc_id_start: int,
-         bc_id_end: int):
+         do_phi_ranged: bool):
 
     outputLevel = LoggingLevel.toC(logging_level)
 
@@ -185,25 +156,6 @@ def main(events: List[int],
                                OutputLevel  = outputLevel)
 
     tape += part
-
-    if args.pileup_avg > 0:
-
-        pileup = Pileup("Pileup",
-                        Pythia8("MBGenerator", 
-                                File=mb_file,
-                                Seed=seed),
-                        EtaMax=3.2,
-                        Select=2,
-                        PileupAvg=pileup_avg,
-                        PileupSigma=pileup_sigma,
-                        BunchIdStart=bc_id_start,
-                        BunchIdEnd=bc_id_end,
-                        OutputLevel=outputLevel,
-                        DeltaEta=0.22,
-                        DeltaPhi=0.22,
-                        )
-
-        tape += pileup
     tape.run(events)
 
 
@@ -269,11 +221,6 @@ def run(args):
         energy_max=args.energy_max,
         do_eta_ranged=args.do_eta_ranged,
         do_phi_ranged=args.do_phi_ranged,
-        pileup_avg=args.pileup_avg,
-        pileup_sigma=args.pileup_sigma,
-        mb_file=args.pileup_file,
-        bc_id_start=args.bc_id_start,
-        bc_id_end=args.bc_id_end
     )
         for events, output_file, seed in get_job_params(args))
     

@@ -19,8 +19,8 @@ class PileupMerge( Cpp ):
                 NtupleName          : str="CollectionTree",
                 PileupAvg           : float=0,
                 PileupSigma         : float=0,
-                BunchIdStart        : int=-8,
-                BunchIdEnd          : int=7,
+                BunchIdStart        : int=-21,
+                BunchIdEnd          : int=4,
               ): 
     
     Cpp.__init__(self, ROOT.PileupMerge(name) )

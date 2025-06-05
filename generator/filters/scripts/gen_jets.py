@@ -5,13 +5,12 @@ import sys
 import os
 import evtgen
 
-from math import ceil
-from typing import List
-from joblib import Parallel, delayed
-from evtgen import Pythia8
-from filters import JF17, Pileup
-
-from GenKernel import EventTape
+from math        import ceil
+from typing      import List
+from joblib      import Parallel, delayed
+from evtgen      import Pythia8
+from filters     import JF17
+from GenKernel   import EventTape
 from GaugiKernel import get_argparser_formatter
 from GaugiKernel import LoggingLevel
 from GaugiKernel import GeV
@@ -70,18 +69,6 @@ def parse_args():
                         dest='energy_max', required = False, 
                         type=float, default=13000, 
                         help = "Maximum energy")
-    parser.add_argument('--bc-id-start', action='store',
-                        dest='bc_id_start', required=False,
-                        type=int, default=-21,
-                        help="The bunch crossing id start.")
-    parser.add_argument('--bc-id-end', action='store',
-                        dest='bc_id_end', required=False,
-                        type=int, default=4,
-                        help="The bunch crossing id end.")
-    parser.add_argument('--bc-duration', action='store',
-                        dest='bc_duration', required=False,
-                        type=int, default=25,
-                        help="The bunch crossing duration (in nanoseconds).")
     parser.add_argument('-nt', '--number-of-threads', action='store',
                         dest='number_of_threads', required=False,
                         type=int, default=1,
@@ -112,9 +99,8 @@ def main(events: List[int],
          eta_min: float,
          eta_max: float,
          energy_min: float,
-         energy_max: float,
-         bc_id_start: int,
-         bc_id_end: int):
+         energy_max: float
+        ):
 
     print(seed)
     outputLevel = LoggingLevel.toC(logging_level)
@@ -157,9 +143,7 @@ def run(args):
         eta_min=args.eta_min,
         eta_max=args.eta_max,
         energy_min=args.energy_min,
-        energy_max=args.energy_max,
-        bc_id_start=args.bc_id_start,
-        bc_id_end=args.bc_id_end
+        energy_max=args.energy_max
     )
         for events, output_file, seed in get_evt_job_params(args))
 

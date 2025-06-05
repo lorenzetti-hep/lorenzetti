@@ -7,7 +7,7 @@ from math import ceil
 from typing import List
 from joblib import Parallel, delayed
 from evtgen import Pythia8
-from filters import Zee, Pileup, OverlappedEvents, Particle
+from filters import Zee, OverlappedEvents, Particle
 
 from GenKernel import EventTape
 from GaugiKernel import get_argparser_formatter
@@ -64,26 +64,6 @@ def parse_args():
                         help="Fix the z vertex position in "
                         "simulation to zero for all selected particles. "
                         "It is applied only at G4 step, not in generation.")
-    parser.add_argument('--pileup-avg', action='store',
-                        dest='pileup_avg', required=False,
-                        type=float, default=0,
-                        help="The pileup average (default is zero).")
-    parser.add_argument('--pileup-sigma', action='store',
-                        dest='pileup_sigma', required=False,
-                        type=float, default=0,
-                        help="The pileup sigma (default is zero).")
-    parser.add_argument('--bc-id-start', action='store',
-                        dest='bc_id_start', required=False,
-                        type=int, default=-21,
-                        help="The bunch crossing id start.")
-    parser.add_argument('--bc-id-end', action='store',
-                        dest='bc_id_end', required=False,
-                        type=int, default=4,
-                        help="The bunch crossing id end.")
-    parser.add_argument('--bc-duration', action='store',
-                        dest='bc_duration', required=False,
-                        type=int, default=25,
-                        help="The bunch crossing duration (in nanoseconds).")
     parser.add_argument('-nt', '--number-of-threads', action='store',
                         dest='number_of_threads', required=False,
                         type=int, default=1,
@@ -116,11 +96,7 @@ def main(events: List[int],
          zero_vertex_particles: bool,
          force_forward_electron: bool,
          eta_max: float,
-         pileup_avg: float,
-         pileup_sigma: float,
-         mb_file: str,
-         bc_id_start: int,
-         bc_id_end: int):
+        ):
 
     outputLevel = LoggingLevel.toC(logging_level)
 
@@ -149,25 +125,6 @@ def main(events: List[int],
                                         )
 
     tape += boostedElectron
-
-    if args.pileup_avg > 0:
-
-        pileup = Pileup("Pileup",
-                        Pythia8("MBGenerator", 
-                                File=mb_file,
-                                Seed=seed),
-                        EtaMax=3.2,
-                        Select=2,
-                        PileupAvg=pileup_avg,
-                        PileupSigma=pileup_sigma,
-                        BunchIdStart=bc_id_start,
-                        BunchIdEnd=bc_id_end,
-                        OutputLevel=outputLevel,
-                        DeltaEta=0.22,
-                        DeltaPhi=0.22,
-                        )
-
-        tape += pileup
     tape.run(events)
 
 
@@ -223,11 +180,6 @@ def run(args):
         zero_vertex_particles=args.zero_vertex_particles,
         force_forward_electron=args.force_forward_electron,
         eta_max=args.eta_max,
-        pileup_avg=args.pileup_avg,
-        pileup_sigma=args.pileup_sigma,
-        mb_file=args.pileup_file,
-        bc_id_start=args.bc_id_start,
-        bc_id_end=args.bc_id_end
     )
         for events, output_file, seed in get_job_params(args))
     

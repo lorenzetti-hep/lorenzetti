@@ -55,30 +55,30 @@ def parse_args():
                         dest='eta_max', required = False, 
                         type=float, default=3.2,
                         help = "Maximum Eta.")
-    parser.add_argument('--eta', action='store', 
-                        dest='eta', required = False, 
-                        type=float, default=0.00,
-                        help = "Eta position.")
-    parser.add_argument('--phi', action='store', 
-                        dest='phi', required = False, 
-                        type=float, default=0.00,
-                        help = "Phi position.")
-    parser.add_argument('--delta-eta', action='store', 
-                        dest='delta_eta', required = False, 
-                        type=float, default=999,
-                        help = "Enable phi range.")
-    parser.add_argument('--delta-phi', action='store', 
-                        dest='delta_phi', required = False, 
-                        type=float, default=999,
-                        help = "Minimum Phi.")
-    parser.add_argument('--pileup-avg', action='store',
-                        dest='pileup_avg', required=False,
-                        type=float, default=0,
-                        help="The pileup average (default is zero).")
-    parser.add_argument('--pileup-sigma', action='store',
-                        dest='pileup_sigma', required=False,
-                        type=float, default=0,
-                        help="The pileup sigma (default is zero).")
+    #parser.add_argument('--eta', action='store', 
+    #                    dest='eta', required = False, 
+    #                    type=float, default=0.00,
+    #                    help = "Eta position.")
+    #parser.add_argument('--phi', action='store', 
+    #                    dest='phi', required = False, 
+    #                    type=float, default=0.00,
+    #                    help = "Phi position.")
+    #parser.add_argument('--delta-eta', action='store', 
+    #                    dest='delta_eta', required = False, 
+    #                    type=float, default=999,
+    #                    help = "Enable phi range.")
+    #parser.add_argument('--delta-phi', action='store', 
+    #                    dest='delta_phi', required = False, 
+    #                    type=float, default=999,
+    #                    help = "Minimum Phi.")
+    #parser.add_argument('--pileup-avg', action='store',
+    #                    dest='pileup_avg', required=False,
+    #                    type=float, default=0,
+    #                    help="The pileup average (default is zero).")
+    #parser.add_argument('--pileup-sigma', action='store',
+    #                    dest='pileup_sigma', required=False,
+    #                    type=float, default=0,
+    #                    help="The pileup sigma (default is zero).")
     parser.add_argument('--pileup-per-bunch-crossing', action='store',
                         dest='pileup_per_bunch_crossing', required=False,
                         type=float, default=-1,
@@ -176,12 +176,12 @@ def run(args):
         run_number=args.run_number,
         seed=seed,
         eta_max=args.eta_max,
-        eta=args.eta,
-        phi=args.phi,
-        delta_eta=args.delta_eta,
-        delta_phi=args.delta_phi,
-        pileup_avg=args.pileup_avg,
-        pileup_sigma=args.pileup_sigma,
+        eta=0,#args.eta,
+        phi=0,#args.phi,
+        delta_eta=999,#args.delta_eta,
+        delta_phi=999,#args.delta_phi,
+        pileup_avg=0,#args.pileup_avg,
+        pileup_sigma=0,#args.pileup_sigma,
         pileup_per_bunch_crossing=args.pileup_per_bunch_crossing,
         mb_file=args.pileup_file,
         bc_id_start=args.bc_id_start,

@@ -68,18 +68,6 @@ def parse_args():
                         help="Fix the z vertex position in "
                         "simulation to zero for all selected particles. "
                         "It is applied only at G4 step, not in generation.")
-    parser.add_argument('--bc-id-start', action='store',
-                        dest='bc_id_start', required=False,
-                        type=int, default=-21,
-                        help="The bunch crossing id start.")
-    parser.add_argument('--bc-id-end', action='store',
-                        dest='bc_id_end', required=False,
-                        type=int, default=4,
-                        help="The bunch crossing id end.")
-    parser.add_argument('--bc-duration', action='store',
-                        dest='bc_duration', required=False,
-                        type=int, default=25,
-                        help="The bunch crossing duration (in nanoseconds).")
     parser.add_argument('-nt', '--number-of-threads', action='store',
                         dest='number_of_threads', required=False,
                         type=int, default=1,
@@ -108,9 +96,8 @@ def main(events: List[int],
          zee_file: str,
          zero_vertex_particles: bool,
          force_forward_electron: bool,
-         eta_max: float,
-         bc_id_start: int,
-         bc_id_end: int):
+         eta_max: float
+        ):
 
     print(seed)
     outputLevel = LoggingLevel.toC(logging_level)
@@ -148,9 +135,7 @@ def run(args):
         zee_file=args.zee_file,
         zero_vertex_particles=args.zero_vertex_particles,
         force_forward_electron=args.force_forward_electron,
-        eta_max=args.eta_max,
-        bc_id_start=args.bc_id_start,
-        bc_id_end=args.bc_id_end
+        eta_max=args.eta_max
     )
         for events, output_file, seed in get_evt_job_params(args))
     

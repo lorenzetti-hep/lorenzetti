@@ -26,8 +26,8 @@ PileupMerge::PileupMerge( std::string name ) :
   declareProperty( "PileupSigma"         , m_pileupSigma=0                       );
   declareProperty( "TruncMu"             , m_trunc_mu = 1000                     );
   declareProperty( "Seed"                , m_seed=0                              );
-  declareProperty( "BunchIdStart"        , m_bcid_start=-7                       );
-  declareProperty( "BunchIdEnd"          , m_bcid_end=8                          );
+  declareProperty( "BunchIdStart"        , m_bcid_start=-21                      );
+  declareProperty( "BunchIdEnd"          , m_bcid_end=4                          );
   declareProperty( "NtupleName"          , m_ntupleName="CollectionTree"         );
   declareProperty( "LowPileupInputFiles" , m_lowPileupInputFiles={}              );
   declareProperty( "HighPileupInputFiles", m_highPileupInputFiles={}             );
@@ -159,7 +159,7 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
   std::vector<xAOD::CaloHit_t> *collection_hits=nullptr;
   std::vector<xAOD::EventInfo_t> *collection_events=nullptr;
   TTree *tree=nullptr;
-  int pos(0);
+
   int nPileUpMean(0);
   int pileupAvg = (int)m_rng.Gaus( m_pileupAvg, m_pileupSigma);
 
@@ -206,10 +206,6 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
     }// while
   }
      
-
-
-
-
   MSG_INFO( "Writing new container hits...");
   {
     SG::WriteHandle<xAOD::CaloHitContainer> hits(m_outputHitsKey, ctx);
@@ -225,7 +221,7 @@ StatusCode PileupMerge::post_execute( EventContext &ctx ) const
   MSG_INFO( "Writing new container event info...");
   {
     nPileUpMean/=nWin;
-    MSG_INFO("Pileup average is " << nPileUpMean);
+    MSG_INFO("Avgmu: " << nPileUpMean);
     SG::ReadHandle<xAOD::EventInfoContainer> event(m_inputEventKey, ctx);
     if( !event.isValid() ){
       MSG_FATAL( "It's not possible to read the xAOD::EventInfoContainer from this Context" );
