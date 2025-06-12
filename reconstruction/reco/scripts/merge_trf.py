@@ -126,8 +126,8 @@ def run(args):
     else:
         args.high_pileup_files = [args.high_pileup_files]
 
-    job = create_parallel_job(job)
-    job( main, 
+    pool = create_parallel_job(args)
+    pool( main, 
          logging_level    = args.output_level,
          low_pileup_files = args.low_pileup_files,
          high_pileup_files= args.high_pileup_files,

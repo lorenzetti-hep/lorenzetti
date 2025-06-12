@@ -13,6 +13,7 @@ import json
 import sys
 import os
 import joblib
+import traceback
 
 from math               import ceil
 from typing             import List, Dict, Callable, Union
@@ -21,7 +22,7 @@ from pprint             import pprint
 from expand_folders     import expand_folders
 from tqdm               import tqdm
 
-from reco import chunks, merge_args_from_file, update_args_from_file, append_index_to_file, check_file_exists
+from reco import chunks, merge_args_from_file, update_args_from_file, append_index_to_file, check_file_exists, merge
 
 
 def merge_args( parser, exclude_input_file : bool=False ):
@@ -62,7 +63,7 @@ def update_args( args ):
     if args.input_file.is_dir():
         args.input_file = expand_folders(os.path.abspath(args.input_file))
     else:
-        args.input_file = [args.input_file]    
+        args.input_file = [os.path.abspath(args.input_file)]    
     return update_args_from_file(args)
 
 
@@ -103,12 +104,14 @@ class Parallel:
                 d[key_a] = {key_b:{"input_file":value_a, "evt":[value_b]}}
 
         nov = 0
+        print(self.files)
         for idx, path in tqdm( enumerate(self.files), desc="Loop over files...", total=len(self.files)):
             try:
                 f = ROOT.TFile( path,"read")
                 entries = f.Get( self.ntuple_name ).GetEntries()
                 f.Close()
             except:
+                traceback.print_exc()
                 print(f"it is not possible to read file {path}")
                 continue
             if entries > 0:
@@ -156,6 +159,5 @@ def create_parallel_job( args ):
                 number_of_events  = args.number_of_events,
                 events_per_job    = args.events_per_job,
                 merge             = args.merge,
-                recreate          = args.recreate,
                 overwrite         = args.overwrite
-            )
+            )   
