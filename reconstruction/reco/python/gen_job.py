@@ -77,12 +77,13 @@ class Parallel:
                  merge             : bool=False,
                  ntuple_name       : str="particles",
                  overwrite         : bool = False,
-                ):  
+                ):
+        
         self.event_numbers     = event_numbers
         self.number_of_events  = number_of_events
         self.number_of_threads = number_of_threads
         self.events_per_job    = events_per_job
-        self.merge_files       =  merge
+        self.merge_files       = merge
         self.ntuple_name       = ntuple_name
         self.output_file       = output_file
         self.overwrite=True#overwrite
