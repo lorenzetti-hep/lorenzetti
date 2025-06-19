@@ -45,6 +45,13 @@ class PileupMerge : public Gaugi::Algorithm
     int poisson(double nAvg) const;
     void Read( SG::EventContext &ctx, const std::vector<std::string> &paths, std::string name ) const;
 
+
+    void allocate( SG::ReadHandle<xAOD::CaloHitContainer> &container , std::vector<xAOD::CaloHit*> &vec_hits ) const;
+    void deallocate( std::vector<xAOD::CaloHit*> &vec_hits ) const;
+    float merge( SG::EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hits ) const;
+
+
+
     std::string m_inputHitsKey;
     std::string m_outputHitsKey;
     std::string m_inputEventKey;
@@ -55,6 +62,7 @@ class PileupMerge : public Gaugi::Algorithm
     float m_pileupAvg;
     float m_pileupSigma;
     float m_seed;
+    int   m_maxRetry;
     float m_trunc_mu;
     /*! The start bunch crossing id for energy estimation */
     int m_bcid_start;

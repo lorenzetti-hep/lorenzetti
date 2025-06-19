@@ -85,7 +85,7 @@ class Parallel:
         self.merge_files       =  merge
         self.ntuple_name       = ntuple_name
         self.output_file       = output_file
-        self.overwrite=overwrite
+        self.overwrite=True#overwrite
         self.seed=seed
 
 
