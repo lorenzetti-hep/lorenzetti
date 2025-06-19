@@ -62,7 +62,7 @@ def update_args( args ):
         raise FileNotFoundError(f"Input file {args.input_file} not found.")
     if args.input_file.is_dir():
         args.input_file = expand_folders(os.path.abspath(args.input_file))
-        args.input_file = [Path(inp) for inp in args.input_file]
+        args.input_file = [Path(inp) for inp in args.input_file if inp.endswith('.root')]
     else:
         args.input_file = os.path.abspath(args.input_file)
 

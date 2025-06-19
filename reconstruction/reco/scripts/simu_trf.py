@@ -108,7 +108,7 @@ def main(logging_level: str,
 def run(args):
 
     if isinstance(args.input_file, list) and not isinstance(args.input_file[0], Path):
-        args.input_file = [Path(inp) for inp in args.input_file]
+        args.input_file = [Path(inp) for inp in args.input_file if inp.endswith('.root')]
 
     if not all(inp.exists() for inp in args.input_file):
         raise FileNotFoundError(f"Input file {args.input_file} not found.")
