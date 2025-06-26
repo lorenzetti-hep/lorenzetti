@@ -6,6 +6,7 @@ import os
 import evtgen
 
 from math        import ceil
+from pathlib     import Path
 from typing      import List
 from joblib      import Parallel, delayed
 from evtgen      import Pythia8
@@ -107,7 +108,12 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
+
     args = parser.parse_args()
+    if Path(args.output_file).is_dir():
+        raise IsADirectoryError(f"Output file '{args.output_file}' was expected to be a file, "
+                                 "but it is a directory.")
+    
     args = update_args(args)
     pool = create_parallel_job(args)
     pool(main,
