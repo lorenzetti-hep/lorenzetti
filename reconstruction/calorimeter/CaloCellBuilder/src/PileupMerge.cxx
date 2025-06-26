@@ -67,6 +67,11 @@ StatusCode PileupMerge::bookHistograms( EventContext &ctx ) const
   Read(ctx, m_highPileupInputFiles, "high_minbias");
 
 
+
+  MSG_INFO( "Link all branches..." );
+  auto store = ctx.getStoreGateSvc();
+
+
   return StatusCode::SUCCESS;
 }
 
@@ -182,12 +187,35 @@ float PileupMerge::merge( EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hi
   auto store = ctx.getStoreGateSvc();
 
   auto tree_low_pileup = ((TChain*)store->decorator("low_minbias"));
+  tree_low_pileup->SetBranchStatus("*",0);
+  tree_low_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".edep").c_str(), 1);
+  //tree_low_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".tof").c_str(), 1);
+  tree_low_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".bcid_start").c_str(), 1);
+  tree_low_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".bcid_end").c_str(), 1);
+  tree_low_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".hash").c_str(), 1);
+  tree_low_pileup->SetBranchStatus(("EventInfoContainer_"+m_inputEventKey+".avgmu").c_str(), 1);
+  
+
+
+
   std::vector<xAOD::CaloHit_t> *collection_hits_low_pileup=nullptr;
   InitBranch( tree_low_pileup,  ("CaloHitContainer_"+m_inputHitsKey).c_str(), &collection_hits_low_pileup );
   std::vector<xAOD::EventInfo_t> *collection_events_low_pileup=nullptr;
   InitBranch( tree_low_pileup,  ("EventInfoContainer_"+m_inputEventKey).c_str(), &collection_events_low_pileup );
 
   auto tree_high_pileup = ((TChain*)store->decorator("high_minbias"));
+  tree_high_pileup->SetBranchStatus("*",0);
+  tree_high_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".edep").c_str(), 1);
+  //tree_high_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".tof").c_str(), 1);
+  tree_high_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".bcid_start").c_str(), 1);
+  tree_high_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".bcid_end").c_str(), 1);
+  tree_high_pileup->SetBranchStatus(("CaloHitContainer_"+m_inputHitsKey+".hash").c_str(), 1);
+  tree_high_pileup->SetBranchStatus(("EventInfoContainer_"+m_inputEventKey+".avgmu").c_str(), 1);
+
+
+
+
+
   std::vector<xAOD::CaloHit_t> *collection_hits_high_pileup=nullptr;
   InitBranch( tree_high_pileup,  ("CaloHitContainer_"+m_inputHitsKey).c_str(), &collection_hits_high_pileup );
   std::vector<xAOD::EventInfo_t> *collection_events_high_pileup=nullptr;
@@ -208,7 +236,7 @@ float PileupMerge::merge( EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hi
   }
 
 
-  std::vector<xAOD::CaloHit_t> *collection_hits=nullptr;
+  std::vector<xAOD::CaloHit_t>   *collection_hits=nullptr;
   std::vector<xAOD::EventInfo_t> *collection_events=nullptr;
   TTree *tree=nullptr;
 
@@ -227,9 +255,11 @@ float PileupMerge::merge( EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hi
 
     while (kPileup>0)
     {
-      tree             = kPileup>nHighPileup? tree_high_pileup              : tree_low_pileup;
-      collection_hits  = kPileup>nHighPileup? collection_hits_high_pileup   : collection_hits_low_pileup;
-      collection_events= kPileup>nHighPileup? collection_events_high_pileup : collection_events_low_pileup;
+      tree                 = kPileup>nHighPileup? tree_high_pileup                 : tree_low_pileup;
+      collection_hits      = kPileup>nHighPileup? collection_hits_high_pileup      : collection_hits_low_pileup;
+      collection_events    = kPileup>nHighPileup? collection_events_high_pileup    : collection_events_low_pileup;
+  
+
 
       if (eventNumber > (tree->GetEntries()-1)){
         eventNumber=-1;
@@ -240,11 +270,11 @@ float PileupMerge::merge( EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hi
       }
       
       MSG_DEBUG("Reading event " << eventNumber);
-      
+   
+
       if (tree->GetEntry( eventNumber ) <= 0){
         MSG_FATAL("Not possible to read this event. repeat...");
       }
-   
 
       if (collection_events->empty()){
         MSG_FATAL("Collection hits is empty!");
@@ -252,7 +282,6 @@ float PileupMerge::merge( EventContext &ctx, std::vector<xAOD::CaloHit*> &vec_hi
       if (collection_hits->empty()){
         MSG_FATAL("Collection hits is empty!");
       }
-
       eventNumber++;
       kPileup -= collection_events->at(0).avgmu;
 
@@ -329,18 +358,20 @@ void PileupMerge::deallocate( std::vector<xAOD::CaloHit*> &vec_hits ) const{
 //!=====================================================================
 
 template <class T>
-void PileupMerge::InitBranch(TTree* fChain, std::string branch_name, T* param) const
+TBranch* PileupMerge::InitBranch(TTree* fChain, std::string branch_name, T* param) const
 {
   std::string bname = branch_name;
   if (fChain->GetAlias(bname.c_str()))
      bname = std::string(fChain->GetAlias(bname.c_str()));
 
   if (!fChain->FindBranch(bname.c_str()) ) {
-    MSG_WARNING( "unknown branch " << bname );
-    return;
+    MSG_FATAL( "unknown branch " << bname );
   }
   fChain->SetBranchStatus(bname.c_str(), 1.);
   fChain->SetBranchAddress(bname.c_str(), param);
+  MSG_INFO("branch aki = "<<fChain->GetBranch(bname.c_str()));
+
+  return fChain->GetBranch(bname.c_str());  
 }
 
 //!=====================================================================
@@ -375,6 +406,5 @@ void PileupMerge::Read( EventContext &ctx, const std::vector<std::string> &paths
     //MSG_INFO("Loading " << path << "...");
     file->Add((path+"/"+m_ntupleName).c_str());
   }
-  MSG_INFO(name << " chain with " << file->GetEntries() << " entries");
   store->decorate( name , file );
 }
