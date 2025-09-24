@@ -41,9 +41,7 @@ def parse_args():
                         dest='save_all_hits', required=False,
                         help="Save all hits into the output file.")
 
-    parser = merge_args(parser)
-
-    return parser
+    return merge_args(parser)
 
 
 def main(logging_level: str,
@@ -162,5 +160,5 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
-    args = update_args(args)
+    # args = update_args(args)
     run(args)
