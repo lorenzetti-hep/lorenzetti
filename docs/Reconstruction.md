@@ -40,12 +40,12 @@ digit_trf.py -i HIT.root -o ESD.root
 Some customization concerning about CrossTalk simulation and energy estimation methods changes:
 
 - ```--simulateCrossTalk```: this simulates the crosstalk efect on the calorimeter cells
-- ```--estimationMethodHAD```: this change the energy estimation method on the hadronic calorimeter. Two options for now are allowd: ```OF``` and ```COF```
+- ```HadEnergyEstimationCOF```: this change the energy estimation method on the hadronic calorimeter. Setting this as ```True``` enables the ConstraneidOptimalFilter to be used in place of the regular OptimalFilter on Hadronic layers.
 
 An example for full customized digitalization step:
 
 ```
-digit_trf.py -i HIT.root -o ESD.root --simulateCrossTalk --estimationMethodHAD COF
+digit_trf.py -i HIT.root -o ESD.root --simulateCrossTalk -c "from CaloCellBuilder import CaloFlags as flags; flags.HadEnergyEstimationCOF=True"
 ```
 
 ### Event Reconstruction

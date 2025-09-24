@@ -4,12 +4,12 @@ __all__ = ["CaloCellBuilder"]
 from GaugiKernel        import Logger, LoggingLevel
 from GaugiKernel.macros import *
 
-from CaloCell           import CaloSampling
+from CaloCell           import CaloSampling, Detector
 from CaloCellBuilder    import CaloCellMaker
 from CaloCellBuilder    import CaloCellMerge
 from CaloCellBuilder    import CrossTalkMaker
 from CaloCellBuilder    import PulseGenerator
-from CaloCellBuilder    import OptimalFilter
+from CaloCellBuilder    import OptimalFilter, ConstrainedOptimalFilter
 from CaloCellBuilder    import CaloFlags
 
 #
@@ -60,8 +60,16 @@ class CaloCellBuilder( Logger ):
                               NoiseStd        = samp.Noise,
                               StartSamplingBC = samp.StartSamplingBC )
      
-
-      of= OptimalFilter("OptimalFilter",
+      if CaloFlags.HadEnergyEstimationCOF and samp.Detector == Detector.TILE: 
+        of = ConstrainedOptimalFilter("ConstrainedOptimalFiler",
+                                      NSamples  = samp.Samples,
+                                      PulsePath = samp.Shaper,
+                                      Threshold = 0,
+                                      SamplingRate = 25.0,
+                                      StartSamplingBC = samp.StartSamplingBC,
+                                      )
+      else:
+        of= OptimalFilter("OptimalFilter",
                         WeightsEnergy  = samp.OFWeightsEnergy,
                         WeightsTime    = samp.OFWeightsTime,
                         OutputLevel=self.OutputLevel)
