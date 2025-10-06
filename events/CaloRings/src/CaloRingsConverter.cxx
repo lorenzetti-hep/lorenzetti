@@ -7,18 +7,17 @@ using namespace xAOD;
 using namespace std;
 
 
-bool CaloRingsConverter::convert( const CaloRings *rings, CaloRings_t &rings_t, cluster_links_t &cluster_links )
+bool CaloRingsConverter::convert( const CaloRings *rings, CaloRings_t &rings_t )
 {
   if(rings){
     
-    rings_t.cluster_link = cluster_links[rings->caloCluster()];
+    rings_t.cluster_link = rings->caloCluster()->seed()->id();
     rings_t.rings = rings->rings();
     return true;
   }
   return false;
 }
 
-// bool CaloRingsConverter::convert( const CaloRings_t &rings_t, CaloRings *&rings, CaloCluster, CaloCluster *clus )
 bool CaloRingsConverter::convert( const CaloRings_t &rings_t, CaloRings *&rings)
 {
   

@@ -44,8 +44,8 @@ volumes.extend( getCrackVolumesCfg(left_side=True)     )
 # Do NOT uncomment this unless you know what you are doing.
 #volumes.extend( getPixelBarrelCfg() )
 
-
-vispath = os.environ['LZT_PATH']+'/geometry/ATLAS/data/vis.mac'
+basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
+vispath = f'{basepath}/vis.mac'
 
 
 #
@@ -57,7 +57,7 @@ class ATLASConstruction(DetectorConstruction):
                                             samplings=flatten(samplings), 
                                             trackings=flatten(tracking),
                                             **kw)
-        # Add extra volumes which is not a sensitive detector
+
         for pv in flatten(volumes):
             self+=pv
     

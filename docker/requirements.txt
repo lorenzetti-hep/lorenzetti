@@ -1,0 +1,14 @@
+setuptools 
+numpy
+pandas 
+scikit-learn
+seaborn 
+jupyterlab 
+tqdm 
+atlas-mpl-style 
+twine 
+pyhepmc 
+prettytable
+expand_folders
+rich_argparse
+loguru

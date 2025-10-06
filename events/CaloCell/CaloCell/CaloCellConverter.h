@@ -7,7 +7,7 @@
 namespace xAOD{
 
 
-    typedef std::map<const xAOD::CaloCell*, int> cell_links_t;
+    typedef std::map<unsigned long int, const xAOD::CaloCell*> cell_links_t;
 
     struct CaloCell_t{
         float e;
@@ -17,7 +17,7 @@ namespace xAOD{
         float phi;
         float deta;
         float dphi;
-        int descriptor_link;
+        unsigned long int descriptor_link; // NOTE: lets use hash as link
     };
 
     class CaloCellConverter{
@@ -27,7 +27,7 @@ namespace xAOD{
             ~CaloCellConverter()=default;
 
             // convert a class object into a struct
-            bool convert(const CaloCell *, CaloCell_t & , int link);
+            bool convert(const CaloCell *, CaloCell_t & );
 
             bool convert( const CaloCell_t &, CaloCell *& );
 

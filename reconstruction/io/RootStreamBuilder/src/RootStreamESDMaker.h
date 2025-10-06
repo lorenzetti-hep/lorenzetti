@@ -3,7 +3,7 @@
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
-#include "EventInfo/EventSeed.h"
+#include "EventInfo/Seed.h"
 #include "TruthParticle/TruthParticle.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"

@@ -1,7 +1,7 @@
 
 __all__ = ["getLArEMECCfg"]
 
-from GaugiKernel.constants import *
+from GaugiKernel.constants import m,cm,mm,MeV,pi
 from G4Kernel.DetectorConstruction import *
 from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
@@ -16,7 +16,7 @@ def getLArEMECCfg(left_side=False):
 
     sign = -1 if left_side else 1
     side_name = 'B' if left_side else 'A'
-    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+    basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
 
     endcap_start    = 3704.*mm
     ps_endcap_start = endcap_start + 31*mm

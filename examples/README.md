@@ -1,8 +1,22 @@
-# Examples:
 
 
+## How to produce Zee events from scratch?
 
-## Datasets:
+```
+run_job.py create --production-card zee.card -o zee_jobs
+```
 
-There are some examples of datasets [here](https://drive.google.com/drive/folders/1z3h6kP0VTVNml4sIQ8sB6eZtwXnrAdtG?usp=share_link)
+Than, we can launch as a single job:
+
+```
+run_job.py run -j zee_jobs/job.0.json -o experiment
+```
+
+in parallel using prun_jobs:
+
+```
+mkdir zee
+prun_jobs.py -i jobs -o zee/job --number-of-threads 10 -c "run_job.py run -j %IN -o %OUT"
+```
+
 

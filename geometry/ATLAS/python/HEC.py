@@ -2,7 +2,7 @@
 
 __all__ = ["getHECCfg"]
 
-from GaugiKernel.constants import *
+from GaugiKernel.constants import mm,MeV,pi
 from G4Kernel.DetectorConstruction import *
 from G4Kernel.DetectorConstruction import SensitiveCaloVolume as SensitiveVolume
 from CaloCell.CaloDefs import Detector, CaloSampling
@@ -17,7 +17,7 @@ def getHECCfg(left_side=False):
     sign = -1 if left_side else 1
     side_name = 'B' if left_side else 'A'
     
-    basepath = os.environ['LZT_PATH']+'/geometry/ATLAS/data'
+    basepath = os.environ['LORENZETTI_ATLAS_DATA_DIR']
     hec_start = 4262*mm
 
     #

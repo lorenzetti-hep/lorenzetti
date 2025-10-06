@@ -6,7 +6,7 @@ using namespace xAOD;
 
 
 
-bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, CaloDetDescriptor_t &descriptor_t, int link )
+bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, CaloDetDescriptor_t &descriptor_t )
 {
 
   if(descriptor){
@@ -24,9 +24,8 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor *descriptor, C
     descriptor_t.bc_duration = descriptor->bc_duration();
     descriptor_t.hash        = descriptor->hash();
     descriptor_t.pulse       = descriptor->pulse();
-    descriptor_t.cell_link   = link; // cross link to cell
-    // std::cout<< z << std::endl;
     descriptor_t.z           = descriptor->z();
+    descriptor_t.anomalous   = descriptor->anomalous();
 
 
     for ( int bcid = descriptor->bcid_start();  bcid <= descriptor->bcid_end(); ++bcid )
@@ -56,7 +55,8 @@ bool CaloDetDescriptorConverter::convert( const CaloDetDescriptor_t &descriptor_
                                             (Detector)descriptor_t.detector,
                                             descriptor_t.bc_duration,
                                             descriptor_t.bcid_start,
-                                            descriptor_t.bcid_end);
+                                            descriptor_t.bcid_end,
+                                            descriptor_t.anomalous);
 
   descriptor->setE(descriptor_t.e); // estimated energy from OF
   descriptor->setPulse( descriptor_t.pulse); // pulse from generator

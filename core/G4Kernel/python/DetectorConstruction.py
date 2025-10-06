@@ -51,7 +51,6 @@ class DetectorConstruction( Cpp ):
       pv = samp.volume(); self+=pv 
 
 
-
   def __add__(self, pv):
     if pv.Name not in self.__volumes.keys():
       self.__volumes[pv.Name] = pv

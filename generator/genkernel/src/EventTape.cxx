@@ -16,7 +16,7 @@ EventTape::EventTape():
   m_store(nullptr)
 {
   declareProperty( "RunNumber"          , m_runNumber=0             );
-  declareProperty( "NumberOfEvents"     , m_nEvent=1                );
+  declareProperty( "EventNumbers"       , m_eventNumbers={0}        );
   declareProperty( "OutputFile"         , m_outputFile="particles"  );
   declareProperty( "OutputLevel"        , m_outputLevel=1           );
 }
@@ -106,6 +106,7 @@ StatusCode EventTape::initialize()
   m_store->add( new TH1F( "phi"  , "#phi Main particles; #phi; Count", 50, -3.2, 3.2 ) );
   m_store->add( new TH1F( "pt"  , "P_{T} Main particles; P_{T}[GeV]; Count", 100, 0, 100 ) );
 
+
   for( auto &alg : m_algs ){
     if ( alg->initialize().isFailure() ){
       MSG_FATAL( "It's not possible to initialize the event filter with name " << alg->name() );
@@ -121,10 +122,11 @@ StatusCode EventTape::initialize()
 StatusCode EventTape::execute() 
 {
 
-  for (int iEvent = 0; iEvent < m_nEvent; ++iEvent) {
+  for (int iEvent=0; iEvent<m_eventNumbers.size(); iEvent++) {
     
+    int eventNumber = m_eventNumbers.at(iEvent);
 
-    MSG_INFO( "Running event " << iEvent << "..." );
+    MSG_INFO( "Running event " << iEvent << " with eventNumber " <<  eventNumber);
     clear();
     
     generator::Event event;
@@ -149,7 +151,7 @@ StatusCode EventTape::execute()
       MSG_INFO("End of generator file");
       break;
     }
-
+    event.setEventNumber(eventNumber);
     dump( event );
 
   }// Loop over events

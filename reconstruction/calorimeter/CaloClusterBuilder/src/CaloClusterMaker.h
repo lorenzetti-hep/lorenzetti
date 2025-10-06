@@ -7,7 +7,7 @@
 #include "GaugiKernel/Algorithm.h"
 #include "CaloCell/CaloCellContainer.h"
 #include "CaloCluster/CaloClusterContainer.h"
-#include "EventInfo/EventSeedContainer.h"
+#include "EventInfo/SeedContainer.h"
 #include "ShowerShapes.h"
 
 

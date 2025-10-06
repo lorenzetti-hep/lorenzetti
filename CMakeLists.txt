@@ -30,6 +30,7 @@ endif()
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 include(${Geant4_USE_FILE})
+include_directories(${CMAKE_SOURCE_DIR} ${Geant4_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 
 #----------------------------------------------------------------------------
@@ -70,14 +71,15 @@ add_subdirectory( events/CaloCluster )
 add_subdirectory( events/EventInfo )
 add_subdirectory( events/TruthParticle )
 add_subdirectory( events/CaloRings )
-add_subdirectory( events/Particle)
+add_subdirectory( events/Egamma)
 
 # reconstruction package
 add_subdirectory( reconstruction/calorimeter/CaloCellBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloClusterBuilder )
 add_subdirectory( reconstruction/calorimeter/CaloRingsBuilder )
 add_subdirectory( reconstruction/io/RootStreamBuilder )
-add_subdirectory( physics/egamma/CaloCutBasedHypo )
+add_subdirectory( reconstruction/physics/EgammaBuilder )
+add_subdirectory( reconstruction/reco )
 
 # detector definitions
 add_subdirectory( geometry/ATLAS )
@@ -88,6 +90,7 @@ add_subdirectory( generator/filters )
 add_subdirectory( generator/evtgen )
 
 
+add_subdirectory( scripts )
 
 
 
@@ -101,13 +104,13 @@ add_library(lorenzetti SHARED
   $<TARGET_OBJECTS:EventInfo>
   $<TARGET_OBJECTS:TruthParticle>
   $<TARGET_OBJECTS:CaloRings>
-  $<TARGET_OBJECTS:Particle>
+  $<TARGET_OBJECTS:Egamma>
   $<TARGET_OBJECTS:SpacePoint>
   $<TARGET_OBJECTS:CaloCellBuilder>
   $<TARGET_OBJECTS:CaloClusterBuilder>
   $<TARGET_OBJECTS:CaloRingsBuilder>
   $<TARGET_OBJECTS:RootStreamBuilder>
-  $<TARGET_OBJECTS:CaloCutBasedHypo>
+  $<TARGET_OBJECTS:EgammaBuilder>
   $<TARGET_OBJECTS:GenKernel>
   $<TARGET_OBJECTS:filters>
   $<TARGET_OBJECTS:evtgen>

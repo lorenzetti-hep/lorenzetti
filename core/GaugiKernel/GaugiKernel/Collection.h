@@ -37,8 +37,10 @@ namespace SG{
   template<class T>
   Collection<T>::~Collection<T>()
   {
-    for(auto& p : m_collection)
-      if(p.second)  delete p.second;
+    for(auto& p : m_collection){
+      if(p.second)
+        delete p.second;
+    }
     m_collection.clear();
   }
 

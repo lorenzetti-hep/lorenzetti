@@ -4,7 +4,7 @@
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "EventInfo/EventSeedConverter.h"
+#include "EventInfo/SeedConverter.h"
 #include "TTree.h"
 #include "RootStreamHITMaker.h"
 #include "GaugiKernel/EDM.h"
@@ -35,6 +35,10 @@ RootStreamHITMaker::RootStreamHITMaker( std::string name ) :
   declareProperty( "OnlyRoI"                 , m_onlyRoI=false                         );
   declareProperty( "EtaWindow"               , m_etaWindow=0.6                         );
   declareProperty( "PhiWindow"               , m_phiWindow=0.6                         );
+  
+  // new for including cell defects
+  declareProperty( "doDefects"               , m_doDefects=false                       );
+  declareProperty( "cellHash"                , m_cellHash={}                           );                 
 }
 
 //!=====================================================================
@@ -47,7 +51,7 @@ RootStreamHITMaker::~RootStreamHITMaker()
 StatusCode RootStreamHITMaker::initialize()
 {
   CHECK_INIT();
-  //setMsgLevel(m_outputLevel);
+  setMsgLevel(m_outputLevel);
   return StatusCode::SUCCESS;
 }
 
@@ -61,12 +65,12 @@ StatusCode RootStreamHITMaker::bookHistograms( SG::EventContext &ctx ) const
   std::vector<xAOD::CaloHit_t             > container_hits;
   std::vector<xAOD::EventInfo_t           > container_event;
   std::vector<xAOD::TruthParticle_t       > container_truth;
-  std::vector<xAOD::EventSeed_t           > container_seeds;
+  std::vector<xAOD::Seed_t                > container_seeds;
 
   store->cd();
   TTree *tree = new TTree(m_ntupleName.c_str(), "");
   tree->Branch( ("EventInfoContainer_"+m_outputEventKey).c_str()     , &container_event     );
-  tree->Branch( ("EventSeedContainer_"+m_outputSeedsKey).c_str()     , &container_seeds     );
+  tree->Branch( ("SeedContainer_"+m_outputSeedsKey).c_str()     , &container_seeds     );
   tree->Branch( ("TruthParticleContainer_"+m_outputTruthKey).c_str() , &container_truth     );
   tree->Branch( ("CaloHitContainer_"+m_outputHitsKey).c_str()        , &container_hits      );
   
@@ -152,13 +156,13 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
  
   std::vector<xAOD::CaloHit_t           > *container_hits       = nullptr;
   std::vector<xAOD::EventInfo_t         > *container_event      = nullptr;
-  std::vector<xAOD::EventSeed_t         > *container_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *container_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *container_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
 
   InitBranch( tree, ("EventInfoContainer_"+m_outputEventKey).c_str()     , &container_event     );
-  InitBranch( tree, ("EventSeedContainer_"+m_outputSeedsKey).c_str()     , &container_seeds     );
+  InitBranch( tree, ("SeedContainer_"+m_outputSeedsKey).c_str()          , &container_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"+m_outputTruthKey).c_str() , &container_truth     );
   InitBranch( tree, ("CaloHitContainer_"+m_outputHitsKey).c_str()        , &container_hits      );
 
@@ -179,16 +183,16 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
 
   { // Serialize Seed
     MSG_DEBUG("Serialize Seed..");
-    SG::ReadHandle<xAOD::EventSeedContainer> container( m_inputSeedsKey, ctx );
+    SG::ReadHandle<xAOD::SeedContainer> container( m_inputSeedsKey, ctx );
 
     if( !container.isValid() )
     {
-      MSG_FATAL("It's not possible to read the xAOD::EventSeedContainer from this Context using this key " << m_inputSeedsKey );
+      MSG_FATAL("It's not possible to read the xAOD::SeedContainer from this Context using this key " << m_inputSeedsKey );
     }
 
     for (const auto seed : **container.ptr() ){
-      xAOD::EventSeed_t seed_t;
-      xAOD::EventSeedConverter cnv;
+      xAOD::Seed_t seed_t;
+      xAOD::SeedConverter cnv;
       cnv.convert( seed, seed_t );
       container_seeds->push_back(seed_t);
     }
@@ -218,12 +222,26 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
           if ( deltaEta < m_etaWindow/2 && deltaPhi < m_phiWindow/2 )
           {
             match=true;
-            break;
+            // break;
+            }
+          else if (m_doDefects) 
+          {
+            // Check if hit->hash() is in any of the vectors inside m_cellHash
+            for (const auto& defectList : m_cellHash) {
+              if (std::find(defectList.begin(), defectList.end(), hit->hash()) != defectList.end()) {
+                match = true; // if hash is on list of defect cell, then we keep the hit
+                MSG_INFO("Hit with hash " << hit->hash() << " is in the defect list, keeping it.");
+                // break;
+              }
+            }  
           }
-        }
+          if (match) break;   // break if we found a match after checking the 2 conditions
+          
+        } 
 
         if(!match) continue; // skip this hit
-      }
+
+      } // end of if(m_onlyRoI)
 
       xAOD::CaloHit_t hit_t;
       xAOD::CaloHitConverter hit_cnv;
@@ -239,6 +257,9 @@ StatusCode RootStreamHITMaker::serialize( EventContext &ctx ) const
     }// check if hit is inside of the window
 
     MSG_DEBUG("Container hit size is " << container_hits->size() << " and total energy " << etot << " MeV");
+    for (const auto hit : *container_hits) {
+      MSG_DEBUG("Hit hash: " << hit.hash );
+    }
 
   }
 

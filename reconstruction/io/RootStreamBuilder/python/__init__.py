@@ -21,9 +21,9 @@ from . import RootStreamESDMaker
 __all__.extend(RootStreamESDMaker.__all__)
 from .RootStreamESDMaker import *
 
-from . import RootStreamNTUPLEMaker
-__all__.extend(RootStreamNTUPLEMaker.__all__)
-from .RootStreamNTUPLEMaker import *
+from . import RootStreamNtupleMaker
+__all__.extend(RootStreamNtupleMaker.__all__)
+from .RootStreamNtupleMaker import *
 
 from . import RootStreamHITReader
 __all__.extend(RootStreamHITReader.__all__)
@@ -33,3 +33,6 @@ from . import RootStreamESDReader
 __all__.extend(RootStreamESDReader.__all__)
 from .RootStreamESDReader import *
 
+from . import RootStreamAODReader
+__all__.extend(RootStreamAODReader.__all__)
+from .RootStreamAODReader import *

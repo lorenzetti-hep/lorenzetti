@@ -1,0 +1,52 @@
+{
+    "run":{
+        "nov"         : 100,
+        "nov_per_job" : 10,
+        "run_number"  : 20250122,
+        "seed"        : 512
+    },
+    "stages" : [
+        {
+            "name"   : "step_1",
+            "script" : "gen_jets.py",
+            "extra_args"        : {
+                "seed"          : "%SEED",
+                "run-number"    : "%RUN_NUMBER",
+                "event-numbers" : "%EVENT_NUMBERS"
+            },
+            "output" : "%JOB_WORKAREA/step_1/JF17.EVT.root"
+        },
+        {
+            "name"   : "step_2",
+            "script" : "simu_trf.py",
+            "extra_args"   : {
+                "timeout" : 30, 
+                "number-of-threads" : "%CPU_CORES"
+            },
+            "input" : "%JOB_WORKAREA/step_1/JF17.EVT.root",
+            "output": "%JOB_WORKAREA/step_2/JF17.HIT.root"
+        },
+        {
+            "name" : "step_3",
+            "script" : "digit_trf.py",
+            "extra_args":{},
+            "input" : "%JOB_WORKAREA/step_2/JF17.HIT.root",
+            "output": "%JOB_WORKAREA/step_3/JF17.ESD.root"
+        },
+        {
+            "name" : "step_4",
+            "script" : "reco_trf.py",
+            "extra_args":{},
+            "input" : "%JOB_WORKAREA/step_3/JF17.ESD.root",
+            "output": "%JOB_WORKAREA/step_4/JF17.AOD.root"
+        },
+        {
+            "name" : "step_5",
+            "script" : "ntuple_trf.py",
+            "extra_args" : {},
+            "input" : "%JOB_WORKAREA/step_4/JF17.AOD.root",
+            "output": "%JOB_WORKAREA/step_5/JF17.root"   
+        }
+
+    ]
+}

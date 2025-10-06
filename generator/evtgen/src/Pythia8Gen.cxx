@@ -13,7 +13,6 @@ Pythia8Gen::Pythia8Gen() : IMsgService("Pythia8"),
 {
   declareProperty("File", m_file = "");
   declareProperty("Seed", m_seed = 0);
-  declareProperty("EventNumber", m_eventNumber = 0);
 }
 
 StatusCode Pythia8Gen::initialize()
@@ -78,7 +77,7 @@ StatusCode Pythia8Gen::execute(HepMC3::GenEvent &evt)
   MSG_DEBUG("Pythia8 to HepMC3");
   converter.fill_next_event(m_gun.event, &evt);
 
-  evt.set_event_number(m_eventNumber + m_nEvent);
+  evt.set_event_number(m_nEvent);
 
   return StatusCode::SUCCESS;
 }

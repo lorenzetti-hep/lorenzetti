@@ -3,10 +3,10 @@
 
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
-#include "EventInfo/EventSeed.h"
+#include "EventInfo/Seed.h"
 #include "CaloRings/CaloRings.h"
 #include "CaloCluster/CaloCluster.h"
-#include "Particle/Electron.h"
+#include "Egamma/Electron.h"
 #include "TruthParticle/TruthParticle.h"
 
 #include "GaugiKernel/StatusCode.h"

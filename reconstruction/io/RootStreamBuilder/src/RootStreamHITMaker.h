@@ -4,7 +4,7 @@
 #include "CaloCell/enumeration.h"
 #include "EventInfo/EventInfo.h"
 #include "TruthParticle/TruthParticle.h"
-#include "EventInfo/EventSeed.h"
+#include "EventInfo/Seed.h"
 #include "GaugiKernel/StatusCode.h"
 #include "GaugiKernel/DataHandle.h"
 #include "GaugiKernel/Algorithm.h"
@@ -61,6 +61,10 @@ class RootStreamHITMaker : public Gaugi::Algorithm
     float m_etaWindow;
     float m_phiWindow;
     bool m_onlyRoI;
+
+    // new for including cell defects
+    bool m_doDefects; 
+    std::vector<std::vector<int>> m_cellHash;
 
     int m_outputLevel;
 };

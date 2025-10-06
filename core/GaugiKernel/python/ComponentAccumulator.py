@@ -10,8 +10,10 @@ import os
 #
 class ComponentAccumulator( Logger ):
 
-
-  def __init__(self, name, output, detector=None ):
+  def __init__(self, 
+               name            : str, 
+               output          : str, 
+              ):
     
     Logger.__init__(self)
     import ROOT
@@ -23,7 +25,6 @@ class ComponentAccumulator( Logger ):
     self.__ctx = SG.EventContext("EventContext")
     self.__store = SG.StoreGate(output)
     self.__ctx.setStoreGateSvc(self.__store)
-    self.__detector = detector
 
 
   #
@@ -66,7 +67,6 @@ class ComponentAccumulator( Logger ):
 
     if nov < 0:
       nov = self.GetEntries()
-  
     elif nov > self.GetEntries():
       nov = self.GetEntries()
   
@@ -85,7 +85,3 @@ class ComponentAccumulator( Logger ):
     self.__ctx.getStoreGateSvc().save()
  
   
-
-  def detector(self):
-    return self.__detector
-    

@@ -7,7 +7,7 @@
 #include "CaloHit/CaloHitConverter.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "EventInfo/EventSeedConverter.h"
+#include "EventInfo/SeedConverter.h"
 
 #include "RootStreamHITReader.h"
 #include "GaugiKernel/EDM.h"
@@ -105,7 +105,7 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
 {
   std::vector<xAOD::CaloHit_t           > *collection_hits       = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
-  std::vector<xAOD::EventSeed_t         > *collection_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *collection_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
@@ -115,7 +115,7 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
   InitBranch( tree, ("EventInfoContainer_"+m_eventKey).c_str()     , &collection_event     );
-  InitBranch( tree, ("EventSeedContainer_"+m_seedsKey).c_str()     , &collection_seeds     );
+  InitBranch( tree, ("SeedContainer_"+m_seedsKey).c_str()          , &collection_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"+m_truthKey).c_str() , &collection_truth     );
   InitBranch( tree, ("CaloHitContainer_"+m_hitsKey).c_str()        , &collection_hits      );
 
@@ -137,14 +137,14 @@ StatusCode RootStreamHITReader::deserialize( int evt, EventContext &ctx ) const
   }
 
 
-  { // deserialize EventSeed
-    SG::WriteHandle<xAOD::EventSeedContainer> container(m_seedsKey, ctx);
-    container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
+  { // deserialize Seed
+    SG::WriteHandle<xAOD::SeedContainer> container(m_seedsKey, ctx);
+    container.record( std::unique_ptr<xAOD::SeedContainer>(new xAOD::SeedContainer()));
 
-    xAOD::EventSeedConverter cnv;
+    xAOD::SeedConverter cnv;
     for( auto& seed_t : *collection_seeds)
     {
-      xAOD::EventSeed  *seed=nullptr;
+      xAOD::Seed  *seed=nullptr;
       cnv.convert(seed_t, seed);
       MSG_DEBUG( "Seed in eta = " << seed->eta() << ", phi = " << seed->phi());
       container->push_back(seed);

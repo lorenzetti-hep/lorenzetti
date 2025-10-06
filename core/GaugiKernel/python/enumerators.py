@@ -5,7 +5,7 @@ __all__ = [
 
 
 from operator import itemgetter
-from GaugiKernel.utils  import get_attributes
+from GaugiKernel import get_attributes
 
 
 class EnumStringification( object ):

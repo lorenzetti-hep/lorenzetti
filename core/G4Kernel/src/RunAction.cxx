@@ -28,7 +28,7 @@ RunAction::RunAction( int numberOfThreads, int timeout, std::vector<Gaugi::Algor
 RunAction::~RunAction()
 {
   MSG_INFO( "~RunAction()" );	
-  delete G4AnalysisManager::Instance();  
+  //delete G4AnalysisManager::Instance();  
 }
 
 

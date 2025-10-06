@@ -46,6 +46,9 @@ StatusCode PulseGenerator::initialize()
   setMsgLevel( (MSG::Level)m_outputLevel );
   MSG_DEBUG( "Reading shaper values from: " << m_shaperFile << " and " << m_nsamples << " samples.");
   MSG_DEBUG("doDefects "<<m_doDefects<<" cell hash "<<m_cellHash<<" noise factor "<<m_noiseFactor)
+  if (m_doDefects){
+    MSG_INFO("artificial anomalies will be applied to some cell signals")
+  }
   ReadShaper( m_shaperFile );
   return StatusCode::SUCCESS;
 }
@@ -94,31 +97,44 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
   // if (cell->hash()/1e7 <=17){
   // MSG_INFO(cell->hash())}
   // only introduce defects if m_doDefects is true
+  bool anom_flag(false);
   if (m_doDefects){ 
     for (auto group : m_cellHash ) {
       for (auto hash : group){
+        unsigned long int detector_part = static_cast<unsigned long int>(cell->hash() / 1e7);
+        MSG_DEBUG("detector part: "<<detector_part<<" vs hash: "<<hash);
         // only introduce defects for specific cells and specific events
-        if ((cell->hash() == static_cast<unsigned long int>(hash)) and (eventNumber >= m_noisyEvents[index][0]) and (eventNumber <= m_noisyEvents[index][1])){
+        if ((detector_part == static_cast<unsigned long int>(hash)) && 
+            (eventNumber >= m_noisyEvents[index][0]) && 
+            (eventNumber <= m_noisyEvents[index][1]))
+        {
           MSG_INFO("perturbed event: "<<eventNumber)
           MSG_INFO("events concerned by noise: "<<m_noisyEvents[index])
-          MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
-          // Add gaussian noise with increased noiseStd
-          AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor[index]*m_noiseStd);  
+          MSG_INFO("perturbed cell hash: "<<cell->hash()<<" vs "<<hash);
+          MSG_INFO("pulse sum : "<<pulse_sum << " with mean " << m_noiseMean << " and std " << m_noiseStd);
+          MSG_INFO("simulating dead cell, setting pulse to zero");
+          pulse_sum.assign(pulse_size, 0.0);
+          cell->edep(0, 0.0); // reset energy deposit
+          cell->setE(0.0); // reset estimated energy
+          anom_flag = true;
+          MSG_INFO("pulse sum after noise: "<<pulse_sum);
+          MSG_INFO("cell energy after noise: "<<cell->e());
         }
       }
       ++index;
     }
   }  
   else{
+    MSG_DEBUG("default noise")
     // Add gaussian noise
     AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseStd);
   }
-  
-
+ 
+  cell->setAnomalous(anom_flag);
+  MSG_DEBUG("local anomalous flag "<< anom_flag << " vs cell anomalous flag " << cell->anomalous() );
 
   // Add the integrated pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );
-
 
   return StatusCode::SUCCESS;
 }

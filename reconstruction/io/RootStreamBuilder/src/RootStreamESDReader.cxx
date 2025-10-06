@@ -3,9 +3,10 @@
 #include "TruthParticle/TruthParticleContainer.h"
 #include "CaloCell/CaloCellConverter.h"
 #include "CaloCell/CaloDetDescriptorConverter.h"
+#include "CaloCell/CaloDetDescriptorContainer.h"
 #include "EventInfo/EventInfoConverter.h"
 #include "TruthParticle/TruthParticleConverter.h"
-#include "EventInfo/EventSeedConverter.h"
+#include "EventInfo/SeedConverter.h"
 #include "RootStreamESDReader.h"
 #include "GaugiKernel/EDM.h"
 
@@ -102,7 +103,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   std::vector<xAOD::CaloDetDescriptor_t > *collection_descriptor = nullptr;
   std::vector<xAOD::CaloCell_t          > *collection_cells      = nullptr;
   std::vector<xAOD::EventInfo_t         > *collection_event      = nullptr;
-  std::vector<xAOD::EventSeed_t         > *collection_seeds      = nullptr;
+  std::vector<xAOD::Seed_t              > *collection_seeds      = nullptr;
   std::vector<xAOD::TruthParticle_t     > *collection_truth      = nullptr;
 
   MSG_DEBUG( "Link all branches..." );
@@ -112,7 +113,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   TTree *tree = (TTree*)file->Get(m_ntupleName.c_str());
 
   InitBranch( tree, ("EventInfoContainer_"         + m_eventKey).c_str() , &collection_event     );
-  InitBranch( tree, ("EventSeedContainer_"         + m_seedsKey).c_str() , &collection_seeds     );
+  InitBranch( tree, ("SeedContainer_"              + m_seedsKey).c_str() , &collection_seeds     );
   InitBranch( tree, ("TruthParticleContainer_"     + m_truthKey).c_str() , &collection_truth     );
   InitBranch( tree, ("CaloCellContainer_"          + m_cellsKey).c_str() , &collection_cells     );
   InitBranch( tree, ("CaloDetDescriptorContainer_" + m_cellsKey).c_str() , &collection_descriptor);
@@ -121,6 +122,7 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
 
 
   MSG_DEBUG("Deserialize TruthParticle...");
+  
   { // deserialize EventInfo
     SG::WriteHandle<xAOD::TruthParticleContainer> container(m_truthKey, ctx);
     container.record( std::unique_ptr<xAOD::TruthParticleContainer>(new xAOD::TruthParticleContainer()));
@@ -134,9 +136,11 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
       container->push_back(par);
     }
   }
-
+  
+  
 
   MSG_DEBUG("Deserialize EventInfo...");
+  
   { // deserialize EventInfo
 
     SG::WriteHandle<xAOD::EventInfoContainer> container(m_eventKey, ctx);
@@ -149,49 +153,79 @@ StatusCode RootStreamESDReader::deserialize( int evt, EventContext &ctx ) const
   }
   
 
-  MSG_DEBUG("Deserialize EventSeed...");
-  { // deserialize EventSeed
-    SG::WriteHandle<xAOD::EventSeedContainer> container(m_seedsKey, ctx);
-    container.record( std::unique_ptr<xAOD::EventSeedContainer>(new xAOD::EventSeedContainer()));
+  MSG_DEBUG("Deserialize Seed...");
+  { // deserialize Seed
+    SG::WriteHandle<xAOD::SeedContainer> container(m_seedsKey, ctx);
+    container.record( std::unique_ptr<xAOD::SeedContainer>(new xAOD::SeedContainer()));
 
-    xAOD::EventSeedConverter cnv;
+    xAOD::SeedConverter cnv;
     for( auto& seed_t : *collection_seeds)
     {
-      xAOD::EventSeed  *seed=nullptr;
+      xAOD::Seed  *seed=nullptr;
       cnv.convert(seed_t, seed);
       MSG_DEBUG( "Seed in eta = " << seed->eta() << ", phi = " << seed->phi());
       container->push_back(seed);
     }
   }
+  
 
   MSG_DEBUG("Deserialize CaloDetDescriptor... ");
+  xAOD::descriptor_links_t descriptor_links;
   {
-    std::map<int, xAOD::CaloDetDescriptor*> descriptor_links;
-    int link=0;
+    SG::WriteHandle<xAOD::CaloDetDescriptorContainer> container( m_cellsKey+"_Aux", ctx );
+    container.record( std::unique_ptr<xAOD::CaloDetDescriptorContainer>(new xAOD::CaloDetDescriptorContainer()) );
+    std::map<unsigned long int,const xAOD::CaloDetDescriptor_t> descriptor_map;
     MSG_DEBUG(collection_descriptor->size());
     for (auto &descriptor_t : *collection_descriptor )
     {
+
+      // NOTE: avoid cell duplication given RoI superposition
+      if ( descriptor_map.count(descriptor_t.hash)){
+        continue;
+      }
+      descriptor_map.insert( std::make_pair( descriptor_t.hash, descriptor_t ) );
       //MSG_DEBUG(descriptor_t.hash);
       xAOD::CaloDetDescriptor *descriptor = nullptr;
       xAOD::CaloDetDescriptorConverter cnv;
       cnv.convert(descriptor_t, descriptor); // alloc memory
-      descriptor_links[link] = descriptor;
-      link++;
+      descriptor_links[descriptor->hash()] = descriptor;
+      container->push_back(descriptor);
     }
+
+  }
+  
+
+  MSG_DEBUG("Deserialize CaloCells... ");
+  {
 
     SG::WriteHandle<xAOD::CaloCellContainer> container(m_cellsKey, ctx);
     container.record( std::unique_ptr<xAOD::CaloCellContainer>(new xAOD::CaloCellContainer()));
-
+    std::map<unsigned long int,const xAOD::CaloDetDescriptor*> descriptor_map;
     for( auto &cell_t : *collection_cells )
     {
-      xAOD::CaloCell *cell = nullptr;
-      xAOD::CaloCellConverter cnv;
-      cnv.convert(cell_t, cell); // alloc memory
-      cell->setDescriptor( descriptor_links[cell_t.descriptor_link] );
-      container->push_back(cell);
-    }
-  }
 
+      if ( descriptor_links.count(cell_t.descriptor_link)  )
+      {
+        auto descriptor = descriptor_links[cell_t.descriptor_link];
+
+        // NOTE: avoid cell duplication given RoI superposition
+        if ( descriptor_map.count(descriptor->hash())){
+          MSG_FATAL("There is a cell duplication. Please check the code. Abort");
+          continue;
+        }
+
+        descriptor_map.insert( std::make_pair( descriptor->hash(), descriptor ) );
+        xAOD::CaloCell *cell = nullptr;
+        xAOD::CaloCellConverter cnv;
+        cnv.convert(cell_t, cell); // alloc memory
+        cell->setDescriptor( descriptor );
+        container->push_back(cell);
+      }  
+      
+    }
+
+  }
+  
 
   delete collection_descriptor;
   delete collection_seeds     ;

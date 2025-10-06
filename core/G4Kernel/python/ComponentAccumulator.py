@@ -32,15 +32,14 @@ class ComponentAccumulator(Cpp):
         # set the geant detector into the geant
         self._core.setDetectorConstruction(self.__detector.core())
         self.setProperty("OutputFile", OutputFile)
+        #self.setProperty("OutputLevel", OutputLevel)
         self.setProperty("VisMac", self.__detector.VisMac)
         self.setProperty("NumberOfThreads", NumberOfThreads)
         self.setProperty("Timeout", Timeout)
         self.setProperty("RunVis", RunVis)
         self.setProperty("Seed", Seed)
-        # self.setProperty( "OutputLevel"     , OutputLevel             )
-        # Set the vis mac file into the manager core
-        self.outputFiles = [(self.OutputFile+".%d" % thread)
-                            for thread in range(self.NumberOfThreads)]
+        self.outputFiles = [ f"{self.OutputFile}.{thread}" for thread in range(self.NumberOfThreads)]
+
 
     def __del__(self):
         del self._core
@@ -48,7 +47,7 @@ class ComponentAccumulator(Cpp):
         time.sleep(2)
         self.merge()
 
-    def run(self, evt: int = None):
+    def run(self, evt: int = -1):
         """
         Runs the events in the simulation.
 
@@ -57,9 +56,9 @@ class ComponentAccumulator(Cpp):
         evt : int, optional
             Number of events to run if None, runs all, by default None
         """
-        if evt is None:
-            evt = self.__numberOfEvents
-        elif evt > self.__numberOfEvents:
+        if evt<0:
+            evt=self.__numberOfEvents
+        if (evt > self.__numberOfEvents):
             evt = self.__numberOfEvents
         self._core.run(evt)
 
@@ -90,10 +89,8 @@ class ComponentAccumulator(Cpp):
         """
         return self.__detector
 
+
     def merge(self):
-        files = ' '.join(self.outputFiles)
-        command = f"hadd -f {self.OutputFile} {files}"
-        os.system(command)
-        # remove thread files
-        for fname in self.outputFiles:
-            os.system('rm ' + fname)
+        os.system(f"hadd -f {self.OutputFile} {' '.join(self.outputFiles)}")
+        [os.remove(f) for f in self.outputFiles]
+

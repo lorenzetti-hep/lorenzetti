@@ -19,7 +19,7 @@ namespace xAOD{
             ~CaloRingsConverter()=default;
 
             // convert a class object into a struct
-            bool convert( const CaloRings *, CaloRings_t & , cluster_links_t &) ;
+            bool convert( const CaloRings *, CaloRings_t & ) ;
             bool convert( const CaloRings_t &rings_t, CaloRings *&rings );
 
         private:
