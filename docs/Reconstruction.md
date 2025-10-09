@@ -48,6 +48,17 @@ An example for full customized digitalization step:
 digit_trf.py -i HIT.root -o ESD.root --simulateCrossTalk --estimationMethodHAD COF
 ```
 
+It is now also possible to inject anomalies associated with detector defects in this simulation step.
+We distinguish 2 types of anomalies: anomalies related to inactive (dead) detector modules or increased noise in cells associated with a physics signal.
+For this, the file `reconstruction/io/RootStreamBuilder/python/RootStreamFlags.py` should be modified (select the type of anomaly and concerned cells etc.) and the ```doDefects``` should be used when running `digit_trf.py`.
+For example:
+ 
+```
+digit_trf.py -i HIT.root -o ESD.root --doDefects --noiseFactor 20
+```
+multiplies the standard deviation of the default noise in cells with physics signal by 20 (```noiseFactor``` is not needed for dead detector modules).
+
+
 ### Event Reconstruction
 
 Use the third step output to feed `reco_trf.py` script. For instance:

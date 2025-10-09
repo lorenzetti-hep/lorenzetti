@@ -29,6 +29,12 @@ The standard detector in the Lorenzetti framework consist in a eletromagnetic ca
 
 It is possible, by using Geant4 modules to change the geometry, the layers and the cell granularity, allowing a high level of customization of the full detector.
 
+
+## Anomalies
+
+This branch contains an implementation to add anomalies in the digitization step, corresponding to potential detector defects.
+Details are given in [Reconstruction](docs/Reconstruction.md).
+
 ## Manual:
 
 - [Getting Started](docs/Getting_Started.md)

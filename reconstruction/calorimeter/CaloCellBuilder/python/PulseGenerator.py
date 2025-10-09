@@ -21,9 +21,10 @@ class PulseGenerator( Cpp ):
                 NoiseStd        : float=0,
                 SamplingRate    : float=0,
                 StartSamplingBC : float=0,
-                doDefects       : bool=False,
+                doDefects       : bool=False,  // argument passed through digit_trf
+                deadModules     : bool=flags.deadModules,
                 cellHash        : list=flags.cellHash,
-                noiseFactor     : list=[1],
+                noiseFactor     : list=[1],  // argument passed through digit_trf
                 noisyEvents     : list=flags.noisyEvents,
               ):
                 
@@ -41,6 +42,7 @@ class PulseGenerator( Cpp ):
 
     # new properties for including cell defects
     self.setProperty( "doDefects"       , doDefects       )
+    self.setProperty( "deadModules"     , deadModules     )
     self.setProperty( "cellHash"        , cellHash        )
     self.setProperty( "noiseFactor"     , noiseFactor     )
     self.setProperty( "noisyEvents"     , noisyEvents     )

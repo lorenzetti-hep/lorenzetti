@@ -29,6 +29,7 @@ PulseGenerator::PulseGenerator( std::string name ) :
 
   // new for including cell defects
   declareProperty( "doDefects"          , m_doDefects=false                 );
+  declareProperty( "deadModules"        , m_deadModules=false               );
   declareProperty( "cellHash"           , m_cellHash={}                     );
   declareProperty( "noiseFactor"        , m_noiseFactor={}                  );
   declareProperty( "noisyEvents"        , m_noisyEvents={}                  );
@@ -94,11 +95,9 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
 
   std::size_t index = 0;  // Initialize index
 
-  // if (cell->hash()/1e7 <=17){
-  // MSG_INFO(cell->hash())}
   // only introduce defects if m_doDefects is true
   bool anom_flag(false);
-  if (m_doDefects){ 
+  if (m_doDefects && m_deadModules){ 
     for (auto group : m_cellHash ) {
       for (auto hash : group){
         unsigned long int detector_part = static_cast<unsigned long int>(cell->hash() / 1e7);
@@ -123,6 +122,27 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
       }
       ++index;
     }
+  }
+  elif (m_doDefects && !m_deadModules){
+    for (auto group : m_cellHash ) {
+      for (auto hash : group){
+        // only introduce defects for specific cells and specific events
+        if ((cell->hash() == static_cast<unsigned long int>(hash)) &&
+         (eventNumber >= m_noisyEvents[index][0]) && 
+         (eventNumber <= m_noisyEvents[index][1])){
+            MSG_INFO("perturbed event: "<<eventNumber)
+            MSG_INFO("events concerned by noise: "<<m_noisyEvents[index])
+            MSG_INFO("increasing noise for cell with hash id: "<<cell->hash());
+            // Add gaussian noise with increased noiseStd
+            AddGaussianNoise(pulse_sum, m_noiseMean, m_noiseFactor[index]*m_noiseStd);  
+            anom_flag = true;
+            MSG_INFO("pulse sum after noise: "<<pulse_sum);
+            MSG_INFO("cell energy after noise: "<<cell->e());
+        }
+      }
+      ++index;
+    }
+
   }  
   else{
     MSG_DEBUG("default noise")

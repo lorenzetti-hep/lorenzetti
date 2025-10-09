@@ -54,7 +54,7 @@ def parse_args():
     parser.add_argument('--noiseFactor', action='store',
                         dest='noiseFactor', required=False,
                         type=float, default=1.0,
-                        help='The noise factor to apply to the cells.')
+                        help='The noise factor to apply for noisy cell anomalies.')
 
     return parser
 
