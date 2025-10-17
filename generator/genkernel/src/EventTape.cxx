@@ -81,6 +81,8 @@ StatusCode EventTape::initialize()
   m_tree->Branch("RunNumber"   , &m_runNumber   , "runNumber/I" );
   m_tree->Branch("EventNumber" , &m_eventNumber , "eventNumber/I" );
   m_tree->Branch("avg_mu"      , &m_avg_mu, "avg_mu/F");
+  m_tree->Branch("tot_mu"      , &m_tot_mu, "tot_mu/F");
+
   m_tree->Branch("p_isMain"    , &m_p_isMain     );
   m_tree->Branch("p_pdg_id"    , &m_p_pdg_id     ); 
   m_tree->Branch("p_bc_id"     , &m_p_bc_id      ); 
@@ -206,6 +208,7 @@ void EventTape::dump( Event &event )
 
   m_avg_mu      = event.avgmu();
   m_eventNumber = event.eventNumber();
+  m_tot_mu      = event.totmu();
 
   m_store->hist1("avgmu")->Fill( m_avg_mu  );
 

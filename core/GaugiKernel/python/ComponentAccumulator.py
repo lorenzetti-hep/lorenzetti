@@ -1,7 +1,7 @@
-
 __all__ = ["ComponentAccumulator"]
 
 from GaugiKernel import Logger
+from typing import List
 import numpy as np
 import os
 
@@ -26,17 +26,10 @@ class ComponentAccumulator( Logger ):
     self.__store = SG.StoreGate(output)
     self.__ctx.setStoreGateSvc(self.__store)
 
-
-  #
-  # Set the reader as first alg
-  #
   def SetReader(self, reader):
     self.__reader = reader
     self.__acc.push_back(reader.core())
 
-  #
-  # Add algorith to the main sequence
-  #
   def __add__( self, algs ):
     if type(algs) is not list:
       algs = [algs]
@@ -44,44 +37,18 @@ class ComponentAccumulator( Logger ):
       self.__acc.push_back(alg.core())
     return self
 
-  #
-  # Get entries
-  #
   def GetEntries(self):
     return self.__reader.GetEntries()
 
-  #
-  # Configure
-  #
   def configure(self):
-
     self.__acc.initialize()
     self.__acc.bookHistograms(self.__ctx)
 
-  #
-  # Run events
-  #
-  def run( self , nov=None , index=None ):
-
+ 
+  def run( self , events : List[int] ):
     self.configure()
-
-    if nov < 0:
-      nov = self.GetEntries()
-    elif nov > self.GetEntries():
-      nov = self.GetEntries()
-  
-    if index is not None:
-      stop = nov + index
-      if stop > self.GetEntries():
-        stop = self.GetEntries()
-      for evt in range(index, stop, 1):
-        self.__acc.run(self.__ctx, evt)
-
-    else:
-      for evt in range(nov):
-        self.__acc.run(self.__ctx, evt)
-
+    for evt in events:
+      self.__acc.run(self.__ctx, evt)
     self.__acc.finalize()
     self.__ctx.getStoreGateSvc().save()
  
-  

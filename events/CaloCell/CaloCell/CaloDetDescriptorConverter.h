@@ -29,6 +29,7 @@ namespace xAOD{
         unsigned long int hash;
         float z;
         bool anomalous;
+        float sigma;
     };
 
     class CaloDetDescriptorConverter{

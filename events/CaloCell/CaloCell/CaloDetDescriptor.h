@@ -118,12 +118,12 @@ namespace xAOD{
       PRIMITIVE_SETTER_AND_GETTER( int, m_bcid_end    , set_bcid_end    , bcid_end      );
       /* Time space (in ns) between two bunch crossings */
       PRIMITIVE_SETTER_AND_GETTER( float, m_bc_duration , set_bc_duration , bc_duration );
-      
-
       /*! Integrated pulse in bunch crossing zero */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float>, m_pulse, setPulse, pulse );
       /*! Time (in ns) for each bunch crossing */
       PRIMITIVE_SETTER_AND_GETTER( std::vector<float> , m_time , setTime , time   );
+      
+      PRIMITIVE_SETTER_AND_GETTER( float , m_sigma , setSigma , sigma   );
 
 
       /*
@@ -203,6 +203,7 @@ namespace xAOD{
       /*! Access information unique ID number */
       unsigned long int m_hash;
       float m_z;
+      float m_sigma;
 
       bool m_anomalous;
 

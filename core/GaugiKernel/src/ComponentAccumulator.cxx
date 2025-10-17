@@ -1,5 +1,6 @@
 
 #include "GaugiKernel/ComponentAccumulator.h"
+#include "GaugiKernel/Timer.h"
 #include <iostream>
 #include <time.h>
 #include "sys/types.h"

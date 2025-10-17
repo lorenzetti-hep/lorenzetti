@@ -8,8 +8,9 @@ from ROOT import generator
 
 class Particle(EnumStringification):
   Electron = 11
-  Photon = 22
-  Pion = 211
+  Photon   = 22
+  PiPlus   = 211
+  PiZero   = 111
   Neutrino = 12
 
 

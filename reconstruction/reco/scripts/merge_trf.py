@@ -4,13 +4,17 @@ import sys
 import os
 
 from pathlib            import Path
-from joblib             import Parallel, delayed
+from typing             import List
 from expand_folders     import expand_folders
 from GaugiKernel        import LoggingLevel, get_argparser_formatter
 from GaugiKernel        import ComponentAccumulator
 from RootStreamBuilder  import RootStreamHITReader, recordable
 from CaloCellBuilder    import PileupMerge
 from RootStreamBuilder  import RootStreamHITMaker
+
+from reco.reco_job import merge_args, update_args, create_parallel_job
+
+
 
 def parse_args():
     # create the top-level parser
@@ -41,30 +45,38 @@ def parse_args():
     parser.add_argument('-c', '--command', action='store',
                         dest='command', required=False, default="''",
                         help="The preexec command")
-    parser.add_argument('-nt', '--number-of-threads', action='store',
-                        dest='number_of_threads', required=False,
-                        type=int, default=1,
-                        help="The number of threads")
-    parser.add_argument('-m','--merge', action='store_true',
-                        dest='merge', required=False,
-                        help='Merge all files.')
+    parser.add_argument('--low-pileup-files', action='store', 
+                        dest='low_pileup_files', required = True,
+                        help = "The event HIT file to be merged (pileup).")
+    parser.add_argument('--high-pileup-files', action='store', 
+                        dest='high_pileup_files', required = True,
+                        help = "The event HIT file to be merged (pileup).")
+    parser.add_argument('--pileup-avg', action='store',
+                        dest='pileup_avg', required=True,
+                        type=int,
+                        help="The pileup average.")
+    parser.add_argument('--pileup-sigma', action='store',
+                        dest='pileup_sigma', required=True,
+                        type=int,
+                        help="The pileup sigma.")
 
-    return parser
+    return merge_args(parser)
 
 
-def main(logging_level: str,
+def main(events: List[int],
          input_file: str | Path,
          output_file: str | Path,
-         pileup_file: str | Path,
-         command: str,
-         number_of_events: int):
+         logging_level: str,
+         low_pileup_files: List[str],
+         high_pileup_files: List[str],
+         pileup_avg : int,
+         pileup_sigma : int,
+         command: str):
 
     if isinstance(input_file, Path):
         input_file = str(input_file)
     if isinstance(output_file, Path):
         output_file = str(output_file)
-    if isinstance(pileup_file, Path):
-        pileup_file = str(pileup_file)
 
     outputLevel = LoggingLevel.toC(logging_level)
 
@@ -83,12 +95,15 @@ def main(logging_level: str,
     reader.merge(acc)
 
     pileup = PileupMerge( "PileupMerge", 
-                          InputFile       = pileup_file,
-                          InputHitsKey    = recordable("Hits"),
-                          InputEventKey   = recordable("Events"),
-                          OutputHitsKey   = "Hits_Merged",
-                          OutputEventKey  = "Events_Merged",
-                          OutputLevel     = outputLevel
+                          LowPileupInputFiles = low_pileup_files,
+                          HighPileupInputFiles= high_pileup_files,
+                          PileupAvg           = pileup_avg,
+                          PileupSigma         = pileup_sigma,
+                          InputHitsKey        = recordable("Hits"),
+                          InputEventKey       = recordable("Events"),
+                          OutputHitsKey       = "Hits_Merged",
+                          OutputEventKey      = "Events_Merged",
+                          OutputLevel         = outputLevel
                         )
     acc += pileup
 
@@ -103,57 +118,41 @@ def main(logging_level: str,
                                OutputEventKey  = recordable("Events"),
                                OutputLevel     = outputLevel)
     acc += HIT
-    acc.run(number_of_events)
+    acc.run(events)
 
-
-
-
-def get_job_params(args, force:bool=False):
-    splitted_output_filename = args.output_file.split(".")
-    for i, input_file in enumerate(args.input_file):
-        output_file = splitted_output_filename.copy()
-        if len(args.input_file)>1:
-          output_file.insert(-1, str(i))
-        output_file = Path('.'.join(output_file))
-        if not force and output_file.exists():
-            print(f"{i} - Output file {output_file} already exists. Skipping.")
-            continue
-        yield input_file, output_file
-   
 
 
 def run(args):
 
-    args.input_file = Path(args.input_file)
-    if not args.input_file.exists():
-        raise FileNotFoundError(f"Input file {args.input_file} not found.")
-    if args.input_file.is_dir():
-        args.input_file = expand_folders(os.path.abspath(args.input_file))
+    args.low_pileup_files  = Path(args.low_pileup_files)
+    args.high_pileup_files = Path(args.high_pileup_files)
+
+    if not args.low_pileup_files.exists():
+        raise FileNotFoundError(f"Low Pileup input files {args.low_pileup_files} not found.")
+    if args.low_pileup_files.is_dir():
+        args.low_pileup_files = expand_folders(os.path.abspath(args.low_pileup_files))
     else:
-        args.input_file = [args.input_file]
+        args.low_pileup_files = [args.low_pileup_files]
+   
+    if not args.high_pileup_files.exists():
+        raise FileNotFoundError(f"High Pileup input files {args.high_pileup_files} not found.")
+    if args.high_pileup_files.is_dir():
+        args.high_pileup_files = expand_folders(os.path.abspath(args.high_pileup_files))
+    else:
+        args.high_pileup_files = [args.high_pileup_files]
 
-    if not args.pileup_file.exists():
-        raise FileNotFoundError(f"Pileup input file {args.input_file} not found.")
-
-
-    pool = Parallel(n_jobs=args.number_of_threads)
-    pool(delayed(main)(
-            logging_level=args.output_level,
-            input_file=input_file,
-            output_file=output_file,
-            pileup_file=args.pileup_file,
-            command=args.command,
-            number_of_events=args.number_of_events
-    )
-        for input_file, output_file in get_job_params(args))
+    pool = create_parallel_job(args)
+    pool( main, 
+         logging_level    = args.output_level,
+         low_pileup_files = args.low_pileup_files,
+         high_pileup_files= args.high_pileup_files,
+         pileup_avg       = args.pileup_avg,
+         pileup_sigma     = args.pileup_sigma,
+         command          = args.command
+         )
     
-    
-    if args.merge:
-      files = [f"{os.getcwd()}/{f}" for _, f in get_job_params(args, force=True)]
-      os.system(f"hadd -f {args.output_file} {' '.join(files)}")
-      [os.remove(f) for f in files]
+   
 
-       
 
 
 if __name__ == "__main__":
@@ -162,4 +161,5 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
     args = parser.parse_args()
+    args = update_args(args)
     run(args)

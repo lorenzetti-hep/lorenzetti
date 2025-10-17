@@ -10,6 +10,7 @@ bool EventInfoConverter::convert( const EventInfo *event, EventInfo_t &event_t) 
     event_t.runNumber   = event->runNumber();
     event_t.eventNumber = event->eventNumber();
     event_t.avgmu       = event->avgmu();
+    event_t.totmu       = event->totmu();
     return true;
   }
   return false;
@@ -21,6 +22,7 @@ bool EventInfoConverter::convert(const EventInfo_t &event_t, EventInfo *&event )
   event->setRunNumber( event_t.runNumber );
   event->setEventNumber( event_t.eventNumber );
   event->setAvgmu( event_t.avgmu);
+  event->setTotmu( event_t.totmu );
   return true;
 }
 

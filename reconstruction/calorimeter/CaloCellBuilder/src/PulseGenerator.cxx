@@ -155,6 +155,7 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
 
   // Add the integrated pulse centered in the bunch crossing zero
   cell->setPulse( pulse_sum );
+  cell->setSigma( m_noiseStd );
 
   return StatusCode::SUCCESS;
 }

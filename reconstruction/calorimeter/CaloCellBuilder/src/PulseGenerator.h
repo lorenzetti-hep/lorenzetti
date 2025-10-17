@@ -20,6 +20,7 @@ class PulseGenerator : public Gaugi::AlgTool
 
     virtual StatusCode execute( SG::EventContext &ctx, Gaugi::EDM * ) const override;
 
+    
 
 
   private:

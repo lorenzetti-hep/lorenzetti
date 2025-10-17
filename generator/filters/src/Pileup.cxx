@@ -12,14 +12,15 @@ Pileup::Pileup(const std::string name, IGenerator *gen):
   IMsgService(name), 
   IAlgorithm(gen)
 {
-  declareProperty( "PileupAvg"      , m_nPileupAvg=0     );
-  declareProperty( "PileupSigma"    , m_nPileupSigma=0   );
-  declareProperty( "BunchIdStart"   , m_bc_id_start=-8   );
-  declareProperty( "BunchIdEnd"     , m_bc_id_end=7      );
-  declareProperty( "EtaMax"         , m_etaMax=1.4       );
-  declareProperty( "Select"         , m_select=2         );
-  declareProperty( "DeltaEta"       , m_delta_eta=0.22   );
-  declareProperty( "DeltaPhi"       , m_delta_phi=0.22   );
+  declareProperty( "PileupAvg"      , m_nPileupAvg=0      );
+  declareProperty( "PileupSigma"    , m_nPileupSigma=0    );
+  declareProperty( "PileupPerBunch" , m_nPileupPerBunch=-1);
+  declareProperty( "BunchIdStart"   , m_bc_id_start=-8    );
+  declareProperty( "BunchIdEnd"     , m_bc_id_end=7       );
+  declareProperty( "EtaMax"         , m_etaMax=1.4        );
+  declareProperty( "Select"         , m_select=2          );
+  declareProperty( "DeltaEta"       , m_delta_eta=0.22    );
+  declareProperty( "DeltaPhi"       , m_delta_phi=0.22    );
 }
 
 Pileup::~Pileup()
@@ -47,15 +48,21 @@ StatusCode Pileup::execute(  generator::Event &ctx )
   float nPileUpMean(0);
 
   // Generate the new average for pileup from a gaussian distribution
-  int evtPileupAvg = m_nPileupAvg + generator()->random_gauss()*m_nPileupSigma;
-  evtPileupAvg = evtPileupAvg<0 ? 0: evtPileupAvg; // negative pileup should be overwrite to zero
+  int evtPileupAvg(0);
+  
+  if(m_nPileupPerBunch<0){
+    evtPileupAvg = m_nPileupAvg + generator()->random_gauss()*m_nPileupSigma;
+    evtPileupAvg = evtPileupAvg<0 ? 0: evtPileupAvg; // negative pileup should be overwrite to zero
+    MSG_INFO("Filling minbias event into the context with Pileup average: " << evtPileupAvg << "...");
+  }else{
+    MSG_INFO("Filling all bunch crossing with nPileup: " << m_nPileupPerBunch);
+  }
   
 
-  MSG_INFO("Filling minbias event into the context with Pileup average: " << evtPileupAvg << "...");
   for ( int bc_id = m_bc_id_start; bc_id <= m_bc_id_end; ++bc_id )
   {
     // Select the number of pileup events to generate.
-    int nPileup = poisson(evtPileupAvg);
+    int nPileup = m_nPileupPerBunch>=0? m_nPileupPerBunch: poisson(evtPileupAvg);
     nPileUpMean += nPileup;
 
     // Generate a number of pileup events.
@@ -112,8 +119,8 @@ StatusCode Pileup::execute(  generator::Event &ctx )
 
 
   // Fill window specific information
-  nPileUpMean /= nWin; 
-  ctx.setAvgmu( nPileUpMean );
+  ctx.setTotmu( nPileUpMean );
+  ctx.setAvgmu( nPileUpMean / nWin);
   
   return StatusCode::SUCCESS;
 }

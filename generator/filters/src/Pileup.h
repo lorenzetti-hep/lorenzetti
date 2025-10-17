@@ -25,6 +25,7 @@ namespace generator{
       float m_etaMax;
       float m_nPileupAvg;
       float m_nPileupSigma;
+      float m_nPileupPerBunch;
       float m_delta_eta;
       float m_delta_phi;
 

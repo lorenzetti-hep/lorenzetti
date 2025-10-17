@@ -6,39 +6,37 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
 
 
-if [ ! -d "$SCRIPT_DIR/lib" ]; then
 
-  mkdir lib
-  # first level pcm
-  for file in "`pwd`"/*/*/*/*.pcm
+# first level pcm
+for file in "`pwd`"/*/*/*/*.pcm
+do
+  echo "ln -sf $file"
+  ln -sf $file
+done
+
+for file in "`pwd`"/*/*/*.pcm
+do
+  echo "ln -sf $file"
+  ln -sf $file
+done
+
+
+# Link all libs
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  for file in "`pwd`"/*.dylib
   do
-    echo "ln -sf $file"
-    ln -sf $file
+    echo "ln -sf $file lib"
+    ln -sf $file lib
   done
-
-  for file in "`pwd`"/*/*/*.pcm
+else # Unix system
+  for file in "`pwd`"/*.so
   do
-    echo "ln -sf $file"
-    ln -sf $file
+    echo "ln -sf $file lib"
+    ln -sf $file lib
   done
-
-
-  # Link all libs
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    for file in "`pwd`"/*.dylib
-    do
-      echo "ln -sf $file lib"
-      ln -sf $file lib
-    done
-  else # Unix system
-    for file in "`pwd`"/*.so
-    do
-      echo "ln -sf $file lib"
-      ln -sf $file lib
-    done
-  fi
-
 fi
+
+
 
 
 if [ ! -d "$SCRIPT_DIR/lib" ]; then
