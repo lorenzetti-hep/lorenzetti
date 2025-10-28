@@ -53,8 +53,8 @@ After enter and setup all dependencies inside of the container, just follow thes
 
 ```
 git clone https://github.com/lorenzetti-hep/lorenzetti.git && cd lorenzetti
-make
-rm -rf build/lib/
+mkdir -p build
+cd build && cmake .. && make -jN && cp ../core/GaugiKernel/cmake/lzt_setup.sh . && cd ..
 source build/lzt_setup.sh
 ```
 

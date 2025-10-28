@@ -41,9 +41,7 @@ def parse_args():
                         dest='save_all_hits', required=False,
                         help="Save all hits into the output file.")
 
-    parser = merge_args(parser)
-
-    return parser
+    return merge_args(parser)
 
 
 def main(logging_level: str,
@@ -161,6 +159,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     args = parser.parse_args()
+
     if Path(args.output_file).is_dir():
         raise IsADirectoryError(f"Output file '{args.output_file}' was expected to be a file, "
                                  "but it is a directory.")
