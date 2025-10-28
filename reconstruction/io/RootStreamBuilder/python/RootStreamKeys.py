@@ -17,6 +17,7 @@ valid_keys = [
             "TruthParticles",
             # CaloRingsBuilder
             "Rings",
+            "RingsSigmaNoise",
             "TruthRings",
             "Electrons",
             ]
