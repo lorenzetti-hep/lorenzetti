@@ -9,7 +9,9 @@ def CaloRingsBuilderCfg( name             : str,
                          InputClusterKey  : str, 
                          OutputRingerKey  : str, 
                          OutputLevel      : int=0, 
-                         HistogramPath    : str="Expert/Rings"
+                         HistogramPath    : str="Expert/Rings",
+                         DoSigmaCut       : bool=False,
+                         SigmaCut         : float=2.0
                          ):
     pi = np.pi
 
@@ -30,7 +32,10 @@ def CaloRingsBuilderCfg( name             : str,
                               ],
                               HistogramPath = HistogramPath,
                               EtaRange      = [0.0, 2.5],
-                              OutputLevel   = OutputLevel)
+                              OutputLevel   = OutputLevel,
+                              DoSigmaCut    = DoSigmaCut,
+                              SigmaCut      = SigmaCut
+                            )
  
 
     fwd_rings   = CaloRingsMaker(name+"_Fwd",

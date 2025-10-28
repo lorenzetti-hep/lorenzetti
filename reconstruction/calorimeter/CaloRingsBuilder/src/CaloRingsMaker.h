@@ -92,6 +92,9 @@ class CaloRingsMaker : public Gaugi::Algorithm
 
     int m_outputLevel;
     bool m_doForward;
+
+    bool m_DoSigmaCut;
+    float m_SigmaCut;
 };
 
 #endif
