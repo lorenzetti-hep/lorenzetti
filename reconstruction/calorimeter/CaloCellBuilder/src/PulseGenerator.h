@@ -42,6 +42,13 @@ class PulseGenerator : public Gaugi::AlgTool
     float m_noiseMean;    
     float m_noiseStd;    
 
+    // new for including cell defects
+    bool m_doDefects; 
+    bool m_deadModules;
+    std::vector<std::vector<int>> m_cellHash;
+    std::vector<float> m_noiseFactor;
+    std::vector<std::vector<int>> m_noisyEvents;
+    
     std::vector<float> m_shaper;
     std::vector<float> m_timeSeries;
     

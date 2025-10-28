@@ -30,7 +30,7 @@ class RootStreamESDMaker( Cpp ):
     self.setProperty( "OutputEventKey"  , OutputEventKey if OutputEventKey else InputEventKey )
     self.setProperty( "OutputTruthKey"  , OutputTruthKey if OutputTruthKey else InputTruthKey )
     self.setProperty( "OutputCellsKey"  , OutputCellsKey if OutputCellsKey else InputCellsKey )
-    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey       )
+    self.setProperty( "OutputSeedsKey"  , OutputSeedsKey if OutputSeedsKey else InputSeedsKey )
     self.setProperty( "OutputLevel"     , OutputLevel     ) 
     self.setProperty( "NtupleName"      , NtupleName      )
     self.setProperty( "EtaWindow"       , EtaWindow       )

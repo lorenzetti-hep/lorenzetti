@@ -77,7 +77,7 @@ StatusCode CaloCellMaker::initialize()
     MSG_DEBUG(tool->name());
     if (tool->initialize().isFailure() )
     {
-      MSG_FATAL( "It's not possible to iniatialize " << tool->name() << " tool." );
+      MSG_FATAL( "It's not possible to initialize " << tool->name() << " tool." );
     }
   }
 
@@ -158,7 +158,9 @@ StatusCode CaloCellMaker::pre_execute( EventContext &ctx ) const
                                                       m_z,
                                                       (CaloSampling)m_sampling,
                                                       (Detector)m_detector,
-                                                      m_bc_duration, m_bcid_start, m_bcid_end);
+                                                      m_bc_duration, m_bcid_start, m_bcid_end,
+                                                      false);
+
       if ( !collection->insert( descriptor->hash(), descriptor ) ){
         MSG_FATAL( "It is not possible to include cell hash ("<< descriptor->hash() << ") into the collection. hash already exist.");
       }
@@ -236,7 +238,7 @@ StatusCode CaloCellMaker::post_execute( EventContext &ctx ) const
         descriptor->edep( bcid, hit->edep(bcid) ); 
         descriptor->tof ( bcid, hit->tof(bcid)  );
       }  
-
+      
       if( m_pulseGenerator->execute(ctx, descriptor).isFailure() ){
           MSG_ERROR( "It's not possible to execute Pulse generator." );
           return StatusCode::FAILURE;

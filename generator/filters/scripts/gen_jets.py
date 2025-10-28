@@ -52,7 +52,7 @@ def parse_args():
                         help = "Minimum energy")
     parser.add_argument('--energy-max', action='store', 
                         dest='energy_max', required = False, 
-                        type=float, default=13000, 
+                        type=float, default=6500, 
                         help = "Maximum energy")
     parser.add_argument('--jf17-file', action='store',
                         dest='jf17_file', required=False,

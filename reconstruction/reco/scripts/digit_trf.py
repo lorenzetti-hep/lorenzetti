@@ -12,6 +12,7 @@ from GaugiKernel        import LoggingLevel, get_argparser_formatter
 from GaugiKernel        import ComponentAccumulator
 from RootStreamBuilder  import RootStreamHITReader, recordable
 from RootStreamBuilder  import RootStreamESDMaker
+from RootStreamBuilder import RootStreamESDFlags as flags
 
 from reco.reco_job import merge_args, update_args, create_parallel_job
 
@@ -65,13 +66,16 @@ def main(events : List[int],
     reader.merge(acc)
 
     # digitalization!
-
+    noisefactor = len(flags.noisyEvents)*[args.noiseFactor]
+    
     calorimeter = CaloCellBuilder("CaloCellBuilder", ATLAS(),
                                   HistogramPath="Expert/Cells",
                                   OutputLevel=outputLevel,
                                   InputHitsKey=recordable("Hits"),
                                   OutputCellsKey=recordable("Cells"),
                                   OutputTruthCellsKey=recordable("TruthCells"),
+                                  doDefects=args.doDefects,
+                                  noiseFactor=noisefactor,
     )
     calorimeter.merge(acc)
 

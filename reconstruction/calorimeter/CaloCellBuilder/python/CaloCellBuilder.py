@@ -24,6 +24,8 @@ class CaloCellBuilder( Logger ):
                       OutputCellsKey       = "Cells",
                       OutputTruthCellsKey  = "TruthCells",
                       OutputLevel          = LoggingLevel.toC('INFO'),
+                      doDefects            = False,
+                      noiseFactor          = [1],
                       ):
 
     Logger.__init__(self)
@@ -35,6 +37,8 @@ class CaloCellBuilder( Logger ):
     self.OutputTruthCellsKey = OutputTruthCellsKey
     self.Detector            = detector
     self.OutputCollectionKeys= []
+    self.doDefects           = doDefects
+    self.noiseFactor         = noiseFactor
 
     
   def configure(self):
@@ -45,7 +49,7 @@ class CaloCellBuilder( Logger ):
 
       DoCrosstalk = True if CaloFlags.DoCrossTalk and (samp.Sampling == CaloSampling.EMEC2 or samp.Sampling == CaloSampling.EMB2) else False
 
-
+      print('sampling noise: ', samp.Noise)
 
       MSG_INFO(self, "Create new CaloCellMaker and dump all cells into %s collection", samp.CollectionKey)
       pulse = PulseGenerator( "PulseGenerator", 
@@ -58,7 +62,10 @@ class CaloCellBuilder( Logger ):
                               DeformationStd  = 0.0,
                               NoiseMean       = 0.0,
                               NoiseStd        = samp.Noise,
-                              StartSamplingBC = samp.StartSamplingBC )
+                              StartSamplingBC = samp.StartSamplingBC, 
+                              doDefects       = self.doDefects,
+                              noiseFactor     = self.noiseFactor,
+                              )
      
 
       of= OptimalFilter("OptimalFilter",

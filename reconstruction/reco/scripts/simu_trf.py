@@ -34,6 +34,9 @@ def parse_args():
                         dest='output_level', required=False,
                         type=str, default='INFO',
                         help="The output level messenger.")
+    parser.add_argument('--doDefects', action='store_true',
+                        dest='doDefects', required=False, default=False,
+                        help="Enable the defects simulation.")
     parser.add_argument('-c', '--command', action='store',
                         dest='command', required=False, default="''",
                         help="The preexec command")
@@ -54,6 +57,9 @@ def main(logging_level: str,
          number_of_events: int,
          number_of_threads: int):
 
+    print('new args do defects: ', args.doDefects)
+    print('output file: ', output_file)
+
     if isinstance(input_file, Path):
         input_file = str(input_file)
     if isinstance(output_file, Path):
@@ -70,6 +76,7 @@ def main(logging_level: str,
                                NumberOfThreads=number_of_threads,
                                OutputFile=output_file,
                                Timeout=timeout * MINUTES)
+    print('here')
 
     gun = EventReader("EventReader", input_file,
                       # outputs
@@ -77,7 +84,7 @@ def main(logging_level: str,
                       OutputTruthKey=recordable("Particles"),
                       OutputSeedKey=recordable("Seeds"),
                       )
-
+    print('here')
     calorimeter = CaloHitBuilder("CaloHitBuilder",
                                  HistogramPath="Expert/Hits",
                                  OutputLevel=outputLevel,
@@ -86,7 +93,7 @@ def main(logging_level: str,
                                  )
     gun.merge(acc)
     calorimeter.merge(acc)
-
+    print('here before HIT')
     HIT = RootStreamHITMaker("RootStreamHITMaker",
                              OutputLevel=outputLevel,
                              OnlyRoI= not save_all_hits,
@@ -95,7 +102,9 @@ def main(logging_level: str,
                              InputEventKey=recordable("Events"),
                              InputTruthKey=recordable("Particles"),
                              InputSeedsKey=recordable("Seeds"),
+                             doDefects=args.doDefects,
                              )
+    print('here after HIT')
     acc += HIT
     acc.run(number_of_events)
 
@@ -112,11 +121,13 @@ def run(args):
         raise FileNotFoundError(f"Input file {args.input_file} not found.")
 
     splitted_output_filename = args.output_file.split(".")
+    print(f"splitted output file {splitted_output_filename}")
     for i, input_file in enumerate(args.input_file):
         output_file = splitted_output_filename.copy()
         if len(args.input_file) > 1:
             output_file.insert(-1, str(i))
         output_file = Path('.'.join(output_file))
+        print(f"Output file: {output_file}")
         if output_file.exists():
             print(f"{i} - Output file {output_file} already exists. Skipping.")
             continue

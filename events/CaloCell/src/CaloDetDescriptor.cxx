@@ -19,7 +19,9 @@ CaloDetDescriptor::CaloDetDescriptor(
                   Detector detector,
                   float bc_duration,
                   int bcid_start,
-                  int bcid_end):
+                  int bcid_end,
+                  bool anomalous
+                ):
   EDM(),
   m_sampling(sampling),
   m_detector(detector),
@@ -33,7 +35,8 @@ CaloDetDescriptor::CaloDetDescriptor(
   m_bcid_end( bcid_end ),
   m_bc_duration( bc_duration ),
   m_hash(hash),
-  m_z(detZ)
+  m_z(detZ),
+  m_anomalous(anomalous)
 {
   // Initalize the time vector using the bunch crossing informations
   // setZ(detZ);
@@ -57,7 +60,8 @@ CaloDetDescriptor * CaloDetDescriptor::copy()
                                     m_detector,
                                     m_bc_duration,
                                     m_bcid_start,
-                                    m_bcid_end);
+                                    m_bcid_end, 
+                                    m_anomalous);
 
   det->setE(e()); // estimated energy from OF
   det->setPulse( pulse() ); // pulse from generator
