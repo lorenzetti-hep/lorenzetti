@@ -21,6 +21,8 @@ class CaloRingsMaker( Cpp ):
                 OutputLevel      : int=0, 
                 HistogramPath    : str="Expert/Rings",
                 EtaRange         : List[float] = [0, 2.5],
+                DoSigmaCut       : bool = False,
+                SigmaCut         : float = 2.0
               ):
 
     Cpp.__init__(self, ROOT.CaloRingsMaker(name) )
@@ -34,8 +36,5 @@ class CaloRingsMaker( Cpp ):
     self.setProperty( "HistogramPath"      , HistogramPath    )
     self.setProperty( "OutputLevel"        , OutputLevel      )
     self.setProperty( "EtaRange"           , EtaRange         )
-
-
-
-
-
+    self.setProperty( "DoSigmaCut"         , DoSigmaCut       )
+    self.setProperty( "SigmaCut"           , SigmaCut         )

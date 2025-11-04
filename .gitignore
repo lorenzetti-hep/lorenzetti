@@ -18,11 +18,12 @@ doc/.ipynb_checkpoints/*
 cmt/boost_test.cxx.o
 MoreFilesForYou-*
 .asetup.save
-build
+build*
 .python-version
 
 # vscode
 ./.vscode/*
+.vscode/*
 
 # configs cells
 ./lorenzet/share/json_files/
@@ -30,3 +31,10 @@ build
 executables
 *.exe
 **/.env
+
+# result folders
+2025_*/
+production/*
+
+# scripts
+*.sh

@@ -28,6 +28,7 @@ namespace xAOD{
         std::vector<float> tof;
         unsigned long int hash;
         float z;
+        bool anomalous;
         float sigma;
     };
 

@@ -6,6 +6,7 @@ import os
 import evtgen
 
 from math        import ceil
+from pathlib     import Path
 from typing      import List
 from joblib      import Parallel, delayed
 from evtgen      import Pythia8
@@ -51,7 +52,7 @@ def parse_args():
                         help = "Minimum energy")
     parser.add_argument('--energy-max', action='store', 
                         dest='energy_max', required = False, 
-                        type=float, default=13000, 
+                        type=float, default=6500, 
                         help = "Maximum energy")
     parser.add_argument('--jf17-file', action='store',
                         dest='jf17_file', required=False,
@@ -107,7 +108,12 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
+
     args = parser.parse_args()
+    if Path(args.output_file).is_dir():
+        raise IsADirectoryError(f"Output file '{args.output_file}' was expected to be a file, "
+                                 "but it is a directory.")
+    
     args = update_args(args)
     pool = create_parallel_job(args)
     pool(main,
