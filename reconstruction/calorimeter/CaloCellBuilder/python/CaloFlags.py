@@ -15,3 +15,5 @@ class CaloFlags(EnumStringification):
     XTAmpCapacitive     = 4.2
     XTAmpInductive      = 2.3
     XTAmpResistive      = 1.0
+    # energy estimation flags
+    HadEnergyEstimationCOF = False
