@@ -123,7 +123,7 @@ StatusCode PulseGenerator::execute( SG::EventContext &ctx, Gaugi::EDM *edm ) con
       ++index;
     }
   }
-  elif (m_doDefects && !m_deadModules){
+  else if (m_doDefects && !m_deadModules){
     for (auto group : m_cellHash ) {
       for (auto hash : group){
         // only introduce defects for specific cells and specific events
