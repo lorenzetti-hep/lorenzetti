@@ -3,6 +3,17 @@
 
 # Lorenzetti Simulator
 
+📢 Repository Moved 📢
+Heads up! This repository has been permanently moved to a new location.
+Please update your remotes and cloning links immediately.
+All future development, issues, and merge requests will take place at the new address.
+
+New Repository Address: 🚀 gitlab.com/lorenzetti.ufrj.br/lorenzetti
+
+Thank you for your understanding! 🙏
+
+
+
 Lorenzetti is a framework for the HEP community to freely exploit the full potential of calorimetry data. We expect to enable the community to mitigate bottlenecks for R&D in processing algorithms using calorimetry data by providing:
 
  - Unified low-level calorimetry and physics information based on full simulation (geant);
