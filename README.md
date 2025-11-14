@@ -9,7 +9,7 @@ Heads up! This repository has been permanently moved to a new location.
 Please update your remotes and cloning links immediately.
 All future development, issues, and merge requests will take place at the new address.
 
-**New Repository Address:** 🚀 [https://github.com/lorenzetti-ufrj-br/lorenzetti](github)
+**New Repository Address:** 🚀 [New GitHub](https://github.com/lorenzetti-ufrj-br/lorenzetti)
 
 Thank you for your understanding! 🙏
 
